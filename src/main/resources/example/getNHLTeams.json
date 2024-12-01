@@ -1,0 +1,6631 @@
+{
+  "statusCode": 200,
+  "body": [
+    {
+      "teamAbv": "ANA",
+      "teamCity": "Anaheim",
+      "teamName": "Ducks",
+      "standings": {
+        "currentStreak": {
+          "result": "W",
+          "length": "1"
+        },
+        "goalsFor": "55",
+        "gamesPlayed": "21",
+        "resultDetail": {
+          "shootoutWin": "0",
+          "shootoutLoss": "0",
+          "regulationWin": "8",
+          "overtimeLoss": "3",
+          "overtimeWin": "1",
+          "regulationLoss": "9"
+        },
+        "OTL": "3",
+        "W": "9",
+        "record": "9-9-3",
+        "diff": "-7",
+        "L": "9",
+        "goalsAgainst": "62",
+        "points": "21"
+      },
+      "espnLogo1": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/ana.png",
+      "teamID": "1",
+      "conference": "Western",
+      "division": "Pacific",
+      "topPerformers": {
+        "penalties": {
+          "total": "10",
+          "playerID": [
+            "5502"
+          ]
+        },
+        "shootoutGoals": {
+          "total": "0",
+          "playerID": []
+        },
+        "blockedShots": {
+          "total": "54",
+          "playerID": [
+            "5502"
+          ]
+        },
+        "shotsMissedNet": {
+          "total": "50",
+          "playerID": [
+            "5080145"
+          ]
+        },
+        "saves": {
+          "total": "451",
+          "playerID": [
+            "4588165"
+          ]
+        },
+        "shortHandedTimeOnIce": {
+          "total": "54:53",
+          "playerID": [
+            "5502"
+          ]
+        },
+        "assists": {
+          "total": "9",
+          "playerID": [
+            "3942905"
+          ]
+        },
+        "timeOnIce": {
+          "total": "837:35",
+          "playerID": [
+            "4588165"
+          ]
+        },
+        "shifts": {
+          "total": "526",
+          "playerID": [
+            "5738"
+          ]
+        },
+        "goalsAgainst": {
+          "total": "38",
+          "playerID": [
+            "4588165"
+          ]
+        },
+        "powerPlayTimeOnIce": {
+          "total": "64:09",
+          "playerID": [
+            "3942905"
+          ]
+        },
+        "goals": {
+          "total": "6",
+          "playerID": [
+            "3942905"
+          ]
+        },
+        "faceoffsWon": {
+          "total": "116",
+          "playerID": [
+            "4352775"
+          ]
+        },
+        "plusMinus": {
+          "total": "7",
+          "playerID": [
+            "4968"
+          ]
+        },
+        "shortHandedSaves": {
+          "total": "14",
+          "playerID": [
+            "4588165"
+          ]
+        },
+        "faceoffs": {
+          "total": "260",
+          "playerID": [
+            "2562636"
+          ]
+        },
+        "powerPlayGoals": {
+          "total": "3",
+          "playerID": [
+            "3942905"
+          ]
+        },
+        "takeaways": {
+          "total": "10",
+          "playerID": [
+            "3942905"
+          ]
+        },
+        "hits": {
+          "total": "66",
+          "playerID": [
+            "5502"
+          ]
+        },
+        "penaltiesInMinutes": {
+          "total": "32",
+          "playerID": [
+            "3067822"
+          ]
+        },
+        "powerPlayAssists": {
+          "total": "4",
+          "playerID": [
+            "4874718"
+          ]
+        },
+        "shots": {
+          "total": "66",
+          "playerID": [
+            "3527554"
+          ]
+        },
+        "faceoffsLost": {
+          "total": "153",
+          "playerID": [
+            "2562636"
+          ]
+        },
+        "giveaways": {
+          "total": "32",
+          "playerID": [
+            "5502"
+          ]
+        },
+        "shotsAgainst": {
+          "total": "489",
+          "playerID": [
+            "4588165"
+          ]
+        }
+      },
+      "teamStats": {
+        "faceoffsWon": "504",
+        "plusMinus": "-6",
+        "penalties": "73",
+        "shootoutGoals": "0",
+        "shortHandedSaves": "16",
+        "faceoffs": "1211",
+        "powerPlayGoals": "10",
+        "takeaways": "96",
+        "blockedShots": "386",
+        "hits": "460",
+        "penaltiesInMinutes": "163",
+        "powerPlayAssists": "19",
+        "shotsMissedNet": "326",
+        "saves": "657",
+        "assists": "90",
+        "shifts": "7775",
+        "shots": "576",
+        "goalsAgainst": "60",
+        "faceoffsLost": "707",
+        "giveaways": "326",
+        "goals": "55",
+        "shotsAgainst": "716"
+      }
+    },
+    {
+      "teamAbv": "BOS",
+      "teamCity": "Boston",
+      "teamName": "Bruins",
+      "standings": {
+        "currentStreak": {
+          "result": "W",
+          "length": "1"
+        },
+        "goalsFor": "57",
+        "gamesPlayed": "24",
+        "resultDetail": {
+          "shootoutWin": "0",
+          "shootoutLoss": "0",
+          "regulationWin": "8",
+          "overtimeLoss": "3",
+          "overtimeWin": "3",
+          "regulationLoss": "10"
+        },
+        "OTL": "3",
+        "W": "11",
+        "record": "11-10-3",
+        "diff": "-18",
+        "L": "10",
+        "goalsAgainst": "75",
+        "points": "25"
+      },
+      "espnLogo1": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/bos.png",
+      "teamID": "3",
+      "conference": "Eastern",
+      "division": "Atlantic",
+      "topPerformers": {
+        "penalties": {
+          "total": "17",
+          "playerID": [
+            "3042021"
+          ]
+        },
+        "shootoutGoals": {
+          "total": "0",
+          "playerID": []
+        },
+        "blockedShots": {
+          "total": "61",
+          "playerID": [
+            "3904175"
+          ]
+        },
+        "shotsMissedNet": {
+          "total": "38",
+          "playerID": [
+            "3114778"
+          ]
+        },
+        "saves": {
+          "total": "389",
+          "playerID": [
+            "4712036"
+          ]
+        },
+        "shortHandedTimeOnIce": {
+          "total": "77:43",
+          "playerID": [
+            "3904175"
+          ]
+        },
+        "assists": {
+          "total": "14",
+          "playerID": [
+            "3114778"
+          ]
+        },
+        "timeOnIce": {
+          "total": "930:53",
+          "playerID": [
+            "4712036"
+          ]
+        },
+        "shifts": {
+          "total": "660",
+          "playerID": [
+            "3988803"
+          ]
+        },
+        "goalsAgainst": {
+          "total": "49",
+          "playerID": [
+            "4712036"
+          ]
+        },
+        "powerPlayTimeOnIce": {
+          "total": "109:45",
+          "playerID": [
+            "3114778"
+          ]
+        },
+        "goals": {
+          "total": "8",
+          "playerID": [
+            "3852"
+          ]
+        },
+        "faceoffsWon": {
+          "total": "211",
+          "playerID": [
+            "3041994"
+          ]
+        },
+        "plusMinus": {
+          "total": "8",
+          "playerID": [
+            "4419679"
+          ]
+        },
+        "shortHandedSaves": {
+          "total": "22",
+          "playerID": [
+            "4712036"
+          ]
+        },
+        "faceoffs": {
+          "total": "396",
+          "playerID": [
+            "3041994"
+          ]
+        },
+        "powerPlayGoals": {
+          "total": "3",
+          "playerID": [
+            "3114778"
+          ]
+        },
+        "takeaways": {
+          "total": "16",
+          "playerID": [
+            "2555315"
+          ]
+        },
+        "hits": {
+          "total": "87",
+          "playerID": [
+            "4587985"
+          ]
+        },
+        "penaltiesInMinutes": {
+          "total": "48",
+          "playerID": [
+            "3042021"
+          ]
+        },
+        "powerPlayAssists": {
+          "total": "5",
+          "playerID": [
+            "3852"
+          ]
+        },
+        "shots": {
+          "total": "93",
+          "playerID": [
+            "3114778"
+          ]
+        },
+        "faceoffsLost": {
+          "total": "185",
+          "playerID": [
+            "3041994"
+          ]
+        },
+        "giveaways": {
+          "total": "39",
+          "playerID": [
+            "3114778"
+          ]
+        },
+        "shotsAgainst": {
+          "total": "438",
+          "playerID": [
+            "4712036"
+          ]
+        }
+      },
+      "teamStats": {
+        "faceoffsWon": "722",
+        "plusMinus": "-47",
+        "penalties": "111",
+        "shootoutGoals": "0",
+        "shortHandedSaves": "28",
+        "faceoffs": "1391",
+        "powerPlayGoals": "11",
+        "takeaways": "132",
+        "blockedShots": "348",
+        "hits": "628",
+        "penaltiesInMinutes": "259",
+        "powerPlayAssists": "20",
+        "shotsMissedNet": "312",
+        "saves": "595",
+        "assists": "95",
+        "shifts": "9391",
+        "shots": "653",
+        "goalsAgainst": "70",
+        "faceoffsLost": "669",
+        "giveaways": "381",
+        "goals": "57",
+        "shotsAgainst": "665"
+      }
+    },
+    {
+      "teamAbv": "BUF",
+      "teamCity": "Buffalo",
+      "teamName": "Sabres",
+      "standings": {
+        "currentStreak": {
+          "result": "L",
+          "length": "1"
+        },
+        "goalsFor": "69",
+        "gamesPlayed": "22",
+        "resultDetail": {
+          "shootoutWin": "1",
+          "shootoutLoss": "0",
+          "regulationWin": "8",
+          "overtimeLoss": "1",
+          "overtimeWin": "2",
+          "regulationLoss": "10"
+        },
+        "OTL": "1",
+        "W": "11",
+        "record": "11-10-1",
+        "diff": "3",
+        "L": "10",
+        "goalsAgainst": "66",
+        "points": "23"
+      },
+      "espnLogo1": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/buf.png",
+      "teamID": "4",
+      "conference": "Eastern",
+      "division": "Atlantic",
+      "topPerformers": {
+        "penalties": {
+          "total": "11",
+          "playerID": [
+            "5149186"
+          ]
+        },
+        "shootoutGoals": {
+          "total": "1",
+          "playerID": [
+            "4697438"
+          ]
+        },
+        "blockedShots": {
+          "total": "36",
+          "playerID": [
+            "4781556"
+          ]
+        },
+        "shotsMissedNet": {
+          "total": "39",
+          "playerID": [
+            "3114766"
+          ]
+        },
+        "saves": {
+          "total": "381",
+          "playerID": [
+            "4233889"
+          ]
+        },
+        "shortHandedTimeOnIce": {
+          "total": "63:07",
+          "playerID": [
+            "3042191"
+          ]
+        },
+        "assists": {
+          "total": "14",
+          "playerID": [
+            "3114766"
+          ]
+        },
+        "timeOnIce": {
+          "total": "880:31",
+          "playerID": [
+            "4233889"
+          ]
+        },
+        "shifts": {
+          "total": "677",
+          "playerID": [
+            "4294163"
+          ]
+        },
+        "goalsAgainst": {
+          "total": "36",
+          "playerID": [
+            "4233889"
+          ]
+        },
+        "powerPlayTimeOnIce": {
+          "total": "73:12",
+          "playerID": [
+            "4294163"
+          ]
+        },
+        "goals": {
+          "total": "11",
+          "playerID": [
+            "4024988"
+          ]
+        },
+        "faceoffsWon": {
+          "total": "175",
+          "playerID": [
+            "4378669"
+          ]
+        },
+        "plusMinus": {
+          "total": "10",
+          "playerID": [
+            "3114766"
+          ]
+        },
+        "shortHandedSaves": {
+          "total": "10",
+          "playerID": [
+            "4233889"
+          ]
+        },
+        "faceoffs": {
+          "total": "351",
+          "playerID": [
+            "4565228"
+          ]
+        },
+        "powerPlayGoals": {
+          "total": "3",
+          "playerID": [
+            "4294163"
+          ]
+        },
+        "takeaways": {
+          "total": "14",
+          "playerID": [
+            "3114766"
+          ]
+        },
+        "hits": {
+          "total": "62",
+          "playerID": [
+            "3042191"
+          ]
+        },
+        "penaltiesInMinutes": {
+          "total": "27",
+          "playerID": [
+            "2593315"
+          ]
+        },
+        "powerPlayAssists": {
+          "total": "5",
+          "playerID": [
+            "4294163"
+          ]
+        },
+        "shots": {
+          "total": "67",
+          "playerID": [
+            "4294163"
+          ]
+        },
+        "faceoffsLost": {
+          "total": "186",
+          "playerID": [
+            "4565228"
+          ]
+        },
+        "giveaways": {
+          "total": "28",
+          "playerID": [
+            "4294163"
+          ]
+        },
+        "shotsAgainst": {
+          "total": "417",
+          "playerID": [
+            "4233889"
+          ]
+        }
+      },
+      "teamStats": {
+        "faceoffsWon": "660",
+        "plusMinus": "+21",
+        "penalties": "95",
+        "shootoutGoals": "1",
+        "shortHandedSaves": "16",
+        "faceoffs": "1332",
+        "powerPlayGoals": "11",
+        "takeaways": "113",
+        "blockedShots": "321",
+        "hits": "460",
+        "penaltiesInMinutes": "221",
+        "powerPlayAssists": "20",
+        "shotsMissedNet": "336",
+        "saves": "573",
+        "assists": "105",
+        "shifts": "8693",
+        "shots": "619",
+        "goalsAgainst": "62",
+        "faceoffsLost": "672",
+        "giveaways": "312",
+        "goals": "68",
+        "shotsAgainst": "635"
+      }
+    },
+    {
+      "teamAbv": "CGY",
+      "teamCity": "Calgary",
+      "teamName": "Flames",
+      "standings": {
+        "currentStreak": {
+          "result": "L",
+          "length": "2"
+        },
+        "goalsFor": "62",
+        "gamesPlayed": "23",
+        "resultDetail": {
+          "shootoutWin": "3",
+          "shootoutLoss": "1",
+          "regulationWin": "7",
+          "overtimeLoss": "3",
+          "overtimeWin": "2",
+          "regulationLoss": "7"
+        },
+        "OTL": "4",
+        "W": "12",
+        "record": "12-7-4",
+        "diff": "-1",
+        "L": "7",
+        "goalsAgainst": "63",
+        "points": "28"
+      },
+      "espnLogo1": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/cgy.png",
+      "teamID": "5",
+      "conference": "Western",
+      "division": "Pacific",
+      "topPerformers": {
+        "penalties": {
+          "total": "9",
+          "playerID": [
+            "4392883"
+          ]
+        },
+        "shootoutGoals": {
+          "total": "2",
+          "playerID": [
+            "3904186"
+          ]
+        },
+        "blockedShots": {
+          "total": "75",
+          "playerID": [
+            "3904186"
+          ]
+        },
+        "shotsMissedNet": {
+          "total": "29",
+          "playerID": [
+            "5349"
+          ]
+        },
+        "saves": {
+          "total": "350",
+          "playerID": [
+            "4587952"
+          ]
+        },
+        "shortHandedTimeOnIce": {
+          "total": "65:05",
+          "playerID": [
+            "4378686"
+          ]
+        },
+        "assists": {
+          "total": "10",
+          "playerID": [
+            "3042269"
+          ]
+        },
+        "timeOnIce": {
+          "total": "727:35",
+          "playerID": [
+            "4587952"
+          ]
+        },
+        "shifts": {
+          "total": "736",
+          "playerID": [
+            "3904186"
+          ]
+        },
+        "goalsAgainst": {
+          "total": "30",
+          "playerID": [
+            "4587952"
+          ]
+        },
+        "powerPlayTimeOnIce": {
+          "total": "67:10",
+          "playerID": [
+            "3042269"
+          ]
+        },
+        "goals": {
+          "total": "7",
+          "playerID": [
+            "2562606"
+          ]
+        },
+        "faceoffsWon": {
+          "total": "229",
+          "playerID": [
+            "3797"
+          ]
+        },
+        "plusMinus": {
+          "total": "9",
+          "playerID": [
+            "4874730"
+          ]
+        },
+        "shortHandedSaves": {
+          "total": "7",
+          "playerID": [
+            "4587952"
+          ]
+        },
+        "faceoffs": {
+          "total": "493",
+          "playerID": [
+            "3797"
+          ]
+        },
+        "powerPlayGoals": {
+          "total": "3",
+          "playerID": [
+            "4587843"
+          ]
+        },
+        "takeaways": {
+          "total": "15",
+          "playerID": [
+            "3042269"
+          ]
+        },
+        "hits": {
+          "total": "57",
+          "playerID": [
+            "4392883"
+          ]
+        },
+        "penaltiesInMinutes": {
+          "total": "21",
+          "playerID": [
+            "4392883"
+          ]
+        },
+        "powerPlayAssists": {
+          "total": "4",
+          "playerID": [
+            "3042269"
+          ]
+        },
+        "shots": {
+          "total": "72",
+          "playerID": [
+            "5349"
+          ]
+        },
+        "faceoffsLost": {
+          "total": "264",
+          "playerID": [
+            "3797"
+          ]
+        },
+        "giveaways": {
+          "total": "44",
+          "playerID": [
+            "3042269"
+          ]
+        },
+        "shotsAgainst": {
+          "total": "380",
+          "playerID": [
+            "4587952"
+          ]
+        }
+      },
+      "teamStats": {
+        "faceoffsWon": "657",
+        "plusMinus": "+13",
+        "penalties": "87",
+        "shootoutGoals": "7",
+        "shortHandedSaves": "10",
+        "faceoffs": "1471",
+        "powerPlayGoals": "13",
+        "takeaways": "122",
+        "blockedShots": "402",
+        "hits": "495",
+        "penaltiesInMinutes": "200",
+        "powerPlayAssists": "25",
+        "shotsMissedNet": "328",
+        "saves": "627",
+        "assists": "90",
+        "shifts": "8940",
+        "shots": "681",
+        "goalsAgainst": "59",
+        "faceoffsLost": "814",
+        "giveaways": "381",
+        "goals": "59",
+        "shotsAgainst": "686"
+      }
+    },
+    {
+      "teamAbv": "CAR",
+      "teamCity": "Carolina",
+      "teamName": "Hurricanes",
+      "standings": {
+        "currentStreak": {
+          "result": "W",
+          "length": "2"
+        },
+        "goalsFor": "88",
+        "gamesPlayed": "23",
+        "resultDetail": {
+          "shootoutWin": "0",
+          "shootoutLoss": "1",
+          "regulationWin": "14",
+          "overtimeLoss": "0",
+          "overtimeWin": "2",
+          "regulationLoss": "5"
+        },
+        "OTL": "1",
+        "W": "16",
+        "record": "16-5-1",
+        "diff": "30",
+        "L": "5",
+        "goalsAgainst": "58",
+        "points": "33"
+      },
+      "espnLogo1": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/car.png",
+      "teamID": "6",
+      "conference": "Eastern",
+      "division": "Metropolitan",
+      "topPerformers": {
+        "penalties": {
+          "total": "10",
+          "playerID": [
+            "4352683"
+          ]
+        },
+        "shootoutGoals": {
+          "total": "0",
+          "playerID": []
+        },
+        "blockedShots": {
+          "total": "34",
+          "playerID": [
+            "3069836"
+          ]
+        },
+        "shotsMissedNet": {
+          "total": "38",
+          "playerID": [
+            "3904173"
+          ]
+        },
+        "saves": {
+          "total": "291",
+          "playerID": [
+            "4565259"
+          ]
+        },
+        "shortHandedTimeOnIce": {
+          "total": "74:00",
+          "playerID": [
+            "3069836"
+          ]
+        },
+        "assists": {
+          "total": "25",
+          "playerID": [
+            "4233586"
+          ]
+        },
+        "timeOnIce": {
+          "total": "767:24",
+          "playerID": [
+            "4565259"
+          ]
+        },
+        "shifts": {
+          "total": "566",
+          "playerID": [
+            "2300"
+          ]
+        },
+        "goalsAgainst": {
+          "total": "31",
+          "playerID": [
+            "4565259"
+          ]
+        },
+        "powerPlayTimeOnIce": {
+          "total": "85:56",
+          "playerID": [
+            "3025662"
+          ]
+        },
+        "goals": {
+          "total": "12",
+          "playerID": [
+            "4233586"
+          ]
+        },
+        "faceoffsWon": {
+          "total": "213",
+          "playerID": [
+            "3541"
+          ]
+        },
+        "plusMinus": {
+          "total": "19",
+          "playerID": [
+            "5646"
+          ]
+        },
+        "shortHandedSaves": {
+          "total": "5",
+          "playerID": [
+            "4565259"
+          ]
+        },
+        "faceoffs": {
+          "total": "389",
+          "playerID": [
+            "3541"
+          ]
+        },
+        "powerPlayGoals": {
+          "total": "5",
+          "playerID": [
+            "4352683"
+          ]
+        },
+        "takeaways": {
+          "total": "21",
+          "playerID": [
+            "3069836"
+          ]
+        },
+        "hits": {
+          "total": "64",
+          "playerID": [
+            "3042054"
+          ]
+        },
+        "penaltiesInMinutes": {
+          "total": "20",
+          "playerID": [
+            "4352683"
+          ]
+        },
+        "powerPlayAssists": {
+          "total": "12",
+          "playerID": [
+            "4233586"
+          ]
+        },
+        "shots": {
+          "total": "75",
+          "playerID": [
+            "4352683"
+          ]
+        },
+        "faceoffsLost": {
+          "total": "176",
+          "playerID": [
+            "3541"
+          ]
+        },
+        "giveaways": {
+          "total": "34",
+          "playerID": [
+            "4352683"
+          ]
+        },
+        "shotsAgainst": {
+          "total": "322",
+          "playerID": [
+            "4565259"
+          ]
+        }
+      },
+      "teamStats": {
+        "faceoffsWon": "712",
+        "plusMinus": "+107",
+        "penalties": "75",
+        "shootoutGoals": "0",
+        "shortHandedSaves": "11",
+        "faceoffs": "1355",
+        "powerPlayGoals": "20",
+        "takeaways": "137",
+        "blockedShots": "236",
+        "hits": "358",
+        "penaltiesInMinutes": "158",
+        "powerPlayAssists": "39",
+        "shotsMissedNet": "405",
+        "saves": "487",
+        "assists": "147",
+        "shifts": "8104",
+        "shots": "738",
+        "goalsAgainst": "54",
+        "faceoffsLost": "643",
+        "giveaways": "329",
+        "goals": "88",
+        "shotsAgainst": "541"
+      }
+    },
+    {
+      "teamAbv": "CHI",
+      "teamCity": "Chicago",
+      "teamName": "Blackhawks",
+      "standings": {
+        "currentStreak": {
+          "result": "W",
+          "length": "1"
+        },
+        "goalsFor": "56",
+        "gamesPlayed": "22",
+        "resultDetail": {
+          "shootoutWin": "1",
+          "shootoutLoss": "0",
+          "regulationWin": "6",
+          "overtimeLoss": "2",
+          "overtimeWin": "1",
+          "regulationLoss": "12"
+        },
+        "OTL": "2",
+        "W": "8",
+        "record": "8-12-2",
+        "diff": "-9",
+        "L": "12",
+        "goalsAgainst": "65",
+        "points": "18"
+      },
+      "espnLogo1": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/chi.png",
+      "teamID": "7",
+      "conference": "Western",
+      "division": "Central",
+      "topPerformers": {
+        "penalties": {
+          "total": "9",
+          "playerID": [
+            "2562618"
+          ]
+        },
+        "shootoutGoals": {
+          "total": "1",
+          "playerID": [
+            "3115033"
+          ]
+        },
+        "blockedShots": {
+          "total": "57",
+          "playerID": [
+            "4565266"
+          ]
+        },
+        "shotsMissedNet": {
+          "total": "28",
+          "playerID": [
+            "3042056"
+          ]
+        },
+        "saves": {
+          "total": "437",
+          "playerID": [
+            "5619"
+          ]
+        },
+        "shortHandedTimeOnIce": {
+          "total": "61:42",
+          "playerID": [
+            "4565266"
+          ]
+        },
+        "assists": {
+          "total": "12",
+          "playerID": [
+            "5149125"
+          ]
+        },
+        "timeOnIce": {
+          "total": "956:26",
+          "playerID": [
+            "5619"
+          ]
+        },
+        "shifts": {
+          "total": "577",
+          "playerID": [
+            "4565266"
+          ]
+        },
+        "goalsAgainst": {
+          "total": "42",
+          "playerID": [
+            "5619"
+          ]
+        },
+        "powerPlayTimeOnIce": {
+          "total": "60:38",
+          "playerID": [
+            "5149125"
+          ]
+        },
+        "goals": {
+          "total": "8",
+          "playerID": [
+            "3115033"
+          ]
+        },
+        "faceoffsWon": {
+          "total": "150",
+          "playerID": [
+            "3042062"
+          ]
+        },
+        "plusMinus": {
+          "total": "4",
+          "playerID": [
+            "2562618"
+          ]
+        },
+        "shortHandedSaves": {
+          "total": "16",
+          "playerID": [
+            "5619"
+          ]
+        },
+        "faceoffs": {
+          "total": "332",
+          "playerID": [
+            "3042062"
+          ]
+        },
+        "powerPlayGoals": {
+          "total": "4",
+          "playerID": [
+            "2592095"
+          ]
+        },
+        "takeaways": {
+          "total": "18",
+          "playerID": [
+            "4565266"
+          ]
+        },
+        "hits": {
+          "total": "67",
+          "playerID": [
+            "3535"
+          ]
+        },
+        "penaltiesInMinutes": {
+          "total": "28",
+          "playerID": [
+            "3853"
+          ]
+        },
+        "powerPlayAssists": {
+          "total": "6",
+          "playerID": [
+            "5149125"
+          ]
+        },
+        "shots": {
+          "total": "57",
+          "playerID": [
+            "5149125"
+          ]
+        },
+        "faceoffsLost": {
+          "total": "182",
+          "playerID": [
+            "3042062"
+          ]
+        },
+        "giveaways": {
+          "total": "28",
+          "playerID": [
+            "4697717"
+          ]
+        },
+        "shotsAgainst": {
+          "total": "479",
+          "playerID": [
+            "5619"
+          ]
+        }
+      },
+      "teamStats": {
+        "faceoffsWon": "551",
+        "plusMinus": "-49",
+        "penalties": "71",
+        "shootoutGoals": "3",
+        "shortHandedSaves": "18",
+        "faceoffs": "1235",
+        "powerPlayGoals": "12",
+        "takeaways": "136",
+        "blockedShots": "404",
+        "hits": "389",
+        "penaltiesInMinutes": "170",
+        "powerPlayAssists": "22",
+        "shotsMissedNet": "252",
+        "saves": "613",
+        "assists": "91",
+        "shifts": "7679",
+        "shots": "572",
+        "goalsAgainst": "56",
+        "faceoffsLost": "684",
+        "giveaways": "272",
+        "goals": "55",
+        "shotsAgainst": "669"
+      }
+    },
+    {
+      "teamAbv": "COL",
+      "teamCity": "Colorado",
+      "teamName": "Avalanche",
+      "standings": {
+        "currentStreak": {
+          "result": "W",
+          "length": "1"
+        },
+        "goalsFor": "77",
+        "gamesPlayed": "23",
+        "resultDetail": {
+          "shootoutWin": "1",
+          "shootoutLoss": "0",
+          "regulationWin": "10",
+          "overtimeLoss": "0",
+          "overtimeWin": "2",
+          "regulationLoss": "10"
+        },
+        "OTL": "0",
+        "W": "13",
+        "record": "13-10-0",
+        "diff": "-7",
+        "L": "10",
+        "goalsAgainst": "84",
+        "points": "26"
+      },
+      "espnLogo1": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/col.png",
+      "teamID": "8",
+      "conference": "Western",
+      "division": "Central",
+      "topPerformers": {
+        "penalties": {
+          "total": "8",
+          "playerID": [
+            "2590829"
+          ]
+        },
+        "shootoutGoals": {
+          "total": "1",
+          "playerID": [
+            "3042003"
+          ]
+        },
+        "blockedShots": {
+          "total": "43",
+          "playerID": [
+            "4063401"
+          ]
+        },
+        "shotsMissedNet": {
+          "total": "41",
+          "playerID": [
+            "4233563"
+          ]
+        },
+        "saves": {
+          "total": "289",
+          "playerID": [
+            "4239677"
+          ]
+        },
+        "shortHandedTimeOnIce": {
+          "total": "44:37",
+          "playerID": [
+            "4392309"
+          ]
+        },
+        "assists": {
+          "total": "28",
+          "playerID": [
+            "3041969"
+          ]
+        },
+        "timeOnIce": {
+          "total": "753:29",
+          "playerID": [
+            "4239677"
+          ]
+        },
+        "shifts": {
+          "total": "617",
+          "playerID": [
+            "4063401"
+          ]
+        },
+        "goalsAgainst": {
+          "total": "41",
+          "playerID": [
+            "4239677"
+          ]
+        },
+        "powerPlayTimeOnIce": {
+          "total": "91:37",
+          "playerID": [
+            "3899938"
+          ]
+        },
+        "goals": {
+          "total": "14",
+          "playerID": [
+            "3899938"
+          ]
+        },
+        "faceoffsWon": {
+          "total": "199",
+          "playerID": [
+            "3041969"
+          ]
+        },
+        "plusMinus": {
+          "total": "3",
+          "playerID": [
+            "3041969"
+          ]
+        },
+        "shortHandedSaves": {
+          "total": "6",
+          "playerID": [
+            "4239677"
+          ]
+        },
+        "faceoffs": {
+          "total": "407",
+          "playerID": [
+            "3041969"
+          ]
+        },
+        "powerPlayGoals": {
+          "total": "5",
+          "playerID": [
+            "3899938"
+          ]
+        },
+        "takeaways": {
+          "total": "20",
+          "playerID": [
+            "4233563"
+          ]
+        },
+        "hits": {
+          "total": "49",
+          "playerID": [
+            "2590829"
+          ]
+        },
+        "penaltiesInMinutes": {
+          "total": "22",
+          "playerID": [
+            "5136731"
+          ]
+        },
+        "powerPlayAssists": {
+          "total": "10",
+          "playerID": [
+            "3041969"
+          ]
+        },
+        "shots": {
+          "total": "84",
+          "playerID": [
+            "3041969"
+          ]
+        },
+        "faceoffsLost": {
+          "total": "208",
+          "playerID": [
+            "3041969"
+          ]
+        },
+        "giveaways": {
+          "total": "41",
+          "playerID": [
+            "2590829"
+          ]
+        },
+        "shotsAgainst": {
+          "total": "330",
+          "playerID": [
+            "4239677"
+          ]
+        }
+      },
+      "teamStats": {
+        "faceoffsWon": "594",
+        "plusMinus": "-72",
+        "penalties": "68",
+        "shootoutGoals": "1",
+        "shortHandedSaves": "12",
+        "faceoffs": "1351",
+        "powerPlayGoals": "20",
+        "takeaways": "106",
+        "blockedShots": "347",
+        "hits": "432",
+        "penaltiesInMinutes": "166",
+        "powerPlayAssists": "39",
+        "shotsMissedNet": "327",
+        "saves": "507",
+        "assists": "132",
+        "shifts": "8707",
+        "shots": "683",
+        "goalsAgainst": "74",
+        "faceoffsLost": "757",
+        "giveaways": "371",
+        "goals": "76",
+        "shotsAgainst": "581"
+      }
+    },
+    {
+      "teamAbv": "CBJ",
+      "teamCity": "Columbus",
+      "teamName": "Blue Jackets",
+      "standings": {
+        "currentStreak": {
+          "result": "L",
+          "length": "1"
+        },
+        "goalsFor": "73",
+        "gamesPlayed": "21",
+        "resultDetail": {
+          "shootoutWin": "1",
+          "shootoutLoss": "0",
+          "regulationWin": "7",
+          "overtimeLoss": "3",
+          "overtimeWin": "1",
+          "regulationLoss": "9"
+        },
+        "OTL": "3",
+        "W": "9",
+        "record": "9-9-3",
+        "diff": "-3",
+        "L": "9",
+        "goalsAgainst": "76",
+        "points": "21"
+      },
+      "espnLogo1": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/cbj.png",
+      "teamID": "9",
+      "conference": "Eastern",
+      "division": "Metropolitan",
+      "topPerformers": {
+        "penalties": {
+          "total": "13",
+          "playerID": [
+            "4064781"
+          ]
+        },
+        "shootoutGoals": {
+          "total": "1",
+          "playerID": [
+            "3041996"
+          ]
+        },
+        "blockedShots": {
+          "total": "37",
+          "playerID": [
+            "3068087"
+          ]
+        },
+        "shotsMissedNet": {
+          "total": "37",
+          "playerID": [
+            "3899972"
+          ]
+        },
+        "saves": {
+          "total": "331",
+          "playerID": [
+            "3151038"
+          ]
+        },
+        "shortHandedTimeOnIce": {
+          "total": "59:34",
+          "playerID": [
+            "3899939"
+          ]
+        },
+        "assists": {
+          "total": "15",
+          "playerID": [
+            "3899972"
+          ]
+        },
+        "timeOnIce": {
+          "total": "779:47",
+          "playerID": [
+            "3151038"
+          ]
+        },
+        "shifts": {
+          "total": "553",
+          "playerID": [
+            "3899972"
+          ]
+        },
+        "goalsAgainst": {
+          "total": "41",
+          "playerID": [
+            "3151038"
+          ]
+        },
+        "powerPlayTimeOnIce": {
+          "total": "60:12",
+          "playerID": [
+            "3899972"
+          ]
+        },
+        "goals": {
+          "total": "8",
+          "playerID": [
+            "4587996"
+          ]
+        },
+        "faceoffsWon": {
+          "total": "224",
+          "playerID": [
+            "3041996"
+          ]
+        },
+        "plusMinus": {
+          "total": "9",
+          "playerID": [
+            "4587996"
+          ]
+        },
+        "shortHandedSaves": {
+          "total": "9",
+          "playerID": [
+            "3151038"
+          ]
+        },
+        "faceoffs": {
+          "total": "429",
+          "playerID": [
+            "3041996"
+          ]
+        },
+        "powerPlayGoals": {
+          "total": "2",
+          "playerID": [
+            "3899972"
+          ]
+        },
+        "takeaways": {
+          "total": "16",
+          "playerID": [
+            "3899972"
+          ]
+        },
+        "hits": {
+          "total": "71",
+          "playerID": [
+            "4064781"
+          ]
+        },
+        "penaltiesInMinutes": {
+          "total": "35",
+          "playerID": [
+            "4064781"
+          ]
+        },
+        "powerPlayAssists": {
+          "total": "6",
+          "playerID": [
+            "3899972"
+          ]
+        },
+        "shots": {
+          "total": "79",
+          "playerID": [
+            "3899972"
+          ]
+        },
+        "faceoffsLost": {
+          "total": "205",
+          "playerID": [
+            "3041996"
+          ]
+        },
+        "giveaways": {
+          "total": "32",
+          "playerID": [
+            "3899939"
+          ]
+        },
+        "shotsAgainst": {
+          "total": "372",
+          "playerID": [
+            "3151038"
+          ]
+        }
+      },
+      "teamStats": {
+        "faceoffsWon": "605",
+        "plusMinus": "+7",
+        "penalties": "75",
+        "shootoutGoals": "1",
+        "shortHandedSaves": "14",
+        "faceoffs": "1228",
+        "powerPlayGoals": "9",
+        "takeaways": "113",
+        "blockedShots": "318",
+        "hits": "417",
+        "penaltiesInMinutes": "162",
+        "powerPlayAssists": "18",
+        "shotsMissedNet": "283",
+        "saves": "529",
+        "assists": "118",
+        "shifts": "7438",
+        "shots": "666",
+        "goalsAgainst": "73",
+        "faceoffsLost": "623",
+        "giveaways": "319",
+        "goals": "72",
+        "shotsAgainst": "602"
+      }
+    },
+    {
+      "teamAbv": "DAL",
+      "teamCity": "Dallas",
+      "teamName": "Stars",
+      "standings": {
+        "currentStreak": {
+          "result": "L",
+          "length": "2"
+        },
+        "goalsFor": "72",
+        "gamesPlayed": "21",
+        "resultDetail": {
+          "shootoutWin": "1",
+          "shootoutLoss": "0",
+          "regulationWin": "12",
+          "overtimeLoss": "0",
+          "overtimeWin": "0",
+          "regulationLoss": "8"
+        },
+        "OTL": "0",
+        "W": "13",
+        "record": "13-8-0",
+        "diff": "16",
+        "L": "8",
+        "goalsAgainst": "56",
+        "points": "26"
+      },
+      "espnLogo1": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/dal.png",
+      "teamID": "10",
+      "conference": "Western",
+      "division": "Central",
+      "topPerformers": {
+        "penalties": {
+          "total": "12",
+          "playerID": [
+            "3998"
+          ]
+        },
+        "shootoutGoals": {
+          "total": "1",
+          "playerID": [
+            "4874740"
+          ]
+        },
+        "blockedShots": {
+          "total": "40",
+          "playerID": [
+            "3069352"
+          ]
+        },
+        "shotsMissedNet": {
+          "total": "25",
+          "playerID": [
+            "4874740"
+          ]
+        },
+        "saves": {
+          "total": "364",
+          "playerID": [
+            "4196914"
+          ]
+        },
+        "shortHandedTimeOnIce": {
+          "total": "70:42",
+          "playerID": [
+            "3069352"
+          ]
+        },
+        "assists": {
+          "total": "14",
+          "playerID": [
+            "5161"
+          ]
+        },
+        "timeOnIce": {
+          "total": "865:02",
+          "playerID": [
+            "4196914"
+          ]
+        },
+        "shifts": {
+          "total": "549",
+          "playerID": [
+            "4233536"
+          ]
+        },
+        "goalsAgainst": {
+          "total": "35",
+          "playerID": [
+            "4196914"
+          ]
+        },
+        "powerPlayTimeOnIce": {
+          "total": "70:12",
+          "playerID": [
+            "4233536"
+          ]
+        },
+        "goals": {
+          "total": "12",
+          "playerID": [
+            "5161"
+          ]
+        },
+        "faceoffsWon": {
+          "total": "115",
+          "playerID": [
+            "3998"
+          ]
+        },
+        "plusMinus": {
+          "total": "13",
+          "playerID": [
+            "4565239"
+          ]
+        },
+        "shortHandedSaves": {
+          "total": "9",
+          "playerID": [
+            "4196914"
+          ]
+        },
+        "faceoffs": {
+          "total": "215",
+          "playerID": [
+            "4874740"
+          ]
+        },
+        "powerPlayGoals": {
+          "total": "3",
+          "playerID": [
+            "5161"
+          ]
+        },
+        "takeaways": {
+          "total": "13",
+          "playerID": [
+            "4233536"
+          ]
+        },
+        "hits": {
+          "total": "31",
+          "playerID": [
+            "3998"
+          ]
+        },
+        "penaltiesInMinutes": {
+          "total": "38",
+          "playerID": [
+            "3998"
+          ]
+        },
+        "powerPlayAssists": {
+          "total": "6",
+          "playerID": [
+            "5161"
+          ]
+        },
+        "shots": {
+          "total": "60",
+          "playerID": [
+            "4874899"
+          ]
+        },
+        "faceoffsLost": {
+          "total": "119",
+          "playerID": [
+            "4874740"
+          ]
+        },
+        "giveaways": {
+          "total": "30",
+          "playerID": [
+            "4233536"
+          ]
+        },
+        "shotsAgainst": {
+          "total": "399",
+          "playerID": [
+            "4196914"
+          ]
+        }
+      },
+      "teamStats": {
+        "faceoffsWon": "623",
+        "plusMinus": "+70",
+        "penalties": "67",
+        "shootoutGoals": "3",
+        "shortHandedSaves": "16",
+        "faceoffs": "1219",
+        "powerPlayGoals": "11",
+        "takeaways": "122",
+        "blockedShots": "264",
+        "hits": "321",
+        "penaltiesInMinutes": "159",
+        "powerPlayAssists": "21",
+        "shotsMissedNet": "293",
+        "saves": "511",
+        "assists": "126",
+        "shifts": "7829",
+        "shots": "641",
+        "goalsAgainst": "53",
+        "faceoffsLost": "596",
+        "giveaways": "339",
+        "goals": "71",
+        "shotsAgainst": "564"
+      }
+    },
+    {
+      "teamAbv": "DET",
+      "teamCity": "Detroit",
+      "teamName": "Red Wings",
+      "standings": {
+        "currentStreak": {
+          "result": "W",
+          "length": "2"
+        },
+        "goalsFor": "55",
+        "gamesPlayed": "22",
+        "resultDetail": {
+          "shootoutWin": "0",
+          "shootoutLoss": "0",
+          "regulationWin": "8",
+          "overtimeLoss": "2",
+          "overtimeWin": "2",
+          "regulationLoss": "10"
+        },
+        "OTL": "2",
+        "W": "10",
+        "record": "10-10-2",
+        "diff": "-11",
+        "L": "10",
+        "goalsAgainst": "66",
+        "points": "22"
+      },
+      "espnLogo1": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/det.png",
+      "teamID": "11",
+      "conference": "Eastern",
+      "division": "Atlantic",
+      "topPerformers": {
+        "penalties": {
+          "total": "12",
+          "playerID": [
+            "5246"
+          ]
+        },
+        "shootoutGoals": {
+          "total": "0",
+          "playerID": []
+        },
+        "blockedShots": {
+          "total": "50",
+          "playerID": [
+            "4565227"
+          ]
+        },
+        "shotsMissedNet": {
+          "total": "31",
+          "playerID": [
+            "3114755"
+          ]
+        },
+        "saves": {
+          "total": "360",
+          "playerID": [
+            "5734"
+          ]
+        },
+        "shortHandedTimeOnIce": {
+          "total": "52:13",
+          "playerID": [
+            "4565227"
+          ]
+        },
+        "assists": {
+          "total": "16",
+          "playerID": [
+            "4697385"
+          ]
+        },
+        "timeOnIce": {
+          "total": "728:05",
+          "playerID": [
+            "5734"
+          ]
+        },
+        "shifts": {
+          "total": "604",
+          "playerID": [
+            "4565227"
+          ]
+        },
+        "goalsAgainst": {
+          "total": "30",
+          "playerID": [
+            "5734"
+          ]
+        },
+        "powerPlayTimeOnIce": {
+          "total": "66:34",
+          "playerID": [
+            "3114755"
+          ]
+        },
+        "goals": {
+          "total": "12",
+          "playerID": [
+            "3114755"
+          ]
+        },
+        "faceoffsWon": {
+          "total": "259",
+          "playerID": [
+            "3114755"
+          ]
+        },
+        "plusMinus": {
+          "total": "6",
+          "playerID": [
+            "4874720"
+          ]
+        },
+        "shortHandedSaves": {
+          "total": "8",
+          "playerID": [
+            "5734"
+          ]
+        },
+        "faceoffs": {
+          "total": "456",
+          "playerID": [
+            "3114755"
+          ]
+        },
+        "powerPlayGoals": {
+          "total": "6",
+          "playerID": [
+            "3114755"
+          ]
+        },
+        "takeaways": {
+          "total": "10",
+          "playerID": [
+            "4565227"
+          ]
+        },
+        "hits": {
+          "total": "58",
+          "playerID": [
+            "4565227"
+          ]
+        },
+        "penaltiesInMinutes": {
+          "total": "27",
+          "playerID": [
+            "5246"
+          ]
+        },
+        "powerPlayAssists": {
+          "total": "11",
+          "playerID": [
+            "4697385"
+          ]
+        },
+        "shots": {
+          "total": "57",
+          "playerID": [
+            "3114755"
+          ]
+        },
+        "faceoffsLost": {
+          "total": "197",
+          "playerID": [
+            "3114755"
+          ]
+        },
+        "giveaways": {
+          "total": "32",
+          "playerID": [
+            "4874720"
+          ]
+        },
+        "shotsAgainst": {
+          "total": "390",
+          "playerID": [
+            "5734"
+          ]
+        }
+      },
+      "teamStats": {
+        "faceoffsWon": "657",
+        "plusMinus": "-54",
+        "penalties": "65",
+        "shootoutGoals": "0",
+        "shortHandedSaves": "11",
+        "faceoffs": "1308",
+        "powerPlayGoals": "18",
+        "takeaways": "116",
+        "blockedShots": "333",
+        "hits": "380",
+        "penaltiesInMinutes": "145",
+        "powerPlayAssists": "35",
+        "shotsMissedNet": "288",
+        "saves": "625",
+        "assists": "89",
+        "shifts": "8067",
+        "shots": "537",
+        "goalsAgainst": "60",
+        "faceoffsLost": "651",
+        "giveaways": "367",
+        "goals": "55",
+        "shotsAgainst": "685"
+      }
+    },
+    {
+      "teamAbv": "EDM",
+      "teamCity": "Edmonton",
+      "teamName": "Oilers",
+      "standings": {
+        "currentStreak": {
+          "result": "W",
+          "length": "1"
+        },
+        "goalsFor": "64",
+        "gamesPlayed": "22",
+        "resultDetail": {
+          "shootoutWin": "0",
+          "shootoutLoss": "0",
+          "regulationWin": "7",
+          "overtimeLoss": "2",
+          "overtimeWin": "4",
+          "regulationLoss": "9"
+        },
+        "OTL": "2",
+        "W": "11",
+        "record": "11-9-2",
+        "diff": "-5",
+        "L": "9",
+        "goalsAgainst": "69",
+        "points": "24"
+      },
+      "espnLogo1": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/edm.png",
+      "teamID": "12",
+      "conference": "Western",
+      "division": "Pacific",
+      "topPerformers": {
+        "penalties": {
+          "total": "6",
+          "playerID": [
+            "3041997"
+          ]
+        },
+        "shootoutGoals": {
+          "total": "0",
+          "playerID": []
+        },
+        "blockedShots": {
+          "total": "41",
+          "playerID": [
+            "4352722"
+          ]
+        },
+        "shotsMissedNet": {
+          "total": "28",
+          "playerID": [
+            "5509"
+          ]
+        },
+        "saves": {
+          "total": "350",
+          "playerID": [
+            "4268767"
+          ]
+        },
+        "shortHandedTimeOnIce": {
+          "total": "49:20",
+          "playerID": [
+            "2558631"
+          ]
+        },
+        "assists": {
+          "total": "17",
+          "playerID": [
+            "3895074"
+          ]
+        },
+        "timeOnIce": {
+          "total": "871:51",
+          "playerID": [
+            "4268767"
+          ]
+        },
+        "shifts": {
+          "total": "584",
+          "playerID": [
+            "2558631"
+          ]
+        },
+        "goalsAgainst": {
+          "total": "47",
+          "playerID": [
+            "4268767"
+          ]
+        },
+        "powerPlayTimeOnIce": {
+          "total": "79:08",
+          "playerID": [
+            "3114727"
+          ]
+        },
+        "goals": {
+          "total": "16",
+          "playerID": [
+            "3114727"
+          ]
+        },
+        "faceoffsWon": {
+          "total": "224",
+          "playerID": [
+            "3114727"
+          ]
+        },
+        "plusMinus": {
+          "total": "10",
+          "playerID": [
+            "3114727"
+          ]
+        },
+        "shortHandedSaves": {
+          "total": "14",
+          "playerID": [
+            "4268767"
+          ]
+        },
+        "faceoffs": {
+          "total": "398",
+          "playerID": [
+            "3114727"
+          ]
+        },
+        "powerPlayGoals": {
+          "total": "4",
+          "playerID": [
+            "3895074"
+          ]
+        },
+        "takeaways": {
+          "total": "18",
+          "playerID": [
+            "4352722"
+          ]
+        },
+        "hits": {
+          "total": "51",
+          "playerID": [
+            "4565231"
+          ]
+        },
+        "penaltiesInMinutes": {
+          "total": "18",
+          "playerID": [
+            "3041997"
+          ]
+        },
+        "powerPlayAssists": {
+          "total": "4",
+          "playerID": [
+            "3114727"
+          ]
+        },
+        "shots": {
+          "total": "69",
+          "playerID": [
+            "3895074"
+          ]
+        },
+        "faceoffsLost": {
+          "total": "174",
+          "playerID": [
+            "3114727"
+          ]
+        },
+        "giveaways": {
+          "total": "35",
+          "playerID": [
+            "4352722"
+          ]
+        },
+        "shotsAgainst": {
+          "total": "397",
+          "playerID": [
+            "4268767"
+          ]
+        }
+      },
+      "teamStats": {
+        "faceoffsWon": "651",
+        "plusMinus": "+3",
+        "penalties": "63",
+        "shootoutGoals": "0",
+        "shortHandedSaves": "18",
+        "faceoffs": "1218",
+        "powerPlayGoals": "9",
+        "takeaways": "125",
+        "blockedShots": "304",
+        "hits": "305",
+        "penaltiesInMinutes": "157",
+        "powerPlayAssists": "17",
+        "shotsMissedNet": "295",
+        "saves": "501",
+        "assists": "108",
+        "shifts": "7833",
+        "shots": "732",
+        "goalsAgainst": "65",
+        "faceoffsLost": "567",
+        "giveaways": "326",
+        "goals": "64",
+        "shotsAgainst": "566"
+      }
+    },
+    {
+      "teamAbv": "FLA",
+      "teamCity": "Florida",
+      "teamName": "Panthers",
+      "standings": {
+        "currentStreak": {
+          "result": "W",
+          "length": "1"
+        },
+        "goalsFor": "80",
+        "gamesPlayed": "23",
+        "resultDetail": {
+          "shootoutWin": "1",
+          "shootoutLoss": "0",
+          "regulationWin": "11",
+          "overtimeLoss": "1",
+          "overtimeWin": "1",
+          "regulationLoss": "9"
+        },
+        "OTL": "1",
+        "W": "13",
+        "record": "13-9-1",
+        "diff": "3",
+        "L": "9",
+        "goalsAgainst": "77",
+        "points": "27"
+      },
+      "espnLogo1": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/fla.png",
+      "teamID": "13",
+      "conference": "Eastern",
+      "division": "Atlantic",
+      "topPerformers": {
+        "penalties": {
+          "total": "11",
+          "playerID": [
+            "3648015"
+          ]
+        },
+        "shootoutGoals": {
+          "total": "1",
+          "playerID": [
+            "3041970"
+          ]
+        },
+        "blockedShots": {
+          "total": "30",
+          "playerID": [
+            "3942354"
+          ]
+        },
+        "shotsMissedNet": {
+          "total": "31",
+          "playerID": [
+            "3042088"
+          ]
+        },
+        "saves": {
+          "total": "384",
+          "playerID": [
+            "5571"
+          ]
+        },
+        "shortHandedTimeOnIce": {
+          "total": "60:05",
+          "playerID": [
+            "3151784"
+          ]
+        },
+        "assists": {
+          "total": "16",
+          "playerID": [
+            "3041970"
+          ]
+        },
+        "timeOnIce": {
+          "total": "945:28",
+          "playerID": [
+            "5571"
+          ]
+        },
+        "shifts": {
+          "total": "659",
+          "playerID": [
+            "3114717"
+          ]
+        },
+        "goalsAgainst": {
+          "total": "48",
+          "playerID": [
+            "5571"
+          ]
+        },
+        "powerPlayTimeOnIce": {
+          "total": "77:44",
+          "playerID": [
+            "3114722"
+          ]
+        },
+        "goals": {
+          "total": "17",
+          "playerID": [
+            "3114722"
+          ]
+        },
+        "faceoffsWon": {
+          "total": "166",
+          "playerID": [
+            "4697395"
+          ]
+        },
+        "plusMinus": {
+          "total": "15",
+          "playerID": [
+            "3151784"
+          ]
+        },
+        "shortHandedSaves": {
+          "total": "4",
+          "playerID": [
+            "4565234"
+          ]
+        },
+        "faceoffs": {
+          "total": "329",
+          "playerID": [
+            "4697395"
+          ]
+        },
+        "powerPlayGoals": {
+          "total": "5",
+          "playerID": [
+            "3114722"
+          ]
+        },
+        "takeaways": {
+          "total": "15",
+          "playerID": [
+            "5328"
+          ]
+        },
+        "hits": {
+          "total": "59",
+          "playerID": [
+            "3648015"
+          ]
+        },
+        "penaltiesInMinutes": {
+          "total": "36",
+          "playerID": [
+            "3648015"
+          ]
+        },
+        "powerPlayAssists": {
+          "total": "5",
+          "playerID": [
+            "3041970"
+          ]
+        },
+        "shots": {
+          "total": "77",
+          "playerID": [
+            "3042088"
+          ]
+        },
+        "faceoffsLost": {
+          "total": "172",
+          "playerID": [
+            "3114732"
+          ]
+        },
+        "giveaways": {
+          "total": "32",
+          "playerID": [
+            "3942354"
+          ]
+        },
+        "shotsAgainst": {
+          "total": "432",
+          "playerID": [
+            "5571"
+          ]
+        }
+      },
+      "teamStats": {
+        "faceoffsWon": "651",
+        "plusMinus": "-28",
+        "penalties": "95",
+        "shootoutGoals": "2",
+        "shortHandedSaves": "7",
+        "faceoffs": "1385",
+        "powerPlayGoals": "17",
+        "takeaways": "133",
+        "blockedShots": "267",
+        "hits": "630",
+        "penaltiesInMinutes": "227",
+        "powerPlayAssists": "32",
+        "shotsMissedNet": "329",
+        "saves": "559",
+        "assists": "138",
+        "shifts": "9096",
+        "shots": "673",
+        "goalsAgainst": "67",
+        "faceoffsLost": "734",
+        "giveaways": "308",
+        "goals": "79",
+        "shotsAgainst": "626"
+      }
+    },
+    {
+      "teamAbv": "LA",
+      "teamCity": "Los Angeles",
+      "teamName": "Kings",
+      "standings": {
+        "currentStreak": {
+          "result": "W",
+          "length": "1"
+        },
+        "goalsFor": "69",
+        "gamesPlayed": "23",
+        "resultDetail": {
+          "shootoutWin": "0",
+          "shootoutLoss": "1",
+          "regulationWin": "12",
+          "overtimeLoss": "2",
+          "overtimeWin": "0",
+          "regulationLoss": "8"
+        },
+        "OTL": "3",
+        "W": "12",
+        "record": "12-8-3",
+        "diff": "4",
+        "L": "8",
+        "goalsAgainst": "65",
+        "points": "27"
+      },
+      "espnLogo1": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/la.png",
+      "teamID": "14",
+      "conference": "Western",
+      "division": "Pacific",
+      "topPerformers": {
+        "penalties": {
+          "total": "10",
+          "playerID": [
+            "4874722"
+          ]
+        },
+        "shootoutGoals": {
+          "total": "1",
+          "playerID": [
+            "3114802"
+          ]
+        },
+        "blockedShots": {
+          "total": "49",
+          "playerID": [
+            "3942292"
+          ]
+        },
+        "shotsMissedNet": {
+          "total": "33",
+          "playerID": [
+            "3114802"
+          ]
+        },
+        "saves": {
+          "total": "246",
+          "playerID": [
+            "4063288"
+          ]
+        },
+        "shortHandedTimeOnIce": {
+          "total": "89:06",
+          "playerID": [
+            "3942292"
+          ]
+        },
+        "assists": {
+          "total": "20",
+          "playerID": [
+            "3183"
+          ]
+        },
+        "timeOnIce": {
+          "total": "762:01",
+          "playerID": [
+            "4063288"
+          ]
+        },
+        "shifts": {
+          "total": "577",
+          "playerID": [
+            "4588178"
+          ]
+        },
+        "goalsAgainst": {
+          "total": "32",
+          "playerID": [
+            "4063288"
+          ]
+        },
+        "powerPlayTimeOnIce": {
+          "total": "70:29",
+          "playerID": [
+            "3183"
+          ]
+        },
+        "goals": {
+          "total": "11",
+          "playerID": [
+            "3114802"
+          ]
+        },
+        "faceoffsWon": {
+          "total": "262",
+          "playerID": [
+            "3183"
+          ]
+        },
+        "plusMinus": {
+          "total": "11",
+          "playerID": [
+            "3942292"
+          ]
+        },
+        "shortHandedSaves": {
+          "total": "9",
+          "playerID": [
+            "2610321"
+          ]
+        },
+        "faceoffs": {
+          "total": "457",
+          "playerID": [
+            "3183"
+          ]
+        },
+        "powerPlayGoals": {
+          "total": "4",
+          "playerID": [
+            "3114743"
+          ]
+        },
+        "takeaways": {
+          "total": "15",
+          "playerID": [
+            "3183"
+          ]
+        },
+        "hits": {
+          "total": "61",
+          "playerID": [
+            "4064780"
+          ]
+        },
+        "penaltiesInMinutes": {
+          "total": "40",
+          "playerID": [
+            "4064780"
+          ]
+        },
+        "powerPlayAssists": {
+          "total": "7",
+          "playerID": [
+            "3183"
+          ]
+        },
+        "shots": {
+          "total": "69",
+          "playerID": [
+            "3114802"
+          ]
+        },
+        "faceoffsLost": {
+          "total": "195",
+          "playerID": [
+            "3183"
+          ]
+        },
+        "giveaways": {
+          "total": "30",
+          "playerID": [
+            "4588190"
+          ]
+        },
+        "shotsAgainst": {
+          "total": "278",
+          "playerID": [
+            "4063288"
+          ]
+        }
+      },
+      "teamStats": {
+        "faceoffsWon": "672",
+        "plusMinus": "+55",
+        "penalties": "93",
+        "shootoutGoals": "2",
+        "shortHandedSaves": "17",
+        "faceoffs": "1296",
+        "powerPlayGoals": "10",
+        "takeaways": "127",
+        "blockedShots": "355",
+        "hits": "523",
+        "penaltiesInMinutes": "228",
+        "powerPlayAssists": "20",
+        "shotsMissedNet": "355",
+        "saves": "488",
+        "assists": "124",
+        "shifts": "8309",
+        "shots": "660",
+        "goalsAgainst": "60",
+        "faceoffsLost": "624",
+        "giveaways": "315",
+        "goals": "69",
+        "shotsAgainst": "547"
+      }
+    },
+    {
+      "teamAbv": "MIN",
+      "teamCity": "Minnesota",
+      "teamName": "Wild",
+      "standings": {
+        "currentStreak": {
+          "result": "W",
+          "length": "1"
+        },
+        "goalsFor": "71",
+        "gamesPlayed": "22",
+        "resultDetail": {
+          "shootoutWin": "0",
+          "shootoutLoss": "2",
+          "regulationWin": "13",
+          "overtimeLoss": "2",
+          "overtimeWin": "1",
+          "regulationLoss": "4"
+        },
+        "OTL": "4",
+        "W": "14",
+        "record": "14-4-4",
+        "diff": "17",
+        "L": "4",
+        "goalsAgainst": "54",
+        "points": "32"
+      },
+      "espnLogo1": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/min.png",
+      "teamID": "15",
+      "conference": "Western",
+      "division": "Central",
+      "topPerformers": {
+        "penalties": {
+          "total": "7",
+          "playerID": [
+            "4565233"
+          ]
+        },
+        "shootoutGoals": {
+          "total": "1",
+          "playerID": [
+            "3149649"
+          ]
+        },
+        "blockedShots": {
+          "total": "55",
+          "playerID": [
+            "3149839"
+          ]
+        },
+        "shotsMissedNet": {
+          "total": "42",
+          "playerID": [
+            "4565233"
+          ]
+        },
+        "saves": {
+          "total": "458",
+          "playerID": [
+            "4272674"
+          ]
+        },
+        "shortHandedTimeOnIce": {
+          "total": "42:58",
+          "playerID": [
+            "2562600"
+          ]
+        },
+        "assists": {
+          "total": "21",
+          "playerID": [
+            "3942335"
+          ]
+        },
+        "timeOnIce": {
+          "total": "1021:31",
+          "playerID": [
+            "4272674"
+          ]
+        },
+        "shifts": {
+          "total": "577",
+          "playerID": [
+            "4697449"
+          ]
+        },
+        "goalsAgainst": {
+          "total": "35",
+          "playerID": [
+            "4272674"
+          ]
+        },
+        "powerPlayTimeOnIce": {
+          "total": "75:24",
+          "playerID": [
+            "4565233"
+          ]
+        },
+        "goals": {
+          "total": "14",
+          "playerID": [
+            "3942335"
+          ]
+        },
+        "faceoffsWon": {
+          "total": "185",
+          "playerID": [
+            "3904091"
+          ]
+        },
+        "plusMinus": {
+          "total": "17",
+          "playerID": [
+            "3149839"
+          ]
+        },
+        "shortHandedSaves": {
+          "total": "18",
+          "playerID": [
+            "4272674"
+          ]
+        },
+        "faceoffs": {
+          "total": "377",
+          "playerID": [
+            "3904091"
+          ]
+        },
+        "powerPlayGoals": {
+          "total": "4",
+          "playerID": [
+            "4565233"
+          ]
+        },
+        "takeaways": {
+          "total": "13",
+          "playerID": [
+            "4565233"
+          ]
+        },
+        "hits": {
+          "total": "79",
+          "playerID": [
+            "5172"
+          ]
+        },
+        "penaltiesInMinutes": {
+          "total": "17",
+          "playerID": [
+            "4565233"
+          ]
+        },
+        "powerPlayAssists": {
+          "total": "6",
+          "playerID": [
+            "3942335"
+          ]
+        },
+        "shots": {
+          "total": "78",
+          "playerID": [
+            "4565233"
+          ]
+        },
+        "faceoffsLost": {
+          "total": "192",
+          "playerID": [
+            "3904091"
+          ]
+        },
+        "giveaways": {
+          "total": "32",
+          "playerID": [
+            "3942335"
+          ]
+        },
+        "shotsAgainst": {
+          "total": "493",
+          "playerID": [
+            "4272674"
+          ]
+        }
+      },
+      "teamStats": {
+        "faceoffsWon": "586",
+        "plusMinus": "+99",
+        "penalties": "61",
+        "shootoutGoals": "2",
+        "shortHandedSaves": "22",
+        "faceoffs": "1204",
+        "powerPlayGoals": "12",
+        "takeaways": "110",
+        "blockedShots": "362",
+        "hits": "430",
+        "penaltiesInMinutes": "141",
+        "powerPlayAssists": "22",
+        "shotsMissedNet": "276",
+        "saves": "590",
+        "assists": "118",
+        "shifts": "7404",
+        "shots": "632",
+        "goalsAgainst": "49",
+        "faceoffsLost": "618",
+        "giveaways": "317",
+        "goals": "70",
+        "shotsAgainst": "639"
+      }
+    },
+    {
+      "teamAbv": "MTL",
+      "teamCity": "Montreal",
+      "teamName": "Canadiens",
+      "standings": {
+        "currentStreak": {
+          "result": "W",
+          "length": "1"
+        },
+        "goalsFor": "62",
+        "gamesPlayed": "22",
+        "resultDetail": {
+          "shootoutWin": "0",
+          "shootoutLoss": "1",
+          "regulationWin": "7",
+          "overtimeLoss": "2",
+          "overtimeWin": "1",
+          "regulationLoss": "11"
+        },
+        "OTL": "3",
+        "W": "8",
+        "record": "8-11-3",
+        "diff": "-21",
+        "L": "11",
+        "goalsAgainst": "83",
+        "points": "19"
+      },
+      "espnLogo1": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/mtl.png",
+      "teamID": "16",
+      "conference": "Eastern",
+      "division": "Atlantic",
+      "topPerformers": {
+        "penalties": {
+          "total": "11",
+          "playerID": [
+            "3069687"
+          ]
+        },
+        "shootoutGoals": {
+          "total": "1",
+          "playerID": [
+            "4874943"
+          ]
+        },
+        "blockedShots": {
+          "total": "55",
+          "playerID": [
+            "5427"
+          ]
+        },
+        "shotsMissedNet": {
+          "total": "35",
+          "playerID": [
+            "4565236"
+          ]
+        },
+        "saves": {
+          "total": "393",
+          "playerID": [
+            "3942714"
+          ]
+        },
+        "shortHandedTimeOnIce": {
+          "total": "72:56",
+          "playerID": [
+            "5427"
+          ]
+        },
+        "assists": {
+          "total": "12",
+          "playerID": [
+            "4233594"
+          ]
+        },
+        "timeOnIce": {
+          "total": "862:12",
+          "playerID": [
+            "3942714"
+          ]
+        },
+        "shifts": {
+          "total": "528",
+          "playerID": [
+            "5080230"
+          ]
+        },
+        "goalsAgainst": {
+          "total": "44",
+          "playerID": [
+            "3942714"
+          ]
+        },
+        "powerPlayTimeOnIce": {
+          "total": "77:19",
+          "playerID": [
+            "4233594"
+          ]
+        },
+        "goals": {
+          "total": "13",
+          "playerID": [
+            "4565236"
+          ]
+        },
+        "faceoffsWon": {
+          "total": "168",
+          "playerID": [
+            "4233594"
+          ]
+        },
+        "plusMinus": {
+          "total": "0",
+          "playerID": []
+        },
+        "shortHandedSaves": {
+          "total": "8",
+          "playerID": [
+            "3942714"
+          ]
+        },
+        "faceoffs": {
+          "total": "347",
+          "playerID": [
+            "4233594"
+          ]
+        },
+        "powerPlayGoals": {
+          "total": "7",
+          "playerID": [
+            "4565236"
+          ]
+        },
+        "takeaways": {
+          "total": "22",
+          "playerID": [
+            "2976851"
+          ]
+        },
+        "hits": {
+          "total": "57",
+          "playerID": [
+            "3069687"
+          ]
+        },
+        "penaltiesInMinutes": {
+          "total": "27",
+          "playerID": [
+            "2976851"
+          ]
+        },
+        "powerPlayAssists": {
+          "total": "6",
+          "playerID": [
+            "2976851"
+          ]
+        },
+        "shots": {
+          "total": "55",
+          "playerID": [
+            "4565236"
+          ]
+        },
+        "faceoffsLost": {
+          "total": "179",
+          "playerID": [
+            "4233594"
+          ]
+        },
+        "giveaways": {
+          "total": "28",
+          "playerID": [
+            "4893969"
+          ]
+        },
+        "shotsAgainst": {
+          "total": "437",
+          "playerID": [
+            "3942714"
+          ]
+        }
+      },
+      "teamStats": {
+        "faceoffsWon": "577",
+        "plusMinus": "-124",
+        "penalties": "94",
+        "shootoutGoals": "2",
+        "shortHandedSaves": "15",
+        "faceoffs": "1192",
+        "powerPlayGoals": "16",
+        "takeaways": "114",
+        "blockedShots": "397",
+        "hits": "536",
+        "penaltiesInMinutes": "231",
+        "powerPlayAssists": "30",
+        "shotsMissedNet": "291",
+        "saves": "574",
+        "assists": "110",
+        "shifts": "7539",
+        "shots": "518",
+        "goalsAgainst": "77",
+        "faceoffsLost": "615",
+        "giveaways": "308",
+        "goals": "62",
+        "shotsAgainst": "651"
+      }
+    },
+    {
+      "teamAbv": "NSH",
+      "teamCity": "Nashville",
+      "teamName": "Predators",
+      "standings": {
+        "currentStreak": {
+          "result": "L",
+          "length": "2"
+        },
+        "goalsFor": "54",
+        "gamesPlayed": "23",
+        "resultDetail": {
+          "shootoutWin": "0",
+          "shootoutLoss": "0",
+          "regulationWin": "6",
+          "overtimeLoss": "4",
+          "overtimeWin": "1",
+          "regulationLoss": "12"
+        },
+        "OTL": "4",
+        "W": "7",
+        "record": "7-12-4",
+        "diff": "-19",
+        "L": "12",
+        "goalsAgainst": "73",
+        "points": "18"
+      },
+      "espnLogo1": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/nsh.png",
+      "teamID": "17",
+      "conference": "Western",
+      "division": "Central",
+      "topPerformers": {
+        "penalties": {
+          "total": "9",
+          "playerID": [
+            "3042048"
+          ]
+        },
+        "shootoutGoals": {
+          "total": "0",
+          "playerID": []
+        },
+        "blockedShots": {
+          "total": "39",
+          "playerID": [
+            "5436"
+          ]
+        },
+        "shotsMissedNet": {
+          "total": "48",
+          "playerID": [
+            "2968772"
+          ]
+        },
+        "saves": {
+          "total": "506",
+          "playerID": [
+            "3042109"
+          ]
+        },
+        "shortHandedTimeOnIce": {
+          "total": "64:51",
+          "playerID": [
+            "3942064"
+          ]
+        },
+        "assists": {
+          "total": "13",
+          "playerID": [
+            "5436"
+          ]
+        },
+        "timeOnIce": {
+          "total": "1114:13",
+          "playerID": [
+            "3042109"
+          ]
+        },
+        "shifts": {
+          "total": "652",
+          "playerID": [
+            "5436"
+          ]
+        },
+        "goalsAgainst": {
+          "total": "48",
+          "playerID": [
+            "3042109"
+          ]
+        },
+        "powerPlayTimeOnIce": {
+          "total": "87:03",
+          "playerID": [
+            "5037"
+          ]
+        },
+        "goals": {
+          "total": "9",
+          "playerID": [
+            "2968772"
+          ]
+        },
+        "faceoffsWon": {
+          "total": "225",
+          "playerID": [
+            "5208"
+          ]
+        },
+        "plusMinus": {
+          "total": "1",
+          "playerID": [
+            "4697446"
+          ]
+        },
+        "shortHandedSaves": {
+          "total": "13",
+          "playerID": [
+            "3042109"
+          ]
+        },
+        "faceoffs": {
+          "total": "414",
+          "playerID": [
+            "5208"
+          ]
+        },
+        "powerPlayGoals": {
+          "total": "6",
+          "playerID": [
+            "5037"
+          ]
+        },
+        "takeaways": {
+          "total": "16",
+          "playerID": [
+            "5436"
+          ]
+        },
+        "hits": {
+          "total": "101",
+          "playerID": [
+            "3904185"
+          ]
+        },
+        "penaltiesInMinutes": {
+          "total": "30",
+          "playerID": [
+            "3042048"
+          ]
+        },
+        "powerPlayAssists": {
+          "total": "8",
+          "playerID": [
+            "5436"
+          ]
+        },
+        "shots": {
+          "total": "80",
+          "playerID": [
+            "2968772"
+          ]
+        },
+        "faceoffsLost": {
+          "total": "189",
+          "playerID": [
+            "5208"
+          ]
+        },
+        "giveaways": {
+          "total": "36",
+          "playerID": [
+            "5436"
+          ]
+        },
+        "shotsAgainst": {
+          "total": "554",
+          "playerID": [
+            "3042109"
+          ]
+        }
+      },
+      "teamStats": {
+        "faceoffsWon": "722",
+        "plusMinus": "-139",
+        "penalties": "89",
+        "shootoutGoals": "0",
+        "shortHandedSaves": "17",
+        "faceoffs": "1362",
+        "powerPlayGoals": "15",
+        "takeaways": "124",
+        "blockedShots": "328",
+        "hits": "632",
+        "penaltiesInMinutes": "205",
+        "powerPlayAssists": "28",
+        "shotsMissedNet": "342",
+        "saves": "590",
+        "assists": "82",
+        "shifts": "8898",
+        "shots": "678",
+        "goalsAgainst": "61",
+        "faceoffsLost": "640",
+        "giveaways": "352",
+        "goals": "54",
+        "shotsAgainst": "651"
+      }
+    },
+    {
+      "teamAbv": "NJ",
+      "teamCity": "New Jersey",
+      "teamName": "Devils",
+      "standings": {
+        "currentStreak": {
+          "result": "L",
+          "length": "1"
+        },
+        "goalsFor": "84",
+        "gamesPlayed": "25",
+        "resultDetail": {
+          "shootoutWin": "0",
+          "shootoutLoss": "0",
+          "regulationWin": "14",
+          "overtimeLoss": "2",
+          "overtimeWin": "1",
+          "regulationLoss": "8"
+        },
+        "OTL": "2",
+        "W": "15",
+        "record": "15-8-2",
+        "diff": "19",
+        "L": "8",
+        "goalsAgainst": "65",
+        "points": "32"
+      },
+      "espnLogo1": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/nj.png",
+      "teamID": "18",
+      "conference": "Eastern",
+      "division": "Metropolitan",
+      "topPerformers": {
+        "penalties": {
+          "total": "13",
+          "playerID": [
+            "2554903"
+          ]
+        },
+        "shootoutGoals": {
+          "total": "0",
+          "playerID": []
+        },
+        "blockedShots": {
+          "total": "49",
+          "playerID": [
+            "3904190"
+          ]
+        },
+        "shotsMissedNet": {
+          "total": "36",
+          "playerID": [
+            "3899978"
+          ]
+        },
+        "saves": {
+          "total": "407",
+          "playerID": [
+            "5452"
+          ]
+        },
+        "shortHandedTimeOnIce": {
+          "total": "68:42",
+          "playerID": [
+            "4587933"
+          ]
+        },
+        "assists": {
+          "total": "18",
+          "playerID": [
+            "4268771"
+          ]
+        },
+        "timeOnIce": {
+          "total": "1015:56",
+          "playerID": [
+            "5452"
+          ]
+        },
+        "shifts": {
+          "total": "654",
+          "playerID": [
+            "3904190"
+          ]
+        },
+        "goalsAgainst": {
+          "total": "43",
+          "playerID": [
+            "5452"
+          ]
+        },
+        "powerPlayTimeOnIce": {
+          "total": "92:40",
+          "playerID": [
+            "4565222"
+          ]
+        },
+        "goals": {
+          "total": "13",
+          "playerID": [
+            "4233555"
+          ]
+        },
+        "faceoffsWon": {
+          "total": "331",
+          "playerID": [
+            "4233555"
+          ]
+        },
+        "plusMinus": {
+          "total": "13",
+          "playerID": [
+            "4587933"
+          ]
+        },
+        "shortHandedSaves": {
+          "total": "10",
+          "playerID": [
+            "5452"
+          ]
+        },
+        "faceoffs": {
+          "total": "592",
+          "playerID": [
+            "4233555"
+          ]
+        },
+        "powerPlayGoals": {
+          "total": "5",
+          "playerID": [
+            "4233555"
+          ]
+        },
+        "takeaways": {
+          "total": "11",
+          "playerID": [
+            "4565222"
+          ]
+        },
+        "hits": {
+          "total": "73",
+          "playerID": [
+            "4331579"
+          ]
+        },
+        "penaltiesInMinutes": {
+          "total": "35",
+          "playerID": [
+            "2554903"
+          ]
+        },
+        "powerPlayAssists": {
+          "total": "9",
+          "playerID": [
+            "4565222"
+          ]
+        },
+        "shots": {
+          "total": "83",
+          "playerID": [
+            "2562605"
+          ]
+        },
+        "faceoffsLost": {
+          "total": "261",
+          "playerID": [
+            "4233555"
+          ]
+        },
+        "giveaways": {
+          "total": "42",
+          "playerID": [
+            "2562605"
+          ]
+        },
+        "shotsAgainst": {
+          "total": "450",
+          "playerID": [
+            "5452"
+          ]
+        }
+      },
+      "teamStats": {
+        "faceoffsWon": "705",
+        "plusMinus": "+33",
+        "penalties": "92",
+        "shootoutGoals": "0",
+        "shortHandedSaves": "16",
+        "faceoffs": "1383",
+        "powerPlayGoals": "23",
+        "takeaways": "116",
+        "blockedShots": "378",
+        "hits": "599",
+        "penaltiesInMinutes": "238",
+        "powerPlayAssists": "40",
+        "shotsMissedNet": "338",
+        "saves": "605",
+        "assists": "133",
+        "shifts": "9568",
+        "shots": "761",
+        "goalsAgainst": "61",
+        "faceoffsLost": "678",
+        "giveaways": "364",
+        "goals": "84",
+        "shotsAgainst": "665"
+      }
+    },
+    {
+      "teamAbv": "NYI",
+      "teamCity": "New York",
+      "teamName": "Islanders",
+      "standings": {
+        "currentStreak": {
+          "result": "L",
+          "length": "2"
+        },
+        "goalsFor": "59",
+        "gamesPlayed": "23",
+        "resultDetail": {
+          "shootoutWin": "2",
+          "shootoutLoss": "1",
+          "regulationWin": "5",
+          "overtimeLoss": "4",
+          "overtimeWin": "1",
+          "regulationLoss": "10"
+        },
+        "OTL": "5",
+        "W": "8",
+        "record": "8-10-5",
+        "diff": "-11",
+        "L": "10",
+        "goalsAgainst": "70",
+        "points": "21"
+      },
+      "espnLogo1": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/nyi.png",
+      "teamID": "19",
+      "conference": "Eastern",
+      "division": "Metropolitan",
+      "topPerformers": {
+        "penalties": {
+          "total": "8",
+          "playerID": [
+            "5212753"
+          ]
+        },
+        "shootoutGoals": {
+          "total": "1",
+          "playerID": [
+            "3042002"
+          ]
+        },
+        "blockedShots": {
+          "total": "52",
+          "playerID": [
+            "4352732"
+          ]
+        },
+        "shotsMissedNet": {
+          "total": "38",
+          "playerID": [
+            "3042002"
+          ]
+        },
+        "saves": {
+          "total": "381",
+          "playerID": [
+            "3151981"
+          ]
+        },
+        "shortHandedTimeOnIce": {
+          "total": "43:11",
+          "playerID": [
+            "3042019"
+          ]
+        },
+        "assists": {
+          "total": "10",
+          "playerID": [
+            "3042002"
+          ]
+        },
+        "timeOnIce": {
+          "total": "844:12",
+          "playerID": [
+            "3151981"
+          ]
+        },
+        "shifts": {
+          "total": "716",
+          "playerID": [
+            "3042019"
+          ]
+        },
+        "goalsAgainst": {
+          "total": "38",
+          "playerID": [
+            "3151981"
+          ]
+        },
+        "powerPlayTimeOnIce": {
+          "total": "70:21",
+          "playerID": [
+            "4352732"
+          ]
+        },
+        "goals": {
+          "total": "10",
+          "playerID": [
+            "5798"
+          ]
+        },
+        "faceoffsWon": {
+          "total": "205",
+          "playerID": [
+            "5798"
+          ]
+        },
+        "plusMinus": {
+          "total": "7",
+          "playerID": [
+            "2563069"
+          ]
+        },
+        "shortHandedSaves": {
+          "total": "8",
+          "playerID": [
+            "3759"
+          ]
+        },
+        "faceoffs": {
+          "total": "367",
+          "playerID": [
+            "5798"
+          ]
+        },
+        "powerPlayGoals": {
+          "total": "1",
+          "playerID": [
+            "3042002"
+          ]
+        },
+        "takeaways": {
+          "total": "14",
+          "playerID": [
+            "4352732"
+          ]
+        },
+        "hits": {
+          "total": "66",
+          "playerID": [
+            "5212753"
+          ]
+        },
+        "penaltiesInMinutes": {
+          "total": "17",
+          "playerID": [
+            "2563069"
+          ]
+        },
+        "powerPlayAssists": {
+          "total": "4",
+          "playerID": [
+            "4352732"
+          ]
+        },
+        "shots": {
+          "total": "75",
+          "playerID": [
+            "5793"
+          ]
+        },
+        "faceoffsLost": {
+          "total": "162",
+          "playerID": [
+            "5798"
+          ]
+        },
+        "giveaways": {
+          "total": "34",
+          "playerID": [
+            "3042019"
+          ]
+        },
+        "shotsAgainst": {
+          "total": "419",
+          "playerID": [
+            "3151981"
+          ]
+        }
+      },
+      "teamStats": {
+        "faceoffsWon": "736",
+        "plusMinus": "-33",
+        "penalties": "53",
+        "shootoutGoals": "4",
+        "shortHandedSaves": "15",
+        "faceoffs": "1314",
+        "powerPlayGoals": "8",
+        "takeaways": "112",
+        "blockedShots": "363",
+        "hits": "492",
+        "penaltiesInMinutes": "115",
+        "powerPlayAssists": "16",
+        "shotsMissedNet": "338",
+        "saves": "593",
+        "assists": "97",
+        "shifts": "9071",
+        "shots": "683",
+        "goalsAgainst": "62",
+        "faceoffsLost": "578",
+        "giveaways": "344",
+        "goals": "57",
+        "shotsAgainst": "655"
+      }
+    },
+    {
+      "teamAbv": "NYR",
+      "teamCity": "New York",
+      "teamName": "Rangers",
+      "standings": {
+        "currentStreak": {
+          "result": "L",
+          "length": "4"
+        },
+        "goalsFor": "70",
+        "gamesPlayed": "21",
+        "resultDetail": {
+          "shootoutWin": "0",
+          "shootoutLoss": "0",
+          "regulationWin": "12",
+          "overtimeLoss": "1",
+          "overtimeWin": "0",
+          "regulationLoss": "8"
+        },
+        "OTL": "1",
+        "W": "12",
+        "record": "12-8-1",
+        "diff": "11",
+        "L": "8",
+        "goalsAgainst": "59",
+        "points": "25"
+      },
+      "espnLogo1": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/nyr.png",
+      "teamID": "20",
+      "conference": "Eastern",
+      "division": "Metropolitan",
+      "topPerformers": {
+        "penalties": {
+          "total": "7",
+          "playerID": [
+            "2976839"
+          ]
+        },
+        "shootoutGoals": {
+          "total": "0",
+          "playerID": []
+        },
+        "blockedShots": {
+          "total": "64",
+          "playerID": [
+            "2976839"
+          ]
+        },
+        "shotsMissedNet": {
+          "total": "42",
+          "playerID": [
+            "3891952"
+          ]
+        },
+        "saves": {
+          "total": "470",
+          "playerID": [
+            "3151297"
+          ]
+        },
+        "shortHandedTimeOnIce": {
+          "total": "64:37",
+          "playerID": [
+            "2976839"
+          ]
+        },
+        "assists": {
+          "total": "18",
+          "playerID": [
+            "4197146"
+          ]
+        },
+        "timeOnIce": {
+          "total": "925:08",
+          "playerID": [
+            "3151297"
+          ]
+        },
+        "shifts": {
+          "total": "512",
+          "playerID": [
+            "4352770"
+          ]
+        },
+        "goalsAgainst": {
+          "total": "46",
+          "playerID": [
+            "3151297"
+          ]
+        },
+        "powerPlayTimeOnIce": {
+          "total": "62:22",
+          "playerID": [
+            "3891952"
+          ]
+        },
+        "goals": {
+          "total": "12",
+          "playerID": [
+            "3891952"
+          ]
+        },
+        "faceoffsWon": {
+          "total": "226",
+          "playerID": [
+            "2563036"
+          ]
+        },
+        "plusMinus": {
+          "total": "13",
+          "playerID": [
+            "4565223"
+          ]
+        },
+        "shortHandedSaves": {
+          "total": "10",
+          "playerID": [
+            "3151297"
+          ]
+        },
+        "faceoffs": {
+          "total": "377",
+          "playerID": [
+            "2563036"
+          ]
+        },
+        "powerPlayGoals": {
+          "total": "4",
+          "playerID": [
+            "3891952"
+          ]
+        },
+        "takeaways": {
+          "total": "14",
+          "playerID": [
+            "2563036"
+          ]
+        },
+        "hits": {
+          "total": "89",
+          "playerID": [
+            "4697468"
+          ]
+        },
+        "penaltiesInMinutes": {
+          "total": "21",
+          "playerID": [
+            "4894222"
+          ]
+        },
+        "powerPlayAssists": {
+          "total": "7",
+          "playerID": [
+            "4197146"
+          ]
+        },
+        "shots": {
+          "total": "70",
+          "playerID": [
+            "3891952"
+          ]
+        },
+        "faceoffsLost": {
+          "total": "159",
+          "playerID": [
+            "2562637"
+          ]
+        },
+        "giveaways": {
+          "total": "36",
+          "playerID": [
+            "2563036"
+          ]
+        },
+        "shotsAgainst": {
+          "total": "516",
+          "playerID": [
+            "3151297"
+          ]
+        }
+      },
+      "teamStats": {
+        "faceoffsWon": "600",
+        "plusMinus": "+47",
+        "penalties": "78",
+        "shootoutGoals": "0",
+        "shortHandedSaves": "12",
+        "faceoffs": "1138",
+        "powerPlayGoals": "11",
+        "takeaways": "124",
+        "blockedShots": "324",
+        "hits": "482",
+        "penaltiesInMinutes": "178",
+        "powerPlayAssists": "22",
+        "shotsMissedNet": "305",
+        "saves": "635",
+        "assists": "121",
+        "shifts": "7378",
+        "shots": "632",
+        "goalsAgainst": "56",
+        "faceoffsLost": "538",
+        "giveaways": "305",
+        "goals": "70",
+        "shotsAgainst": "691"
+      }
+    },
+    {
+      "teamAbv": "OTT",
+      "teamCity": "Ottawa",
+      "teamName": "Senators",
+      "standings": {
+        "currentStreak": {
+          "result": "W",
+          "length": "2"
+        },
+        "goalsFor": "70",
+        "gamesPlayed": "22",
+        "resultDetail": {
+          "shootoutWin": "0",
+          "shootoutLoss": "0",
+          "regulationWin": "8",
+          "overtimeLoss": "1",
+          "overtimeWin": "2",
+          "regulationLoss": "11"
+        },
+        "OTL": "1",
+        "W": "10",
+        "record": "10-11-1",
+        "diff": "-1",
+        "L": "11",
+        "goalsAgainst": "71",
+        "points": "21"
+      },
+      "espnLogo1": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/ott.png",
+      "teamID": "21",
+      "conference": "Eastern",
+      "division": "Atlantic",
+      "topPerformers": {
+        "penalties": {
+          "total": "18",
+          "playerID": [
+            "4319858"
+          ]
+        },
+        "shootoutGoals": {
+          "total": "0",
+          "playerID": []
+        },
+        "blockedShots": {
+          "total": "47",
+          "playerID": [
+            "4697386"
+          ]
+        },
+        "shotsMissedNet": {
+          "total": "41",
+          "playerID": [
+            "4319858"
+          ]
+        },
+        "saves": {
+          "total": "311",
+          "playerID": [
+            "3069285"
+          ]
+        },
+        "shortHandedTimeOnIce": {
+          "total": "54:47",
+          "playerID": [
+            "3775"
+          ]
+        },
+        "assists": {
+          "total": "19",
+          "playerID": [
+            "4697384"
+          ]
+        },
+        "timeOnIce": {
+          "total": "776:56",
+          "playerID": [
+            "3069285"
+          ]
+        },
+        "shifts": {
+          "total": "648",
+          "playerID": [
+            "4697386"
+          ]
+        },
+        "goalsAgainst": {
+          "total": "40",
+          "playerID": [
+            "3069285"
+          ]
+        },
+        "powerPlayTimeOnIce": {
+          "total": "75:58",
+          "playerID": [
+            "4697386"
+          ]
+        },
+        "goals": {
+          "total": "11",
+          "playerID": [
+            "3942868"
+          ]
+        },
+        "faceoffsWon": {
+          "total": "180",
+          "playerID": [
+            "3775"
+          ]
+        },
+        "plusMinus": {
+          "total": "11",
+          "playerID": [
+            "3025608"
+          ]
+        },
+        "shortHandedSaves": {
+          "total": "5",
+          "playerID": [
+            "3036851"
+          ]
+        },
+        "faceoffs": {
+          "total": "295",
+          "playerID": [
+            "4233627"
+          ]
+        },
+        "powerPlayGoals": {
+          "total": "6",
+          "playerID": [
+            "4319858"
+          ]
+        },
+        "takeaways": {
+          "total": "23",
+          "playerID": [
+            "4697386"
+          ]
+        },
+        "hits": {
+          "total": "94",
+          "playerID": [
+            "4319858"
+          ]
+        },
+        "penaltiesInMinutes": {
+          "total": "50",
+          "playerID": [
+            "4319858"
+          ]
+        },
+        "powerPlayAssists": {
+          "total": "10",
+          "playerID": [
+            "4697386"
+          ]
+        },
+        "shots": {
+          "total": "88",
+          "playerID": [
+            "4319858"
+          ]
+        },
+        "faceoffsLost": {
+          "total": "132",
+          "playerID": [
+            "4233627"
+          ]
+        },
+        "giveaways": {
+          "total": "35",
+          "playerID": [
+            "4697386"
+          ]
+        },
+        "shotsAgainst": {
+          "total": "351",
+          "playerID": [
+            "3069285"
+          ]
+        }
+      },
+      "teamStats": {
+        "faceoffsWon": "669",
+        "plusMinus": "-47",
+        "penalties": "87",
+        "shootoutGoals": "0",
+        "shortHandedSaves": "8",
+        "faceoffs": "1286",
+        "powerPlayGoals": "22",
+        "takeaways": "117",
+        "blockedShots": "346",
+        "hits": "645",
+        "penaltiesInMinutes": "194",
+        "powerPlayAssists": "41",
+        "shotsMissedNet": "297",
+        "saves": "534",
+        "assists": "117",
+        "shifts": "8998",
+        "shots": "689",
+        "goalsAgainst": "67",
+        "faceoffsLost": "617",
+        "giveaways": "298",
+        "goals": "70",
+        "shotsAgainst": "601"
+      }
+    },
+    {
+      "teamAbv": "PHI",
+      "teamCity": "Philadelphia",
+      "teamName": "Flyers",
+      "standings": {
+        "currentStreak": {
+          "result": "W",
+          "length": "1"
+        },
+        "goalsFor": "67",
+        "gamesPlayed": "23",
+        "resultDetail": {
+          "shootoutWin": "3",
+          "shootoutLoss": "2",
+          "regulationWin": "4",
+          "overtimeLoss": "1",
+          "overtimeWin": "3",
+          "regulationLoss": "10"
+        },
+        "OTL": "3",
+        "W": "10",
+        "record": "10-10-3",
+        "diff": "-13",
+        "L": "10",
+        "goalsAgainst": "80",
+        "points": "23"
+      },
+      "espnLogo1": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/phi.png",
+      "teamID": "22",
+      "conference": "Eastern",
+      "division": "Metropolitan",
+      "topPerformers": {
+        "penalties": {
+          "total": "12",
+          "playerID": [
+            "3900169"
+          ]
+        },
+        "shootoutGoals": {
+          "total": "3",
+          "playerID": [
+            "3900169"
+          ]
+        },
+        "blockedShots": {
+          "total": "53",
+          "playerID": [
+            "3114757"
+          ]
+        },
+        "shotsMissedNet": {
+          "total": "35",
+          "playerID": [
+            "4392072"
+          ]
+        },
+        "saves": {
+          "total": "239",
+          "playerID": [
+            "4587815"
+          ]
+        },
+        "shortHandedTimeOnIce": {
+          "total": "69:55",
+          "playerID": [
+            "3114757"
+          ]
+        },
+        "assists": {
+          "total": "16",
+          "playerID": [
+            "3900169"
+          ]
+        },
+        "timeOnIce": {
+          "total": "589:35",
+          "playerID": [
+            "3114757"
+          ]
+        },
+        "shifts": {
+          "total": "724",
+          "playerID": [
+            "3114757"
+          ]
+        },
+        "goalsAgainst": {
+          "total": "29",
+          "playerID": [
+            "3942685"
+          ]
+        },
+        "powerPlayTimeOnIce": {
+          "total": "71:59",
+          "playerID": [
+            "3900169"
+          ]
+        },
+        "goals": {
+          "total": "11",
+          "playerID": [
+            "3900169"
+          ]
+        },
+        "faceoffsWon": {
+          "total": "225",
+          "playerID": [
+            "2562601"
+          ]
+        },
+        "plusMinus": {
+          "total": "8",
+          "playerID": [
+            "4419682"
+          ]
+        },
+        "shortHandedSaves": {
+          "total": "15",
+          "playerID": [
+            "4587815"
+          ]
+        },
+        "faceoffs": {
+          "total": "388",
+          "playerID": [
+            "2562601"
+          ]
+        },
+        "powerPlayGoals": {
+          "total": "5",
+          "playerID": [
+            "3900169"
+          ]
+        },
+        "takeaways": {
+          "total": "24",
+          "playerID": [
+            "3114757"
+          ]
+        },
+        "hits": {
+          "total": "68",
+          "playerID": [
+            "3149633"
+          ]
+        },
+        "penaltiesInMinutes": {
+          "total": "27",
+          "playerID": [
+            "3900169"
+          ]
+        },
+        "powerPlayAssists": {
+          "total": "5",
+          "playerID": [
+            "5149170"
+          ]
+        },
+        "shots": {
+          "total": "64",
+          "playerID": [
+            "3900169"
+          ]
+        },
+        "faceoffsLost": {
+          "total": "163",
+          "playerID": [
+            "2562601"
+          ]
+        },
+        "giveaways": {
+          "total": "29",
+          "playerID": [
+            "3900169"
+          ]
+        },
+        "shotsAgainst": {
+          "total": "265",
+          "playerID": [
+            "4587815"
+          ]
+        }
+      },
+      "teamStats": {
+        "faceoffsWon": "671",
+        "plusMinus": "-84",
+        "penalties": "91",
+        "shootoutGoals": "7",
+        "shortHandedSaves": "22",
+        "faceoffs": "1312",
+        "powerPlayGoals": "12",
+        "takeaways": "151",
+        "blockedShots": "447",
+        "hits": "524",
+        "penaltiesInMinutes": "211",
+        "powerPlayAssists": "23",
+        "shotsMissedNet": "282",
+        "saves": "579",
+        "assists": "118",
+        "shifts": "9076",
+        "shots": "627",
+        "goalsAgainst": "73",
+        "faceoffsLost": "641",
+        "giveaways": "362",
+        "goals": "64",
+        "shotsAgainst": "652"
+      }
+    },
+    {
+      "teamAbv": "PIT",
+      "teamCity": "Pittsburgh",
+      "teamName": "Penguins",
+      "standings": {
+        "currentStreak": {
+          "result": "W",
+          "length": "1"
+        },
+        "goalsFor": "64",
+        "gamesPlayed": "24",
+        "resultDetail": {
+          "shootoutWin": "1",
+          "shootoutLoss": "2",
+          "regulationWin": "5",
+          "overtimeLoss": "2",
+          "overtimeWin": "2",
+          "regulationLoss": "12"
+        },
+        "OTL": "4",
+        "W": "8",
+        "record": "8-12-4",
+        "diff": "-33",
+        "L": "12",
+        "goalsAgainst": "97",
+        "points": "20"
+      },
+      "espnLogo1": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/pit.png",
+      "teamID": "23",
+      "conference": "Eastern",
+      "division": "Metropolitan",
+      "topPerformers": {
+        "penalties": {
+          "total": "8",
+          "playerID": [
+            "3114995"
+          ]
+        },
+        "shootoutGoals": {
+          "total": "1",
+          "playerID": [
+            "3904107"
+          ]
+        },
+        "blockedShots": {
+          "total": "43",
+          "playerID": [
+            "3114995"
+          ]
+        },
+        "shotsMissedNet": {
+          "total": "34",
+          "playerID": [
+            "3114"
+          ]
+        },
+        "saves": {
+          "total": "272",
+          "playerID": [
+            "3114994"
+          ]
+        },
+        "shortHandedTimeOnIce": {
+          "total": "65:46",
+          "playerID": [
+            "3114995"
+          ]
+        },
+        "assists": {
+          "total": "16",
+          "playerID": [
+            "3124"
+          ]
+        },
+        "timeOnIce": {
+          "total": "666:15",
+          "playerID": [
+            "3114994"
+          ]
+        },
+        "shifts": {
+          "total": "635",
+          "playerID": [
+            "3114995"
+          ]
+        },
+        "goalsAgainst": {
+          "total": "38",
+          "playerID": [
+            "3114994"
+          ]
+        },
+        "powerPlayTimeOnIce": {
+          "total": "83:34",
+          "playerID": [
+            "3124"
+          ]
+        },
+        "goals": {
+          "total": "8",
+          "playerID": [
+            "3114"
+          ]
+        },
+        "faceoffsWon": {
+          "total": "321",
+          "playerID": [
+            "3114"
+          ]
+        },
+        "plusMinus": {
+          "total": "1",
+          "playerID": [
+            "4565242"
+          ]
+        },
+        "shortHandedSaves": {
+          "total": "10",
+          "playerID": [
+            "3042020"
+          ]
+        },
+        "faceoffs": {
+          "total": "560",
+          "playerID": [
+            "3114"
+          ]
+        },
+        "powerPlayGoals": {
+          "total": "3",
+          "playerID": [
+            "3114"
+          ]
+        },
+        "takeaways": {
+          "total": "13",
+          "playerID": [
+            "3539"
+          ]
+        },
+        "hits": {
+          "total": "57",
+          "playerID": [
+            "3096237"
+          ]
+        },
+        "penaltiesInMinutes": {
+          "total": "19",
+          "playerID": [
+            "3114995"
+          ]
+        },
+        "powerPlayAssists": {
+          "total": "6",
+          "playerID": [
+            "3124"
+          ]
+        },
+        "shots": {
+          "total": "72",
+          "playerID": [
+            "3114"
+          ]
+        },
+        "faceoffsLost": {
+          "total": "239",
+          "playerID": [
+            "3114"
+          ]
+        },
+        "giveaways": {
+          "total": "44",
+          "playerID": [
+            "5164"
+          ]
+        },
+        "shotsAgainst": {
+          "total": "310",
+          "playerID": [
+            "3114994"
+          ]
+        }
+      },
+      "teamStats": {
+        "faceoffsWon": "731",
+        "plusMinus": "-158",
+        "penalties": "77",
+        "shootoutGoals": "5",
+        "shortHandedSaves": "25",
+        "faceoffs": "1392",
+        "powerPlayGoals": "14",
+        "takeaways": "138",
+        "blockedShots": "368",
+        "hits": "500",
+        "penaltiesInMinutes": "170",
+        "powerPlayAssists": "27",
+        "shotsMissedNet": "355",
+        "saves": "685",
+        "assists": "105",
+        "shifts": "9048",
+        "shots": "715",
+        "goalsAgainst": "90",
+        "faceoffsLost": "661",
+        "giveaways": "364",
+        "goals": "63",
+        "shotsAgainst": "775"
+      }
+    },
+    {
+      "teamAbv": "SJ",
+      "teamCity": "San Jose",
+      "teamName": "Sharks",
+      "standings": {
+        "currentStreak": {
+          "result": "L",
+          "length": "1"
+        },
+        "goalsFor": "66",
+        "gamesPlayed": "25",
+        "resultDetail": {
+          "shootoutWin": "0",
+          "shootoutLoss": "4",
+          "regulationWin": "4",
+          "overtimeLoss": "1",
+          "overtimeWin": "3",
+          "regulationLoss": "13"
+        },
+        "OTL": "5",
+        "W": "7",
+        "record": "7-13-5",
+        "diff": "-23",
+        "L": "13",
+        "goalsAgainst": "89",
+        "points": "19"
+      },
+      "espnLogo1": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/sj.png",
+      "teamID": "24",
+      "conference": "Western",
+      "division": "Pacific",
+      "topPerformers": {
+        "penalties": {
+          "total": "9",
+          "playerID": [
+            "4024933"
+          ]
+        },
+        "shootoutGoals": {
+          "total": "2",
+          "playerID": [
+            "5831"
+          ]
+        },
+        "blockedShots": {
+          "total": "45",
+          "playerID": [
+            "2976843"
+          ]
+        },
+        "shotsMissedNet": {
+          "total": "34",
+          "playerID": [
+            "4874721"
+          ]
+        },
+        "saves": {
+          "total": "397",
+          "playerID": [
+            "3904177"
+          ]
+        },
+        "shortHandedTimeOnIce": {
+          "total": "76:37",
+          "playerID": [
+            "2976843"
+          ]
+        },
+        "assists": {
+          "total": "16",
+          "playerID": [
+            "4874721"
+          ]
+        },
+        "timeOnIce": {
+          "total": "840:50",
+          "playerID": [
+            "3904177"
+          ]
+        },
+        "shifts": {
+          "total": "652",
+          "playerID": [
+            "2976843"
+          ]
+        },
+        "goalsAgainst": {
+          "total": "44",
+          "playerID": [
+            "3904177"
+          ]
+        },
+        "powerPlayTimeOnIce": {
+          "total": "85:37",
+          "playerID": [
+            "5550"
+          ]
+        },
+        "goals": {
+          "total": "9",
+          "playerID": [
+            "5550"
+          ]
+        },
+        "faceoffsWon": {
+          "total": "177",
+          "playerID": [
+            "3042017"
+          ]
+        },
+        "plusMinus": {
+          "total": "6",
+          "playerID": [
+            "4587837"
+          ]
+        },
+        "shortHandedSaves": {
+          "total": "13",
+          "playerID": [
+            "3904177"
+          ]
+        },
+        "faceoffs": {
+          "total": "353",
+          "playerID": [
+            "3042017"
+          ]
+        },
+        "powerPlayGoals": {
+          "total": "3",
+          "playerID": [
+            "3042017"
+          ]
+        },
+        "takeaways": {
+          "total": "17",
+          "playerID": [
+            "4233884"
+          ]
+        },
+        "hits": {
+          "total": "69",
+          "playerID": [
+            "4233884"
+          ]
+        },
+        "penaltiesInMinutes": {
+          "total": "23",
+          "playerID": [
+            "3069411"
+          ]
+        },
+        "powerPlayAssists": {
+          "total": "5",
+          "playerID": [
+            "5831"
+          ]
+        },
+        "shots": {
+          "total": "75",
+          "playerID": [
+            "5550"
+          ]
+        },
+        "faceoffsLost": {
+          "total": "176",
+          "playerID": [
+            "3042017"
+          ]
+        },
+        "giveaways": {
+          "total": "29",
+          "playerID": [
+            "5831"
+          ]
+        },
+        "shotsAgainst": {
+          "total": "440",
+          "playerID": [
+            "3904177"
+          ]
+        }
+      },
+      "teamStats": {
+        "faceoffsWon": "704",
+        "plusMinus": "-99",
+        "penalties": "89",
+        "shootoutGoals": "3",
+        "shortHandedSaves": "20",
+        "faceoffs": "1449",
+        "powerPlayGoals": "15",
+        "takeaways": "126",
+        "blockedShots": "431",
+        "hits": "628",
+        "penaltiesInMinutes": "195",
+        "powerPlayAssists": "26",
+        "shotsMissedNet": "326",
+        "saves": "716",
+        "assists": "112",
+        "shifts": "9053",
+        "shots": "696",
+        "goalsAgainst": "78",
+        "faceoffsLost": "745",
+        "giveaways": "362",
+        "goals": "66",
+        "shotsAgainst": "793"
+      }
+    },
+    {
+      "teamAbv": "SEA",
+      "teamCity": "Seattle",
+      "teamName": "Kraken",
+      "standings": {
+        "currentStreak": {
+          "result": "L",
+          "length": "1"
+        },
+        "goalsFor": "64",
+        "gamesPlayed": "23",
+        "resultDetail": {
+          "shootoutWin": "1",
+          "shootoutLoss": "0",
+          "regulationWin": "8",
+          "overtimeLoss": "1",
+          "overtimeWin": "2",
+          "regulationLoss": "11"
+        },
+        "OTL": "1",
+        "W": "11",
+        "record": "11-11-1",
+        "diff": "0",
+        "L": "11",
+        "goalsAgainst": "64",
+        "points": "23"
+      },
+      "espnLogo1": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/sea.png",
+      "teamID": "25",
+      "conference": "Western",
+      "division": "Pacific",
+      "topPerformers": {
+        "penalties": {
+          "total": "9",
+          "playerID": [
+            "3115032"
+          ]
+        },
+        "shootoutGoals": {
+          "total": "1",
+          "playerID": [
+            "3042095"
+          ]
+        },
+        "blockedShots": {
+          "total": "52",
+          "playerID": [
+            "2562625"
+          ]
+        },
+        "shotsMissedNet": {
+          "total": "38",
+          "playerID": [
+            "3115032"
+          ]
+        },
+        "saves": {
+          "total": "428",
+          "playerID": [
+            "3942073"
+          ]
+        },
+        "shortHandedTimeOnIce": {
+          "total": "72:35",
+          "playerID": [
+            "2562625"
+          ]
+        },
+        "assists": {
+          "total": "13",
+          "playerID": [
+            "3114777"
+          ]
+        },
+        "timeOnIce": {
+          "total": "949:25",
+          "playerID": [
+            "3942073"
+          ]
+        },
+        "shifts": {
+          "total": "517",
+          "playerID": [
+            "3067858"
+          ]
+        },
+        "goalsAgainst": {
+          "total": "39",
+          "playerID": [
+            "3942073"
+          ]
+        },
+        "powerPlayTimeOnIce": {
+          "total": "74:43",
+          "playerID": [
+            "3115032"
+          ]
+        },
+        "goals": {
+          "total": "9",
+          "playerID": [
+            "3114777"
+          ]
+        },
+        "faceoffsWon": {
+          "total": "249",
+          "playerID": [
+            "3067858"
+          ]
+        },
+        "plusMinus": {
+          "total": "10",
+          "playerID": [
+            "3114777"
+          ]
+        },
+        "shortHandedSaves": {
+          "total": "11",
+          "playerID": [
+            "3942073"
+          ]
+        },
+        "faceoffs": {
+          "total": "466",
+          "playerID": [
+            "3067858"
+          ]
+        },
+        "powerPlayGoals": {
+          "total": "2",
+          "playerID": [
+            "3115032"
+          ]
+        },
+        "takeaways": {
+          "total": "13",
+          "playerID": [
+            "3067858"
+          ]
+        },
+        "hits": {
+          "total": "69",
+          "playerID": [
+            "4588750"
+          ]
+        },
+        "penaltiesInMinutes": {
+          "total": "32",
+          "playerID": [
+            "3094261"
+          ]
+        },
+        "powerPlayAssists": {
+          "total": "5",
+          "playerID": [
+            "3067858"
+          ]
+        },
+        "shots": {
+          "total": "75",
+          "playerID": [
+            "3115032"
+          ]
+        },
+        "faceoffsLost": {
+          "total": "217",
+          "playerID": [
+            "3067858"
+          ]
+        },
+        "giveaways": {
+          "total": "31",
+          "playerID": [
+            "2562625"
+          ]
+        },
+        "shotsAgainst": {
+          "total": "467",
+          "playerID": [
+            "3942073"
+          ]
+        }
+      },
+      "teamStats": {
+        "faceoffsWon": "656",
+        "plusMinus": "+8",
+        "penalties": "67",
+        "shootoutGoals": "2",
+        "shortHandedSaves": "14",
+        "faceoffs": "1333",
+        "powerPlayGoals": "10",
+        "takeaways": "120",
+        "blockedShots": "382",
+        "hits": "479",
+        "penaltiesInMinutes": "153",
+        "powerPlayAssists": "19",
+        "shotsMissedNet": "339",
+        "saves": "584",
+        "assists": "102",
+        "shifts": "7945",
+        "shots": "639",
+        "goalsAgainst": "60",
+        "faceoffsLost": "677",
+        "giveaways": "312",
+        "goals": "63",
+        "shotsAgainst": "644"
+      }
+    },
+    {
+      "teamAbv": "STL",
+      "teamCity": "St. Louis",
+      "teamName": "Blues",
+      "standings": {
+        "currentStreak": {
+          "result": "W",
+          "length": "2"
+        },
+        "goalsFor": "61",
+        "gamesPlayed": "24",
+        "resultDetail": {
+          "shootoutWin": "1",
+          "shootoutLoss": "0",
+          "regulationWin": "7",
+          "overtimeLoss": "1",
+          "overtimeWin": "3",
+          "regulationLoss": "12"
+        },
+        "OTL": "1",
+        "W": "11",
+        "record": "11-12-1",
+        "diff": "-15",
+        "L": "12",
+        "goalsAgainst": "76",
+        "points": "23"
+      },
+      "espnLogo1": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/stl.png",
+      "teamID": "26",
+      "conference": "Western",
+      "division": "Central",
+      "topPerformers": {
+        "penalties": {
+          "total": "10",
+          "playerID": [
+            "4697409"
+          ]
+        },
+        "shootoutGoals": {
+          "total": "1",
+          "playerID": [
+            "4697409"
+          ]
+        },
+        "blockedShots": {
+          "total": "63",
+          "playerID": [
+            "3069341"
+          ]
+        },
+        "shotsMissedNet": {
+          "total": "30",
+          "playerID": [
+            "4062251"
+          ]
+        },
+        "saves": {
+          "total": "441",
+          "playerID": [
+            "2590874"
+          ]
+        },
+        "shortHandedTimeOnIce": {
+          "total": "65:27",
+          "playerID": [
+            "3069341"
+          ]
+        },
+        "assists": {
+          "total": "12",
+          "playerID": [
+            "4062251"
+          ]
+        },
+        "timeOnIce": {
+          "total": "1048:22",
+          "playerID": [
+            "2590874"
+          ]
+        },
+        "shifts": {
+          "total": "671",
+          "playerID": [
+            "3069341"
+          ]
+        },
+        "goalsAgainst": {
+          "total": "50",
+          "playerID": [
+            "2590874"
+          ]
+        },
+        "powerPlayTimeOnIce": {
+          "total": "58:53",
+          "playerID": [
+            "4062251"
+          ]
+        },
+        "goals": {
+          "total": "7",
+          "playerID": [
+            "4062251"
+          ]
+        },
+        "faceoffsWon": {
+          "total": "181",
+          "playerID": [
+            "5219"
+          ]
+        },
+        "plusMinus": {
+          "total": "6",
+          "playerID": [
+            "4697397"
+          ]
+        },
+        "shortHandedSaves": {
+          "total": "9",
+          "playerID": [
+            "2590874"
+          ]
+        },
+        "faceoffs": {
+          "total": "359",
+          "playerID": [
+            "5219"
+          ]
+        },
+        "powerPlayGoals": {
+          "total": "2",
+          "playerID": [
+            "4697397"
+          ]
+        },
+        "takeaways": {
+          "total": "14",
+          "playerID": [
+            "3069341"
+          ]
+        },
+        "hits": {
+          "total": "64",
+          "playerID": [
+            "3067860"
+          ]
+        },
+        "penaltiesInMinutes": {
+          "total": "23",
+          "playerID": [
+            "4233653"
+          ]
+        },
+        "powerPlayAssists": {
+          "total": "3",
+          "playerID": [
+            "4233637"
+          ]
+        },
+        "shots": {
+          "total": "67",
+          "playerID": [
+            "4062251"
+          ]
+        },
+        "faceoffsLost": {
+          "total": "178",
+          "playerID": [
+            "5219"
+          ]
+        },
+        "giveaways": {
+          "total": "36",
+          "playerID": [
+            "3069341"
+          ]
+        },
+        "shotsAgainst": {
+          "total": "491",
+          "playerID": [
+            "2590874"
+          ]
+        }
+      },
+      "teamStats": {
+        "faceoffsWon": "626",
+        "plusMinus": "-60",
+        "penalties": "83",
+        "shootoutGoals": "1",
+        "shortHandedSaves": "13",
+        "faceoffs": "1305",
+        "powerPlayGoals": "8",
+        "takeaways": "113",
+        "blockedShots": "376",
+        "hits": "558",
+        "penaltiesInMinutes": "188",
+        "powerPlayAssists": "15",
+        "shotsMissedNet": "271",
+        "saves": "627",
+        "assists": "100",
+        "shifts": "8752",
+        "shots": "640",
+        "goalsAgainst": "71",
+        "faceoffsLost": "679",
+        "giveaways": "372",
+        "goals": "60",
+        "shotsAgainst": "698"
+      }
+    },
+    {
+      "teamAbv": "TB",
+      "teamCity": "Tampa Bay",
+      "teamName": "Lightning",
+      "standings": {
+        "currentStreak": {
+          "result": "L",
+          "length": "1"
+        },
+        "goalsFor": "80",
+        "gamesPlayed": "22",
+        "resultDetail": {
+          "shootoutWin": "0",
+          "shootoutLoss": "1",
+          "regulationWin": "9",
+          "overtimeLoss": "1",
+          "overtimeWin": "2",
+          "regulationLoss": "8"
+        },
+        "OTL": "2",
+        "W": "11",
+        "record": "11-8-2",
+        "diff": "14",
+        "L": "8",
+        "goalsAgainst": "66",
+        "points": "24"
+      },
+      "espnLogo1": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/tb.png",
+      "teamID": "27",
+      "conference": "Eastern",
+      "division": "Atlantic",
+      "topPerformers": {
+        "penalties": {
+          "total": "10",
+          "playerID": [
+            "5146599"
+          ]
+        },
+        "shootoutGoals": {
+          "total": "0",
+          "playerID": []
+        },
+        "blockedShots": {
+          "total": "42",
+          "playerID": [
+            "4954"
+          ]
+        },
+        "shotsMissedNet": {
+          "total": "30",
+          "playerID": [
+            "2563060"
+          ]
+        },
+        "saves": {
+          "total": "425",
+          "playerID": [
+            "2976847"
+          ]
+        },
+        "shortHandedTimeOnIce": {
+          "total": "65:48",
+          "playerID": [
+            "4954"
+          ]
+        },
+        "assists": {
+          "total": "21",
+          "playerID": [
+            "2563060"
+          ]
+        },
+        "timeOnIce": {
+          "total": "1049:43",
+          "playerID": [
+            "2976847"
+          ]
+        },
+        "shifts": {
+          "total": "562",
+          "playerID": [
+            "5157"
+          ]
+        },
+        "goalsAgainst": {
+          "total": "42",
+          "playerID": [
+            "2976847"
+          ]
+        },
+        "powerPlayTimeOnIce": {
+          "total": "77:50",
+          "playerID": [
+            "2563060"
+          ]
+        },
+        "goals": {
+          "total": "15",
+          "playerID": [
+            "3151187"
+          ]
+        },
+        "faceoffsWon": {
+          "total": "183",
+          "playerID": [
+            "3941973"
+          ]
+        },
+        "plusMinus": {
+          "total": "11",
+          "playerID": [
+            "3941973"
+          ]
+        },
+        "shortHandedSaves": {
+          "total": "12",
+          "playerID": [
+            "2976847"
+          ]
+        },
+        "faceoffs": {
+          "total": "353",
+          "playerID": [
+            "3941973"
+          ]
+        },
+        "powerPlayGoals": {
+          "total": "8",
+          "playerID": [
+            "3151187"
+          ]
+        },
+        "takeaways": {
+          "total": "13",
+          "playerID": [
+            "4874929"
+          ]
+        },
+        "hits": {
+          "total": "35",
+          "playerID": [
+            "2335062"
+          ]
+        },
+        "penaltiesInMinutes": {
+          "total": "26",
+          "playerID": [
+            "5146599"
+          ]
+        },
+        "powerPlayAssists": {
+          "total": "12",
+          "playerID": [
+            "2563060"
+          ]
+        },
+        "shots": {
+          "total": "80",
+          "playerID": [
+            "2563060"
+          ]
+        },
+        "faceoffsLost": {
+          "total": "170",
+          "playerID": [
+            "3941973"
+          ]
+        },
+        "giveaways": {
+          "total": "33",
+          "playerID": [
+            "5157"
+          ]
+        },
+        "shotsAgainst": {
+          "total": "467",
+          "playerID": [
+            "2976847"
+          ]
+        }
+      },
+      "teamStats": {
+        "faceoffsWon": "619",
+        "plusMinus": "+66",
+        "penalties": "75",
+        "shootoutGoals": "0",
+        "shortHandedSaves": "13",
+        "faceoffs": "1200",
+        "powerPlayGoals": "15",
+        "takeaways": "88",
+        "blockedShots": "323",
+        "hits": "337",
+        "penaltiesInMinutes": "190",
+        "powerPlayAssists": "29",
+        "shotsMissedNet": "275",
+        "saves": "532",
+        "assists": "135",
+        "shifts": "7940",
+        "shots": "586",
+        "goalsAgainst": "60",
+        "faceoffsLost": "581",
+        "giveaways": "299",
+        "goals": "80",
+        "shotsAgainst": "592"
+      }
+    },
+    {
+      "teamAbv": "TOR",
+      "teamCity": "Toronto",
+      "teamName": "Maple Leafs",
+      "standings": {
+        "currentStreak": {
+          "result": "L",
+          "length": "1"
+        },
+        "goalsFor": "65",
+        "gamesPlayed": "22",
+        "resultDetail": {
+          "shootoutWin": "0",
+          "shootoutLoss": "0",
+          "regulationWin": "11",
+          "overtimeLoss": "2",
+          "overtimeWin": "2",
+          "regulationLoss": "7"
+        },
+        "OTL": "2",
+        "W": "13",
+        "record": "13-7-2",
+        "diff": "8",
+        "L": "7",
+        "goalsAgainst": "57",
+        "points": "28"
+      },
+      "espnLogo1": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/tor.png",
+      "teamID": "28",
+      "conference": "Eastern",
+      "division": "Atlantic",
+      "topPerformers": {
+        "penalties": {
+          "total": "10",
+          "playerID": [
+            "5488"
+          ]
+        },
+        "shootoutGoals": {
+          "total": "0",
+          "playerID": []
+        },
+        "blockedShots": {
+          "total": "73",
+          "playerID": [
+            "5592"
+          ]
+        },
+        "shotsMissedNet": {
+          "total": "34",
+          "playerID": [
+            "4024123"
+          ]
+        },
+        "saves": {
+          "total": "350",
+          "playerID": [
+            "3067313"
+          ]
+        },
+        "shortHandedTimeOnIce": {
+          "total": "67:51",
+          "playerID": [
+            "3020803"
+          ]
+        },
+        "assists": {
+          "total": "20",
+          "playerID": [
+            "3899937"
+          ]
+        },
+        "timeOnIce": {
+          "total": "774:02",
+          "playerID": [
+            "3067313"
+          ]
+        },
+        "shifts": {
+          "total": "648",
+          "playerID": [
+            "3020803"
+          ]
+        },
+        "goalsAgainst": {
+          "total": "30",
+          "playerID": [
+            "3067313"
+          ]
+        },
+        "powerPlayTimeOnIce": {
+          "total": "82:48",
+          "playerID": [
+            "3114736"
+          ]
+        },
+        "goals": {
+          "total": "14",
+          "playerID": [
+            "3114736"
+          ]
+        },
+        "faceoffsWon": {
+          "total": "217",
+          "playerID": [
+            "5160"
+          ]
+        },
+        "plusMinus": {
+          "total": "9",
+          "playerID": [
+            "3020803"
+          ]
+        },
+        "shortHandedSaves": {
+          "total": "12",
+          "playerID": [
+            "3067313"
+          ]
+        },
+        "faceoffs": {
+          "total": "358",
+          "playerID": [
+            "5160"
+          ]
+        },
+        "powerPlayGoals": {
+          "total": "5",
+          "playerID": [
+            "3114736"
+          ]
+        },
+        "takeaways": {
+          "total": "20",
+          "playerID": [
+            "3899937"
+          ]
+        },
+        "hits": {
+          "total": "54",
+          "playerID": [
+            "3939658"
+          ]
+        },
+        "penaltiesInMinutes": {
+          "total": "23",
+          "playerID": [
+            "3683"
+          ]
+        },
+        "powerPlayAssists": {
+          "total": "9",
+          "playerID": [
+            "3899937"
+          ]
+        },
+        "shots": {
+          "total": "79",
+          "playerID": [
+            "3114736"
+          ]
+        },
+        "faceoffsLost": {
+          "total": "141",
+          "playerID": [
+            "5160"
+          ]
+        },
+        "giveaways": {
+          "total": "30",
+          "playerID": [
+            "3899937"
+          ]
+        },
+        "shotsAgainst": {
+          "total": "380",
+          "playerID": [
+            "3067313"
+          ]
+        }
+      },
+      "teamStats": {
+        "faceoffsWon": "651",
+        "plusMinus": "+29",
+        "penalties": "90",
+        "shootoutGoals": "0",
+        "shortHandedSaves": "21",
+        "faceoffs": "1202",
+        "powerPlayGoals": "15",
+        "takeaways": "116",
+        "blockedShots": "377",
+        "hits": "495",
+        "penaltiesInMinutes": "206",
+        "powerPlayAssists": "28",
+        "shotsMissedNet": "298",
+        "saves": "568",
+        "assists": "100",
+        "shifts": "8590",
+        "shots": "658",
+        "goalsAgainst": "52",
+        "faceoffsLost": "551",
+        "giveaways": "296",
+        "goals": "65",
+        "shotsAgainst": "620"
+      }
+    },
+    {
+      "teamAbv": "VAN",
+      "teamCity": "Vancouver",
+      "teamName": "Canucks",
+      "standings": {
+        "currentStreak": {
+          "result": "L",
+          "length": "1"
+        },
+        "goalsFor": "67",
+        "gamesPlayed": "21",
+        "resultDetail": {
+          "shootoutWin": "0",
+          "shootoutLoss": "1",
+          "regulationWin": "10",
+          "overtimeLoss": "2",
+          "overtimeWin": "1",
+          "regulationLoss": "7"
+        },
+        "OTL": "3",
+        "W": "11",
+        "record": "11-7-3",
+        "diff": "0",
+        "L": "7",
+        "goalsAgainst": "67",
+        "points": "25"
+      },
+      "espnLogo1": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/van.png",
+      "teamID": "29",
+      "conference": "Western",
+      "division": "Pacific",
+      "topPerformers": {
+        "penalties": {
+          "total": "9",
+          "playerID": [
+            "4063607"
+          ]
+        },
+        "shootoutGoals": {
+          "total": "1",
+          "playerID": [
+            "3900240"
+          ]
+        },
+        "blockedShots": {
+          "total": "39",
+          "playerID": [
+            "5052"
+          ]
+        },
+        "shotsMissedNet": {
+          "total": "33",
+          "playerID": [
+            "4320548"
+          ]
+        },
+        "saves": {
+          "total": "379",
+          "playerID": [
+            "4341584"
+          ]
+        },
+        "shortHandedTimeOnIce": {
+          "total": "53:06",
+          "playerID": [
+            "5052"
+          ]
+        },
+        "assists": {
+          "total": "18",
+          "playerID": [
+            "4320548"
+          ]
+        },
+        "timeOnIce": {
+          "total": "892:20",
+          "playerID": [
+            "4341584"
+          ]
+        },
+        "shifts": {
+          "total": "631",
+          "playerID": [
+            "4063607"
+          ]
+        },
+        "goalsAgainst": {
+          "total": "38",
+          "playerID": [
+            "4341584"
+          ]
+        },
+        "powerPlayTimeOnIce": {
+          "total": "75:56",
+          "playerID": [
+            "4320548"
+          ]
+        },
+        "goals": {
+          "total": "7",
+          "playerID": [
+            "4271732"
+          ]
+        },
+        "faceoffsWon": {
+          "total": "169",
+          "playerID": [
+            "2590852"
+          ]
+        },
+        "plusMinus": {
+          "total": "14",
+          "playerID": [
+            "4063607"
+          ]
+        },
+        "shortHandedSaves": {
+          "total": "12",
+          "playerID": [
+            "4341584"
+          ]
+        },
+        "faceoffs": {
+          "total": "306",
+          "playerID": [
+            "4233566"
+          ]
+        },
+        "powerPlayGoals": {
+          "total": "3",
+          "playerID": [
+            "3899979"
+          ]
+        },
+        "takeaways": {
+          "total": "10",
+          "playerID": [
+            "4233566"
+          ]
+        },
+        "hits": {
+          "total": "135",
+          "playerID": [
+            "4391255"
+          ]
+        },
+        "penaltiesInMinutes": {
+          "total": "19",
+          "playerID": [
+            "4320548"
+          ]
+        },
+        "powerPlayAssists": {
+          "total": "8",
+          "playerID": [
+            "4320548"
+          ]
+        },
+        "shots": {
+          "total": "71",
+          "playerID": [
+            "4320548"
+          ]
+        },
+        "faceoffsLost": {
+          "total": "173",
+          "playerID": [
+            "4233566"
+          ]
+        },
+        "giveaways": {
+          "total": "27",
+          "playerID": [
+            "4063607"
+          ]
+        },
+        "shotsAgainst": {
+          "total": "417",
+          "playerID": [
+            "4341584"
+          ]
+        }
+      },
+      "teamStats": {
+        "faceoffsWon": "585",
+        "plusMinus": "+6",
+        "penalties": "78",
+        "shootoutGoals": "1",
+        "shortHandedSaves": "15",
+        "faceoffs": "1195",
+        "powerPlayGoals": "13",
+        "takeaways": "111",
+        "blockedShots": "281",
+        "hits": "596",
+        "penaltiesInMinutes": "188",
+        "powerPlayAssists": "24",
+        "shotsMissedNet": "268",
+        "saves": "517",
+        "assists": "117",
+        "shifts": "8318",
+        "shots": "568",
+        "goalsAgainst": "63",
+        "faceoffsLost": "610",
+        "giveaways": "284",
+        "goals": "67",
+        "shotsAgainst": "580"
+      }
+    },
+    {
+      "teamAbv": "VGK",
+      "teamCity": "Vegas",
+      "teamName": "Golden Knights",
+      "standings": {
+        "currentStreak": {
+          "result": "L",
+          "length": "1"
+        },
+        "goalsFor": "87",
+        "gamesPlayed": "23",
+        "resultDetail": {
+          "shootoutWin": "1",
+          "shootoutLoss": "1",
+          "regulationWin": "12",
+          "overtimeLoss": "2",
+          "overtimeWin": "1",
+          "regulationLoss": "6"
+        },
+        "OTL": "3",
+        "W": "14",
+        "record": "14-6-3",
+        "diff": "17",
+        "L": "6",
+        "goalsAgainst": "70",
+        "points": "31"
+      },
+      "espnLogo1": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/vgk.png",
+      "teamID": "30",
+      "conference": "Western",
+      "division": "Pacific",
+      "topPerformers": {
+        "penalties": {
+          "total": "8",
+          "playerID": [
+            "3943996"
+          ]
+        },
+        "shootoutGoals": {
+          "total": "1",
+          "playerID": [
+            "3648002"
+          ]
+        },
+        "blockedShots": {
+          "total": "54",
+          "playerID": [
+            "5202"
+          ]
+        },
+        "shotsMissedNet": {
+          "total": "21",
+          "playerID": [
+            "3648002"
+          ]
+        },
+        "saves": {
+          "total": "348",
+          "playerID": [
+            "3939714"
+          ]
+        },
+        "shortHandedTimeOnIce": {
+          "total": "50:18",
+          "playerID": [
+            "5202"
+          ]
+        },
+        "assists": {
+          "total": "26",
+          "playerID": [
+            "3648002"
+          ]
+        },
+        "timeOnIce": {
+          "total": "867:35",
+          "playerID": [
+            "3939714"
+          ]
+        },
+        "shifts": {
+          "total": "599",
+          "playerID": [
+            "3652964"
+          ]
+        },
+        "goalsAgainst": {
+          "total": "41",
+          "playerID": [
+            "3939714"
+          ]
+        },
+        "powerPlayTimeOnIce": {
+          "total": "72:36",
+          "playerID": [
+            "3648002"
+          ]
+        },
+        "goals": {
+          "total": "12",
+          "playerID": [
+            "4587588"
+          ]
+        },
+        "faceoffsWon": {
+          "total": "187",
+          "playerID": [
+            "2976844"
+          ]
+        },
+        "plusMinus": {
+          "total": "16",
+          "playerID": [
+            "5202"
+          ]
+        },
+        "shortHandedSaves": {
+          "total": "7",
+          "playerID": [
+            "3939714"
+          ]
+        },
+        "faceoffs": {
+          "total": "375",
+          "playerID": [
+            "3648002"
+          ]
+        },
+        "powerPlayGoals": {
+          "total": "6",
+          "playerID": [
+            "2976844"
+          ]
+        },
+        "takeaways": {
+          "total": "14",
+          "playerID": [
+            "3042055"
+          ]
+        },
+        "hits": {
+          "total": "76",
+          "playerID": [
+            "3941546"
+          ]
+        },
+        "penaltiesInMinutes": {
+          "total": "27",
+          "playerID": [
+            "3943996"
+          ]
+        },
+        "powerPlayAssists": {
+          "total": "11",
+          "playerID": [
+            "3648002"
+          ]
+        },
+        "shots": {
+          "total": "68",
+          "playerID": [
+            "4587588"
+          ]
+        },
+        "faceoffsLost": {
+          "total": "195",
+          "playerID": [
+            "3648002"
+          ]
+        },
+        "giveaways": {
+          "total": "34",
+          "playerID": [
+            "3042055"
+          ]
+        },
+        "shotsAgainst": {
+          "total": "389",
+          "playerID": [
+            "3939714"
+          ]
+        }
+      },
+      "teamStats": {
+        "faceoffsWon": "661",
+        "plusMinus": "+55",
+        "penalties": "54",
+        "shootoutGoals": "1",
+        "shortHandedSaves": "7",
+        "faceoffs": "1295",
+        "powerPlayGoals": "17",
+        "takeaways": "125",
+        "blockedShots": "396",
+        "hits": "473",
+        "penaltiesInMinutes": "129",
+        "powerPlayAssists": "34",
+        "shotsMissedNet": "253",
+        "saves": "595",
+        "assists": "150",
+        "shifts": "8357",
+        "shots": "698",
+        "goalsAgainst": "66",
+        "faceoffsLost": "634",
+        "giveaways": "348",
+        "goals": "86",
+        "shotsAgainst": "661"
+      }
+    },
+    {
+      "teamAbv": "WSH",
+      "teamCity": "Washington",
+      "teamName": "Capitals",
+      "standings": {
+        "currentStreak": {
+          "result": "W",
+          "length": "2"
+        },
+        "goalsFor": "90",
+        "gamesPlayed": "22",
+        "resultDetail": {
+          "shootoutWin": "0",
+          "shootoutLoss": "0",
+          "regulationWin": "14",
+          "overtimeLoss": "1",
+          "overtimeWin": "1",
+          "regulationLoss": "6"
+        },
+        "OTL": "1",
+        "W": "15",
+        "record": "15-6-1",
+        "diff": "30",
+        "L": "6",
+        "goalsAgainst": "60",
+        "points": "31"
+      },
+      "espnLogo1": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/wsh.png",
+      "teamID": "31",
+      "conference": "Eastern",
+      "division": "Metropolitan",
+      "topPerformers": {
+        "penalties": {
+          "total": "9",
+          "playerID": [
+            "3025616"
+          ]
+        },
+        "shootoutGoals": {
+          "total": "0",
+          "playerID": []
+        },
+        "blockedShots": {
+          "total": "48",
+          "playerID": [
+            "3025524"
+          ]
+        },
+        "shotsMissedNet": {
+          "total": "29",
+          "playerID": [
+            "4565246"
+          ]
+        },
+        "saves": {
+          "total": "298",
+          "playerID": [
+            "4272888"
+          ]
+        },
+        "shortHandedTimeOnIce": {
+          "total": "74:10",
+          "playerID": [
+            "4378677"
+          ]
+        },
+        "assists": {
+          "total": "24",
+          "playerID": [
+            "3899933"
+          ]
+        },
+        "timeOnIce": {
+          "total": "664:58",
+          "playerID": [
+            "4272888"
+          ]
+        },
+        "shifts": {
+          "total": "574",
+          "playerID": [
+            "5118"
+          ]
+        },
+        "goalsAgainst": {
+          "total": "30",
+          "playerID": [
+            "3095975"
+          ]
+        },
+        "powerPlayTimeOnIce": {
+          "total": "83:42",
+          "playerID": [
+            "3101"
+          ]
+        },
+        "goals": {
+          "total": "15",
+          "playerID": [
+            "3101"
+          ]
+        },
+        "faceoffsWon": {
+          "total": "193",
+          "playerID": [
+            "3899933"
+          ]
+        },
+        "plusMinus": {
+          "total": "18",
+          "playerID": [
+            "4352803"
+          ]
+        },
+        "shortHandedSaves": {
+          "total": "10",
+          "playerID": [
+            "3095975"
+          ]
+        },
+        "faceoffs": {
+          "total": "357",
+          "playerID": [
+            "3025616"
+          ]
+        },
+        "powerPlayGoals": {
+          "total": "4",
+          "playerID": [
+            "3101"
+          ]
+        },
+        "takeaways": {
+          "total": "10",
+          "playerID": [
+            "4024950"
+          ]
+        },
+        "hits": {
+          "total": "62",
+          "playerID": [
+            "2970615"
+          ]
+        },
+        "penaltiesInMinutes": {
+          "total": "28",
+          "playerID": [
+            "4197009"
+          ]
+        },
+        "powerPlayAssists": {
+          "total": "9",
+          "playerID": [
+            "3899933"
+          ]
+        },
+        "shots": {
+          "total": "64",
+          "playerID": [
+            "4565246"
+          ]
+        },
+        "faceoffsLost": {
+          "total": "186",
+          "playerID": [
+            "3025616"
+          ]
+        },
+        "giveaways": {
+          "total": "34",
+          "playerID": [
+            "5118"
+          ]
+        },
+        "shotsAgainst": {
+          "total": "325",
+          "playerID": [
+            "4272888"
+          ]
+        }
+      },
+      "teamStats": {
+        "faceoffsWon": "642",
+        "plusMinus": "+140",
+        "penalties": "84",
+        "shootoutGoals": "0",
+        "shortHandedSaves": "19",
+        "faceoffs": "1293",
+        "powerPlayGoals": "12",
+        "takeaways": "102",
+        "blockedShots": "390",
+        "hits": "470",
+        "penaltiesInMinutes": "192",
+        "powerPlayAssists": "22",
+        "shotsMissedNet": "327",
+        "saves": "560",
+        "assists": "147",
+        "shifts": "8077",
+        "shots": "636",
+        "goalsAgainst": "57",
+        "faceoffsLost": "651",
+        "giveaways": "331",
+        "goals": "90",
+        "shotsAgainst": "616"
+      }
+    },
+    {
+      "teamAbv": "WPG",
+      "teamCity": "Winnipeg",
+      "teamName": "Jets",
+      "standings": {
+        "currentStreak": {
+          "result": "L",
+          "length": "1"
+        },
+        "goalsFor": "90",
+        "gamesPlayed": "23",
+        "resultDetail": {
+          "shootoutWin": "0",
+          "shootoutLoss": "0",
+          "regulationWin": "15",
+          "overtimeLoss": "0",
+          "overtimeWin": "3",
+          "regulationLoss": "5"
+        },
+        "OTL": "0",
+        "W": "18",
+        "record": "18-5-0",
+        "diff": "34",
+        "L": "5",
+        "goalsAgainst": "56",
+        "points": "36"
+      },
+      "espnLogo1": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/wpg.png",
+      "teamID": "32",
+      "conference": "Western",
+      "division": "Central",
+      "topPerformers": {
+        "penalties": {
+          "total": "9",
+          "playerID": [
+            "2562632"
+          ]
+        },
+        "shootoutGoals": {
+          "total": "0",
+          "playerID": []
+        },
+        "blockedShots": {
+          "total": "40",
+          "playerID": [
+            "3042016"
+          ]
+        },
+        "shotsMissedNet": {
+          "total": "28",
+          "playerID": [
+            "3988847"
+          ]
+        },
+        "saves": {
+          "total": "487",
+          "playerID": [
+            "3020225"
+          ]
+        },
+        "shortHandedTimeOnIce": {
+          "total": "56:46",
+          "playerID": [
+            "2590861"
+          ]
+        },
+        "assists": {
+          "total": "18",
+          "playerID": [
+            "3042016"
+          ]
+        },
+        "timeOnIce": {
+          "total": "1079:27",
+          "playerID": [
+            "3020225"
+          ]
+        },
+        "shifts": {
+          "total": "636",
+          "playerID": [
+            "2590861"
+          ]
+        },
+        "goalsAgainst": {
+          "total": "38",
+          "playerID": [
+            "3020225"
+          ]
+        },
+        "powerPlayTimeOnIce": {
+          "total": "71:41",
+          "playerID": [
+            "3042016"
+          ]
+        },
+        "goals": {
+          "total": "13",
+          "playerID": [
+            "3899952"
+          ]
+        },
+        "faceoffsWon": {
+          "total": "192",
+          "playerID": [
+            "2563066"
+          ]
+        },
+        "plusMinus": {
+          "total": "16",
+          "playerID": [
+            "2563066"
+          ]
+        },
+        "shortHandedSaves": {
+          "total": "19",
+          "playerID": [
+            "3020225"
+          ]
+        },
+        "faceoffs": {
+          "total": "409",
+          "playerID": [
+            "2563066"
+          ]
+        },
+        "powerPlayGoals": {
+          "total": "4",
+          "playerID": [
+            "3899952"
+          ]
+        },
+        "takeaways": {
+          "total": "14",
+          "playerID": [
+            "4233878"
+          ]
+        },
+        "hits": {
+          "total": "47",
+          "playerID": [
+            "5511"
+          ]
+        },
+        "penaltiesInMinutes": {
+          "total": "21",
+          "playerID": [
+            "2562632"
+          ]
+        },
+        "powerPlayAssists": {
+          "total": "8",
+          "playerID": [
+            "3042016"
+          ]
+        },
+        "shots": {
+          "total": "79",
+          "playerID": [
+            "3899952"
+          ]
+        },
+        "faceoffsLost": {
+          "total": "217",
+          "playerID": [
+            "2563066"
+          ]
+        },
+        "giveaways": {
+          "total": "33",
+          "playerID": [
+            "2562632"
+          ]
+        },
+        "shotsAgainst": {
+          "total": "525",
+          "playerID": [
+            "3020225"
+          ]
+        }
+      },
+      "teamStats": {
+        "faceoffsWon": "654",
+        "plusMinus": "+115",
+        "penalties": "73",
+        "shootoutGoals": "0",
+        "shortHandedSaves": "21",
+        "faceoffs": "1333",
+        "powerPlayGoals": "23",
+        "takeaways": "126",
+        "blockedShots": "338",
+        "hits": "423",
+        "penaltiesInMinutes": "190",
+        "powerPlayAssists": "46",
+        "shotsMissedNet": "297",
+        "saves": "629",
+        "assists": "148",
+        "shifts": "8683",
+        "shots": "680",
+        "goalsAgainst": "52",
+        "faceoffsLost": "679",
+        "giveaways": "340",
+        "goals": "90",
+        "shotsAgainst": "681"
+      }
+    },
+    {
+      "teamAbv": "UTA",
+      "teamCity": "Utah",
+      "teamName": "Hockey Club",
+      "standings": {
+        "currentStreak": {
+          "result": "W",
+          "length": "1"
+        },
+        "goalsFor": "60",
+        "gamesPlayed": "22",
+        "resultDetail": {
+          "shootoutWin": "0",
+          "shootoutLoss": "0",
+          "regulationWin": "5",
+          "overtimeLoss": "3",
+          "overtimeWin": "4",
+          "regulationLoss": "10"
+        },
+        "OTL": "3",
+        "W": "9",
+        "record": "9-10-3",
+        "diff": "-9",
+        "L": "10",
+        "goalsAgainst": "69",
+        "points": "21"
+      },
+      "espnLogo1": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/utah.png",
+      "teamID": "33",
+      "conference": "Western",
+      "division": "Central",
+      "topPerformers": {
+        "penalties": {
+          "total": "14",
+          "playerID": [
+            "5080177"
+          ]
+        },
+        "shootoutGoals": {
+          "total": "0",
+          "playerID": []
+        },
+        "blockedShots": {
+          "total": "54",
+          "playerID": [
+            "4991"
+          ]
+        },
+        "shotsMissedNet": {
+          "total": "41",
+          "playerID": [
+            "4874723"
+          ]
+        },
+        "saves": {
+          "total": "291",
+          "playerID": [
+            "4063522"
+          ]
+        },
+        "shortHandedTimeOnIce": {
+          "total": "87:30",
+          "playerID": [
+            "4024868"
+          ]
+        },
+        "assists": {
+          "total": "17",
+          "playerID": [
+            "3114770"
+          ]
+        },
+        "timeOnIce": {
+          "total": "714:29",
+          "playerID": [
+            "4063522"
+          ]
+        },
+        "shifts": {
+          "total": "698",
+          "playerID": [
+            "4024868"
+          ]
+        },
+        "goalsAgainst": {
+          "total": "43",
+          "playerID": [
+            "4063522"
+          ]
+        },
+        "powerPlayTimeOnIce": {
+          "total": "76:40",
+          "playerID": [
+            "4024857"
+          ]
+        },
+        "goals": {
+          "total": "10",
+          "playerID": [
+            "4874723"
+          ]
+        },
+        "faceoffsWon": {
+          "total": "170",
+          "playerID": [
+            "4352699"
+          ]
+        },
+        "plusMinus": {
+          "total": "7",
+          "playerID": [
+            "4874723"
+          ]
+        },
+        "shortHandedSaves": {
+          "total": "9",
+          "playerID": [
+            "4063522"
+          ]
+        },
+        "faceoffs": {
+          "total": "291",
+          "playerID": [
+            "4352699"
+          ]
+        },
+        "powerPlayGoals": {
+          "total": "4",
+          "playerID": [
+            "4874723"
+          ]
+        },
+        "takeaways": {
+          "total": "12",
+          "playerID": [
+            "4991"
+          ]
+        },
+        "hits": {
+          "total": "63",
+          "playerID": [
+            "4755695"
+          ]
+        },
+        "penaltiesInMinutes": {
+          "total": "42",
+          "playerID": [
+            "5080177"
+          ]
+        },
+        "powerPlayAssists": {
+          "total": "4",
+          "playerID": [
+            "4874723"
+          ]
+        },
+        "shots": {
+          "total": "56",
+          "playerID": [
+            "4874723"
+          ]
+        },
+        "faceoffsLost": {
+          "total": "121",
+          "playerID": [
+            "4352699"
+          ]
+        },
+        "giveaways": {
+          "total": "38",
+          "playerID": [
+            "4024868"
+          ]
+        },
+        "shotsAgainst": {
+          "total": "334",
+          "playerID": [
+            "4063522"
+          ]
+        }
+      },
+      "teamStats": {
+        "faceoffsWon": "688",
+        "plusMinus": "-11",
+        "penalties": "99",
+        "shootoutGoals": "0",
+        "shortHandedSaves": "12",
+        "faceoffs": "1304",
+        "powerPlayGoals": "11",
+        "takeaways": "116",
+        "blockedShots": "315",
+        "hits": "362",
+        "penaltiesInMinutes": "267",
+        "powerPlayAssists": "22",
+        "shotsMissedNet": "358",
+        "saves": "563",
+        "assists": "108",
+        "shifts": "8853",
+        "shots": "579",
+        "goalsAgainst": "66",
+        "faceoffsLost": "616",
+        "giveaways": "363",
+        "goals": "60",
+        "shotsAgainst": "629"
+      }
+    }
+  ]
+}

@@ -30,7 +30,7 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
     public Promise generate() {
         return servicePromise.get(index, 6_000L)
                 .append("main", (_, _, _) -> {
-                    Util.logConsole("Hello");
+                    //Util.logConsole("Hello");
                 });
     }
 }
