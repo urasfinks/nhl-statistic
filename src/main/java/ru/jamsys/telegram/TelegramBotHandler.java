@@ -5,6 +5,7 @@ import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 import org.telegram.telegrambots.meta.api.objects.commands.scope.BotCommandScopeDefault;
@@ -44,7 +45,7 @@ public class TelegramBotHandler extends TelegramLongPollingBot {
 
                     handler(msg.getCallbackQuery().getMessage().getChatId(), msg);
 
-                } else if (msg.hasMessage() && msg.getMessage().getFrom().getId() == 290029195) {
+                } else if (msg.hasMessage()) {
                     handler(msg.getMessage().getChatId(), msg);
                 }
             }
@@ -54,11 +55,25 @@ public class TelegramBotHandler extends TelegramLongPollingBot {
     }
 
     @SuppressWarnings("unused")
-    public void removeMessage(long idChat, int idMessage) {
+    public void removeMessage(Update msg) {
         // Удаляем контекстное меню, что ранее нарисовали
         DeleteMessage editMessage = new DeleteMessage();
-        editMessage.setChatId(idChat);
-        editMessage.setMessageId(idMessage);
+        editMessage.setChatId(getIdChat(msg));
+        editMessage.setMessageId(getIdMessage(msg));
+        try {
+            execute(editMessage);
+        } catch (Throwable th) {
+            App.error(th);
+        }
+    }
+
+    @SuppressWarnings("unused")
+    public void changeMessage(Update msg, String data) {
+        // Удаляем контекстное меню, что ранее нарисовали
+        EditMessageText editMessage = new EditMessageText();
+        editMessage.setChatId(getIdChat(msg));
+        editMessage.setMessageId(getIdMessage(msg));
+        editMessage.setText(data);
         try {
             execute(editMessage);
         } catch (Throwable th) {
@@ -72,6 +87,16 @@ public class TelegramBotHandler extends TelegramLongPollingBot {
             return msg.getCallbackQuery().getMessage().getMessageId();
         } else if (msg.hasMessage()) {
             return msg.getMessage().getMessageId();
+        }
+        return null;
+    }
+
+    @SuppressWarnings("unused")
+    public Long getIdChat(Update msg) {
+        if (msg.hasCallbackQuery()) {
+            return msg.getCallbackQuery().getMessage().getChatId();
+        } else if (msg.hasMessage()) {
+            return msg.getMessage().getChatId();
         }
         return null;
     }
@@ -109,9 +134,6 @@ public class TelegramBotHandler extends TelegramLongPollingBot {
         message.setChatId(idChat);
         message.setText(data);
         if (listButtons != null && !listButtons.isEmpty()) {
-//            new ArrayListBuilder<Button>()
-//                    .append(new Button("Привет", "р1"))
-//                    .append(new Button("Страна", "р2"))
             addMessageButton(message, listButtons);
         }
         execute(message);
