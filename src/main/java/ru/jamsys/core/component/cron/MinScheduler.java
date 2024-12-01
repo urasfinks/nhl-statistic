@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.extension.UniqueClassName;
 import ru.jamsys.core.flat.template.cron.release.Cron1m;
-import ru.jamsys.core.flat.util.Util;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
 
