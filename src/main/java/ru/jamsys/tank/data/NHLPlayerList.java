@@ -1,4 +1,4 @@
-package ru.jamsys;
+package ru.jamsys.tank.data;
 
 import ru.jamsys.core.flat.util.UtilFileResource;
 import ru.jamsys.core.flat.util.UtilJson;

@@ -1,12 +1,18 @@
 package ru.jamsys.core.component;
 
+import lombok.Getter;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
-import ru.jamsys.TelegramBotHandler;
+import ru.jamsys.core.component.manager.ManagerExpiration;
+import ru.jamsys.core.component.manager.item.Session;
 import ru.jamsys.core.extension.LifeCycleComponent;
+import ru.jamsys.telegram.TelegramBotHandler;
+import ru.jamsys.telegram.command.TelegramContext;
+
+import java.util.Map;
 
 @SuppressWarnings("unused")
 @Component
@@ -14,11 +20,22 @@ import ru.jamsys.core.extension.LifeCycleComponent;
 public class TelegramBotComponent implements LifeCycleComponent {
 
     private final TelegramBotsApi api;
+
     private final SecurityComponent securityComponent;
 
-    public TelegramBotComponent(SecurityComponent securityComponent) throws TelegramApiException {
+    @Getter
+    private final Map<Long, TelegramContext> map;
+
+    @Getter
+    private TelegramBotHandler telegramBotHandler;
+
+    public TelegramBotComponent(
+            SecurityComponent securityComponent,
+            ManagerExpiration managerExpiration
+    ) throws TelegramApiException {
         this.securityComponent = securityComponent;
         api = new TelegramBotsApi(DefaultBotSession.class);
+        map = new Session<>("TelegramContext", Long.class, 60_000L);
     }
 
     @Override
@@ -29,7 +46,8 @@ public class TelegramBotComponent implements LifeCycleComponent {
     @Override
     public void run() {
         try {
-            api.registerBot(new TelegramBotHandler(new String(securityComponent.get("telegram.api.token"))));
+            telegramBotHandler = new TelegramBotHandler(new String(securityComponent.get("telegram.api.token")));
+            api.registerBot(telegramBotHandler);
         } catch (TelegramApiException e) {
             throw new RuntimeException(e);
         }

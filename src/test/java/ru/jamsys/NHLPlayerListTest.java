@@ -2,6 +2,7 @@ package ru.jamsys;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import ru.jamsys.tank.data.NHLPlayerList;
 
 import java.util.List;
 import java.util.Map;

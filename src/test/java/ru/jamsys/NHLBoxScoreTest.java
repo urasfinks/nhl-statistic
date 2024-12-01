@@ -2,6 +2,7 @@ package ru.jamsys;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import ru.jamsys.tank.data.NHLBoxScore;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
