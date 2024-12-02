@@ -11,7 +11,6 @@ import ru.jamsys.core.extension.http.ServletHandler;
 import ru.jamsys.core.flat.util.tank.UtilTank01;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
-import ru.jamsys.core.resource.http.client.HttpClientImpl;
 import ru.jamsys.core.web.http.HttpHandler;
 
 
