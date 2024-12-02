@@ -2,6 +2,8 @@ package ru.jamsys.tank.data;
 
 import ru.jamsys.core.flat.util.UtilFileResource;
 import ru.jamsys.core.flat.util.UtilJson;
+import ru.jamsys.core.flat.util.tank.UtilTank01;
+import ru.jamsys.core.promise.Promise;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -9,6 +11,10 @@ import java.util.List;
 import java.util.Map;
 
 public class NHLPlayerList {
+
+    public static void promiseExtensionGetPlayerList(Promise promiseSource) {
+        UtilTank01.cacheRequest(promiseSource, "/getNHLPlayerList");
+    }
 
     public static String getExample() throws IOException {
         return UtilFileResource.getAsString("example/player_id.json");

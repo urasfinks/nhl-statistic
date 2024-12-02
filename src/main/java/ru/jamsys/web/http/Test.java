@@ -8,7 +8,7 @@ import ru.jamsys.core.App;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.extension.exception.JsonSchemaException;
 import ru.jamsys.core.extension.http.ServletHandler;
-import ru.jamsys.core.flat.util.tank.UtilTank;
+import ru.jamsys.core.flat.util.tank.UtilTank01;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
 import ru.jamsys.core.resource.http.client.HttpClientImpl;
@@ -32,10 +32,10 @@ public class Test implements PromiseGenerator, HttpHandler {
     @Override
     public Promise generate() {
         return servicePromise.get(index, 12_000L)
-                .extension(promise -> UtilTank.cacheRequest(promise, new HttpClientImpl().setUrl("http://localhost/1.json")))
+                //.extension(promise -> UtilTank01.cacheRequest(promise, new HttpClientImpl().setUrl("http://localhost/1.json")))
                 .then("check", (_, _, promise) -> {
                     ServletHandler servletHandler = promise.getRepositoryMapClass(ServletHandler.class);
-                    UtilTank.Context context = promise.getRepositoryMapClass(UtilTank.Context.class);
+                    UtilTank01.Context context = promise.getRepositoryMapClass(UtilTank01.Context.class);
                     servletHandler.setResponseBody(context.getData());
                 })
                 .extension(Test::addErrorHandler);

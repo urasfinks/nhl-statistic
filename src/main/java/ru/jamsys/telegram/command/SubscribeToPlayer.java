@@ -1,91 +1,132 @@
 package ru.jamsys.telegram.command;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
+import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.jamsys.core.App;
+import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.component.TelegramBotComponent;
 import ru.jamsys.core.flat.util.UtilTelegram;
+import ru.jamsys.core.flat.util.tank.UtilTank01;
 import ru.jamsys.core.flat.util.telegram.Button;
 import ru.jamsys.tank.data.NHLPlayerList;
 import ru.jamsys.telegram.TelegramBotHandler;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+
 public class SubscribeToPlayer implements TelegramContext {
 
+    @Getter
+    @Setter
+    @Accessors(chain = true)
     private long idChat;
 
-    TelegramBotHandler telegramBotHandler = App.get(TelegramBotComponent.class).getTelegramBotHandler();
+    private final TelegramBotHandler handler = App.get(TelegramBotComponent.class).getHandler();
 
-    @Override
-    public long getIdChat() {
-        return idChat;
-    }
-
-    @Override
-    public TelegramContext setIdChat(long idChat) {
-        this.idChat = idChat;
-        return this;
-    }
-
-    String player = null;
+    @Getter
+    private String player = null;
 
     @Override
     public void onNext(Update msg) {
         try {
             if (msg.hasMessage() && player == null) {
-                List<Map<String, Object>> byName = NHLPlayerList.findByName(msg.getMessage().getText(), NHLPlayerList.getExample());
-                if (byName.isEmpty()) {
-                    notFoundPlayer();
-                    return;
-                }
                 player = msg.getMessage().getText();
-                int counter = 0;
-                List<Button> buttons = new ArrayList<>();
-                for (Map<String, Object> player : byName) {
-                    buttons.add(new Button(
-                            player.get("longName").toString() + " (" + player.get("team").toString() + ")",
-                            player.get("playerID").toString())
-                    );
-                    counter++;
-                    if (counter > 2) {
-                        break;
-                    }
-                }
-                buttons.add(new Button("Cancel", "cancel"));
-                telegramBotHandler.send(UtilTelegram.message(idChat, "Choose Player:", buttons));
+                findPlayerByName();
             } else if (msg.hasCallbackQuery()) {
-                String data = UtilTelegram.getData(msg);
-                if (data == null) {
+                player = UtilTelegram.getData(msg);
+                if (player == null) {
                     return;
                 }
-                if (data.equals("cancel")) {
-                    telegramBotHandler.send(UtilTelegram.removeMessage(msg));
+                if (player.equals("cancel")) {
+                    System.out.println("REMOVE");
+                    handler.send(UtilTelegram.removeMessage(msg));
                     return;
                 }
-                Map<String, Object> player = NHLPlayerList.findById(data, NHLPlayerList.getExample());
-                if (player == null || player.isEmpty()) {
-                    telegramBotHandler.send(UtilTelegram.editMessage(msg, "Not found"));
-                    return;
-                }
-                telegramBotHandler.send(UtilTelegram.editMessage(
-                        msg,
-                        player.get("longName").toString() + " (" + player.get("team").toString() + ")")
-                );
+                findPlayerById(msg);
             }
         } catch (Throwable th) {
             App.error(th);
         }
     }
 
-    private void notFoundPlayer() {
-        telegramBotHandler.send(UtilTelegram.message(idChat, "Player's not found", null));
+    private void findPlayerById(Update msg) {
+        App.get(ServicePromise.class).get(getClass(), 5_000L)
+                .extension(promise -> promise.setRepositoryMapClass(SubscribeToPlayer.class, this))
+                .extension(promise -> promise.setRepositoryMapClass(Update.class, msg))
+                .extension(NHLPlayerList::promiseExtensionGetPlayerList)
+                .then("handler", (_, _, promise) -> {
+                    UtilTank01.Context context = promise.getRepositoryMapClass(UtilTank01.Context.class);
+                    SubscribeToPlayer self = promise.getRepositoryMapClass(SubscribeToPlayer.class);
+                    Update origMessage = promise.getRepositoryMapClass(Update.class);
+
+                    Map<String, Object> player = NHLPlayerList.findById(self.getPlayer(), context.getData());
+                    if (player == null || player.isEmpty()) {
+                        self.send(UtilTelegram.editMessage(origMessage, "Not found"));
+                        return;
+                    }
+                    self.send(UtilTelegram.editMessage(
+                            origMessage,
+                            player.get("longName").toString() + " (" + player.get("team").toString() + ")")
+                    );
+                })
+                .run();
+    }
+
+    private void findPlayerByName() {
+        App.get(ServicePromise.class).get(getClass(), 5_000L)
+                .extension(promise -> promise.setRepositoryMapClass(SubscribeToPlayer.class, this))
+                .extension(NHLPlayerList::promiseExtensionGetPlayerList)
+                .then("handler", (_, _, promise) -> {
+                    UtilTank01.Context context = promise.getRepositoryMapClass(UtilTank01.Context.class);
+                    SubscribeToPlayer self = promise.getRepositoryMapClass(SubscribeToPlayer.class);
+                    List<Map<String, Object>> userList = NHLPlayerList.findByName(
+                            self.getPlayer(),
+                            context.getData()
+                    );
+                    if (userList.isEmpty()) {
+                        self.send("Player's not found", null);
+                        return;
+                    }
+                    int counter = 0;
+                    List<Button> buttons = new ArrayList<>();
+                    for (Map<String, Object> player : userList) {
+                        buttons.add(new Button(
+                                player.get("longName").toString() + " (" + player.get("team").toString() + ")",
+                                player.get("playerID").toString())
+                        );
+                        counter++;
+                        if (counter > 2) {
+                            break;
+                        }
+                    }
+                    buttons.add(new Button("Cancel", "cancel"));
+                    self.send("Choose Player:", buttons);
+                })
+                .run();
+    }
+
+    public void send(String data, List<Button> buttons) {
+        handler.send(UtilTelegram.message(idChat, data, buttons));
+    }
+
+    public <T extends Serializable, Method extends BotApiMethod<T>> T send(Method method) {
+        return handler.send(method);
     }
 
     @Override
     public void start() {
-        telegramBotHandler.send(UtilTelegram.message(idChat, "Enter the player's name", null));
+        send("Enter the player's name", null);
+    }
+
+    @Override
+    public void finish() {
+
     }
 
 }

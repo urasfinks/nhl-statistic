@@ -50,9 +50,12 @@ public class TelegramBotHandler extends TelegramLongPollingBot {
             return;
         }
         Map<Long, TelegramContext> map = App.get(TelegramBotComponent.class).getMap();
-        if (map.containsKey(idChat)) { //Мы имеем контекст
-            map.get(idChat).onNext(msg);
-        } else if (msg.hasMessage() && msg.getMessage().getText().startsWith("/")) {
+
+        // Если что-то начинается на "/" - это всё конец всем предыдущим
+        if (msg.hasMessage() && msg.getMessage().getText().startsWith("/")) {
+            if (map.containsKey(idChat)) {
+                map.get(idChat).finish();
+            }
             TelegramCommand telegramCommand = TelegramCommand.valueOfCommand(msg.getMessage().getText());
             if (telegramCommand != null) {
                 TelegramContext telegramContext = telegramCommand.getTelegramContext(idChat);
@@ -65,6 +68,10 @@ public class TelegramBotHandler extends TelegramLongPollingBot {
                         null
                 ));
             }
+        } else if (map.containsKey(idChat)) {
+            map.get(idChat).onNext(msg);
+        } else if (msg.hasCallbackQuery()) {
+            send(UtilTelegram.message(idChat, "Operation canceled, please start over", null));
         }
     }
 

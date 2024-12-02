@@ -3,10 +3,14 @@ package ru.jamsys.core.flat.util.tank;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import ru.jamsys.core.App;
+import ru.jamsys.core.component.SecurityComponent;
+import ru.jamsys.core.component.ServiceProperty;
 import ru.jamsys.core.jt.JTHttpCache;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.resource.http.HttpResource;
 import ru.jamsys.core.resource.http.client.HttpClient;
+import ru.jamsys.core.resource.http.client.HttpClientImpl;
 import ru.jamsys.core.resource.http.client.HttpResponse;
 import ru.jamsys.core.resource.jdbc.JdbcRequest;
 import ru.jamsys.core.resource.jdbc.JdbcResource;
@@ -14,7 +18,7 @@ import ru.jamsys.core.resource.jdbc.JdbcResource;
 import java.util.List;
 import java.util.Map;
 
-public class UtilTank {
+public class UtilTank01 {
 
     @Getter
     @Setter
@@ -25,8 +29,18 @@ public class UtilTank {
         boolean cache = false;
     }
 
-    public static void request(Promise refPromise, HttpClient httpClient) {
-        refPromise.setRepositoryMapClass(Context.class, new Context().setHttpClient(httpClient));
+    private static HttpClient getHttpClient(String uri) {
+        ServiceProperty serviceProperty = App.get(ServiceProperty.class);
+        SecurityComponent securityComponent = App.get(SecurityComponent.class);
+        return new HttpClientImpl()
+                .setUrl(serviceProperty.get("rapidapi.host") + uri)
+                .setRequestHeader("x-rapidapi-key", new String(securityComponent.get("rapidapi.tank01.key")))
+                .setRequestHeader("x-rapidapi-host", serviceProperty.get("rapidapi.tank01.host"))
+                ;
+    }
+
+    public static void request(Promise refPromise, String uri) {
+        refPromise.setRepositoryMapClass(Context.class, new Context().setHttpClient(getHttpClient(uri)));
         refPromise
                 .thenWithResource("request", HttpResource.class, (_, _, promise, httpResource) -> {
                     Context context = promise.getRepositoryMapClass(Context.class);
@@ -36,8 +50,8 @@ public class UtilTank {
         ;
     }
 
-    public static void cacheRequest(Promise refPromise, HttpClient httpClient) {
-        refPromise.setRepositoryMapClass(Context.class, new Context().setHttpClient(httpClient));
+    public static void cacheRequest(Promise refPromise, String uri) {
+        refPromise.setRepositoryMapClass(Context.class, new Context().setHttpClient(getHttpClient(uri)));
         refPromise
                 .thenWithResource("cacheSelect", JdbcResource.class, (_, _, promise, jdbcResource) -> {
                     Context context = promise.getRepositoryMapClass(Context.class);

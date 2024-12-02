@@ -27,7 +27,7 @@ public class TelegramBotComponent implements LifeCycleComponent {
     private final Map<Long, TelegramContext> map;
 
     @Getter
-    private TelegramBotHandler telegramBotHandler;
+    private TelegramBotHandler handler;
 
     public TelegramBotComponent(
             SecurityComponent securityComponent,
@@ -46,8 +46,8 @@ public class TelegramBotComponent implements LifeCycleComponent {
     @Override
     public void run() {
         try {
-            telegramBotHandler = new TelegramBotHandler(new String(securityComponent.get("telegram.api.token")));
-            api.registerBot(telegramBotHandler);
+            handler = new TelegramBotHandler(new String(securityComponent.get("telegram.api.token")));
+            api.registerBot(handler);
         } catch (TelegramApiException e) {
             throw new RuntimeException(e);
         }
