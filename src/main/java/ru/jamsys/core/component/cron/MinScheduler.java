@@ -14,7 +14,6 @@ import ru.jamsys.core.promise.PromiseGenerator;
 @Lazy
 public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
 
-
     private final ServicePromise servicePromise;
 
     @Setter
@@ -32,4 +31,5 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                     //Util.logConsole("Hello");
                 });
     }
+
 }
