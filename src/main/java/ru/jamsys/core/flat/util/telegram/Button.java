@@ -1,4 +1,4 @@
-package ru.jamsys.telegram;
+package ru.jamsys.core.flat.util.telegram;
 
 import lombok.Getter;
 

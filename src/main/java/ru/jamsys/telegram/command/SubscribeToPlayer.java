@@ -3,8 +3,9 @@ package ru.jamsys.telegram.command;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.jamsys.core.App;
 import ru.jamsys.core.component.TelegramBotComponent;
+import ru.jamsys.core.flat.util.UtilTelegram;
+import ru.jamsys.core.flat.util.telegram.Button;
 import ru.jamsys.tank.data.NHLPlayerList;
-import ru.jamsys.telegram.Button;
 import ru.jamsys.telegram.TelegramBotHandler;
 
 import java.util.ArrayList;
@@ -53,52 +54,38 @@ public class SubscribeToPlayer implements TelegramContext {
                     }
                 }
                 buttons.add(new Button("Cancel", "cancel"));
-                foundPlayer(buttons);
+                telegramBotHandler.send(UtilTelegram.message(idChat, "Choose Player:", buttons));
             } else if (msg.hasCallbackQuery()) {
-                String data = telegramBotHandler.getData(msg);
+                String data = UtilTelegram.getData(msg);
+                if (data == null) {
+                    return;
+                }
                 if (data.equals("cancel")) {
-                    telegramBotHandler.removeMessage(msg);
+                    telegramBotHandler.send(UtilTelegram.removeMessage(msg));
                     return;
                 }
                 Map<String, Object> player = NHLPlayerList.findById(data, NHLPlayerList.getExample());
                 if (player == null || player.isEmpty()) {
-                    telegramBotHandler.changeMessage(msg, "Not found");
+                    telegramBotHandler.send(UtilTelegram.editMessage(msg, "Not found"));
                     return;
                 }
-                telegramBotHandler.changeMessage(
+                telegramBotHandler.send(UtilTelegram.editMessage(
                         msg,
-                        player.get("longName").toString() + " (" + player.get("team").toString() + ")"
+                        player.get("longName").toString() + " (" + player.get("team").toString() + ")")
                 );
-
             }
         } catch (Throwable th) {
             App.error(th);
         }
     }
 
-    private void foundPlayer(List<Button> buttons) {
-        try {
-            telegramBotHandler.send(idChat, "Choose Player:", buttons);
-        } catch (Throwable th) {
-            App.error(th);
-        }
-    }
-
     private void notFoundPlayer() {
-        try {
-            telegramBotHandler.send(idChat, "Player's not found", null);
-        } catch (Throwable th) {
-            App.error(th);
-        }
+        telegramBotHandler.send(UtilTelegram.message(idChat, "Player's not found", null));
     }
 
     @Override
     public void start() {
-        try {
-            telegramBotHandler.send(idChat, "Enter the player's name", null);
-        } catch (Throwable th) {
-            App.error(th);
-        }
+        telegramBotHandler.send(UtilTelegram.message(idChat, "Enter the player's name", null));
     }
 
 }
