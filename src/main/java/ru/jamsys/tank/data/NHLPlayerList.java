@@ -13,7 +13,7 @@ import java.util.Map;
 public class NHLPlayerList {
 
     public static void promiseExtensionGetPlayerList(Promise promiseSource) {
-        UtilTank01.cacheRequest(promiseSource, "/getNHLPlayerList");
+        UtilTank01.cacheRequest(promiseSource, _ -> "/getNHLPlayerList");
     }
 
     public static String getExample() throws IOException {

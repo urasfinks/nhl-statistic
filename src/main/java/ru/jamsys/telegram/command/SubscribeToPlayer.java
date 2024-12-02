@@ -12,6 +12,7 @@ import ru.jamsys.core.flat.util.UtilTelegram;
 import ru.jamsys.core.flat.util.tank.UtilTank01;
 import ru.jamsys.core.flat.util.telegram.Button;
 import ru.jamsys.tank.data.NHLPlayerList;
+import ru.jamsys.tank.data.NHLTeamSchedule;
 import ru.jamsys.telegram.TelegramBotHandler;
 
 import java.io.Serializable;
@@ -44,36 +45,44 @@ public class SubscribeToPlayer implements TelegramContext {
                     return;
                 }
                 if (player.equals("cancel")) {
-                    System.out.println("REMOVE");
                     handler.send(UtilTelegram.removeMessage(msg));
                     return;
                 }
-                findPlayerById(msg);
+                findScheduledGames(msg);
             }
         } catch (Throwable th) {
             App.error(th);
         }
     }
 
-    private void findPlayerById(Update msg) {
+    private void findScheduledGames(Update msg) {
         App.get(ServicePromise.class).get(getClass(), 5_000L)
                 .extension(promise -> promise.setRepositoryMapClass(SubscribeToPlayer.class, this))
                 .extension(promise -> promise.setRepositoryMapClass(Update.class, msg))
                 .extension(NHLPlayerList::promiseExtensionGetPlayerList)
-                .then("handler", (_, _, promise) -> {
+                .then("findPlayerById", (_, _, promise) -> {
                     UtilTank01.Context context = promise.getRepositoryMapClass(UtilTank01.Context.class);
                     SubscribeToPlayer self = promise.getRepositoryMapClass(SubscribeToPlayer.class);
                     Update origMessage = promise.getRepositoryMapClass(Update.class);
-
                     Map<String, Object> player = NHLPlayerList.findById(self.getPlayer(), context.getData());
                     if (player == null || player.isEmpty()) {
                         self.send(UtilTelegram.editMessage(origMessage, "Not found"));
+                        promise.skipAllStep();
                         return;
                     }
                     self.send(UtilTelegram.editMessage(
                             origMessage,
                             player.get("longName").toString() + " (" + player.get("team").toString() + ")")
                     );
+                    promise.setRepositoryMap("teamId", player.get("teamID"));
+                    promise.setRepositoryMap("season", "2025");
+                })
+                .extension(NHLTeamSchedule::promiseExtensionGetTeamSchedule)
+                .then("findScheduledGames", (_, _, promise) -> {
+                    UtilTank01.Context context = promise.getRepositoryMapClass(UtilTank01.Context.class);
+                    SubscribeToPlayer self = promise.getRepositoryMapClass(SubscribeToPlayer.class);
+                    List<Map<String, Object>> game = NHLTeamSchedule.findGame(context.getData());
+                    self.send("Scheduled: " + game.size() + " games", null);
                 })
                 .run();
     }
@@ -82,7 +91,7 @@ public class SubscribeToPlayer implements TelegramContext {
         App.get(ServicePromise.class).get(getClass(), 5_000L)
                 .extension(promise -> promise.setRepositoryMapClass(SubscribeToPlayer.class, this))
                 .extension(NHLPlayerList::promiseExtensionGetPlayerList)
-                .then("handler", (_, _, promise) -> {
+                .then("findPlayerByName", (_, _, promise) -> {
                     UtilTank01.Context context = promise.getRepositoryMapClass(UtilTank01.Context.class);
                     SubscribeToPlayer self = promise.getRepositoryMapClass(SubscribeToPlayer.class);
                     List<Map<String, Object>> userList = NHLPlayerList.findByName(

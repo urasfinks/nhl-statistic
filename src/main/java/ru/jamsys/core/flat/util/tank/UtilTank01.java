@@ -1,5 +1,6 @@
 package ru.jamsys.core.flat.util.tank;
 
+import io.reactivex.rxjava3.functions.Function;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -24,9 +25,9 @@ public class UtilTank01 {
     @Setter
     @Accessors(chain = true)
     public static class Context {
-        HttpClient httpClient;
         String data;
         boolean cache = false;
+        String teamId;
     }
 
     private static HttpClient getHttpClient(String uri) {
@@ -35,28 +36,17 @@ public class UtilTank01 {
         return new HttpClientImpl()
                 .setUrl(serviceProperty.get("rapidapi.host") + uri)
                 .setRequestHeader("x-rapidapi-key", new String(securityComponent.get("rapidapi.tank01.key")))
-                .setRequestHeader("x-rapidapi-host", serviceProperty.get("rapidapi.tank01.host"))
-                ;
+                .setRequestHeader("x-rapidapi-host", serviceProperty.get("rapidapi.tank01.host"));
     }
 
-    public static void request(Promise refPromise, String uri) {
-        refPromise.setRepositoryMapClass(Context.class, new Context().setHttpClient(getHttpClient(uri)));
-        refPromise
-                .thenWithResource("request", HttpResource.class, (_, _, promise, httpResource) -> {
-                    Context context = promise.getRepositoryMapClass(Context.class);
-                    HttpResponse execute = httpResource.execute(context.getHttpClient());
-                    context.setData(execute.getBody());
-                })
-        ;
-    }
-
-    public static void cacheRequest(Promise refPromise, String uri) {
-        refPromise.setRepositoryMapClass(Context.class, new Context().setHttpClient(getHttpClient(uri)));
+    public static void cacheRequest(Promise refPromise, Function<Promise, String> uriSupplier) {
+        refPromise.setRepositoryMapClass(Context.class, new Context());
         refPromise
                 .thenWithResource("cacheSelect", JdbcResource.class, (_, _, promise, jdbcResource) -> {
                     Context context = promise.getRepositoryMapClass(Context.class);
+                    context.setData(null); // Обнуляем данные, если последовательные цепочки
                     List<Map<String, Object>> execute = jdbcResource.execute(new JdbcRequest(JTHttpCache.SELECT)
-                            .addArg("url", context.getHttpClient().getUrl())
+                            .addArg("url", uriSupplier.apply(promise))
                             .setDebug(false)
                     );
                     context.setCache(!execute.isEmpty());
@@ -68,23 +58,21 @@ public class UtilTank01 {
                 })
                 .thenWithResource("request", HttpResource.class, (_, _, promise, httpResource) -> {
                     Context context = promise.getRepositoryMapClass(Context.class);
-                    System.out.println("Request: " + context.getHttpClient().getUrl());
-                    HttpResponse execute = httpResource.execute(context.getHttpClient());
+                    System.out.println("Request: " + uriSupplier.apply(promise));
+                    HttpResponse execute = httpResource.execute(getHttpClient(uriSupplier.apply(promise)));
                     context.setData(execute.getBody());
-
                 })
                 .thenWithResource("cacheInsert", JdbcResource.class, (_, _, promise, jdbcResource) -> {
                     Context context = promise.getRepositoryMapClass(Context.class);
                     jdbcResource.execute(
                             new JdbcRequest(context.isCache() ? JTHttpCache.UPDATE : JTHttpCache.INSERT)
-                                    .addArg("url", context.getHttpClient().getUrl())
+                                    .addArg("url", uriSupplier.apply(promise))
                                     .addArg("data", context.getData())
                                     .setDebug(false)
                     );
                     context.setData(context.getData());
                 })
                 .then("cacheComplete", (_, _, _) -> {
-                })
-        ;
+                });
     }
 }
