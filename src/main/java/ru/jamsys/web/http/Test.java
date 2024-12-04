@@ -34,8 +34,8 @@ public class Test implements PromiseGenerator, HttpHandler {
                 //.extension(promise -> UtilTank01.cacheRequest(promise, new HttpClientImpl().setUrl("http://localhost/1.json")))
                 .then("check", (_, _, promise) -> {
                     ServletHandler servletHandler = promise.getRepositoryMapClass(ServletHandler.class);
-                    UtilTank01.Context context = promise.getRepositoryMapClass(UtilTank01.Context.class);
-                    servletHandler.setResponseBody(context.getData());
+                    UtilTank01.Response response = promise.getRepositoryMapClass(UtilTank01.Response.class);
+                    servletHandler.setResponseBody(response.getData());
                 })
                 .extension(Test::addErrorHandler);
     }

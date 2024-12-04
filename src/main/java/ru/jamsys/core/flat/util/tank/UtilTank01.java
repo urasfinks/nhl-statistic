@@ -24,7 +24,7 @@ public class UtilTank01 {
     @Getter
     @Setter
     @Accessors(chain = true)
-    public static class Context {
+    public static class Response {
         String data;
         boolean cache = false;
         String teamId;
@@ -40,37 +40,37 @@ public class UtilTank01 {
     }
 
     public static void cacheRequest(Promise refPromise, Function<Promise, String> uriSupplier) {
-        refPromise.setRepositoryMapClass(Context.class, new Context());
+        refPromise.setRepositoryMapClass(Response.class, new Response());
         refPromise
                 .thenWithResource("cacheSelect", JdbcResource.class, (_, _, promise, jdbcResource) -> {
-                    Context context = promise.getRepositoryMapClass(Context.class);
-                    context.setData(null); // Обнуляем данные, если последовательные цепочки
+                    Response response = promise.getRepositoryMapClass(Response.class);
+                    response.setData(null); // Обнуляем данные, если последовательные цепочки
                     List<Map<String, Object>> execute = jdbcResource.execute(new JdbcRequest(JTHttpCache.SELECT)
                             .addArg("url", uriSupplier.apply(promise))
                             .setDebug(false)
                     );
-                    context.setCache(!execute.isEmpty());
+                    response.setCache(!execute.isEmpty());
                     if (execute.isEmpty()) {
                         return;
                     }
-                    context.setData(execute.getFirst().get("data").toString());
+                    response.setData(execute.getFirst().get("data").toString());
                     promise.goTo("cacheComplete");
                 })
                 .thenWithResource("request", HttpResource.class, (_, _, promise, httpResource) -> {
-                    Context context = promise.getRepositoryMapClass(Context.class);
+                    Response response = promise.getRepositoryMapClass(Response.class);
                     System.out.println("Request: " + uriSupplier.apply(promise));
                     HttpResponse execute = httpResource.execute(getHttpClient(uriSupplier.apply(promise)));
-                    context.setData(execute.getBody());
+                    response.setData(execute.getBody());
                 })
                 .thenWithResource("cacheInsert", JdbcResource.class, (_, _, promise, jdbcResource) -> {
-                    Context context = promise.getRepositoryMapClass(Context.class);
+                    Response response = promise.getRepositoryMapClass(Response.class);
                     jdbcResource.execute(
-                            new JdbcRequest(context.isCache() ? JTHttpCache.UPDATE : JTHttpCache.INSERT)
+                            new JdbcRequest(response.isCache() ? JTHttpCache.UPDATE : JTHttpCache.INSERT)
                                     .addArg("url", uriSupplier.apply(promise))
-                                    .addArg("data", context.getData())
+                                    .addArg("data", response.getData())
                                     .setDebug(false)
                     );
-                    context.setData(context.getData());
+                    response.setData(response.getData());
                 })
                 .then("cacheComplete", (_, _, _) -> {
                 });

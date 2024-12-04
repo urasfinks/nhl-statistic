@@ -9,6 +9,10 @@ import java.util.Map;
 
 public class NHLBoxScore {
 
+    public static String getUri(String gameId) {
+        return "/getNHLBoxScore?gameID=" + gameId;
+    }
+
     public static String getExample() throws IOException {
         return UtilFileResource.getAsString("example/getNHLBoxScore5.json");
     }
