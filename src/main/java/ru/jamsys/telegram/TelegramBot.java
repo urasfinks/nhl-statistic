@@ -18,9 +18,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class TelegramBotHandler extends TelegramLongPollingBot {
+public class TelegramBot extends TelegramLongPollingBot {
 
-    public TelegramBotHandler(String botToken) throws TelegramApiException {
+    public TelegramBot(String botToken) throws TelegramApiException {
         super(botToken);
         List<BotCommand> list = new ArrayList<>();
         list.add(new BotCommand("/subscribe_to_player", "Follow a player to stay updated"));

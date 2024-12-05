@@ -17,7 +17,7 @@ import ru.jamsys.core.resource.jdbc.JdbcRequest;
 import ru.jamsys.core.resource.jdbc.JdbcResource;
 import ru.jamsys.tank.data.NHLPlayerList;
 import ru.jamsys.tank.data.NHLTeamSchedule;
-import ru.jamsys.telegram.TelegramBotHandler;
+import ru.jamsys.telegram.TelegramBot;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -34,7 +34,7 @@ public class SubscribeToPlayer implements TelegramContext {
     @Accessors(chain = true)
     private long idChat;
 
-    private final TelegramBotHandler handler = App.get(TelegramBotComponent.class).getHandler();
+    private final TelegramBot handler = App.get(TelegramBotComponent.class).getHandler();
 
     @Getter
     private String player = null;
