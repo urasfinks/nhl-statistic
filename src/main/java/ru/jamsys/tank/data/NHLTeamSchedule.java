@@ -13,8 +13,8 @@ import java.util.Map;
 
 public class NHLTeamSchedule {
 
-    public static String getUri(String teamId, int season) {
-        return "/getNHLTeamSchedule?teamID=" + teamId + "&season=" + season;
+    public static String getUri(String idTeam, String season) {
+        return "/getNHLTeamSchedule?teamID=" + idTeam + "&season=" + season;
     }
 
     public static String getExample() throws IOException {
@@ -34,9 +34,9 @@ public class NHLTeamSchedule {
             String gameStatus = game.get("gameStatus").toString(); // https://www.tank01.com/Guides_Game_Status_Code_NHL.html
             if (game.containsKey("gameStatus") && (gameStatus.equals("Scheduled") || gameStatus.equals("Live - In Progress"))) {
                 game.put("date", UtilDate.timestampFormat(timestampStart));
-                game.put("about",
-                        teams.get(game.get("home")) + " (" + game.get("home") + ") vs "
-                                + teams.get(game.get("away")) + " (" + game.get("away") + ")");
+                game.put("homeTeam", teams.get(game.get("home")) + " (" + game.get("home") + ")");
+                game.put("awayTeam", teams.get(game.get("away")) + " (" + game.get("away") + ")");
+                game.put("about", game.get("homeTeam") + " vs " + game.get("awayTeam"));
                 //System.out.println(UtilJson.toStringPretty(game, "{}"));
                 result.add(game);
             }

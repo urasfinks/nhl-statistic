@@ -14,6 +14,7 @@ import ru.jamsys.core.extension.http.ServletRequestReader;
 import ru.jamsys.core.flat.util.Util;
 import ru.jamsys.core.flat.util.UtilJson;
 import ru.jamsys.core.flat.util.UtilTelegram;
+import ru.jamsys.core.flat.util.telegram.Button;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
 
@@ -57,7 +58,6 @@ public class TelegramBot extends TelegramLongPollingBot {
             return;
         }
         String remove = stepHandler.remove(idChat);
-        System.out.println("Remove: " + remove);
 
         if (remove != null) {
             try {
@@ -66,7 +66,6 @@ public class TelegramBot extends TelegramLongPollingBot {
                 App.error(e);
             }
         }
-        System.out.println("Data: " + data);
         if (data.startsWith("/")) {
             PromiseGenerator match = routerRepository.match(data);
             if (match == null) {
@@ -90,11 +89,16 @@ public class TelegramBot extends TelegramLongPollingBot {
                     .setMsg(msg)
                     .setStepHandler(stepHandler)
                     .setUriPath(ServletRequestReader.getPath(data))
-                    .setUriParameters(ServletRequestReader.parseUriParameters(data))
+                    .setUriParametersListValue(ServletRequestReader.parseUriParameters(data))
+                    .setUriParameters(ServletRequestReader.parseUriParameters(data, List::getFirst))
                     .setTelegramBot(this)
             );
             promise.run();
         }
+    }
+
+    public void send(long idChat, String data, List<Button> buttons) {
+        send(UtilTelegram.message(idChat, data, buttons));
     }
 
     public <T extends Serializable, Method extends BotApiMethod<T>> T send(Method method) {

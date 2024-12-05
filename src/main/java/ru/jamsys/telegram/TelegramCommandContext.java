@@ -7,6 +7,7 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -20,7 +21,11 @@ public class TelegramCommandContext {
 
     private String uriPath;
 
-    private Map<String, List<String>> uriParameters;
+    private Map<String, List<String>> uriParametersListValue;
+
+    private Map<String, String> uriParameters;
+
+    private Map<String, Object> anyData = new HashMap<>();
 
     @ToString.Exclude
     @JsonIgnore
