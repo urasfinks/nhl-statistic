@@ -8,10 +8,14 @@ import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 import org.telegram.telegrambots.meta.api.objects.commands.scope.BotCommandScopeDefault;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.jamsys.core.App;
-import ru.jamsys.core.component.TelegramBotComponent;
+import ru.jamsys.core.component.manager.item.RouteGeneratorRepository;
+import ru.jamsys.core.component.manager.item.Session;
+import ru.jamsys.core.extension.http.ServletRequestReader;
+import ru.jamsys.core.flat.util.Util;
 import ru.jamsys.core.flat.util.UtilJson;
 import ru.jamsys.core.flat.util.UtilTelegram;
-import ru.jamsys.telegram.command.TelegramContext;
+import ru.jamsys.core.promise.Promise;
+import ru.jamsys.core.promise.PromiseGenerator;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -20,58 +24,76 @@ import java.util.Map;
 
 public class TelegramBot extends TelegramLongPollingBot {
 
-    public TelegramBot(String botToken) throws TelegramApiException {
+    private final RouteGeneratorRepository routerRepository;
+    private final Map<Long, String> stepHandler;
+
+    public TelegramBot(String botToken, RouteGeneratorRepository routerRepository) throws TelegramApiException {
         super(botToken);
+        this.routerRepository = routerRepository;
         List<BotCommand> list = new ArrayList<>();
         list.add(new BotCommand("/subscribe_to_player", "Follow a player to stay updated"));
         list.add(new BotCommand("/my_subscriptions", "See the list of players you're following"));
         list.add(new BotCommand("/remove_subscription", "Unfollow a player from your list"));
         execute(new SetMyCommands(list, new BotCommandScopeDefault(), null));
+
+        stepHandler = new Session<>("TelegramContext", Long.class, 60_000L);
     }
 
     @Override
     public void onUpdateReceived(Update msg) {
-        try {
-            System.out.println(UtilJson.toStringPretty(msg, "{}"));
-            if (msg != null) {
-                if (msg.hasCallbackQuery()) {
-                    execute(UtilTelegram.answerCallbackQuery(msg, ""));
-                }
-                handler(msg);
-            }
-        } catch (Throwable e) {
-            App.error(e);
+        if (msg == null) {
+            return;
         }
-    }
-
-    private void handler(Update msg) throws Throwable {
+        System.out.println(UtilJson.toStringPretty(msg, "{}"));
+        if (msg.hasCallbackQuery()) {
+            send(UtilTelegram.answerCallbackQuery(msg, ""));
+        }
         Long idChat = UtilTelegram.getIdChat(msg);
         if (idChat == null) {
             return;
         }
-        Map<Long, TelegramContext> map = App.get(TelegramBotComponent.class).getMap();
+        String data = UtilTelegram.getData(msg);
+        if (data == null) {
+            return;
+        }
+        String remove = stepHandler.remove(idChat);
+        System.out.println("Remove: " + remove);
 
-        // Если что-то начинается на "/" - это всё конец всем предыдущим
-        if (msg.hasMessage() && msg.getMessage().getText().startsWith("/")) {
-            if (map.containsKey(idChat)) {
-                map.get(idChat).finish();
+        if (remove != null) {
+            try {
+                data = remove + Util.urlEncode(data);
+            } catch (Exception e) {
+                App.error(e);
             }
-            TelegramCommand telegramCommand = TelegramCommand.valueOfCommand(msg.getMessage().getText());
-            if (telegramCommand != null) {
-                TelegramContext telegramContext = telegramCommand.getTelegramContext(idChat);
-                map.put(idChat, telegramContext);
-                telegramContext.start();
-            } else {
+        }
+        System.out.println("Data: " + data);
+        if (data.startsWith("/")) {
+            PromiseGenerator match = routerRepository.match(data);
+            if (match == null) {
                 send(UtilTelegram.message(
                         idChat,
                         "Command " + msg.getMessage().getText() + " not support",
                         null
                 ));
+                return;
             }
-        } else if (map.containsKey(idChat)) {
-            map.get(idChat).onNext(msg);
-        } else if (msg.hasCallbackQuery()) {
-            send(UtilTelegram.message(idChat, "Operation canceled, please start over", null));
+            Promise promise = match.generate();
+            if (promise == null) {
+                App.error(new RuntimeException("Promise is null"));
+                return;
+            }
+            if (!promise.isSetErrorHandler()) {
+                promise.onError((_, _, p) -> System.out.println(p.getLogString()));
+            }
+            promise.setRepositoryMapClass(TelegramCommandContext.class, new TelegramCommandContext()
+                    .setIdChat(idChat)
+                    .setMsg(msg)
+                    .setStepHandler(stepHandler)
+                    .setUriPath(ServletRequestReader.getPath(data))
+                    .setUriParameters(ServletRequestReader.parseUriParameters(data))
+                    .setTelegramBot(this)
+            );
+            promise.run();
         }
     }
 

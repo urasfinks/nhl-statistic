@@ -8,13 +8,9 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 import ru.jamsys.core.component.manager.ManagerExpiration;
 import ru.jamsys.core.component.manager.item.RouteGeneratorRepository;
-import ru.jamsys.core.component.manager.item.Session;
 import ru.jamsys.core.extension.LifeCycleComponent;
 import ru.jamsys.telegram.TelegramBot;
-import ru.jamsys.telegram.TelegramHandler;
-import ru.jamsys.telegram.command.TelegramContext;
-
-import java.util.Map;
+import ru.jamsys.telegram.TelegramCommandHandler;
 
 @SuppressWarnings("unused")
 @Component
@@ -26,8 +22,6 @@ public class TelegramBotComponent implements LifeCycleComponent {
     private final SecurityComponent securityComponent;
 
     @Getter
-    private final Map<Long, TelegramContext> map;
-
     private final RouteGeneratorRepository routerRepository;
 
     @Getter
@@ -40,8 +34,7 @@ public class TelegramBotComponent implements LifeCycleComponent {
     ) throws TelegramApiException {
         this.securityComponent = securityComponent;
         api = new TelegramBotsApi(DefaultBotSession.class);
-        map = new Session<>("TelegramContext", Long.class, 60_000L);
-        routerRepository = routeGenerator.getRouterRepository(TelegramHandler.class);
+        routerRepository = routeGenerator.getRouterRepository(TelegramCommandHandler.class);
     }
 
     @Override
@@ -52,7 +45,7 @@ public class TelegramBotComponent implements LifeCycleComponent {
     @Override
     public void run() {
         try {
-            handler = new TelegramBot(new String(securityComponent.get("telegram.api.token")));
+            handler = new TelegramBot(new String(securityComponent.get("telegram.api.token")), routerRepository);
             api.registerBot(handler);
         } catch (TelegramApiException e) {
             throw new RuntimeException(e);
