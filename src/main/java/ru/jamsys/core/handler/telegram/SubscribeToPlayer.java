@@ -191,6 +191,7 @@ public class SubscribeToPlayer implements PromiseGenerator, TelegramCommandHandl
                             + ", scheduled for " +
                             UtilDate.format(map.get("gameDate").toString(), "yyyyMMdd", "dd/MM/yyyy")
                             + " at " + map.get("gameTime")
+                            + " (UTC" + map.get("zone") + ")"
                             + ".";
                     context.getTelegramBot().send(UtilTelegram.editMessage(context.getMsg(), infoGame));
                 });

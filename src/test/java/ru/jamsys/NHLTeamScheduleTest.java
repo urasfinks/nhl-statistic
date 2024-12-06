@@ -1,9 +1,12 @@
 package ru.jamsys;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import ru.jamsys.core.flat.util.UtilDate;
 import ru.jamsys.core.flat.util.UtilJson;
 import ru.jamsys.tank.data.NHLTeamSchedule;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -32,6 +35,12 @@ class NHLTeamScheduleTest {
         List<Map<String, Object>> game = NHLTeamSchedule.findGame(NHLTeamSchedule.getExample());
         List<Map<String, Object>> sortGameByTime = NHLTeamSchedule.getSortGameByTime(game);
         System.out.println(UtilJson.toStringPretty(sortGameByTime, "{}"));
+    }
+
+    @Test
+    void test() throws Throwable {
+        Map<String, Object> game = NHLTeamSchedule.findGame(NHLTeamSchedule.getExample()).getFirst();
+        Assertions.assertEquals("-05:00", NHLTeamSchedule.getZoneDiff(game));
     }
 
 }
