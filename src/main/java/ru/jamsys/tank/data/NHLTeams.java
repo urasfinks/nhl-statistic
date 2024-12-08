@@ -28,12 +28,10 @@ public class NHLTeams {
         @SuppressWarnings("unchecked")
         List<Map<String, Object>> selector = (List<Map<String, Object>>) UtilJson.selector(parsed, "body");
         Map<String, Object> result = new HashMap<>();
-        selector.forEach(stringObjectMap -> {
-            result.put(
-                    stringObjectMap.get("teamAbv").toString(),
-                    stringObjectMap.get("teamCity") + " " + stringObjectMap.get("teamName")
-            );
-        });
+        selector.forEach(stringObjectMap -> result.put(
+                stringObjectMap.get("teamAbv").toString(),
+                stringObjectMap.get("teamCity") + " " + stringObjectMap.get("teamName")
+        ));
         return result;
     }
 }

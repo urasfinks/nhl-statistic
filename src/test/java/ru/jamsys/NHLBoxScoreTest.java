@@ -16,7 +16,7 @@ class NHLBoxScoreTest {
     }
 
     @Test
-    void getDiff() throws Throwable {
+    void getDiff() {
 
     }
 
