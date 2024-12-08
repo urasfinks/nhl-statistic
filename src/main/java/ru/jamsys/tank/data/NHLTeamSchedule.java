@@ -21,22 +21,39 @@ public class NHLTeamSchedule {
     }
 
     public static String getGameTimeZone(Map<String, Object> game) throws Exception {
-        String localTimeGame = NHLTeamSchedule.getGameLocalTime(game);
+        String localTimeGame = NHLTeamSchedule.getGameLocalTime(game, "yyyy-MM-dd'T'HH:mm:ss");
         String realTimeUtc = UtilDate.timestampFormatUTC(new BigDecimal(game.get("gameTime_epoch").toString()).longValue(), "yyyy-MM-dd'T'HH:mm:ss");
         long timestampLocalGame = UtilDate.getTimestamp(localTimeGame, "yyyy-MM-dd'T'HH:mm:ss");
         long timestampRealGame = UtilDate.getTimestamp(realTimeUtc, "yyyy-MM-dd'T'HH:mm:ss");
         return (timestampLocalGame - timestampRealGame < 0 ? "-" : "+") + LocalTime.MIN.plusSeconds(Math.abs(timestampLocalGame - timestampRealGame)).toString();
     }
 
-    public static String getGameLocalTime(Map<String, Object> game) throws Exception {
+    public static String getGameLocalTime(Map<String, Object> game, String format) {
         String gameDate = game.get("gameDate").toString();
         String gameTime = game.get("gameTime").toString();
         int hourSec = Integer.parseInt(gameTime.substring(0, gameTime.indexOf(":"))) * 60 * 60;
         int offsetHourSec = gameTime.endsWith("p") ? (12 * 60 * 60) : 0;
         int minSec = Integer.parseInt(Util.readUntil(gameTime.substring(gameTime.indexOf(":") + 1), Util::isNumeric)) * 60;
-        long dateSec = UtilDate.getTimestamp(gameDate, "yyyyMMdd");
+        long dateSec = UtilDate.getTimestamp(gameDate, "yyyyMMdd", 0);
         dateSec += (hourSec + offsetHourSec + minSec);
-        return UtilDate.timestampFormat(dateSec, "yyyy-MM-dd'T'HH:mm:ss");
+        return UtilDate.timestampFormat(dateSec, format);
+    }
+
+    public static String getGameTimeFormat(Map<String, Object> map) {
+        return String.format(
+                "%s (UTC%s)",
+                NHLTeamSchedule.getGameLocalTime(map, "dd/MM/yyyy HH:mm"),
+                map.get("timeZone")
+        );
+    }
+
+    public static String getGameAbout(String infoPlayer, Map<String, Object> map) {
+        return String.format("[%s] %s; %s vs %s",
+                getGameTimeFormat(map), // 3
+                infoPlayer, // 4
+                map.get("homeTeam"), // 5
+                map.get("awayTeam") // 6
+        );
     }
 
     public static List<Map<String, Object>> findGame(String json) throws Throwable {
@@ -61,7 +78,7 @@ public class NHLTeamSchedule {
                 game.put("awayTeam", teams.get(game.get("away")) + " (" + game.get("away") + ")");
                 game.put("about", game.get("homeTeam") + " vs " + game.get("awayTeam"));
                 try {
-                    game.put("zone", NHLTeamSchedule.getGameTimeZone(game));
+                    game.put("timeZone", NHLTeamSchedule.getGameTimeZone(game));
                 } catch (Exception e) {
                     App.error(e);
                 }

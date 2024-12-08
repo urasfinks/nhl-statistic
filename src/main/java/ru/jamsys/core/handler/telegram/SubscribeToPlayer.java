@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.extension.builder.HashMapBuilder;
 import ru.jamsys.core.extension.http.ServletResponseWriter;
-import ru.jamsys.core.flat.util.UtilDate;
 import ru.jamsys.core.flat.util.UtilJson;
 import ru.jamsys.core.flat.util.UtilTelegram;
 import ru.jamsys.core.flat.util.tank.UtilTank01;
@@ -160,8 +159,8 @@ public class SubscribeToPlayer implements PromiseGenerator, TelegramCommandHandl
                         context.getTelegramBot().send(UtilTelegram.editMessage(context.getMsg(), "Not found games"));
                         return;
                     }
-                    Map<String, Object> map = sortGameByTime.getFirst();
-                    jdbcResource.execute(new JdbcRequest(JTScheduler.INSERT)
+                    JdbcRequest jdbcRequest = new JdbcRequest(JTScheduler.INSERT);
+                    sortGameByTime.forEach(map -> jdbcRequest
                             .addArg("id_chat", UtilTelegram.getIdChat(context.getMsg()))
                             .addArg("id_player", context.getUriParameters().get("idPlayer"))
                             .addArg("id_team", context.getUriParameters().get("idTeam"))
@@ -169,31 +168,24 @@ public class SubscribeToPlayer implements PromiseGenerator, TelegramCommandHandl
                             .addArg("time_game_start", new BigDecimal(
                                     map.get("gameTime_epoch").toString()
                             ).longValue() * 1000)
-                            .addArg("about",
-                                    "["
-                                            + UtilDate.format(map.get("gameDate").toString(), "yyyyMMdd", "dd/MM/yyyy")
-                                            + map.get("gameTime")
-                                            + "] "
-                                            + context.getUriParameters().get("infoPlayer")
-                                            + "; "
-                                            + map.get("homeTeam")
-                                            + " vs "
-                                            + map.get("awayTeam")
+                            .addArg(
+                                    "about",
+                                    NHLTeamSchedule.getGameAbout(context.getUriParameters().get("infoPlayer"), map)
                             )
-                            .setDebug(false)
-                    );
-                    String infoGame = "A subscription has been created for goals by player "
-                            + context.getUriParameters().get("infoPlayer")
-                            + " in the game between the "
-                            + map.get("homeTeam")
-                            + " and "
-                            + map.get("awayTeam")
-                            + ", scheduled for " +
-                            UtilDate.format(map.get("gameDate").toString(), "yyyyMMdd", "dd/MM/yyyy")
-                            + " at " + map.get("gameTime")
-                            + " (UTC" + map.get("zone") + ")"
-                            + ".";
-                    context.getTelegramBot().send(UtilTelegram.editMessage(context.getMsg(), infoGame));
+                            .nextBatch());
+
+                    jdbcResource.execute(jdbcRequest);
+
+                    context.getTelegramBot().send(UtilTelegram.editMessage(context.getMsg(), String.format(
+                            "A subscription for %d games featuring %s has been created." +
+                                    " The first game is on %s, and the last game is on %s." +
+                                    " See more information in the subscriptions.",
+
+                            sortGameByTime.size(),
+                            context.getUriParameters().get("infoPlayer"),
+                            NHLTeamSchedule.getGameTimeFormat(sortGameByTime.getFirst()),
+                            NHLTeamSchedule.getGameTimeFormat(sortGameByTime.getLast())
+                    )));
                 });
     }
 
