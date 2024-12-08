@@ -1,5 +1,6 @@
 package ru.jamsys;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import ru.jamsys.core.flat.util.UtilJson;
 import ru.jamsys.tank.data.NHLBoxScore;
@@ -16,8 +17,15 @@ class NHLBoxScoreTest {
     }
 
     @Test
-    void getDiff() {
-
+    void getDiff() throws Throwable {
+        List<Map<String, Object>> newEventScoring = NHLBoxScore.getNewEventScoring(
+                NHLBoxScore.getExample(),
+                NHLBoxScore.getExample2()
+        );
+        Assertions.assertEquals(
+                "[{period=2P, goal={longName=Vincent Trocheck, playerID=2563036}, shortHanded=False, shootout=False, assists=[], powerPlay=False, teamID=20, scoreTime=10:18, team=NYR, teamAbv=NYR}]",
+                newEventScoring.toString()
+        );
     }
 
 }
