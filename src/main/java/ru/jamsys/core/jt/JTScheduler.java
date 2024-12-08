@@ -6,7 +6,7 @@ import ru.jamsys.core.flat.template.jdbc.StatementType;
 
 public enum JTScheduler implements JdbcRequestRepository {
 
-    SELECT_SUBSCRIBED_PLAYER("""
+    SELECT_MY_SUBSCRIBED_PLAYER("""
             SELECT
                 id_player,
                 max(player_about) as player_about,
@@ -18,7 +18,7 @@ public enum JTScheduler implements JdbcRequestRepository {
             ORDER BY 1
             """, StatementType.SELECT_WITH_AUTO_COMMIT),
 
-    SELECT_SUBSCRIBED_PLAYER_GAMES("""
+    SELECT_MY_SUBSCRIBED_GAMES("""
             SELECT
                 *
             FROM scheduler
@@ -60,7 +60,15 @@ public enum JTScheduler implements JdbcRequestRepository {
             	time_game_start < now()::timestamp
             GROUP BY id_game
             ORDER BY 2 DESC
-            """, StatementType.SELECT_WITH_AUTO_COMMIT);
+            """, StatementType.SELECT_WITH_AUTO_COMMIT),
+
+    SELECT_SUBSCRIBER_BY_PLAYER("""
+           SELECT distinct on(id_chat)
+               *
+           FROM scheduler
+           WHERE
+               id_player IN (${IN.id_players::IN_ENUM_NUMBER})
+           """, StatementType.SELECT_WITH_AUTO_COMMIT);
 
     private final JdbcTemplate jdbcTemplate;
 

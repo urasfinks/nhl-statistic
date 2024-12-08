@@ -23,6 +23,9 @@ public class NHLBoxScore {
     }
 
     public static List<Map<String, Object>> getScoringPlays(String json) throws Throwable {
+        if (json == null || json.isEmpty()) { //Так как в БД может быть ничего
+            return new ArrayList<>();
+        }
         @SuppressWarnings("unchecked")
         Map<String, Object> parsed = UtilJson.toObject(json, Map.class);
         @SuppressWarnings("unchecked")
@@ -41,23 +44,26 @@ public class NHLBoxScore {
 
     public static <T> List<T> getDifference(List<T> list1, List<T> list2) {
         Set<T> set1 = new HashSet<>(list1);
-        set1.removeAll(list2);
+        list2.forEach(set1::remove);
         return new ArrayList<>(set1);
     }
 
     public static List<Map<String, Object>> getNewEventScoring(String jsonLast, String jsonCurrent) throws Throwable {
-        List<Map<String, Object>> result = new ArrayList<>();
         List<Map<String, Object>> scoringPlaysLast = getScoringPlays(jsonLast);
         List<Map<String, Object>> scoringPlaysCurrent = getScoringPlays(jsonCurrent);
+
         List<String> listLast = scoringPlaysLast.stream().map(NHLBoxScore::hashObject).toList();
-        List<String> listCurrent = scoringPlaysCurrent.stream().map(NHLBoxScore::hashObject).toList();
-        List<String> difference = getDifference(listCurrent, listLast);
-        scoringPlaysCurrent.forEach(map -> {
-            if (difference.contains(hashObject(map))) {
-                result.add(map);
+        List<String> listCurrent = new ArrayList<>(scoringPlaysCurrent.stream().map(NHLBoxScore::hashObject).toList());
+
+        for (int i = listLast.size() - 1; i >= 0; i--) {
+            if (!listCurrent.isEmpty() && listCurrent.getLast().equals(listLast.get(i))) {
+                listCurrent.removeLast();
+                scoringPlaysCurrent.removeLast();
+            } else {
+                break;
             }
-        });
-        return result;
+        }
+        return scoringPlaysCurrent;
     }
 
 }

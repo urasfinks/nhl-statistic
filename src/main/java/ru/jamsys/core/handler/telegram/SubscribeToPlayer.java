@@ -106,7 +106,7 @@ public class SubscribeToPlayer implements PromiseGenerator, TelegramCommandHandl
                         promise.skipAllStep();
                         return;
                     }
-                    String playerInfo = player.get("longName").toString() + " (" + player.get("team").toString() + ")";
+                    String playerInfo = NHLPlayerList.getPlayerName(player);
                     context.getTelegramBot().send(UtilTelegram.editMessage(context.getMsg(), playerInfo));
                     context.getUriParameters().put("infoPlayer", playerInfo);
                     context.getUriParameters().put("idTeam", player.get("teamID").toString());

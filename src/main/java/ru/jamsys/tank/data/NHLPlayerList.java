@@ -20,6 +20,10 @@ public class NHLPlayerList {
         return "/getNHLPlayerList";
     }
 
+    public static String getPlayerName(Map<String, Object> player) {
+        return String.format("%s (%s)", player.get("longName"), player.get("team"));
+    }
+
     public static String getExample() throws IOException {
         return UtilFileResource.getAsString("example/player_id.json");
     }

@@ -28,4 +28,13 @@ class NHLBoxScoreTest {
         );
     }
 
+    @Test
+    void getDiff2() throws Throwable {
+        List<Map<String, Object>> newEventScoring = NHLBoxScore.getNewEventScoring(
+                NHLBoxScore.getExample2(),
+                NHLBoxScore.getExample()
+        );
+        Assertions.assertEquals("[]", newEventScoring.toString());
+    }
+
 }
