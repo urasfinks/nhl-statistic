@@ -59,6 +59,13 @@ public class TelegramBot extends TelegramLongPollingBot {
         }
         String remove = stepHandler.remove(idChat);
 
+        // Тут 2 варианта:
+        // 1) Приходит чистое сообщение от пользователя
+        // 2) Приходит ButtonCallbackData - подразумевает, что имеет полный путь /command/?args=...
+        // Не должно быть чистого сообщения от пользователя содержащего контекст и начало с /
+        if (remove != null && msg.hasMessage() && data.startsWith("/")) {
+            remove = null;
+        }
         if (remove != null) {
             try {
                 data = remove + Util.urlEncode(data);
@@ -90,7 +97,14 @@ public class TelegramBot extends TelegramLongPollingBot {
                     .setStepHandler(stepHandler)
                     .setUriPath(ServletRequestReader.getPath(data))
                     .setUriParametersListValue(ServletRequestReader.parseUriParameters(data))
-                    .setUriParameters(ServletRequestReader.parseUriParameters(data, List::getFirst))
+                    .setUriParameters(ServletRequestReader.parseUriParameters(data, listString -> {
+                        try {
+                            return Util.urlDecode(listString.getFirst());
+                        } catch (Exception e) {
+                            App.error(e);
+                        }
+                        return listString.getFirst();
+                    }))
                     .setTelegramBot(this)
             );
             promise.run();
