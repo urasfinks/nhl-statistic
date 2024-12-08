@@ -28,6 +28,14 @@ public enum JTScheduler implements JdbcRequestRepository {
             ORDER BY id ASC
             """, StatementType.SELECT_WITH_AUTO_COMMIT),
 
+    REMOVE_MY_SUBSCRIBED("""
+            DELETE
+            FROM scheduler
+            WHERE
+                id_chat = ${IN.id_chat::NUMBER}
+                AND id_player = ${IN.id_player::NUMBER}
+            """, StatementType.SELECT_WITH_AUTO_COMMIT),
+
     INSERT("""
             INSERT INTO scheduler (
                 id_chat,
