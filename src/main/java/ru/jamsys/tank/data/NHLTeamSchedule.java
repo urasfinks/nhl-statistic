@@ -20,12 +20,20 @@ public class NHLTeamSchedule {
         return UtilFileResource.getAsString("example/getNHLTeamSchedule.json");
     }
 
-    public static String getGameTimeZone(Map<String, Object> game) throws Exception {
+    public static void extendGameTimeZone(Map<String, Object> game) throws Exception {
         String localTimeGame = NHLTeamSchedule.getGameLocalTime(game, "yyyy-MM-dd'T'HH:mm:ss");
-        String realTimeUtc = UtilDate.timestampFormatUTC(new BigDecimal(game.get("gameTime_epoch").toString()).longValue(), "yyyy-MM-dd'T'HH:mm:ss");
+        String realTimeGameUtc = UtilDate.timestampFormatUTC(
+                new BigDecimal(game.get("gameTime_epoch").toString()).longValue(),
+                "yyyy-MM-dd'T'HH:mm:ss"
+        );
+        // Тут нам уже не важно локальную зону, нам просто нужна общая точка отсчёта и локальная вполне подходит
         long timestampLocalGame = UtilDate.getTimestamp(localTimeGame, "yyyy-MM-dd'T'HH:mm:ss");
-        long timestampRealGame = UtilDate.getTimestamp(realTimeUtc, "yyyy-MM-dd'T'HH:mm:ss");
-        return (timestampLocalGame - timestampRealGame < 0 ? "-" : "+") + LocalTime.MIN.plusSeconds(Math.abs(timestampLocalGame - timestampRealGame)).toString();
+        long timestampRealGame = UtilDate.getTimestamp(realTimeGameUtc, "yyyy-MM-dd'T'HH:mm:ss");
+        String zone = (timestampLocalGame - timestampRealGame < 0 ? "-" : "+") + LocalTime.MIN.plusSeconds(Math.abs(timestampLocalGame - timestampRealGame)).toString();
+        game.put("timeZone", zone);
+        game.put("gameDateEpoch", UtilDate.timestampFormatUTC(new BigDecimal(game.get("gameTime_epoch").toString()).longValue(), "yyyyMMdd"));
+        game.put("gameDateTime", localTimeGame);
+        game.put("gameDateTimeEpoch", realTimeGameUtc);
     }
 
     public static String getGameLocalTime(Map<String, Object> game, String format) {
@@ -55,7 +63,7 @@ public class NHLTeamSchedule {
         );
     }
 
-    public static List<Map<String, Object>> findGame(String json) throws Throwable {
+    public static List<Map<String, Object>> parseGame(String json) throws Throwable {
         Map<String, Object> teams = NHLTeams.getTeams();
         @SuppressWarnings("unchecked")
         Map<String, Object> parsed = UtilJson.toObject(json, Map.class);
@@ -64,7 +72,6 @@ public class NHLTeamSchedule {
         List<Map<String, Object>> result = new ArrayList<>();
 
         selector.forEach(game -> {
-            long timestampStart = new BigDecimal(game.get("gameTime_epoch").toString()).longValue();
             String gameStatus = game.get("gameStatus").toString(); // https://www.tank01.com/Guides_Game_Status_Code_NHL.html
             if (game.containsKey("gameStatus") &&
                     (
@@ -72,12 +79,11 @@ public class NHLTeamSchedule {
                                     || gameStatus.equals("Live - In Progress")
                     )
             ) {
-                game.put("date", UtilDate.timestampFormat(timestampStart));
                 game.put("homeTeam", teams.get(game.get("home")) + " (" + game.get("home") + ")");
                 game.put("awayTeam", teams.get(game.get("away")) + " (" + game.get("away") + ")");
                 game.put("about", game.get("homeTeam") + " vs " + game.get("awayTeam"));
                 try {
-                    game.put("timeZone", NHLTeamSchedule.getGameTimeZone(game));
+                    NHLTeamSchedule.extendGameTimeZone(game);
                 } catch (Exception e) {
                     App.error(e);
                 }
@@ -87,9 +93,19 @@ public class NHLTeamSchedule {
         return result;
     }
 
-    public static List<Map<String, Object>> getSortGameByTime(List<Map<String, Object>> listGame) {
+    public static List<Map<String, Object>> getGameSortAndFilterByTime(List<Map<String, Object>> listGame) {
+        long currentTimestamp = UtilDate.getTimestamp();
         return UtilListSort.sort(
-                listGame,
+                listGame.stream().filter(game -> {
+                    // Сейчас 14:26
+                    // Игра началась в 14:00
+                    // timestamp игры меньше чем сейчас
+                    // изначально планировал, что будем брать все игры у которых timestamp больше чем сейчас
+                    // Но тогда мы не возьмём игру, которая в процессе, поэтому сравнивать будем за вычитом времени игры
+                    long gameStartTimestamp = new BigDecimal(game.get("gameTime_epoch").toString()).longValue();
+                    // 5 часов просто накинул
+                    return gameStartTimestamp > (currentTimestamp - 5 * 60 * 60);
+                }).toList(),
                 UtilListSort.Type.ASC,
                 stringObjectMap -> new BigDecimal(stringObjectMap.get("gameTime_epoch").toString()).longValue()
         );

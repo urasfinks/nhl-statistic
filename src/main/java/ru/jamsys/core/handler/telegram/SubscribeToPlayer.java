@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.extension.builder.HashMapBuilder;
 import ru.jamsys.core.extension.http.ServletResponseWriter;
-import ru.jamsys.core.flat.util.UtilJson;
 import ru.jamsys.core.flat.util.UtilTelegram;
 import ru.jamsys.core.flat.util.tank.UtilTank01;
 import ru.jamsys.core.flat.util.telegram.Button;
@@ -46,7 +45,6 @@ public class SubscribeToPlayer implements PromiseGenerator, TelegramCommandHandl
         return servicePromise.get(index, 12_000L)
                 .then("check", (_, _, promise) -> {
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
-                    System.out.println(UtilJson.toStringPretty(context, "{}"));
                     if (!context.getUriParameters().containsKey("namePlayer")) {
                         context.getStepHandler().put(context.getIdChat(), context.getUriPath() + "/?namePlayer=");
                         context.getTelegramBot().send(
@@ -129,7 +127,7 @@ public class SubscribeToPlayer implements PromiseGenerator, TelegramCommandHandl
                     List<Map<String, Object>> game = (List<Map<String, Object>>) context.getAnyData().computeIfAbsent(
                             "findGames", _ -> new ArrayList<String>()
                     );
-                    game.addAll(NHLTeamSchedule.findGame(response.getData()));
+                    game.addAll(NHLTeamSchedule.parseGame(response.getData()));
                 })
                 .extension(extendPromise -> UtilTank01.cacheRequest(
                         extendPromise,
@@ -148,13 +146,13 @@ public class SubscribeToPlayer implements PromiseGenerator, TelegramCommandHandl
                     List<Map<String, Object>> game = (List<Map<String, Object>>) context.getAnyData().computeIfAbsent(
                             "findGames", _ -> new ArrayList<String>()
                     );
-                    game.addAll(NHLTeamSchedule.findGame(response.getData()));
+                    game.addAll(NHLTeamSchedule.parseGame(response.getData()));
                 })
                 .thenWithResource("insertSchedule", JdbcResource.class, (_, _, promise, jdbcResource) -> {
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
                     @SuppressWarnings("unchecked")
                     List<Map<String, Object>> game = (List<Map<String, Object>>) context.getAnyData().get("findGames");
-                    List<Map<String, Object>> sortGameByTime = NHLTeamSchedule.getSortGameByTime(game);
+                    List<Map<String, Object>> sortGameByTime = NHLTeamSchedule.getGameSortAndFilterByTime(game);
                     if (sortGameByTime.isEmpty()) {
                         context.getTelegramBot().send(UtilTelegram.editMessage(context.getMsg(), "Not found games"));
                         return;

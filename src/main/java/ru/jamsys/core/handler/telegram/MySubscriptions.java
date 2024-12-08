@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.extension.builder.HashMapBuilder;
 import ru.jamsys.core.extension.http.ServletResponseWriter;
-import ru.jamsys.core.flat.util.UtilJson;
 import ru.jamsys.core.flat.util.UtilTelegram;
 import ru.jamsys.core.flat.util.telegram.Button;
 import ru.jamsys.core.jt.JTScheduler;
@@ -44,7 +43,6 @@ public class MySubscriptions implements PromiseGenerator, TelegramCommandHandler
         return servicePromise.get(index, 12_000L)
                 .then("check", (_, _, promise) -> {
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
-                    System.out.println(UtilJson.toStringPretty(context, "{}"));
                     if (context.getUriParameters().containsKey("id")) {
                         promise.goTo("getSubscriptionsMarker");
                     }
@@ -53,7 +51,7 @@ public class MySubscriptions implements PromiseGenerator, TelegramCommandHandler
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
                     List<Map<String, Object>> execute = jdbcResource.execute(new JdbcRequest(JTScheduler.SELECT_SUBSCRIBED_PLAYER)
                             .addArg("id_chat", context.getIdChat())
-                            .setDebug(true)
+                            .setDebug(false)
                     );
                     if (execute.isEmpty()) {
                         context.getTelegramBot().send(
@@ -95,7 +93,7 @@ public class MySubscriptions implements PromiseGenerator, TelegramCommandHandler
                     List<Map<String, Object>> execute = jdbcResource.execute(new JdbcRequest(JTScheduler.SELECT_SUBSCRIBED_PLAYER_GAMES)
                             .addArg("id_chat", context.getIdChat())
                             .addArg("id_player", context.getUriParameters().get("id"))
-                            .setDebug(true)
+                            .setDebug(false)
                     );
                     if (execute.isEmpty()) {
                         context.getTelegramBot().send(

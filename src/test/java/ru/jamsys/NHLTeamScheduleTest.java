@@ -23,22 +23,23 @@ class NHLTeamScheduleTest {
     }
 
     @Test
-    void findGame() throws Throwable {
-        List<Map<String, Object>> game = NHLTeamSchedule.findGame(NHLTeamSchedule.getExample());
+    void parseGame() throws Throwable {
+        List<Map<String, Object>> game = NHLTeamSchedule.parseGame(NHLTeamSchedule.getExample());
         System.out.println(UtilJson.toStringPretty(game, "{}"));
     }
 
     @Test
-    void findEarlierGame() throws Throwable {
-        List<Map<String, Object>> game = NHLTeamSchedule.findGame(NHLTeamSchedule.getExample());
-        List<Map<String, Object>> sortGameByTime = NHLTeamSchedule.getSortGameByTime(game);
-        System.out.println(UtilJson.toStringPretty(sortGameByTime, "{}"));
+    void getGameSortAndFilterByTime() throws Throwable {
+        List<Map<String, Object>> game = NHLTeamSchedule.parseGame(NHLTeamSchedule.getExample());
+        List<Map<String, Object>> sortGameByTime = NHLTeamSchedule.getGameSortAndFilterByTime(game);
+        System.out.println(UtilJson.toStringPretty(sortGameByTime.getFirst(), "{}"));
     }
 
     @Test
     void test() throws Throwable {
-        Map<String, Object> game = NHLTeamSchedule.findGame(NHLTeamSchedule.getExample()).getFirst();
-        Assertions.assertEquals("-05:00", NHLTeamSchedule.getGameTimeZone(game));
+        Map<String, Object> game = NHLTeamSchedule.parseGame(NHLTeamSchedule.getExample()).getFirst();
+        NHLTeamSchedule.extendGameTimeZone(game);
+        Assertions.assertEquals("-05:00", game.get("timeZone"));
     }
 
 }
