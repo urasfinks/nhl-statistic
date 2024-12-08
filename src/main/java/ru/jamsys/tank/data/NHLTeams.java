@@ -2,8 +2,6 @@ package ru.jamsys.tank.data;
 
 import ru.jamsys.core.flat.util.UtilFileResource;
 import ru.jamsys.core.flat.util.UtilJson;
-import ru.jamsys.core.flat.util.tank.UtilTank01;
-import ru.jamsys.core.promise.Promise;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -12,8 +10,8 @@ import java.util.Map;
 
 public class NHLTeams {
 
-    public static void promiseExtensionGetTeams(Promise promiseSource) {
-        UtilTank01.cacheRequest(promiseSource, _ -> "getNHLTeams?teamStats=true&topPerformers=true&includeDefunctTeams=false");
+    public static String getUri() {
+        return "getNHLTeams?teamStats=true&topPerformers=true&includeDefunctTeams=false";
     }
 
     public static String getExample() throws IOException {
