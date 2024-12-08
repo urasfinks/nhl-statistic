@@ -6,7 +6,7 @@ import ru.jamsys.core.flat.template.jdbc.StatementType;
 
 public enum JTScheduler implements JdbcRequestRepository {
 
-    SELECT("""
+    SELECT_MY("""
             SELECT * FROM scheduler
             """, StatementType.SELECT_WITH_AUTO_COMMIT),
 
@@ -17,7 +17,8 @@ public enum JTScheduler implements JdbcRequestRepository {
                 id_team,
                 id_game,
                 time_game_start,
-                about
+                game_about,
+                player_about
             )
             VALUES (
                 ${IN.id_chat::NUMBER},
@@ -25,7 +26,8 @@ public enum JTScheduler implements JdbcRequestRepository {
                 ${IN.id_team::NUMBER},
                 ${IN.id_game::VARCHAR},
                 ${IN.time_game_start::TIMESTAMP},
-                ${IN.about::VARCHAR}
+                ${IN.game_about::VARCHAR},
+                ${IN.player_about::VARCHAR}
             )
             """, StatementType.SELECT_WITH_AUTO_COMMIT),
 

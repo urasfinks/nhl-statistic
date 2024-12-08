@@ -168,10 +168,8 @@ public class SubscribeToPlayer implements PromiseGenerator, TelegramCommandHandl
                             .addArg("time_game_start", new BigDecimal(
                                     map.get("gameTime_epoch").toString()
                             ).longValue() * 1000)
-                            .addArg(
-                                    "about",
-                                    NHLTeamSchedule.getGameAbout(context.getUriParameters().get("infoPlayer"), map)
-                            )
+                            .addArg("game_about", NHLTeamSchedule.getGameAbout(map))
+                            .addArg("player_about", context.getUriParameters().get("infoPlayer"))
                             .nextBatch());
 
                     jdbcResource.execute(jdbcRequest);

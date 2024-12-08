@@ -47,12 +47,11 @@ public class NHLTeamSchedule {
         );
     }
 
-    public static String getGameAbout(String infoPlayer, Map<String, Object> map) {
-        return String.format("[%s] %s; %s vs %s",
-                getGameTimeFormat(map), // 3
-                infoPlayer, // 4
-                map.get("homeTeam"), // 5
-                map.get("awayTeam") // 6
+    public static String getGameAbout(Map<String, Object> map) {
+        return String.format("%s %s vs %s",
+                getGameTimeFormat(map),
+                map.get("homeTeam"),
+                map.get("awayTeam")
         );
     }
 
