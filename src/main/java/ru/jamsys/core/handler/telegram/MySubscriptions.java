@@ -37,6 +37,8 @@ public class MySubscriptions implements PromiseGenerator, TelegramCommandHandler
         this.servicePromise = servicePromise;
     }
 
+    private int maxLength = 3000;
+
     @Override
     public Promise generate() {
         return servicePromise.get(index, 12_000L)
@@ -105,9 +107,7 @@ public class MySubscriptions implements PromiseGenerator, TelegramCommandHandler
                     }
                     StringBuilder sb = new StringBuilder();
                     execute.forEach(map -> sb.append(map.get("game_about")).append("\n"));
-                    splitMessageSmart(sb.toString(), 3000).forEach(s -> {
-                        context.getTelegramBot().send(context.getIdChat(), s, null);
-                    });
+                    splitMessageSmart(sb.toString(), maxLength).forEach(s -> context.getTelegramBot().send(context.getIdChat(), s, null));
                     promise.skipAllStep();
                 })
                 ;
