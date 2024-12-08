@@ -20,15 +20,15 @@ public class NHLTeamSchedule {
         return UtilFileResource.getAsString("example/getNHLTeamSchedule.json");
     }
 
-    public static String getZoneDiff(Map<String, Object> game) throws Exception {
-        String localTimeGame = NHLTeamSchedule.getLocalTimeGame(game);
+    public static String getGameTimeZone(Map<String, Object> game) throws Exception {
+        String localTimeGame = NHLTeamSchedule.getGameLocalTime(game);
         String realTimeUtc = UtilDate.timestampFormatUTC(new BigDecimal(game.get("gameTime_epoch").toString()).longValue(), "yyyy-MM-dd'T'HH:mm:ss");
         long timestampLocalGame = UtilDate.getTimestamp(localTimeGame, "yyyy-MM-dd'T'HH:mm:ss");
         long timestampRealGame = UtilDate.getTimestamp(realTimeUtc, "yyyy-MM-dd'T'HH:mm:ss");
         return (timestampLocalGame - timestampRealGame < 0 ? "-" : "+") + LocalTime.MIN.plusSeconds(Math.abs(timestampLocalGame - timestampRealGame)).toString();
     }
 
-    public static String getLocalTimeGame(Map<String, Object> game) throws Exception {
+    public static String getGameLocalTime(Map<String, Object> game) throws Exception {
         String gameDate = game.get("gameDate").toString();
         String gameTime = game.get("gameTime").toString();
         int hourSec = Integer.parseInt(gameTime.substring(0, gameTime.indexOf(":"))) * 60 * 60;
@@ -50,13 +50,18 @@ public class NHLTeamSchedule {
         selector.forEach(game -> {
             long timestampStart = new BigDecimal(game.get("gameTime_epoch").toString()).longValue();
             String gameStatus = game.get("gameStatus").toString(); // https://www.tank01.com/Guides_Game_Status_Code_NHL.html
-            if (game.containsKey("gameStatus") && (gameStatus.equals("Scheduled") || gameStatus.equals("Live - In Progress"))) {
+            if (game.containsKey("gameStatus") &&
+                    (
+                            gameStatus.equals("Scheduled")
+                                    || gameStatus.equals("Live - In Progress")
+                    )
+            ) {
                 game.put("date", UtilDate.timestampFormat(timestampStart));
                 game.put("homeTeam", teams.get(game.get("home")) + " (" + game.get("home") + ")");
                 game.put("awayTeam", teams.get(game.get("away")) + " (" + game.get("away") + ")");
                 game.put("about", game.get("homeTeam") + " vs " + game.get("awayTeam"));
                 try {
-                    game.put("zone", NHLTeamSchedule.getZoneDiff(game));
+                    game.put("zone", NHLTeamSchedule.getGameTimeZone(game));
                 } catch (Exception e) {
                     App.error(e);
                 }

@@ -38,7 +38,7 @@ class NHLTeamScheduleTest {
     @Test
     void test() throws Throwable {
         Map<String, Object> game = NHLTeamSchedule.findGame(NHLTeamSchedule.getExample()).getFirst();
-        Assertions.assertEquals("-05:00", NHLTeamSchedule.getZoneDiff(game));
+        Assertions.assertEquals("-05:00", NHLTeamSchedule.getGameTimeZone(game));
     }
 
 }
