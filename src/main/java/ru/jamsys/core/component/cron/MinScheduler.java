@@ -9,7 +9,7 @@ import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.component.TelegramBotComponent;
 import ru.jamsys.core.extension.UniqueClassName;
 import ru.jamsys.core.extension.exception.ForwardException;
-import ru.jamsys.core.flat.template.cron.release.Cron3s;
+import ru.jamsys.core.flat.template.cron.release.Cron1m;
 import ru.jamsys.core.flat.util.UtilRisc;
 import ru.jamsys.core.flat.util.tank.UtilTank01;
 import ru.jamsys.core.jt.JTGameDiff;
@@ -26,7 +26,7 @@ import java.util.*;
 
 @Component
 @Lazy
-public class MinScheduler implements Cron3s, PromiseGenerator, UniqueClassName {
+public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
 
     private final ServicePromise servicePromise;
 
