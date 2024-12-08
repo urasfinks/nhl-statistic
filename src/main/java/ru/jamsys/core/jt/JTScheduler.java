@@ -51,8 +51,15 @@ public enum JTScheduler implements JdbcRequestRepository {
             )
             """, StatementType.SELECT_WITH_AUTO_COMMIT),
 
-    UPDATE("""
-            
+    SELECT_ACTIVE_GAME("""
+            SELECT
+            	id_game,
+            	count(*)
+            FROM scheduler
+            WHERE
+            	time_game_start < now()::timestamp
+            GROUP BY id_game
+            ORDER BY 2 DESC
             """, StatementType.SELECT_WITH_AUTO_COMMIT);
 
     private final JdbcTemplate jdbcTemplate;
