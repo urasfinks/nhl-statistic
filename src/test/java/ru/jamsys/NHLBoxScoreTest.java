@@ -17,6 +17,12 @@ class NHLBoxScoreTest {
     }
 
     @Test
+    void isFinish() throws Throwable {
+        Assertions.assertFalse(NHLBoxScore.isFinish(NHLBoxScore.getExample()));
+        Assertions.assertTrue(NHLBoxScore.isFinish(NHLBoxScore.getExample3()));
+    }
+
+    @Test
     void getDiff() throws Throwable {
         List<Map<String, Object>> newEventScoring = NHLBoxScore.getNewEventScoring(
                 NHLBoxScore.getExample(),

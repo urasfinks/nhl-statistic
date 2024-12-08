@@ -49,6 +49,7 @@ public class MinScheduler implements Cron3s, PromiseGenerator, UniqueClassName {
         Map<String, String> lastDB = new HashMap<>();
         Map<Integer, String> event = new LinkedHashMap<>();
         Map<Integer, List<Integer>> subscriber = new HashMap<>();
+        List<String> endGames = new ArrayList<>();
     }
 
     @Override
@@ -80,7 +81,7 @@ public class MinScheduler implements Cron3s, PromiseGenerator, UniqueClassName {
                         }
 //                        HttpResponse response = UtilTank01.request(httpResource, promise, _ -> NHLBoxScore.getUri(idGame));
 //                        context.getResponse().put(idGame, response.getBody());
-                        context.getResponse().put(idGame, NHLBoxScore.getExample2());
+                        context.getResponse().put(idGame, NHLBoxScore.getExample3());
                     }
                     if (context.getResponse().isEmpty()) {
                         promise.skipAllStep();
@@ -88,12 +89,12 @@ public class MinScheduler implements Cron3s, PromiseGenerator, UniqueClassName {
                 })
                 .thenWithResource("prepareLastData", JdbcResource.class, (run, _, promise, jdbcResource) -> {
                     Context context = promise.getRepositoryMapClass(Context.class);
-                    UtilRisc.forEach(run, context.getResponse(), (key, _) -> {
+                    UtilRisc.forEach(run, context.getResponse(), (idGame, _) -> {
                         try {
                             List<Map<String, Object>> execute = jdbcResource.execute(new JdbcRequest(JTGameDiff.SELECT)
-                                    .addArg("id_game", key)
+                                    .addArg("id_game", idGame)
                             );
-                            context.getLastDB().put(key, execute.isEmpty()
+                            context.getLastDB().put(idGame, execute.isEmpty()
                                     ? null
                                     : execute.getFirst().get("scoring_plays").toString()
                             );
@@ -104,9 +105,12 @@ public class MinScheduler implements Cron3s, PromiseGenerator, UniqueClassName {
                 })
                 .then("getDiff", (atomicBoolean, _, promise) -> {
                     Context context = promise.getRepositoryMapClass(Context.class);
-                    UtilRisc.forEach(atomicBoolean, context.getResponse(), (key, data) -> {
+                    UtilRisc.forEach(atomicBoolean, context.getResponse(), (idGame, data) -> {
                         try {
-                            NHLBoxScore.getNewEventScoring(context.getLastDB().get(key), data).forEach(map -> {
+                            if (NHLBoxScore.isFinish(data)) {
+                                context.getEndGames().add(idGame);
+                            }
+                            NHLBoxScore.getNewEventScoring(context.getLastDB().get(idGame), data).forEach(map -> {
                                 @SuppressWarnings("uncheched")
                                 int idPlayer = Integer.parseInt(((Map<String, ?>) map.get("goal")).get("playerID").toString());
                                 context.getEvent().put(idPlayer, String.format(
@@ -119,6 +123,13 @@ public class MinScheduler implements Cron3s, PromiseGenerator, UniqueClassName {
                             throw new ForwardException(e);
                         }
                     });
+                    if (context.getEvent().isEmpty()) {
+                        if (!context.getEndGames().isEmpty()) {
+                            promise.goTo("removeFinish");
+                        } else {
+                            promise.skipAllStep();
+                        }
+                    }
                 })
                 .thenWithResource("selectSubscribers", JdbcResource.class, (_, _, promise, jdbcResource) -> {
                     Context context = promise.getRepositoryMapClass(Context.class);
@@ -184,7 +195,24 @@ public class MinScheduler implements Cron3s, PromiseGenerator, UniqueClassName {
                             App.error(e);
                         }
                     });
-                });
+                })
+                .thenWithResource("removeFinish", JdbcResource.class, (_, _, promise, jdbcResource) -> {
+                    Context context = promise.getRepositoryMapClass(Context.class);
+                    if (!context.getEndGames().isEmpty()) {
+                        System.out.println("removeFinish");
+                        context.getEndGames().forEach(idGame -> {
+                            try {
+                                jdbcResource.execute(new JdbcRequest(JTScheduler.REMOVE_FINISH_GAME)
+                                        .addArg("id_game", idGame)
+                                        .setDebug(false)
+                                );
+                            } catch (Throwable e) {
+                                App.error(e);
+                            }
+                        });
+                    }
+                })
+                .onError((_, _, promise) -> System.out.println(promise.getLogString()));
     }
 
 }

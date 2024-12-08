@@ -36,6 +36,13 @@ public enum JTScheduler implements JdbcRequestRepository {
                 AND id_player = ${IN.id_player::NUMBER}
             """, StatementType.SELECT_WITH_AUTO_COMMIT),
 
+    REMOVE_FINISH_GAME("""
+            DELETE
+            FROM scheduler
+            WHERE
+                id_game = ${IN.id_game::VARCHAR}
+            """, StatementType.SELECT_WITH_AUTO_COMMIT),
+
     INSERT("""
             INSERT INTO scheduler (
                 id_chat,

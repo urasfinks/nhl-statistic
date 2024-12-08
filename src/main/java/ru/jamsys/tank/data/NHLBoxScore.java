@@ -22,6 +22,10 @@ public class NHLBoxScore {
         return UtilFileResource.getAsString("example/getNHLBoxScore5.json");
     }
 
+    public static String getExample3() throws IOException {
+        return UtilFileResource.getAsString("example/getNHLBoxScore6.json");
+    }
+
     public static List<Map<String, Object>> getScoringPlays(String json) throws Throwable {
         if (json == null || json.isEmpty()) { //Так как в БД может быть ничего
             return new ArrayList<>();
@@ -46,6 +50,16 @@ public class NHLBoxScore {
         Set<T> set1 = new HashSet<>(list1);
         list2.forEach(set1::remove);
         return new ArrayList<>(set1);
+    }
+
+    public static boolean isFinish(String json) throws Throwable {
+        if (json == null || json.isEmpty()) { //Так как в БД может быть ничего
+            return false;
+        }
+        @SuppressWarnings("unchecked")
+        Map<String, Object> parsed = UtilJson.toObject(json, Map.class);
+        String gameStatusCode = (String) UtilJson.selector(parsed, "body.gameStatusCode");
+        return Integer.parseInt(gameStatusCode) == 2;
     }
 
     public static List<Map<String, Object>> getNewEventScoring(String jsonLast, String jsonCurrent) throws Throwable {
