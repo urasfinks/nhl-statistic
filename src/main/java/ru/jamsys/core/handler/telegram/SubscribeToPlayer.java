@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.extension.builder.HashMapBuilder;
 import ru.jamsys.core.extension.http.ServletResponseWriter;
+import ru.jamsys.core.flat.util.UtilJson;
 import ru.jamsys.core.flat.util.UtilTelegram;
 import ru.jamsys.core.flat.util.tank.UtilTank01;
 import ru.jamsys.core.flat.util.telegram.Button;
@@ -168,6 +169,7 @@ public class SubscribeToPlayer implements PromiseGenerator, TelegramCommandHandl
                             ).longValue() * 1000)
                             .addArg("game_about", NHLTeamSchedule.getGameAbout(map))
                             .addArg("player_about", context.getUriParameters().get("infoPlayer"))
+                            .addArg("test", UtilJson.toStringPretty(map, "{}"))
                             .nextBatch());
 
                     jdbcResource.execute(jdbcRequest);

@@ -59,6 +59,7 @@ public class MySubscriptions implements PromiseGenerator, TelegramCommandHandler
                                 "At the moment, you don't have any subscriptions yet.",
                                 null
                         );
+                        promise.skipAllStep();
                         return;
                     }
                     List<Button> buttons = new ArrayList<>();

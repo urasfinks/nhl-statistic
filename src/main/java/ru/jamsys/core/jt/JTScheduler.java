@@ -36,7 +36,8 @@ public enum JTScheduler implements JdbcRequestRepository {
                 id_game,
                 time_game_start,
                 game_about,
-                player_about
+                player_about,
+                test
             )
             VALUES (
                 ${IN.id_chat::NUMBER},
@@ -45,7 +46,8 @@ public enum JTScheduler implements JdbcRequestRepository {
                 ${IN.id_game::VARCHAR},
                 ${IN.time_game_start::TIMESTAMP},
                 ${IN.game_about::VARCHAR},
-                ${IN.player_about::VARCHAR}
+                ${IN.player_about::VARCHAR},
+                ${IN.test::VARCHAR}
             )
             """, StatementType.SELECT_WITH_AUTO_COMMIT),
 
