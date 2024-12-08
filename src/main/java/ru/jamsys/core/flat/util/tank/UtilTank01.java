@@ -39,6 +39,25 @@ public class UtilTank01 {
                 .setRequestHeader("x-rapidapi-host", serviceProperty.get("rapidapi.tank01.host"));
     }
 
+    public static HttpResponse request(
+            HttpResource httpResource,
+            Promise promise,
+            Function<Promise, String> uriSupplier
+    ) throws Throwable {
+        HttpResponse response = httpResource.execute(getHttpClient(uriSupplier.apply(promise)));
+        checkResponse(response);
+        return response;
+    }
+
+    public static void checkResponse(HttpResponse execute) throws Throwable {
+        if (!execute.isStatus()) {
+            throw (Throwable) execute.getException().getFirst().getValue();
+        }
+        if (!execute.getBody().contains("\"statusCode\": 200")) {
+            throw new RuntimeException("Not found statusCode 200");
+        }
+    }
+
     public static void cacheRequest(Promise refPromise, Function<Promise, String> uriSupplier) {
         refPromise.setRepositoryMapClass(Response.class, new Response());
         refPromise
@@ -50,16 +69,16 @@ public class UtilTank01 {
                             .setDebug(false)
                     );
                     response.setCache(!execute.isEmpty());
-                    if (execute.isEmpty()) {
-                        return;
+                    if (!execute.isEmpty()) {
+                        response.setData(execute.getFirst().get("data").toString());
+                        promise.goTo("cacheComplete");
                     }
-                    response.setData(execute.getFirst().get("data").toString());
-                    promise.goTo("cacheComplete");
                 })
                 .thenWithResource("request", HttpResource.class, (_, _, promise, httpResource) -> {
                     Response response = promise.getRepositoryMapClass(Response.class);
                     System.out.println("Request: " + uriSupplier.apply(promise));
                     HttpResponse execute = httpResource.execute(getHttpClient(uriSupplier.apply(promise)));
+                    checkResponse(execute);
                     response.setData(execute.getBody());
                 })
                 .thenWithResource("cacheInsert", JdbcResource.class, (_, _, promise, jdbcResource) -> {
