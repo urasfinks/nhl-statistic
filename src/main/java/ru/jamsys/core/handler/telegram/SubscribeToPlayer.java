@@ -93,6 +93,18 @@ public class SubscribeToPlayer implements PromiseGenerator, TelegramCommandHandl
                 })
                 .then("findPlayerByIdMarker", (_, _, _) -> {
                 })
+                .thenWithResource("checkAlready", JdbcResource.class, (_, _, promise, jdbcResource) -> {
+                    TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
+                    List<Map<String, Object>> execute = jdbcResource.execute(new JdbcRequest(JTScheduler.SELECT_MY_SUBSCRIBED_GAMES)
+                            .addArg("id_chat", context.getIdChat())
+                            .addArg("id_player", context.getUriParameters().get("idPlayer"))
+                            .setDebug(false)
+                    );
+                    if (!execute.isEmpty()) {
+                        context.getTelegramBot().send(UtilTelegram.editMessage(context.getMsg(), "The subscription already exists."));
+                        promise.skipAllStep();
+                    }
+                })
                 .extension(NHLPlayerList::promiseExtensionGetPlayerList)
                 .then("findPlayerById", (_, _, promise) -> {
                     UtilTank01.Response response = promise.getRepositoryMapClass(UtilTank01.Response.class);
