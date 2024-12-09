@@ -1,0 +1,20 @@
+Разворачивание приложения на сервере:
+1.  apt-get install docker.io
+
+copy [web/security/LogManager/heap] to /root/nhl-statistic
+chmod 644 -R /root/nhl-statistic
+docker save nhl-statistic > d.tar
+docker exec -it ${uuid} bash
+docker logs $(docker ps -lq) --tail 1000
+
+[nhl-statistic]
+cd /root/nhl-statistic
+docker stop nhl-statistic
+docker rm -vf $(docker ps -aq)
+docker rmi -f $(docker images -aq)
+docker load < d.tar
+docker run --name nhl-statistic -v /root/nhl-statistic:/home/storage -p 443:443 -p 80:80 -p 10001:10001 --log-driver json-file --log-opt max-size=18m --log-opt max-file=50 --env JAVA_TOOL_OPTIONS="-Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.port=10001 -Dcom.sun.management.jmxremote.rmi.port=10001 -Djava.rmi.server.hostname=nhl-statistic.ru -Dcom.sun.management.jmxremote.local.only=false -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/home/storage/heap/crash.hprof -Dspring.config.location=classpath:application.properties,classpath:application.docker.properties" -d nhl-statistic:0.0.1-SNAPSHOT
+
+[Для локального докера nhl-statistic]
+
+docker run --name nhl-statistic -v /Users/sfinks/IdeaProjects/nhl-statistic:/home/storage -p 443:443 -p 80:80 -p 10001:10001 --log-driver json-file --log-opt max-size=18m --log-opt max-file=50 --env JAVA_TOOL_OPTIONS="-Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.port=10001 -Dcom.sun.management.jmxremote.rmi.port=10001 -Djava.rmi.server.hostname=nhl-statistic.ru -Dcom.sun.management.jmxremote.local.only=false -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/Users/sfinks/IdeaProjects/heap/crash.hprof -Dspring.config.location=classpath:application.properties,classpath:application.docker.properties" -d nhl-statistic:0.0.1-SNAPSHOT
