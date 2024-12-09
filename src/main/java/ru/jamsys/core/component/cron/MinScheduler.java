@@ -10,6 +10,7 @@ import ru.jamsys.core.component.TelegramBotComponent;
 import ru.jamsys.core.extension.UniqueClassName;
 import ru.jamsys.core.extension.exception.ForwardException;
 import ru.jamsys.core.flat.template.cron.release.Cron1m;
+import ru.jamsys.core.flat.util.UtilJson;
 import ru.jamsys.core.flat.util.UtilRisc;
 import ru.jamsys.core.flat.util.tank.UtilTank01;
 import ru.jamsys.core.jt.JTGameDiff;
@@ -17,6 +18,7 @@ import ru.jamsys.core.jt.JTScheduler;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
 import ru.jamsys.core.resource.http.HttpResource;
+import ru.jamsys.core.resource.http.client.HttpResponse;
 import ru.jamsys.core.resource.jdbc.JdbcRequest;
 import ru.jamsys.core.resource.jdbc.JdbcResource;
 import ru.jamsys.tank.data.NHLBoxScore;
@@ -79,9 +81,9 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                         if (!run.get()) {
                             return;
                         }
-//                        HttpResponse response = UtilTank01.request(httpResource, promise, _ -> NHLBoxScore.getUri(idGame));
-//                        context.getResponse().put(idGame, response.getBody());
-                        context.getResponse().put(idGame, NHLBoxScore.getExample3());
+                        HttpResponse response = UtilTank01.request(httpResource, promise, _ -> NHLBoxScore.getUri(idGame));
+                        context.getResponse().put(idGame, response.getBody());
+//                        context.getResponse().put(idGame, NHLBoxScore.getExample3());
                     }
                     if (context.getResponse().isEmpty()) {
                         promise.skipAllStep();
@@ -111,6 +113,11 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                                 context.getEndGames().add(idGame);
                             }
                             NHLBoxScore.getNewEventScoring(context.getLastDB().get(idGame), data).forEach(map -> {
+                                telegramBotComponent.getHandler().send(
+                                        -4739098379L,
+                                        idGame + ":" + UtilJson.toStringPretty(map, "{}"),
+                                        null
+                                );
                                 @SuppressWarnings("uncheched")
                                 int idPlayer = Integer.parseInt(((Map<String, ?>) map.get("goal")).get("playerID").toString());
                                 context.getEvent().put(idPlayer, String.format(
