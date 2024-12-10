@@ -2,6 +2,7 @@ package ru.jamsys;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import ru.jamsys.core.flat.util.JsonEnvelope;
 import ru.jamsys.core.flat.util.UtilJson;
 import ru.jamsys.tank.data.NHLTeamSchedule;
 
@@ -40,6 +41,31 @@ class NHLTeamScheduleTest {
         Map<String, Object> game = NHLTeamSchedule.parseGame(NHLTeamSchedule.getExample()).getFirst();
         NHLTeamSchedule.extendGameTimeZone(game);
         Assertions.assertEquals("-05:00", game.get("timeZone"));
+    }
+
+    @Test
+    void test2() throws Throwable {
+        String data = """
+                {
+                  "gameID" : "20241210_COL@PIT",
+                  "seasonType" : "Regular Season",
+                  "away" : "COL",
+                  "gameTime" : "7:00p",
+                  "teamIDHome" : "23",
+                  "gameDate" : "20241210",
+                  "gameStatus" : "Scheduled",
+                  "gameTime_epoch" : "1733875200.0",
+                  "teamIDAway" : "8",
+                  "home" : "PIT",
+                  "gameStatusCode" : "0",
+                  "homeTeam" : "Pittsburgh Penguins (PIT)",
+                  "awayTeam" : "Colorado Avalanche (COL)",
+                  "about" : "Pittsburgh Penguins (PIT) vs Colorado Avalanche (COL)"
+                }
+                """;
+        Map<String, Object> game = UtilJson.getMapOrThrow(data);
+        NHLTeamSchedule.extendGameTimeZone(game);
+        System.out.println(UtilJson.toStringPretty(game, "{}"));
     }
 
 }
