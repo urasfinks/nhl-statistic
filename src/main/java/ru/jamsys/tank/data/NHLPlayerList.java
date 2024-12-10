@@ -32,6 +32,9 @@ public class NHLPlayerList {
         @SuppressWarnings("unchecked")
         Map<String, Object> parsed = UtilJson.toObject(json, Map.class);
         List<Map<String, Object>> result = new ArrayList<>();
+        if (parsed.containsKey("error")) {
+            throw new RuntimeException(parsed.get("error").toString());
+        }
         @SuppressWarnings("unchecked")
         List<Map<String, Object>> selector = (List<Map<String, Object>>) UtilJson.selector(parsed, "body");
         String lowerUserName = userName.toLowerCase();
@@ -46,6 +49,9 @@ public class NHLPlayerList {
     public static Map<String, Object> findById(String userId, String json) throws Throwable {
         @SuppressWarnings("unchecked")
         Map<String, Object> parsed = UtilJson.toObject(json, Map.class);
+        if (parsed.containsKey("error")) {
+            throw new RuntimeException(parsed.get("error").toString());
+        }
         @SuppressWarnings("unchecked")
         List<Map<String, Object>> selector = (List<Map<String, Object>>) UtilJson.selector(parsed, "body");
         for (Map<String, Object> stringObjectMap : selector) {

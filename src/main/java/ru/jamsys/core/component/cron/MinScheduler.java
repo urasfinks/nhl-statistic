@@ -206,7 +206,6 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                 .thenWithResource("removeFinish", JdbcResource.class, (_, _, promise, jdbcResource) -> {
                     Context context = promise.getRepositoryMapClass(Context.class);
                     if (!context.getEndGames().isEmpty()) {
-                        System.out.println("removeFinish");
                         context.getEndGames().forEach(idGame -> {
                             try {
                                 jdbcResource.execute(new JdbcRequest(JTScheduler.REMOVE_FINISH_GAME)

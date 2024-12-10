@@ -25,6 +25,9 @@ public class NHLTeams {
     public static Map<String, Object> getTeams(String json) throws Throwable {
         @SuppressWarnings("unchecked")
         Map<String, Object> parsed = UtilJson.toObject(json, Map.class);
+        if (parsed.containsKey("error")) {
+            throw new RuntimeException(parsed.get("error").toString());
+        }
         @SuppressWarnings("unchecked")
         List<Map<String, Object>> selector = (List<Map<String, Object>>) UtilJson.selector(parsed, "body");
         Map<String, Object> result = new HashMap<>();

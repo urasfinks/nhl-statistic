@@ -26,12 +26,19 @@ public class NHLBoxScore {
         return UtilFileResource.getAsString("example/getNHLBoxScore6.json");
     }
 
+    public static String getExampleError() throws IOException {
+        return UtilFileResource.getAsString("example/getNHLBoxScore_error.json");
+    }
+
     public static List<Map<String, Object>> getScoringPlays(String json) throws Throwable {
         if (json == null || json.isEmpty()) { //Так как в БД может быть ничего
             return new ArrayList<>();
         }
         @SuppressWarnings("unchecked")
         Map<String, Object> parsed = UtilJson.toObject(json, Map.class);
+        if (parsed.containsKey("error")) {
+            throw new RuntimeException(parsed.get("error").toString());
+        }
         @SuppressWarnings("unchecked")
         List<Map<String, Object>> selector = (List<Map<String, Object>>) UtilJson.selector(parsed, "body.scoringPlays");
         return selector;
@@ -58,6 +65,9 @@ public class NHLBoxScore {
         }
         @SuppressWarnings("unchecked")
         Map<String, Object> parsed = UtilJson.toObject(json, Map.class);
+        if (parsed.containsKey("error")) {
+            throw new RuntimeException(parsed.get("error").toString());
+        }
         String gameStatusCode = (String) UtilJson.selector(parsed, "body.gameStatusCode");
         return Integer.parseInt(gameStatusCode) == 2;
     }

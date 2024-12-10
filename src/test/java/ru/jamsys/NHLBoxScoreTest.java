@@ -43,4 +43,14 @@ class NHLBoxScoreTest {
         Assertions.assertEquals("[]", newEventScoring.toString());
     }
 
+    @Test
+    void getError() {
+        try {
+            NHLBoxScore.isFinish(NHLBoxScore.getExampleError());
+            Assertions.fail();
+        } catch (Throwable e) {
+            Assertions.assertEquals("Game hasn't started yet. Game time is: 7:00p(ET) on 20241210", e.getMessage());
+        }
+    }
+
 }

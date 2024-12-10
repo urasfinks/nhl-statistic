@@ -67,6 +67,9 @@ public class NHLTeamSchedule {
         Map<String, Object> teams = NHLTeams.getTeams();
         @SuppressWarnings("unchecked")
         Map<String, Object> parsed = UtilJson.toObject(json, Map.class);
+        if (parsed.containsKey("error")) {
+            throw new RuntimeException(parsed.get("error").toString());
+        }
         @SuppressWarnings("unchecked")
         List<Map<String, Object>> selector = (List<Map<String, Object>>) UtilJson.selector(parsed, "body.schedule");
         List<Map<String, Object>> result = new ArrayList<>();
