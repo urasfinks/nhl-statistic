@@ -12,7 +12,6 @@ import ru.jamsys.core.component.manager.item.RouteGeneratorRepository;
 import ru.jamsys.core.component.manager.item.Session;
 import ru.jamsys.core.extension.http.ServletRequestReader;
 import ru.jamsys.core.flat.util.Util;
-import ru.jamsys.core.flat.util.UtilJson;
 import ru.jamsys.core.flat.util.UtilTelegram;
 import ru.jamsys.core.flat.util.telegram.Button;
 import ru.jamsys.core.promise.Promise;
@@ -45,7 +44,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         if (msg == null) {
             return;
         }
-        System.out.println(UtilJson.toStringPretty(msg, "{}"));
+        //System.out.println(UtilJson.toStringPretty(msg, "{}"));
         if (msg.hasCallbackQuery()) {
             send(UtilTelegram.answerCallbackQuery(msg, ""));
         }

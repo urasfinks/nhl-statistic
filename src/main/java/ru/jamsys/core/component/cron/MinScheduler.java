@@ -54,6 +54,14 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
         List<String> endGames = new ArrayList<>();
     }
 
+    public void logToTelegram(String data) {
+        telegramBotComponent.getHandler().send(
+                -4739098379L,
+                data,
+                null
+        );
+    }
+
     @Override
     public Promise generate() {
         return servicePromise.get(index, 6_000L)
@@ -113,11 +121,7 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                                 context.getEndGames().add(idGame);
                             }
                             NHLBoxScore.getNewEventScoring(context.getLastDB().get(idGame), data).forEach(map -> {
-                                telegramBotComponent.getHandler().send(
-                                        -4739098379L,
-                                        idGame + ":" + UtilJson.toStringPretty(map, "{}"),
-                                        null
-                                );
+                                logToTelegram(idGame + ":" + UtilJson.toStringPretty(map, "{}"));
                                 @SuppressWarnings("uncheched")
                                 int idPlayer = Integer.parseInt(((Map<String, ?>) map.get("goal")).get("playerID").toString());
                                 context.getEvent().put(idPlayer, String.format(
@@ -190,6 +194,9 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                     Context context = promise.getRepositoryMapClass(Context.class);
                     UtilRisc.forEach(run, context.getResponse(), (key, data) -> {
                         try {
+                            if (context.getLastDB().get(key) == null) {
+                                logToTelegram("Start game: " + key);
+                            }
                             jdbcResource.execute(
                                     new JdbcRequest(context.getLastDB().get(key) == null
                                             ? JTGameDiff.INSERT
