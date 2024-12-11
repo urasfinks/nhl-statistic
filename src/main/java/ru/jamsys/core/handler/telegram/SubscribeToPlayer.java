@@ -30,7 +30,7 @@ import java.util.Map;
 @Setter
 @Getter
 @Component
-@RequestMapping("/subscribe_to_player/**")
+@RequestMapping({"/subscribe_to_player/**", "/stp/**"})
 public class SubscribeToPlayer implements PromiseGenerator, TelegramCommandHandler {
 
     private String index;
@@ -78,7 +78,7 @@ public class SubscribeToPlayer implements PromiseGenerator, TelegramCommandHandl
                         buttons.add(new Button(
                                 player.get("longName").toString() + " (" + player.get("team").toString() + ")",
                                 ServletResponseWriter.buildUrlQuery(
-                                        context.getUriPath() + "/",
+                                         "/stp/",
                                         new HashMapBuilder<>(context.getUriParameters())
                                                 .append("idPlayer", player.get("playerID").toString())
                                 )
