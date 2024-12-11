@@ -70,7 +70,8 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
         if (telegramBotComponent.getHandler() == null) {
             return null;
         }
-        return servicePromise.get(index, 5_000L)
+        return servicePromise.get(index, 50_000L)
+                .setDebug(true)
                 .thenWithResource("getSubscriptionsPlayer", JdbcResource.class, (_, _, promise, jdbcResource) -> {
                     Context context = promise.setRepositoryMapClass(Context.class, new Context());
                     List<Map<String, Object>> execute = jdbcResource.execute(
@@ -231,8 +232,7 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                 .onError((_, _, _) -> {
                     //logToTelegram(promise.getException().getMessage());
                     //System.out.println(promise.getLogString());
-                })
-                .setDebug(false);
+                });
     }
 
 }
