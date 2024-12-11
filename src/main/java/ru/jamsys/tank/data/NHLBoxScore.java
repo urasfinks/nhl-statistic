@@ -14,15 +14,19 @@ public class NHLBoxScore {
         return "/getNHLBoxScore?gameID=" + Util.urlEncode(gameId);
     }
 
-    public static String getExample() throws IOException {
+    public static String getExample4() throws IOException {
         return UtilFileResource.getAsString("example/getNHLBoxScore4.json");
     }
 
-    public static String getExample2() throws IOException {
+    public static String getExampleEmptyScore() throws IOException {
+        return UtilFileResource.getAsString("example/getNHLBoxScore_empty_scoring.json");
+    }
+
+    public static String getExample5() throws IOException {
         return UtilFileResource.getAsString("example/getNHLBoxScore5.json");
     }
 
-    public static String getExample3() throws IOException {
+    public static String getExample6() throws IOException {
         return UtilFileResource.getAsString("example/getNHLBoxScore6.json");
     }
 

@@ -48,63 +48,70 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
     public static class Context {
         List<String> listIdGame = new ArrayList<>();
         Map<String, String> response = new HashMap<>();
-        Map<String, String> lastDB = new HashMap<>();
+        Map<String, String> savedData = new HashMap<>();
         Map<Integer, String> event = new LinkedHashMap<>();
         Map<Integer, List<Integer>> subscriber = new HashMap<>();
         List<String> endGames = new ArrayList<>();
     }
 
     public void logToTelegram(String data) {
-        telegramBotComponent.getHandler().send(
-                -4739098379L,
-                data,
-                null
-        );
+        if (telegramBotComponent.getHandler() != null) {
+            telegramBotComponent.getHandler().send(
+                    -4739098379L,
+                    //290029195,
+                    data,
+                    null
+            );
+        }
     }
 
     @Override
     public Promise generate() {
-        return servicePromise.get(index, 6_000L)
-                .then("check", (_, _, promise) -> {
-                    if (telegramBotComponent.getHandler() == null) {
-                        promise.skipAllStep();
-                    }
-                })
+        if (telegramBotComponent.getHandler() == null) {
+            return null;
+        }
+        return servicePromise.get(index, 5_000L)
                 .thenWithResource("getSubscriptionsPlayer", JdbcResource.class, (_, _, promise, jdbcResource) -> {
                     Context context = promise.setRepositoryMapClass(Context.class, new Context());
-                    List<Map<String, Object>> execute = jdbcResource.execute(new JdbcRequest(JTScheduler.SELECT_ACTIVE_GAME)
-                            .setDebug(false)
+                    List<Map<String, Object>> execute = jdbcResource.execute(
+                            new JdbcRequest(JTScheduler.SELECT_ACTIVE_GAME).setDebug(false)
                     );
+                    // Если нет активных игр, нечего тут делать
                     if (execute.isEmpty()) {
-                        promise.skipAllStep();
+                        promise.skipAllStep("active game is empty");
                         return;
                     }
-                    List<String> listIdGame = context.getListIdGame();
-                    execute.forEach(stringObjectMap -> listIdGame.add(stringObjectMap.get("id_game").toString()));
+                    execute.forEach(map -> context.getListIdGame().add(map.get("id_game").toString()));
                 })
                 .thenWithResource("request", HttpResource.class, (run, _, promise, httpResource) -> {
                     Context context = promise.getRepositoryMapClass(Context.class);
-                    List<String> listIdGame = context.getListIdGame();
-                    for (String idGame : listIdGame) {
+                    for (String idGame : context.getListIdGame()) {
                         if (!run.get()) {
                             return;
                         }
                         HttpResponse response = UtilTank01.request(httpResource, promise, _ -> NHLBoxScore.getUri(idGame));
-                        context.getResponse().put(idGame, response.getBody());
-//                        context.getResponse().put(idGame, NHLBoxScore.getExample3());
+                        String data = response.getBody();
+                        //String data = NHLBoxScore.getExample6();
+
+                        @SuppressWarnings("unchecked")
+                        Map<String, Object> parsed = UtilJson.toObject(data, Map.class);
+                        if (!parsed.containsKey("error")) {
+                            context.getResponse().put(idGame, data);
+                        }
                     }
+                    // Если нет никаких данных, нет смысла ничего сверять
                     if (context.getResponse().isEmpty()) {
-                        promise.skipAllStep();
+                        promise.skipAllStep("NHLBoxScore response by active game is empty");
                     }
                 })
-                .thenWithResource("prepareLastData", JdbcResource.class, (run, _, promise, jdbcResource) -> {
+                .thenWithResource("getSavedData", JdbcResource.class, (run, _, promise, jdbcResource) -> {
                     Context context = promise.getRepositoryMapClass(Context.class);
                     UtilRisc.forEach(run, context.getResponse(), (idGame, _) -> {
                         try {
                             List<Map<String, Object>> execute = jdbcResource.execute(new JdbcRequest(JTGameDiff.SELECT)
                                     .addArg("id_game", idGame)
                             );
-                            context.getLastDB().put(idGame, execute.isEmpty()
+                            context.getSavedData().put(idGame, execute.isEmpty()
                                     ? null
                                     : execute.getFirst().get("scoring_plays").toString()
                             );
@@ -113,14 +120,14 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                         }
                     });
                 })
-                .then("getDiff", (atomicBoolean, _, promise) -> {
+                .then("diffEvent", (atomicBoolean, _, promise) -> {
                     Context context = promise.getRepositoryMapClass(Context.class);
                     UtilRisc.forEach(atomicBoolean, context.getResponse(), (idGame, data) -> {
                         try {
                             if (NHLBoxScore.isFinish(data)) {
                                 context.getEndGames().add(idGame);
                             }
-                            NHLBoxScore.getNewEventScoring(context.getLastDB().get(idGame), data).forEach(map -> {
+                            NHLBoxScore.getNewEventScoring(context.getSavedData().get(idGame), data).forEach(map -> {
                                 logToTelegram(idGame + ":" + UtilJson.toStringPretty(map, "{}"));
                                 @SuppressWarnings("uncheched")
                                 int idPlayer = Integer.parseInt(((Map<String, ?>) map.get("goal")).get("playerID").toString());
@@ -134,8 +141,9 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                             throw new ForwardException(e);
                         }
                     });
+                    // Если некому рассылать события, просто сохраним данные в БД
                     if (context.getEvent().isEmpty()) {
-                        promise.goTo("updateDB");
+                        promise.goTo("saveData");
                     }
                 })
                 .thenWithResource("selectSubscribers", JdbcResource.class, (_, _, promise, jdbcResource) -> {
@@ -145,17 +153,13 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                                     .addArg("id_players", context.getEvent().keySet().stream().toList())
                                     .setDebug(false)
                     );
-                    if (execute.isEmpty()) {
-                        promise.skipAllStep();
-                        return;
-                    }
                     execute.forEach(map -> context.getSubscriber().computeIfAbsent(
                             Integer.parseInt(map.get("id_player").toString()),
                             _ -> new ArrayList<>()
                     ).add(Integer.parseInt(map.get("id_chat").toString())));
                 })
                 .extension(NHLPlayerList::promiseExtensionGetPlayerList)
-                .then("send", (atomicBoolean, _, promise) -> {
+                .then("sendNotification", (atomicBoolean, _, promise) -> {
                     Context context = promise.getRepositoryMapClass(Context.class);
                     UtilTank01.Response response = promise.getRepositoryMapClass(UtilTank01.Response.class);
                     Map<Integer, String> event = context.getEvent();
@@ -174,24 +178,27 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                                     NHLPlayerList.getPlayerName(player),
                                     event.get(idPlayer)
                             );
-
                             UtilRisc.forEach(atomicBoolean, listIdChat, idChat -> {
-                                telegramBotComponent.getHandler().send(idChat, message, null);
+                                if (telegramBotComponent.getHandler() != null) {
+                                    telegramBotComponent.getHandler().send(idChat, message, null);
+                                }
                             });
                         } catch (Throwable e) {
                             App.error(e);
                         }
                     });
                 })
-                .thenWithResource("updateDB", JdbcResource.class, (run, _, promise, jdbcResource) -> {
+                // saveData в конце Promise специально на случай критичных рассылок, если сломается, то будет всё по
+                // новой рассылать
+                .thenWithResource("saveData", JdbcResource.class, (run, _, promise, jdbcResource) -> {
                     Context context = promise.getRepositoryMapClass(Context.class);
                     UtilRisc.forEach(run, context.getResponse(), (key, data) -> {
+                        if (context.getSavedData().get(key) == null) {
+                            logToTelegram("Start game: " + key);
+                        }
                         try {
-                            if (context.getLastDB().get(key) == null) {
-                                logToTelegram("Start game: " + key);
-                            }
                             jdbcResource.execute(
-                                    new JdbcRequest(context.getLastDB().get(key) == null
+                                    new JdbcRequest(context.getSavedData().get(key) == null
                                             ? JTGameDiff.INSERT
                                             : JTGameDiff.UPDATE
                                     )
@@ -218,7 +225,14 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                         });
                     }
                 })
-                .onError((_, _, promise) -> System.out.println(promise.getLogString()));
+                .onComplete((_, _, _) -> {
+                    //System.out.println(promise.getLogString());
+                })
+                .onError((_, _, _) -> {
+                    //logToTelegram(promise.getException().getMessage());
+                    //System.out.println(promise.getLogString());
+                })
+                .setDebug(false);
     }
 
 }

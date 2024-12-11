@@ -12,21 +12,21 @@ class NHLBoxScoreTest {
 
     @Test
     void getScoringPlays() throws Throwable {
-        List<Map<String, Object>> scoringPlays = NHLBoxScore.getScoringPlays(NHLBoxScore.getExample());
+        List<Map<String, Object>> scoringPlays = NHLBoxScore.getScoringPlays(NHLBoxScore.getExample4());
         System.out.println(UtilJson.toStringPretty(scoringPlays, "{}"));
     }
 
     @Test
     void isFinish() throws Throwable {
-        Assertions.assertFalse(NHLBoxScore.isFinish(NHLBoxScore.getExample()));
-        Assertions.assertTrue(NHLBoxScore.isFinish(NHLBoxScore.getExample3()));
+        Assertions.assertFalse(NHLBoxScore.isFinish(NHLBoxScore.getExample4()));
+        Assertions.assertTrue(NHLBoxScore.isFinish(NHLBoxScore.getExample6()));
     }
 
     @Test
     void getDiff() throws Throwable {
         List<Map<String, Object>> newEventScoring = NHLBoxScore.getNewEventScoring(
-                NHLBoxScore.getExample(),
-                NHLBoxScore.getExample2()
+                NHLBoxScore.getExample4(),
+                NHLBoxScore.getExample5()
         );
         Assertions.assertEquals(
                 "[{period=2P, goal={longName=Vincent Trocheck, playerID=2563036}, shortHanded=False, shootout=False, assists=[], powerPlay=False, teamID=20, scoreTime=10:18, team=NYR, teamAbv=NYR}]",
@@ -37,8 +37,8 @@ class NHLBoxScoreTest {
     @Test
     void getDiff2() throws Throwable {
         List<Map<String, Object>> newEventScoring = NHLBoxScore.getNewEventScoring(
-                NHLBoxScore.getExample2(),
-                NHLBoxScore.getExample()
+                NHLBoxScore.getExample5(),
+                NHLBoxScore.getExample4()
         );
         Assertions.assertEquals("[]", newEventScoring.toString());
     }

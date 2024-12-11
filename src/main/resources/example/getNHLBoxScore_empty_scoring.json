@@ -1,0 +1,72 @@
+{
+  "statusCode": 200,
+  "body": {
+    "gameStatus": "Live - In Progress",
+    "teamStats": {
+      "away": {
+        "teamAbv": "COL",
+        "team": "COL",
+        "teamID": "8"
+      },
+      "home": {
+        "teamAbv": "PIT",
+        "team": "PIT",
+        "teamID": "23"
+      }
+    },
+    "gameDate": "20241210",
+    "scoringPlays": [],
+    "homePoints": "",
+    "awayPoints": "",
+    "teamIDHome": "23",
+    "homeResult": "",
+    "linesmen": "Bryan Pancich, CJ Murray",
+    "away": "COL",
+    "lineScore": {
+      "period": "6:00 PM",
+      "gameClock": "",
+      "away": {
+        "teamAbv": "COL",
+        "team": "COL",
+        "teamID": "8"
+      },
+      "home": {
+        "teamAbv": "PIT",
+        "team": "PIT",
+        "teamID": "23"
+      }
+    },
+    "currentPeriod": "6:00 PM",
+    "gameLocation": "Pittsburgh, PA",
+    "home": "PIT",
+    "playerStats": {},
+    "shootout": "False",
+    "referees": "Francois St. Laurent, Garrett Rank",
+    "arena": "PPG Paints Arena",
+    "resultDetail": {
+      "away": {
+        "shootoutWin": "False",
+        "shootoutLoss": "False",
+        "regulationWin": "False",
+        "overtimeLoss": "False",
+        "overtimeWin": "False",
+        "regulationLoss": "False"
+      },
+      "home": {
+        "shootoutWin": "False",
+        "shootoutLoss": "False",
+        "regulationWin": "False",
+        "overtimeLoss": "False",
+        "overtimeWin": "False",
+        "regulationLoss": "False"
+      }
+    },
+    "awayResult": "",
+    "teamIDAway": "8",
+    "gameClock": "",
+    "gameID": "20241210_COL@PIT",
+    "overtime": "False",
+    "seasonType": "Regular Season",
+    "gameStatusCode": "1"
+  }
+}
