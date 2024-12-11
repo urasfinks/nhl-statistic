@@ -84,7 +84,7 @@ public class SubscribeToPlayer implements PromiseGenerator, TelegramCommandHandl
                                 )
                         ));
                         counter++;
-                        if (counter > 2) {
+                        if (counter > 9) {
                             break;
                         }
                     }
