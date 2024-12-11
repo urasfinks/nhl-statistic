@@ -53,7 +53,7 @@ public class SubscribeToPlayer implements PromiseGenerator, TelegramCommandHandl
                                 "Enter the player's name:",
                                 null
                         );
-                        promise.skipAllStep();
+                        promise.skipAllStep("wait player name");
                         return;
                     }
                     if (context.getUriParameters().containsKey("idPlayer")) {
@@ -89,7 +89,7 @@ public class SubscribeToPlayer implements PromiseGenerator, TelegramCommandHandl
                         }
                     }
                     context.getTelegramBot().send(context.getIdChat(), "Choose Player:", buttons);
-                    promise.skipAllStep();
+                    promise.skipAllStep("wait id_player");
                 })
                 .then("findPlayerByIdMarker", (_, _, _) -> {
                 })
@@ -102,7 +102,7 @@ public class SubscribeToPlayer implements PromiseGenerator, TelegramCommandHandl
                     );
                     if (!execute.isEmpty()) {
                         context.getTelegramBot().send(UtilTelegram.editMessage(context.getMsg(), "The subscription already exists."));
-                        promise.skipAllStep();
+                        promise.skipAllStep("The subscription already exists");
                     }
                 })
                 .extension(NHLPlayerList::promiseExtensionGetPlayerList)
@@ -115,7 +115,7 @@ public class SubscribeToPlayer implements PromiseGenerator, TelegramCommandHandl
                     );
                     if (player == null || player.isEmpty()) {
                         context.getTelegramBot().send(UtilTelegram.editMessage(context.getMsg(), "Not found player"));
-                        promise.skipAllStep();
+                        promise.skipAllStep("Not found player");
                         return;
                     }
                     String playerInfo = NHLPlayerList.getPlayerName(player);

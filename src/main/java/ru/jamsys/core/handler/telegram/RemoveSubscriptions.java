@@ -59,7 +59,7 @@ public class RemoveSubscriptions implements PromiseGenerator, TelegramCommandHan
                                 "At the moment, you don't have any subscriptions yet.",
                                 null
                         );
-                        promise.skipAllStep();
+                        promise.skipAllStep("subscribe empty");
                         return;
                     }
                     List<Button> buttons = new ArrayList<>();
@@ -84,7 +84,7 @@ public class RemoveSubscriptions implements PromiseGenerator, TelegramCommandHan
                             "You are subscribed to %d games. Select a player to unsubscribe.",
                             activeGame.get()
                     ), buttons);
-                    promise.skipAllStep();
+                    promise.skipAllStep("wait read id_player for unsubscribe");
                 })
                 .then("getSubscriptionsMarker", (_, _, promise) -> {
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);

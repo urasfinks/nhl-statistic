@@ -59,7 +59,7 @@ public class MySubscriptions implements PromiseGenerator, TelegramCommandHandler
                                 "At the moment, you don't have any subscriptions yet.",
                                 null
                         );
-                        promise.skipAllStep();
+                        promise.skipAllStep("subscriptions empty");
                         return;
                     }
                     List<Button> buttons = new ArrayList<>();
@@ -84,7 +84,7 @@ public class MySubscriptions implements PromiseGenerator, TelegramCommandHandler
                             "You are subscribed to %d games. Select a player to view detailed match information",
                             activeGame.get()
                     ), buttons);
-                    promise.skipAllStep();
+                    promise.skipAllStep("wait read id_player for more information");
                 })
                 .then("getSubscriptionsMarker", (_, _, promise) -> {
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
@@ -111,7 +111,6 @@ public class MySubscriptions implements PromiseGenerator, TelegramCommandHandler
                     StringBuilder sb = new StringBuilder();
                     execute.forEach(map -> sb.append(map.get("game_about")).append("\n"));
                     splitMessageSmart(sb.toString(), maxLength).forEach(s -> context.getTelegramBot().send(context.getIdChat(), s, null));
-                    promise.skipAllStep();
                 })
                 ;
     }
