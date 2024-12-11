@@ -135,11 +135,7 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                         }
                     });
                     if (context.getEvent().isEmpty()) {
-                        if (!context.getEndGames().isEmpty()) {
-                            promise.goTo("removeFinish");
-                        } else {
-                            promise.skipAllStep();
-                        }
+                        promise.goTo("updateDB");
                     }
                 })
                 .thenWithResource("selectSubscribers", JdbcResource.class, (_, _, promise, jdbcResource) -> {
@@ -157,9 +153,6 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                             Integer.parseInt(map.get("id_player").toString()),
                             _ -> new ArrayList<>()
                     ).add(Integer.parseInt(map.get("id_chat").toString())));
-                    if (context.getSubscriber().isEmpty()) {
-                        promise.skipAllStep();
-                    }
                 })
                 .extension(NHLPlayerList::promiseExtensionGetPlayerList)
                 .then("send", (atomicBoolean, _, promise) -> {
