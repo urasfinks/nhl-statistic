@@ -46,15 +46,16 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
     @Setter
     @Getter
     public static class Context {
-        List<String> listIdGame = new ArrayList<>();
-        Map<String, String> response = new HashMap<>();
-        Map<String, String> savedData = new HashMap<>();
-        Map<Integer, String> event = new LinkedHashMap<>();
-        Map<Integer, List<Integer>> subscriber = new HashMap<>();
-        List<String> endGames = new ArrayList<>();
+        private List<String> listIdGame = new ArrayList<>();
+        private Map<String, String> response = new HashMap<>();
+        private Map<String, String> savedData = new HashMap<>();
+        private Map<String, List<Map<String, Object>>> event = new LinkedHashMap<>(); // key - idPlayer; value - listEvent
+        private Map<String, List<Integer>> subscriber = new HashMap<>(); // key - idPlayer;
+        private List<String> endGames = new ArrayList<>();
     }
 
     public void logToTelegram(String data) {
+        //System.out.println("logToTelegram:" + data);
         if (telegramBotComponent.getHandler() != null) {
             telegramBotComponent.getHandler().send(
                     -4739098379L,
@@ -71,7 +72,7 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
             return null;
         }
         return servicePromise.get(index, 50_000L)
-                .setDebug(true)
+                .setDebug(false)
                 .thenWithResource("getSubscriptionsPlayer", JdbcResource.class, (_, _, promise, jdbcResource) -> {
                     Context context = promise.setRepositoryMapClass(Context.class, new Context());
                     List<Map<String, Object>> execute = jdbcResource.execute(
@@ -128,16 +129,11 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                             if (NHLBoxScore.isFinish(data)) {
                                 context.getEndGames().add(idGame);
                             }
-                            NHLBoxScore.getNewEventScoring(context.getSavedData().get(idGame), data).forEach(map -> {
-                                logToTelegram(idGame + ":" + UtilJson.toStringPretty(map, "{}"));
-                                @SuppressWarnings("uncheched")
-                                int idPlayer = Integer.parseInt(((Map<String, ?>) map.get("goal")).get("playerID").toString());
-                                context.getEvent().put(idPlayer, String.format(
-                                        "%s of the %s",
-                                        map.get("scoreTime"),
-                                        map.get("period")
-                                ));
-                            });
+                            context.getEvent().putAll(NHLBoxScore.getNewEventScoringByPlayer(
+                                    context.getSavedData().get(idGame),
+                                    data
+                            ));
+                            logToTelegram(idGame + ":" + UtilJson.toStringPretty(context.getEvent(), "{}"));
                         } catch (Throwable e) {
                             throw new ForwardException(e);
                         }
@@ -155,7 +151,7 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                                     .setDebug(false)
                     );
                     execute.forEach(map -> context.getSubscriber().computeIfAbsent(
-                            Integer.parseInt(map.get("id_player").toString()),
+                            map.get("id_player").toString(),
                             _ -> new ArrayList<>()
                     ).add(Integer.parseInt(map.get("id_chat").toString())));
                 })
@@ -163,22 +159,28 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                 .then("sendNotification", (atomicBoolean, _, promise) -> {
                     Context context = promise.getRepositoryMapClass(Context.class);
                     UtilTank01.Response response = promise.getRepositoryMapClass(UtilTank01.Response.class);
-                    Map<Integer, String> event = context.getEvent();
 
                     UtilRisc.forEach(atomicBoolean, context.getSubscriber(), (idPlayer, listIdChat) -> {
                         try {
                             Map<String, Object> player = NHLPlayerList.findById(
-                                    String.valueOf(idPlayer),
+                                    idPlayer,
                                     response.getData()
                             );
                             if (player == null || player.isEmpty()) {
                                 return;
                             }
-                            String message = String.format(
-                                    "%s scored a goal at %s.",
+                            List<String> listMessage = new ArrayList<>();
+                            context.getEvent().get(idPlayer).forEach(map -> listMessage.add(String.format(
+                                    "%s %s %s of the %s",
                                     NHLPlayerList.getPlayerName(player),
-                                    event.get(idPlayer)
-                            );
+                                    map.get("type").equals("goal")
+                                            ? "scored a goal at"
+                                            : " !CANCEL! ",
+                                    map.get("scoreTime"),
+                                    map.get("period")
+                            )));
+                            String message = String.join("\n", listMessage);
+                            //System.out.println("SEND TO CLIENT: " + message);
                             UtilRisc.forEach(atomicBoolean, listIdChat, idChat -> {
                                 if (telegramBotComponent.getHandler() != null) {
                                     telegramBotComponent.getHandler().send(idChat, message, null);
@@ -226,13 +228,7 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                         });
                     }
                 })
-                .onComplete((_, _, _) -> {
-                    //System.out.println(promise.getLogString());
-                })
-                .onError((_, _, _) -> {
-                    //logToTelegram(promise.getException().getMessage());
-                    //System.out.println(promise.getLogString());
-                });
+                .onError((_, _, promise) -> System.out.println(promise.getLogString()));
     }
 
 }
