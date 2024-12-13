@@ -414,7 +414,7 @@ class NHLBoxScoreTest {
                 NHLBoxScore.getExample4(),
                 NHLBoxScore.getExample5()
         );
-        Assertions.assertEquals("{2563036=GOAL! ${playerName} has 1 goal: 10:18 2P.}", result.toString());
+        Assertions.assertEquals("{2563036=GOAL! ${playerName} scored 1 goal: 10:18 2P.}", result.toString());
     }
 
     @Test
@@ -423,7 +423,7 @@ class NHLBoxScoreTest {
                 NHLBoxScore.getExample5(),
                 NHLBoxScore.getExample4()
         );
-        Assertions.assertEquals("{2563036=CANCEL! ${playerName} has 0 goal.}", result.toString());
+        Assertions.assertEquals("{2563036=CANCEL! ${playerName} scored 0 goal.}", result.toString());
     }
 
     @Test
@@ -432,7 +432,7 @@ class NHLBoxScoreTest {
                 NHLBoxScore.getExample6(),
                 NHLBoxScore.getExample6ChangeTime()
         );
-        Assertions.assertEquals("{2563036=CORRECTION! ${playerName} has 1 goal: 10:19 2P.}", result.toString());
+        Assertions.assertEquals("{2563036=CORRECTION! ${playerName} scored 1 goal: 10:19 2P.}", result.toString());
     }
 
     @Test
@@ -441,7 +441,7 @@ class NHLBoxScoreTest {
                 NHLBoxScore.getExample7(),
                 NHLBoxScore.getExample7ManyChange()
         );
-        Assertions.assertEquals("{2563036=CANCEL+CORRECTION! ${playerName} has 2 goals: 10:20 2P, 10:20 2P.}", result.toString());
+        Assertions.assertEquals("{2563036=CANCEL+CORRECTION! ${playerName} scored 2 goals: 10:20 2P, 10:20 2P.}", result.toString());
     }
 
 }

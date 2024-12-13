@@ -136,7 +136,7 @@ public class NHLBoxScore {
     }
 
     public static void addGoalsInformation(StringBuilder sb, List<Map<String, Object>> listPlaysCurrent) {
-        sb.append(" has ");
+        sb.append(" scored ");
         sb.append(listPlaysCurrent.size());
         sb.append(listPlaysCurrent.size() > 1 ? " goals" : " goal");
         if (!listPlaysCurrent.isEmpty()) {
