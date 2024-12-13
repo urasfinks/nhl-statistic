@@ -8,8 +8,10 @@ import ru.jamsys.core.App;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.component.TelegramBotComponent;
 import ru.jamsys.core.extension.UniqueClassName;
+import ru.jamsys.core.extension.builder.HashMapBuilder;
 import ru.jamsys.core.extension.exception.ForwardException;
 import ru.jamsys.core.flat.template.cron.release.Cron1m;
+import ru.jamsys.core.flat.template.twix.TemplateTwix;
 import ru.jamsys.core.flat.util.UtilJson;
 import ru.jamsys.core.flat.util.UtilRisc;
 import ru.jamsys.core.flat.util.tank.UtilTank01;
@@ -49,7 +51,7 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
         private List<String> listIdGame = new ArrayList<>();
         private Map<String, String> response = new HashMap<>();
         private Map<String, String> savedData = new HashMap<>();
-        private Map<String, List<Map<String, Object>>> event = new LinkedHashMap<>(); // key - idPlayer; value - listEvent
+        private Map<String, String> event = new LinkedHashMap<>(); // key - idPlayer; value - template
         private Map<String, List<Integer>> subscriber = new HashMap<>(); // key - idPlayer;
         private List<String> endGames = new ArrayList<>();
     }
@@ -128,12 +130,13 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                         try {
                             if (NHLBoxScore.isFinish(data)) {
                                 context.getEndGames().add(idGame);
+                                logToTelegram("Finish game: " + idGame);
                             }
                             context.getEvent().putAll(NHLBoxScore.getNewEventScoringByPlayer(
                                     context.getSavedData().get(idGame),
                                     data
                             ));
-                            logToTelegram(idGame + ":" + UtilJson.toStringPretty(context.getEvent(), "{}"));
+                            //logToTelegram(idGame + ":" + UtilJson.toStringPretty(context.getEvent(), "{}"));
                         } catch (Throwable e) {
                             throw new ForwardException(e);
                         }
@@ -169,17 +172,11 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                             if (player == null || player.isEmpty()) {
                                 return;
                             }
-                            List<String> listMessage = new ArrayList<>();
-                            context.getEvent().get(idPlayer).forEach(map -> listMessage.add(String.format(
-                                    "%s %s %s of the %s",
-                                    NHLPlayerList.getPlayerName(player),
-                                    map.get("type").equals("goal")
-                                            ? "scored a goal at"
-                                            : " !CANCEL! ",
-                                    map.get("scoreTime"),
-                                    map.get("period")
-                            )));
-                            String message = String.join("\n", listMessage);
+                            String message = TemplateTwix.template(
+                                    context.getEvent().get(idPlayer),
+                                    new HashMapBuilder<String, String>()
+                                            .append("playerName", NHLPlayerList.getPlayerName(player))
+                            );
                             //System.out.println("SEND TO CLIENT: " + message);
                             UtilRisc.forEach(atomicBoolean, listIdChat, idChat -> {
                                 if (telegramBotComponent.getHandler() != null) {

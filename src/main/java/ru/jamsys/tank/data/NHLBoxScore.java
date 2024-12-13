@@ -2,11 +2,12 @@ package ru.jamsys.tank.data;
 
 import ru.jamsys.core.App;
 import ru.jamsys.core.extension.builder.HashMapBuilder;
-import ru.jamsys.core.flat.util.Util;
-import ru.jamsys.core.flat.util.UtilFileResource;
-import ru.jamsys.core.flat.util.UtilJson;
+import ru.jamsys.core.flat.util.*;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class NHLBoxScore {
@@ -30,6 +31,18 @@ public class NHLBoxScore {
 
     public static String getExample6() throws IOException {
         return UtilFileResource.getAsString("example/getNHLBoxScore6.json");
+    }
+
+    public static String getExample6ChangeTime() throws IOException {
+        return UtilFileResource.getAsString("example/getNHLBoxScore6_change_time.json");
+    }
+
+    public static String getExample7() throws IOException {
+        return UtilFileResource.getAsString("example/getNHLBoxScore7.json");
+    }
+
+    public static String getExample7ManyChange() throws IOException {
+        return UtilFileResource.getAsString("example/getNHLBoxScore7_many_change.json");
     }
 
     public static String getExampleError() throws IOException {
@@ -116,9 +129,26 @@ public class NHLBoxScore {
         return scoringPlaysCurrent;
     }
 
-    public static Map<String, List<Map<String, Object>>> getNewEventScoringByPlayer(String last, String current) throws Throwable {
+    public static String getEnumGame(List<Map<String, Object>> listPlaysCurrent) {
+        List<String> timeGoal = new ArrayList<>();
+        listPlaysCurrent.forEach(map -> timeGoal.add(map.get("scoreTime") + " " + map.get("period")));
+        return String.join(", ", timeGoal);
+    }
 
-        Map<String, List<Map<String, Object>>> result = new HashMap<>();
+    public static void addGoalsInformation(StringBuilder sb, List<Map<String, Object>> listPlaysCurrent) {
+        sb.append(" has ");
+        sb.append(listPlaysCurrent.size());
+        sb.append(listPlaysCurrent.size() > 1 ? " goals" : " goal");
+        if (!listPlaysCurrent.isEmpty()) {
+            sb.append(": ");
+            sb.append(getEnumGame(listPlaysCurrent));
+        }
+        sb.append(".");
+    }
+
+    public static Map<String, String> getNewEventScoringByPlayer(String last, String current) throws Throwable {
+
+        Map<String, String> result = new HashMap<>();
 
         Map<String, List<Map<String, Object>>> scoringPlaysLast = getScoringPlaysMap(last);
         Map<String, List<Map<String, Object>>> scoringPlaysCurrent = getScoringPlaysMap(current);
@@ -127,12 +157,38 @@ public class NHLBoxScore {
         idPlayers.addAll(scoringPlaysLast.keySet());
         idPlayers.addAll(scoringPlaysCurrent.keySet());
         idPlayers.forEach(idPlayer -> {
+            List<Map<String, Object>> listPlaysCurrent = scoringPlaysCurrent.getOrDefault(idPlayer, new ArrayList<>());
             List<Map<String, Object>> newEventScoringByPlayer = getNewEventScoringByPlayer(
                     scoringPlaysLast.getOrDefault(idPlayer, new ArrayList<>()),
-                    scoringPlaysCurrent.getOrDefault(idPlayer, new ArrayList<>())
+                    listPlaysCurrent
             );
             if (!newEventScoringByPlayer.isEmpty()) {
-                result.put(idPlayer, newEventScoringByPlayer);
+                Set<String> notify = new HashSet<>();
+                for (Map<String, Object> event : newEventScoringByPlayer) {
+                    notify.add(event.get("type").toString());
+                }
+                if (notify.contains("goal")) {
+                    StringBuilder sb = new StringBuilder();
+                    sb.append(newEventScoringByPlayer.size() > 1 ? "GOALS!" : "GOAL!");
+                    sb.append(" ${playerName}");
+                    addGoalsInformation(sb, listPlaysCurrent);
+                    result.put(idPlayer, sb.toString());
+                } else if (notify.size() == 1 && notify.contains("cancel")) {
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("CANCEL! ${playerName}");
+                    addGoalsInformation(sb, listPlaysCurrent);
+                    result.put(idPlayer, sb.toString());
+                } else if (notify.size() == 1 && notify.contains("changeScoreTime")) {
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("CORRECTION! ${playerName}");
+                    addGoalsInformation(sb, listPlaysCurrent);
+                    result.put(idPlayer, sb.toString());
+                } else {
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("CANCEL+CORRECTION! ${playerName}");
+                    addGoalsInformation(sb, listPlaysCurrent);
+                    result.put(idPlayer, sb.toString());
+                }
             }
         });
         return result;
@@ -167,20 +223,57 @@ public class NHLBoxScore {
                 }
             }
         });
+        List<Map<String, Object>> cancel = new ArrayList<>();
+        List<Map<String, Object>> goal = new ArrayList<>();
 
         last.forEach(map -> {
             if (!map.containsKey("findInCurrent")) {
                 map.put("type", "cancel");
                 res.add(map);
+                cancel.add(map);
             }
         });
         current.forEach(map -> {
             if (!map.containsKey("findInLast")) {
                 map.put("type", "goal");
                 res.add(map);
+                goal.add(map);
             }
         });
-        return res;
+
+        cancel.forEach(cancelMap -> {
+            List<Map<String, Object>> reduce = new ArrayList<>();
+            goal.forEach(goalMap -> {
+                if (!goalMap.get("type").equals("reduceCancel")) {
+                    try {
+                        long secOffset = Math.abs(UtilDate.diffSecond(
+                                cancelMap.get("scoreTime").toString(),
+                                goalMap.get("scoreTime").toString(),
+                                "H:mm"
+                        ));
+                        if (secOffset <= 3 * 60) {
+                            reduce.add(goalMap);
+                        }
+                    } catch (ParseException _) {
+                    }
+                }
+            });
+
+            if (!reduce.isEmpty()) {
+                Map<String, Object> first = UtilListSort.sort(reduce, UtilListSort.Type.ASC, map -> {
+                    DateFormat dateFormat = new SimpleDateFormat("H:mm");
+                    try {
+                        return dateFormat.parse(map.get("scoreTime").toString()).getTime();
+                    } catch (ParseException _) {
+                    }
+                    return 0L;
+                }).getFirst();
+                first.put("type", "reduceCancel");
+                cancelMap.put("type", "changeScoreTime");
+                cancelMap.put("newScoreTime", first.get("scoreTime"));
+            }
+        });
+        return res.stream().filter(map -> !map.get("type").equals("reduceCancel")).toList();
     }
 
 }
