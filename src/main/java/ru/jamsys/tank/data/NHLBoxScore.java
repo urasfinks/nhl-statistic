@@ -131,8 +131,24 @@ public class NHLBoxScore {
 
     public static String getEnumGame(List<Map<String, Object>> listPlaysCurrent) {
         List<String> timeGoal = new ArrayList<>();
-        listPlaysCurrent.forEach(map -> timeGoal.add(map.get("scoreTime") + " " + map.get("period")));
+        listPlaysCurrent.forEach(map -> timeGoal.add(map.get("scoreTime") + " " + periodExpand(map.get("period").toString())));
         return String.join(", ", timeGoal);
+    }
+
+    public static String periodExpand(String period) {
+        if (period == null || period.isEmpty()) {
+            return "undefined period";
+        } else if (period.equals("1P")) {
+            return "1st period";
+        } else if (period.equals("2P")) {
+            return "2nd period";
+        } else if (period.equals("3P")) {
+            return "3rd period";
+        } else if (period.equals("OT")) {
+            return "overtime";
+        } else {
+            return period;
+        }
     }
 
     public static void addGoalsInformation(StringBuilder sb, List<Map<String, Object>> listPlaysCurrent) {

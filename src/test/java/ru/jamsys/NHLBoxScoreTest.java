@@ -444,4 +444,13 @@ class NHLBoxScoreTest {
         Assertions.assertEquals("{2563036=CANCEL+CORRECTION! ${playerName} scored 2 goals: 10:20 2P, 10:20 2P.}", result.toString());
     }
 
+    @Test
+    void periodExpand(){
+        Assertions.assertEquals("1st period", NHLBoxScore.periodExpand("1P"));
+        Assertions.assertEquals("2nd period", NHLBoxScore.periodExpand("2P"));
+        Assertions.assertEquals("3rd period", NHLBoxScore.periodExpand("3P"));
+        Assertions.assertEquals("overtime", NHLBoxScore.periodExpand("OT"));
+        Assertions.assertEquals("time is it", NHLBoxScore.periodExpand("time is it"));
+    }
+
 }
