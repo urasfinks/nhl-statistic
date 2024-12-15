@@ -24,6 +24,14 @@ public class NHLTeamSchedule {
         return UtilFileResource.getAsString("example/NJ_2025.json");
     }
 
+    public static String getExample_WSH_2024() throws IOException {
+        return UtilFileResource.getAsString("example/WSH_2024.json");
+    }
+
+    public static String getExample_WSH_2025() throws IOException {
+        return UtilFileResource.getAsString("example/WSH_2025.json");
+    }
+
     public static String getExample() throws IOException {
         return UtilFileResource.getAsString("example/getNHLTeamSchedule.json");
     }

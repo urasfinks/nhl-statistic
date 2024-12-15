@@ -15,16 +15,16 @@ class NHLGamesForPlayerTest {
     void goals() throws Throwable {
 
         Set<String> game2024 = new HashSet<>();
-        NHLTeamSchedule.parseGameRaw(NHLTeamSchedule.getExample_18_2024()).forEach(
+        NHLTeamSchedule.parseGameRaw(NHLTeamSchedule.getExample_WSH_2024()).forEach(
                 stringObjectMap -> game2024.add(stringObjectMap.get("gameID").toString())
         );
         //System.out.println(game2024);
         Set<String> game2025 = new HashSet<>();
-        NHLTeamSchedule.parseGameRaw(NHLTeamSchedule.getExample_18_2025()).forEach(
+        NHLTeamSchedule.parseGameRaw(NHLTeamSchedule.getExample_WSH_2025()).forEach(
                 stringObjectMap -> game2025.add(stringObjectMap.get("gameID").toString())
         );
         //System.out.println(game2025);
-        Map<String, Map<String, Object>> goals = NHLGamesForPlayer.goals(NHLGamesForPlayer.getExample());
+        Map<String, Map<String, Object>> goals = NHLGamesForPlayer.goals(NHLGamesForPlayer.getExampleOvechkin());
         HashMap<String, AtomicInteger> xx = new HashMapBuilder<String, AtomicInteger>()
                 .append("2024", new AtomicInteger(0))
                 .append("2025", new AtomicInteger(0));

@@ -12,6 +12,10 @@ public class NHLGamesForPlayer {
         return UtilFileResource.getAsString("example/4565222.json");
     }
 
+    public static String getExampleOvechkin() throws IOException {
+        return UtilFileResource.getAsString("example/3101.json");
+    }
+
     public static Map<String, Map<String, Object>> goals(String json) throws Throwable {
         @SuppressWarnings("unchecked")
         Map<String, Object> parsed = UtilJson.toObject(json, Map.class);
