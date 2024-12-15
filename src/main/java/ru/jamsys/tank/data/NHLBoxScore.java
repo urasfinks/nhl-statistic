@@ -186,22 +186,22 @@ public class NHLBoxScore {
                 if (notify.contains("goal")) {
                     StringBuilder sb = new StringBuilder();
                     sb.append(newEventScoringByPlayer.size() > 1 ? "GOALS!" : "GOAL!");
-                    sb.append(" ${playerName}");
+                    sb.append(" Game ${gameName}. ${playerName}");
                     addGoalsInformation(sb, listPlaysCurrent);
                     result.put(idPlayer, sb.toString());
                 } else if (notify.size() == 1 && notify.contains("cancel")) {
                     StringBuilder sb = new StringBuilder();
-                    sb.append("CANCEL! ${playerName}");
+                    sb.append("CANCEL! Game ${gameName}. ${playerName}");
                     addGoalsInformation(sb, listPlaysCurrent);
                     result.put(idPlayer, sb.toString());
                 } else if (notify.size() == 1 && notify.contains("changeScoreTime")) {
                     StringBuilder sb = new StringBuilder();
-                    sb.append("CORRECTION! ${playerName}");
+                    sb.append("CORRECTION! Game ${gameName}. ${playerName}");
                     addGoalsInformation(sb, listPlaysCurrent);
                     result.put(idPlayer, sb.toString());
                 } else {
                     StringBuilder sb = new StringBuilder();
-                    sb.append("CANCEL+CORRECTION! ${playerName}");
+                    sb.append("CANCEL+CORRECTION! Game ${gameName}. ${playerName}");
                     addGoalsInformation(sb, listPlaysCurrent);
                     result.put(idPlayer, sb.toString());
                 }

@@ -451,6 +451,8 @@ class NHLBoxScoreTest {
         Assertions.assertEquals("3rd period", NHLBoxScore.periodExpand("3P"));
         Assertions.assertEquals("overtime", NHLBoxScore.periodExpand("OT"));
         Assertions.assertEquals("time is it", NHLBoxScore.periodExpand("time is it"));
+        String idGame = "20241012_NJ@WSH";
+        Assertions.assertEquals("NJ@WSH", idGame.substring(idGame.indexOf("_") + 1));
     }
 
 }

@@ -54,6 +54,7 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
         private Map<String, String> event = new LinkedHashMap<>(); // key - idPlayer; value - template
         private Map<String, List<Integer>> subscriber = new HashMap<>(); // key - idPlayer;
         private List<String> endGames = new ArrayList<>();
+        private Map<String, String> mapIdPlayerGame = new HashMap<>(); // key - idPlayer; value - gameName
     }
 
     public void logToTelegram(String data) {
@@ -132,10 +133,16 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                                 context.getEndGames().add(idGame);
                                 logToTelegram("Finish game: " + idGame);
                             }
-                            context.getEvent().putAll(NHLBoxScore.getNewEventScoringByPlayer(
+                            Map<String, String> newEventScoringByPlayer = NHLBoxScore.getNewEventScoringByPlayer(
                                     context.getSavedData().get(idGame),
                                     data
-                            ));
+                            );
+                            newEventScoringByPlayer.forEach(
+                                    (idPlayer, _) -> context
+                                            .getMapIdPlayerGame()
+                                            .put(idPlayer, idGame.substring(idGame.indexOf("_") + 1))
+                            );
+                            context.getEvent().putAll(newEventScoringByPlayer);
                             //logToTelegram(idGame + ":" + UtilJson.toStringPretty(context.getEvent(), "{}"));
                         } catch (Throwable e) {
                             throw new ForwardException(e);
@@ -176,6 +183,7 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                                     context.getEvent().get(idPlayer),
                                     new HashMapBuilder<String, String>()
                                             .append("playerName", NHLPlayerList.getPlayerName(player))
+                                            .append("gameName", context.getMapIdPlayerGame().getOrDefault(idPlayer, ""))
                             );
                             //System.out.println("SEND TO CLIENT: " + message);
                             UtilRisc.forEach(atomicBoolean, listIdChat, idChat -> {
