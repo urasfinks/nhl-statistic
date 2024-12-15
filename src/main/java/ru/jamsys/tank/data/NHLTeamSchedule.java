@@ -16,6 +16,14 @@ public class NHLTeamSchedule {
         return "/getNHLTeamSchedule?teamID=" + idTeam + "&season=" + season;
     }
 
+    public static String getExample_18_2024() throws IOException {
+        return UtilFileResource.getAsString("example/NJ_2024.json");
+    }
+
+    public static String getExample_18_2025() throws IOException {
+        return UtilFileResource.getAsString("example/NJ_2025.json");
+    }
+
     public static String getExample() throws IOException {
         return UtilFileResource.getAsString("example/getNHLTeamSchedule.json");
     }
@@ -61,6 +69,17 @@ public class NHLTeamSchedule {
                 map.get("homeTeam"),
                 map.get("awayTeam")
         );
+    }
+
+    public static List<Map<String, Object>> parseGameRaw(String json) throws Throwable {
+        @SuppressWarnings("unchecked")
+        Map<String, Object> parsed = UtilJson.toObject(json, Map.class);
+        if (parsed.containsKey("error")) {
+            throw new RuntimeException(parsed.get("error").toString());
+        }
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> selector = (List<Map<String, Object>>) UtilJson.selector(parsed, "body.schedule");
+        return selector;
     }
 
     public static List<Map<String, Object>> parseGame(String json) throws Throwable {
