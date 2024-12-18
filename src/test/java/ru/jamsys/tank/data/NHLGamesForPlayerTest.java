@@ -28,7 +28,9 @@ class NHLGamesForPlayerTest {
         HashMap<String, AtomicInteger> xx = new HashMapBuilder<String, AtomicInteger>()
                 .append("2024", new AtomicInteger(0))
                 .append("2025", new AtomicInteger(0));
+        AtomicInteger all = new AtomicInteger(0);
         goals.forEach((s, o) -> {
+            all.addAndGet(Integer.parseInt(o.get("goals").toString()));
             if (game2024.contains(s)) {
                 xx.get("2024").addAndGet(Integer.parseInt(o.get("goals").toString()));
             }
@@ -37,6 +39,7 @@ class NHLGamesForPlayerTest {
             }
         });
         System.out.println(xx);
+        System.out.println(all);
     }
 
 }

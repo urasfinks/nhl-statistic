@@ -48,8 +48,8 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
     @Setter
     @Getter
     public static class Context {
-        private List<String> listIdGame = new ArrayList<>();
-        private Map<String, String> response = new HashMap<>();
+        private List<String> activeGame = new ArrayList<>();
+        private Map<String, String> boxScore = new HashMap<>();
         private Map<String, String> savedData = new HashMap<>();
         private Map<String, String> event = new LinkedHashMap<>(); // key - idPlayer; value - template
         private Map<String, List<Integer>> subscriber = new HashMap<>(); // key - idPlayer;
@@ -76,7 +76,7 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
         }
         return servicePromise.get(index, 50_000L)
                 .setDebug(false)
-                .thenWithResource("getSubscriptionsPlayer", JdbcResource.class, (_, _, promise, jdbcResource) -> {
+                .thenWithResource("getActiveGame", JdbcResource.class, (_, _, promise, jdbcResource) -> {
                     Context context = promise.setRepositoryMapClass(Context.class, new Context());
                     List<Map<String, Object>> execute = jdbcResource.execute(
                             new JdbcRequest(JTScheduler.SELECT_ACTIVE_GAME).setDebug(false)
@@ -86,11 +86,11 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                         promise.skipAllStep("active game is empty");
                         return;
                     }
-                    execute.forEach(map -> context.getListIdGame().add(map.get("id_game").toString()));
+                    execute.forEach(map -> context.getActiveGame().add(map.get("id_game").toString()));
                 })
-                .thenWithResource("request", HttpResource.class, (run, _, promise, httpResource) -> {
+                .thenWithResource("getBoxScore", HttpResource.class, (run, _, promise, httpResource) -> {
                     Context context = promise.getRepositoryMapClass(Context.class);
-                    for (String idGame : context.getListIdGame()) {
+                    for (String idGame : context.getActiveGame()) {
                         if (!run.get()) {
                             return;
                         }
@@ -101,17 +101,17 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                         @SuppressWarnings("unchecked")
                         Map<String, Object> parsed = UtilJson.toObject(data, Map.class);
                         if (!parsed.containsKey("error")) {
-                            context.getResponse().put(idGame, data);
+                            context.getBoxScore().put(idGame, data);
                         }
                     }
                     // Если нет никаких данных, нет смысла ничего сверять
-                    if (context.getResponse().isEmpty()) {
+                    if (context.getBoxScore().isEmpty()) {
                         promise.skipAllStep("NHLBoxScore response by active game is empty");
                     }
                 })
                 .thenWithResource("getSavedData", JdbcResource.class, (run, _, promise, jdbcResource) -> {
                     Context context = promise.getRepositoryMapClass(Context.class);
-                    UtilRisc.forEach(run, context.getResponse(), (idGame, _) -> {
+                    UtilRisc.forEach(run, context.getBoxScore(), (idGame, _) -> {
                         try {
                             List<Map<String, Object>> execute = jdbcResource.execute(new JdbcRequest(JTGameDiff.SELECT)
                                     .addArg("id_game", idGame)
@@ -127,7 +127,7 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                 })
                 .then("diffEvent", (atomicBoolean, _, promise) -> {
                     Context context = promise.getRepositoryMapClass(Context.class);
-                    UtilRisc.forEach(atomicBoolean, context.getResponse(), (idGame, data) -> {
+                    UtilRisc.forEach(atomicBoolean, context.getBoxScore(), (idGame, data) -> {
                         try {
                             if (NHLBoxScore.isFinish(data)) {
                                 context.getEndGames().add(idGame);
@@ -200,7 +200,7 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                 // новой рассылать
                 .thenWithResource("saveData", JdbcResource.class, (run, _, promise, jdbcResource) -> {
                     Context context = promise.getRepositoryMapClass(Context.class);
-                    UtilRisc.forEach(run, context.getResponse(), (key, data) -> {
+                    UtilRisc.forEach(run, context.getBoxScore(), (key, data) -> {
                         if (context.getSavedData().get(key) == null) {
                             logToTelegram("Start game: " + key);
                         }
