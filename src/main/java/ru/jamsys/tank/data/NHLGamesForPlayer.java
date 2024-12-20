@@ -8,6 +8,10 @@ import java.util.Map;
 
 public class NHLGamesForPlayer {
 
+    public static String getUri(String idPlayer) {
+        return "getNHLGamesForPlayer?playerID=" + idPlayer + "&numberOfGames=10000";
+    }
+
     public static String getExample() throws IOException {
         return UtilFileResource.getAsString("example/4565222.json");
     }
