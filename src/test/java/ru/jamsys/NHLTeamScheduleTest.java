@@ -24,21 +24,21 @@ class NHLTeamScheduleTest {
     }
 
     @Test
-    void parseGame() throws Throwable {
-        List<Map<String, Object>> game = NHLTeamSchedule.parseGame(NHLTeamSchedule.getExample());
+    void parseGameScheduledAndLive() throws Throwable {
+        List<Map<String, Object>> game = NHLTeamSchedule.parseGameScheduledAndLive(NHLTeamSchedule.getExample());
         System.out.println(UtilJson.toStringPretty(game, "{}"));
     }
 
     @Test
     void getGameSortAndFilterByTime() throws Throwable {
-        List<Map<String, Object>> game = NHLTeamSchedule.parseGame(NHLTeamSchedule.getExample());
+        List<Map<String, Object>> game = NHLTeamSchedule.parseGameScheduledAndLive(NHLTeamSchedule.getExample());
         List<Map<String, Object>> sortGameByTime = NHLTeamSchedule.getGameSortAndFilterByTime(game);
         System.out.println(UtilJson.toStringPretty(sortGameByTime.getFirst(), "{}"));
     }
 
     @Test
     void test() throws Throwable {
-        Map<String, Object> game = NHLTeamSchedule.parseGame(NHLTeamSchedule.getExample()).getFirst();
+        Map<String, Object> game = NHLTeamSchedule.parseGameScheduledAndLive(NHLTeamSchedule.getExample()).getFirst();
         NHLTeamSchedule.extendGameTimeZone(game);
         Assertions.assertEquals("-05:00", game.get("timeZone"));
     }

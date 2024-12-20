@@ -97,7 +97,7 @@ public class NHLTeamSchedule {
         return selector;
     }
 
-    public static List<Map<String, Object>> parseGame(String json) throws Throwable {
+    public static List<Map<String, Object>> parseGameScheduledAndLive(String json) throws Throwable {
         Map<String, Object> teams = NHLTeams.getTeams();
         @SuppressWarnings("unchecked")
         Map<String, Object> parsed = UtilJson.toObject(json, Map.class);
@@ -149,7 +149,7 @@ public class NHLTeamSchedule {
     }
 
     // Метод для определения сезона по дате
-    public static Integer getCurrentSeasonIfRunOrNext() throws ParseException {
+    public static Integer getCurrentSeasonIfRunOrNext() {
         return getCurrentSeasonIfRunOrNext(LocalDate.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
     }
 

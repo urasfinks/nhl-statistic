@@ -46,7 +46,11 @@ public class SubscribeToPlayer implements PromiseGenerator, TelegramCommandHandl
                 .then("check", (_, _, promise) -> {
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
                     if (NHLTeamSchedule.getCurrentSeasonIfRunOrNext() == null) {
-                        context.getTelegramBot().send(context.getIdChat(), "The regular season has not started yet. The subscription is available from October to April.", null);
+                        context.getTelegramBot().send(
+                                context.getIdChat(),
+                                "The regular season has not started yet. The subscription is available from October to April.",
+                                null
+                        );
                         promise.skipAllStep("Not found run season");
                         return;
                     }
@@ -144,7 +148,7 @@ public class SubscribeToPlayer implements PromiseGenerator, TelegramCommandHandl
                     List<Map<String, Object>> game = (List<Map<String, Object>>) context.getAnyData().computeIfAbsent(
                             "findGames", _ -> new ArrayList<String>()
                     );
-                    game.addAll(NHLTeamSchedule.parseGame(response.getData()));
+                    game.addAll(NHLTeamSchedule.parseGameScheduledAndLive(response.getData()));
                 })
                 .thenWithResource("insertSchedule", JdbcResource.class, (_, _, promise, jdbcResource) -> {
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);

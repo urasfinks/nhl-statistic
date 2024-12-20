@@ -51,7 +51,7 @@ public class UtilTank01 {
 
     public static void checkResponse(HttpResponse execute) throws Throwable {
         if (!execute.isStatus()) {
-            throw (Throwable) execute.getException().getFirst().getValue();
+            throw execute.getException().getFirst().getValueRaw();
         }
         if (!execute.getBody().contains("\"statusCode\": 200")) {
             throw new RuntimeException("Not found statusCode 200");

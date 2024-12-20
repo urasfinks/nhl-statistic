@@ -1,6 +1,8 @@
 package ru.jamsys.tank.data;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import ru.jamsys.core.extension.builder.ArrayListBuilder;
 import ru.jamsys.core.extension.builder.HashMapBuilder;
 
 import java.util.HashMap;
@@ -40,6 +42,18 @@ class NHLGamesForPlayerTest {
         });
         System.out.println(xx);
         System.out.println(all);
+    }
+
+    @Test
+    public void test1() throws Throwable {
+        Map<String, Integer> onlyGoals = NHLGamesForPlayer.getOnlyGoals(NHLGamesForPlayer.getExampleOvechkin());
+        Assertions.assertEquals(0, onlyGoals.get("20240303_ARI@WSH"));
+
+        Map<String, Integer> onlyGoals2 = NHLGamesForPlayer.getOnlyGoalsFilterSeason(
+                NHLGamesForPlayer.getExampleOvechkin(),
+                new ArrayListBuilder<String>().append("20241115_WSH@COL")
+        );
+        Assertions.assertEquals(0, onlyGoals2.get("20241115_WSH@COL"));
     }
 
 }
