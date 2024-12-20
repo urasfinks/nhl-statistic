@@ -23,7 +23,6 @@ import ru.jamsys.telegram.TelegramCommandHandler;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
@@ -134,7 +133,7 @@ public class SubscribeToPlayer implements PromiseGenerator, TelegramCommandHandl
                             TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
                             return NHLTeamSchedule.getUri(
                                     context.getUriParameters().get("idTeam"),
-                                    NHLTeamSchedule.getCurrentSeasonIfRunOrNext()+""
+                                    NHLTeamSchedule.getCurrentSeasonIfRunOrNext() + ""
                             );
                         }
                 ))
