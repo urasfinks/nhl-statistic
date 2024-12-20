@@ -46,6 +46,11 @@ public class SubscribeToPlayer implements PromiseGenerator, TelegramCommandHandl
         return servicePromise.get(index, 12_000L)
                 .then("check", (_, _, promise) -> {
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
+                    if (NHLTeamSchedule.getCurrentSeasonIfRunOrNext() == null) {
+                        context.getTelegramBot().send(context.getIdChat(), "The regular season has not started yet. The subscription is available from October to April.", null);
+                        promise.skipAllStep("Not found run season");
+                        return;
+                    }
                     if (!context.getUriParameters().containsKey("namePlayer")) {
                         context.getStepHandler().put(context.getIdChat(), context.getUriPath() + "/?namePlayer=");
                         context.getTelegramBot().send(
@@ -78,7 +83,7 @@ public class SubscribeToPlayer implements PromiseGenerator, TelegramCommandHandl
                         buttons.add(new Button(
                                 player.get("longName").toString() + " (" + player.get("team").toString() + ")",
                                 ServletResponseWriter.buildUrlQuery(
-                                         "/stp/",
+                                        "/stp/",
                                         new HashMapBuilder<>(context.getUriParameters())
                                                 .append("idPlayer", player.get("playerID").toString())
                                 )
@@ -129,26 +134,7 @@ public class SubscribeToPlayer implements PromiseGenerator, TelegramCommandHandl
                             TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
                             return NHLTeamSchedule.getUri(
                                     context.getUriParameters().get("idTeam"),
-                                    String.valueOf(Calendar.getInstance().get(Calendar.YEAR))
-                            );
-                        }
-                ))
-                .then("mergeScheduledGames", (_, _, promise) -> {
-                    UtilTank01.Response response = promise.getRepositoryMapClass(UtilTank01.Response.class);
-                    TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
-                    @SuppressWarnings("unchecked")
-                    List<Map<String, Object>> game = (List<Map<String, Object>>) context.getAnyData().computeIfAbsent(
-                            "findGames", _ -> new ArrayList<String>()
-                    );
-                    game.addAll(NHLTeamSchedule.parseGame(response.getData()));
-                })
-                .extension(extendPromise -> UtilTank01.cacheRequest(
-                        extendPromise,
-                        promise -> {
-                            TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
-                            return NHLTeamSchedule.getUri(
-                                    context.getUriParameters().get("idTeam"),
-                                    String.valueOf(Calendar.getInstance().get(Calendar.YEAR) + 1)
+                                    NHLTeamSchedule.getCurrentSeasonIfRunOrNext()+""
                             );
                         }
                 ))

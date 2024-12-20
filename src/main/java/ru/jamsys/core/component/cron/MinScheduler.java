@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import ru.jamsys.NhlStatisticApplication;
 import ru.jamsys.core.App;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.component.TelegramBotComponent;
@@ -58,7 +59,9 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
     }
 
     public void logToTelegram(String data) {
-        //System.out.println("logToTelegram:" + data);
+        if (!NhlStatisticApplication.startTelegramListener) {
+            System.out.println("logToTelegram:" + data);
+        }
         if (telegramBotComponent.getHandler() != null) {
             telegramBotComponent.getHandler().send(
                     -4739098379L,
@@ -71,7 +74,7 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
 
     @Override
     public Promise generate() {
-        if (telegramBotComponent.getHandler() == null) {
+        if (telegramBotComponent.getHandler() == null && NhlStatisticApplication.startTelegramListener) {
             return null;
         }
         return servicePromise.get(index, 50_000L)
@@ -94,10 +97,13 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                         if (!run.get()) {
                             return;
                         }
-                        HttpResponse response = UtilTank01.request(httpResource, promise, _ -> NHLBoxScore.getUri(idGame));
-                        String data = response.getBody();
-                        //String data = NHLBoxScore.getExample6();
-
+                        String data;
+                        if (NhlStatisticApplication.dummySchedulerBoxScore) {
+                            data = NHLBoxScore.getExample6();
+                        } else {
+                            HttpResponse response = UtilTank01.request(httpResource, promise, _ -> NHLBoxScore.getUri(idGame));
+                            data = response.getBody();
+                        }
                         @SuppressWarnings("unchecked")
                         Map<String, Object> parsed = UtilJson.toObject(data, Map.class);
                         if (!parsed.containsKey("error")) {

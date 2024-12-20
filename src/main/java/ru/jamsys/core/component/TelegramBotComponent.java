@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
+import ru.jamsys.NhlStatisticApplication;
 import ru.jamsys.core.component.manager.ManagerExpiration;
 import ru.jamsys.core.component.manager.item.RouteGeneratorRepository;
 import ru.jamsys.core.extension.LifeCycleComponent;
@@ -44,11 +45,13 @@ public class TelegramBotComponent implements LifeCycleComponent {
 
     @Override
     public void run() {
-        try {
-            handler = new TelegramBot(new String(securityComponent.get("telegram.api.token")), routerRepository);
-            api.registerBot(handler);
-        } catch (TelegramApiException e) {
-            throw new RuntimeException(e);
+        if (NhlStatisticApplication.startTelegramListener) {
+            try {
+                handler = new TelegramBot(new String(securityComponent.get("telegram.api.token")), routerRepository);
+                api.registerBot(handler);
+            } catch (TelegramApiException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
