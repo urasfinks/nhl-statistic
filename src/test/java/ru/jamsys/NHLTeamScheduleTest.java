@@ -2,10 +2,10 @@ package ru.jamsys;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import ru.jamsys.core.flat.util.JsonEnvelope;
 import ru.jamsys.core.flat.util.UtilJson;
 import ru.jamsys.tank.data.NHLTeamSchedule;
 
+import java.text.ParseException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -66,6 +66,24 @@ class NHLTeamScheduleTest {
         Map<String, Object> game = UtilJson.getMapOrThrow(data);
         NHLTeamSchedule.extendGameTimeZone(game);
         System.out.println(UtilJson.toStringPretty(game, "{}"));
+    }
+
+    @Test
+    void nhlSeason() throws ParseException {
+        Assertions.assertEquals(2025, NHLTeamSchedule.getCurrentSeasonIfRunOrNext("2024-12-20", "yyyy-MM-dd"));
+        Assertions.assertEquals(2025, NHLTeamSchedule.getCurrentSeasonIfRunOrNext("2024-11-20", "yyyy-MM-dd"));
+        Assertions.assertEquals(2025, NHLTeamSchedule.getCurrentSeasonIfRunOrNext("2024-10-20", "yyyy-MM-dd"));
+        Assertions.assertEquals(2025, NHLTeamSchedule.getCurrentSeasonIfRunOrNext("2024-10-01", "yyyy-MM-dd"));
+
+        Assertions.assertNull(NHLTeamSchedule.getCurrentSeasonIfRunOrNext("2024-09-30", "yyyy-MM-dd"));
+        Assertions.assertNull(NHLTeamSchedule.getCurrentSeasonIfRunOrNext("2024-05-01", "yyyy-MM-dd"));
+
+        Assertions.assertEquals(2024, NHLTeamSchedule.getCurrentSeasonIfRunOrNext("2024-04-30", "yyyy-MM-dd"));
+        Assertions.assertEquals(2024, NHLTeamSchedule.getCurrentSeasonIfRunOrNext("2024-01-01", "yyyy-MM-dd"));
+
+        Assertions.assertNull(NHLTeamSchedule.getCurrentSeasonIfRunOrNext("2023-05-01", "yyyy-MM-dd"));
+
+        Assertions.assertEquals(2023, NHLTeamSchedule.getCurrentSeasonIfRunOrNext("2023-04-30", "yyyy-MM-dd"));
     }
 
 }

@@ -5,8 +5,15 @@ import ru.jamsys.core.flat.util.*;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.Month;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -139,6 +146,28 @@ public class NHLTeamSchedule {
                 UtilListSort.Type.ASC,
                 stringObjectMap -> new BigDecimal(stringObjectMap.get("gameTime_epoch").toString()).longValue()
         );
+    }
+
+    // Метод для определения сезона по дате
+    public static Integer getCurrentSeasonIfRunOrNext() throws ParseException {
+        return getCurrentSeasonIfRunOrNext(LocalDate.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
+    }
+
+    public static Integer getCurrentSeasonIfRunOrNext(String date, String format) throws ParseException {
+        DateFormat dateFormat = new SimpleDateFormat(format);
+        Date input = dateFormat.parse(date);
+        return getCurrentSeasonIfRunOrNext(LocalDate.ofInstant(input.toInstant(), ZoneId.systemDefault()));
+    }
+
+    public static Integer getCurrentSeasonIfRunOrNext(LocalDate date) {
+        int year = date.getYear();
+        if (date.getMonthValue() <= Month.APRIL.getValue()) {
+            return year;
+        } else if (date.getMonthValue() >= Month.OCTOBER.getValue()) {
+            return year + 1;
+        } else { // Потому что возможно ещё не сформировано расписание, нет смысла раньше времени
+            return null;
+        }
     }
 
 }
