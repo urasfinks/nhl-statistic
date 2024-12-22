@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import ru.jamsys.NhlStatisticApplication;
 import ru.jamsys.core.App;
 import ru.jamsys.core.component.ServicePromise;
+import ru.jamsys.core.component.ServiceProperty;
 import ru.jamsys.core.component.TelegramBotComponent;
 import ru.jamsys.core.extension.UniqueClassName;
 import ru.jamsys.core.extension.builder.HashMapBuilder;
@@ -16,6 +17,8 @@ import ru.jamsys.core.flat.template.twix.TemplateTwix;
 import ru.jamsys.core.flat.util.UtilJson;
 import ru.jamsys.core.flat.util.UtilRisc;
 import ru.jamsys.core.flat.util.tank.UtilTank01;
+import ru.jamsys.core.handler.promise.Tank01CacheRequest;
+import ru.jamsys.core.handler.promise.Tank01Response;
 import ru.jamsys.core.jt.JTGameDiff;
 import ru.jamsys.core.jt.JTScheduler;
 import ru.jamsys.core.promise.Promise;
@@ -31,19 +34,22 @@ import java.util.*;
 
 @Component
 @Lazy
+@SuppressWarnings("unused")
 public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
 
     private final ServicePromise servicePromise;
-
-    @Setter
-    @Getter
-    private String index;
+    private final ServiceProperty serviceProperty;
 
     private final TelegramBotComponent telegramBotComponent;
 
-    public MinScheduler(ServicePromise servicePromise, TelegramBotComponent telegramBotComponent) {
+    public MinScheduler(
+            ServicePromise servicePromise,
+            TelegramBotComponent telegramBotComponent,
+            ServiceProperty serviceProperty
+    ) {
         this.servicePromise = servicePromise;
         this.telegramBotComponent = telegramBotComponent;
+        this.serviceProperty = serviceProperty;
     }
 
     @Setter
@@ -72,12 +78,15 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
         }
     }
 
-    @Override
     public Promise generate() {
+        String mode = serviceProperty.get(String.class, "run.mode", "prod");
+        if (mode.equals("test")) {
+            return null;
+        }
         if (telegramBotComponent.getHandler() == null && NhlStatisticApplication.startTelegramListener) {
             return null;
         }
-        return servicePromise.get(index, 50_000L)
+        return servicePromise.get(getClass().getSimpleName(), 50_000L)
                 .setDebug(false)
                 .thenWithResource("getActiveGame", JdbcResource.class, (_, _, promise, jdbcResource) -> {
                     Context context = promise.setRepositoryMapClass(Context.class, new Context());
@@ -171,10 +180,12 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                             _ -> new ArrayList<>()
                     ).add(Integer.parseInt(map.get("id_chat").toString())));
                 })
-                .extension(NHLPlayerList::promiseExtensionGetPlayerList)
+                .then("getPlayerList", new Tank01CacheRequest(NHLPlayerList::getUri).generate())
                 .then("sendNotification", (atomicBoolean, _, promise) -> {
                     Context context = promise.getRepositoryMapClass(Context.class);
-                    UtilTank01.Response response = promise.getRepositoryMapClass(UtilTank01.Response.class);
+                    Tank01Response response = promise
+                            .getRepositoryMapClass(Promise.class, "getPlayerList")
+                            .getRepositoryMapClass(Tank01Response.class);
 
                     UtilRisc.forEach(atomicBoolean, context.getSubscriber(), (idPlayer, listIdChat) -> {
                         try {

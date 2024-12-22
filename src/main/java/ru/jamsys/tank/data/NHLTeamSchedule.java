@@ -149,17 +149,17 @@ public class NHLTeamSchedule {
     }
 
     // Метод для определения сезона по дате
-    public static Integer getCurrentSeasonIfRunOrNext() {
-        return getCurrentSeasonIfRunOrNext(LocalDate.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
+    public static Integer getActiveSeasonOrNext() {
+        return getActiveSeasonOrNext(LocalDate.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
     }
 
-    public static Integer getCurrentSeasonIfRunOrNext(String date, String format) throws ParseException {
+    public static Integer getActiveSeasonOrNext(String date, String format) throws ParseException {
         DateFormat dateFormat = new SimpleDateFormat(format);
         Date input = dateFormat.parse(date);
-        return getCurrentSeasonIfRunOrNext(LocalDate.ofInstant(input.toInstant(), ZoneId.systemDefault()));
+        return getActiveSeasonOrNext(LocalDate.ofInstant(input.toInstant(), ZoneId.systemDefault()));
     }
 
-    public static Integer getCurrentSeasonIfRunOrNext(LocalDate date) {
+    public static Integer getActiveSeasonOrNext(LocalDate date) {
         int year = date.getYear();
         if (date.getMonthValue() <= Month.APRIL.getValue()) {
             return year;

@@ -9,8 +9,9 @@ import ru.jamsys.core.extension.builder.HashMapBuilder;
 import ru.jamsys.core.extension.http.ServletResponseWriter;
 import ru.jamsys.core.flat.util.UtilJson;
 import ru.jamsys.core.flat.util.UtilTelegram;
-import ru.jamsys.core.flat.util.tank.UtilTank01;
+import ru.jamsys.core.handler.promise.Tank01Response;
 import ru.jamsys.core.flat.util.telegram.Button;
+import ru.jamsys.core.handler.promise.Tank01CacheRequest;
 import ru.jamsys.core.jt.JTScheduler;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
@@ -30,6 +31,7 @@ import java.util.Map;
 @Getter
 @Component
 @RequestMapping({"/subscribe_to_player/**", "/stp/**"})
+@SuppressWarnings("unused")
 public class SubscribeToPlayer implements PromiseGenerator, TelegramCommandHandler {
 
     private String index;
@@ -42,10 +44,10 @@ public class SubscribeToPlayer implements PromiseGenerator, TelegramCommandHandl
 
     @Override
     public Promise generate() {
-        return servicePromise.get(index, 12_000L)
-                .then("check", (_, _, promise) -> {
+        Promise gen = servicePromise.get(index, 12_000L);
+        gen.then("check", (_, _, promise) -> {
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
-                    if (NHLTeamSchedule.getCurrentSeasonIfRunOrNext() == null) {
+                    if (NHLTeamSchedule.getActiveSeasonOrNext() == null) {
                         context.getTelegramBot().send(
                                 context.getIdChat(),
                                 "The regular season has not started yet. The subscription is available from October to April.",
@@ -68,9 +70,11 @@ public class SubscribeToPlayer implements PromiseGenerator, TelegramCommandHandl
                         promise.goTo("findPlayerByIdMarker");
                     }
                 })
-                .extension(NHLPlayerList::promiseExtensionGetPlayerList)
+                .then("getPlayerList", new Tank01CacheRequest(NHLPlayerList::getUri).generate())
                 .then("findPlayerByName", (_, _, promise) -> {
-                    UtilTank01.Response response = promise.getRepositoryMapClass(UtilTank01.Response.class);
+                    Tank01Response response = promise
+                            .getRepositoryMapClass(Promise.class, "getPlayerList")
+                            .getRepositoryMapClass(Tank01Response.class);
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
                     List<Map<String, Object>> userList = NHLPlayerList.findByName(
                             context.getUriParameters().get("namePlayer"),
@@ -113,9 +117,11 @@ public class SubscribeToPlayer implements PromiseGenerator, TelegramCommandHandl
                         promise.skipAllStep("The subscription already exists");
                     }
                 })
-                .extension(NHLPlayerList::promiseExtensionGetPlayerList)
+                .then("getPlayerList", new Tank01CacheRequest(NHLPlayerList::getUri).generate())
                 .then("findPlayerById", (_, _, promise) -> {
-                    UtilTank01.Response response = promise.getRepositoryMapClass(UtilTank01.Response.class);
+                    Tank01Response response = promise
+                            .getRepositoryMapClass(Promise.class, "getPlayerList")
+                            .getRepositoryMapClass(Tank01Response.class);
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
                     Map<String, Object> player = NHLPlayerList.findById(
                             context.getUriParameters().get("idPlayer"),
@@ -131,18 +137,17 @@ public class SubscribeToPlayer implements PromiseGenerator, TelegramCommandHandl
                     context.getUriParameters().put("infoPlayer", playerInfo);
                     context.getUriParameters().put("idTeam", player.get("teamID").toString());
                 })
-                .extension(extendPromise -> UtilTank01.cacheRequest(
-                        extendPromise,
-                        promise -> {
-                            TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
-                            return NHLTeamSchedule.getUri(
-                                    context.getUriParameters().get("idTeam"),
-                                    NHLTeamSchedule.getCurrentSeasonIfRunOrNext() + ""
-                            );
-                        }
-                ))
+                .then("getGameInSeason", new Tank01CacheRequest(() -> {
+                    TelegramCommandContext context = gen.getRepositoryMapClass(TelegramCommandContext.class);
+                    return NHLTeamSchedule.getUri(
+                            context.getUriParameters().get("idTeam"),
+                            NHLTeamSchedule.getActiveSeasonOrNext() + ""
+                    );
+                }).generate())
                 .then("mergeScheduledGames", (_, _, promise) -> {
-                    UtilTank01.Response response = promise.getRepositoryMapClass(UtilTank01.Response.class);
+                    Tank01Response response = promise
+                            .getRepositoryMapClass(Promise.class, "getGameInSeason")
+                            .getRepositoryMapClass(Tank01Response.class);
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
                     @SuppressWarnings("unchecked")
                     List<Map<String, Object>> game = (List<Map<String, Object>>) context.getAnyData().computeIfAbsent(
@@ -186,6 +191,7 @@ public class SubscribeToPlayer implements PromiseGenerator, TelegramCommandHandl
                             NHLTeamSchedule.getGameTimeFormat(sortGameByTime.getLast())
                     )));
                 });
+        return gen;
     }
 
 }
