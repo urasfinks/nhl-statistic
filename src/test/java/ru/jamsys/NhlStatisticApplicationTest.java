@@ -5,7 +5,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import ru.jamsys.core.App;
 import ru.jamsys.core.component.ServicePromise;
-import ru.jamsys.core.handler.promise.GetPlayerScoreCurrentSeason;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.resource.http.client.HttpResponse;
 import ru.jamsys.core.resource.notification.telegram.TelegramNotificationRequest;
@@ -34,7 +33,7 @@ class NhlStatisticApplicationTest {
     }
 
     @SuppressWarnings("unused")
-    //@Test
+        //@Test
     void telegramSend() {
         Promise promise = servicePromise.get("testPromise", 6_000L);
         promise
