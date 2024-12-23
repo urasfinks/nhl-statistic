@@ -44,7 +44,7 @@ public class SendNotification implements PromiseGenerator {
         }
         return App.get(ServicePromise.class).get(getClass().getSimpleName(), 60_000L)
                 .then("lastGoals", new GetPlayerScoreCurrentSeason(idGame, player).generate())
-                .then("send", (atomicBoolean, promiseTask, promise) -> {
+                .then("send", (atomicBoolean, _, promise) -> {
                     String prevGoal = promise.getRepositoryMapClass(Promise.class, "lastGoals").getRepositoryMap(String.class, "prev_goal", "0");
                     NotificationDataAndTemplate notificationDataAndTemplate = new NotificationDataAndTemplate()
                             .setPlayerName(NHLPlayerList.getPlayerName(player))
