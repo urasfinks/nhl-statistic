@@ -25,19 +25,17 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Setter
 public class GetPlayerScoreCurrentSeason implements PromiseGenerator {
 
-    private String idTeam;
-
     private String idGame;
 
-    private String idPlayer;
+    private NHLPlayerList.Player player;
 
     private List<String> lisIdGameInSeason = new ArrayList<>();
 
     private AtomicInteger countGoal = new AtomicInteger(0);
 
-    public GetPlayerScoreCurrentSeason(String idGame, String idPlayer) {
+    public GetPlayerScoreCurrentSeason(String idGame, NHLPlayerList.Player player) {
         this.idGame = idGame;
-        this.idPlayer = idPlayer;
+        this.player = player;
     }
 
     @Override
@@ -46,7 +44,7 @@ public class GetPlayerScoreCurrentSeason implements PromiseGenerator {
                 .thenWithResource("select", JdbcResource.class, (_, _, promise, jdbcResource) -> {
                     List<Map<String, Object>> execute = jdbcResource.execute(new JdbcRequest(JTPrevGoal.SELECT)
                             .addArg("id_game", idGame)
-                            .addArg("id_player", idPlayer)
+                            .addArg("id_player", player.getPlayerID())
                             .setDebug(false)
                     );
                     if (!execute.isEmpty()) {
@@ -54,19 +52,8 @@ public class GetPlayerScoreCurrentSeason implements PromiseGenerator {
                         promise.skipAllStep("already cache");
                     }
                 })
-                .then("getPlayerList", new Tank01CacheRequest(NHLPlayerList::getUri).generate())
-                .then("getIdTeam", (_, _, promise) -> {
-                    Tank01Response response = promise.
-                            getRepositoryMapClass(Promise.class, "getPlayerList").
-                            getRepositoryMapClass(Tank01Response.class);
-                    Map<String, Object> player = NHLPlayerList.findById(idPlayer, response.getData());
-                    if (player == null || player.isEmpty()) {
-                        throw new RuntimeException("Not found player");
-                    }
-                    idTeam = player.get("teamID").toString();
-                })
                 .then("requestGameInSeason", new Tank01CacheRequest(() -> NHLTeamSchedule.getUri(
-                        idTeam,
+                        player.getTeamID(),
                         NHLTeamSchedule.getActiveSeasonOrNext() + ""
                 )).generate())
                 .then("parseGameInSeason", (_, _, promise) -> {
@@ -86,7 +73,7 @@ public class GetPlayerScoreCurrentSeason implements PromiseGenerator {
                             HttpResponse response = UtilTank01.request(
                                     httpResource,
                                     promise,
-                                    _ -> NHLGamesForPlayer.getUri(idPlayer));
+                                    _ -> NHLGamesForPlayer.getUri(player.getPlayerID()));
 
                             NHLGamesForPlayer.getOnlyGoalsFilterSeason(
                                     response.getBody(),
@@ -100,7 +87,7 @@ public class GetPlayerScoreCurrentSeason implements PromiseGenerator {
                         (_, _, _, jdbcResource)
                                 -> jdbcResource.execute(new JdbcRequest(JTPrevGoal.INSERT)
                                 .addArg("id_game", idGame)
-                                .addArg("id_player", idPlayer)
+                                .addArg("id_player", player.getPlayerID())
                                 .addArg("prev_goal", countGoal.get())
                                 .setDebug(false)
                         ))
