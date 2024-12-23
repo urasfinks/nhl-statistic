@@ -90,15 +90,13 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                 .setDebug(false)
                 .thenWithResource("getActiveGame", JdbcResource.class, (_, _, promise, jdbcResource) -> {
                     Context context = promise.setRepositoryMapClass(Context.class, new Context());
-                    List<Map<String, Object>> execute = jdbcResource.execute(
+                    jdbcResource.execute(
                             new JdbcRequest(JTScheduler.SELECT_ACTIVE_GAME).setDebug(false)
-                    );
+                    ).forEach(map -> context.getActiveGame().add(map.get("id_game").toString()));
                     // Если нет активных игр, нечего тут делать
-                    if (execute.isEmpty()) {
+                    if (context.getActiveGame().isEmpty()) {
                         promise.skipAllStep("active game is empty");
-                        return;
                     }
-                    execute.forEach(map -> context.getActiveGame().add(map.get("id_game").toString()));
                 })
                 .thenWithResource("getBoxScore", HttpResource.class, (run, _, promise, httpResource) -> {
                     Context context = promise.getRepositoryMapClass(Context.class);
