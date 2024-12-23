@@ -41,14 +41,14 @@ public class Test implements PromiseGenerator, HttpHandler {
     }
 
     public static void errorHandler(Promise promise) {
-        App.error(promise.getException());
+        App.error(promise.getExceptionSource());
         ServletHandler servletHandler = promise.getRepositoryMapClass(ServletHandler.class);
         servletHandler.setResponseContentType("application/json");
-        Throwable exception = promise.getException();
+        Throwable exception = promise.getExceptionSource();
         if (exception instanceof JsonSchemaException) {
             servletHandler.setResponseError(((JsonSchemaException) exception).getResponseError());
         } else {
-            servletHandler.setResponseError(promise.getException().getMessage());
+            servletHandler.setResponseError(promise.getExceptionSource().getMessage());
         }
         servletHandler.responseComplete();
     }

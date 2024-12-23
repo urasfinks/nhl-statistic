@@ -10,13 +10,12 @@ import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.component.ServiceProperty;
 import ru.jamsys.core.component.TelegramBotComponent;
 import ru.jamsys.core.extension.UniqueClassName;
-import ru.jamsys.core.extension.builder.HashMapBuilder;
 import ru.jamsys.core.extension.exception.ForwardException;
 import ru.jamsys.core.flat.template.cron.release.Cron1m;
-import ru.jamsys.core.flat.template.twix.TemplateTwix;
 import ru.jamsys.core.flat.util.UtilJson;
 import ru.jamsys.core.flat.util.UtilRisc;
 import ru.jamsys.core.flat.util.tank.UtilTank01;
+import ru.jamsys.core.handler.promise.SendNotification;
 import ru.jamsys.core.handler.promise.Tank01CacheRequest;
 import ru.jamsys.core.handler.promise.Tank01Response;
 import ru.jamsys.core.jt.JTGameDiff;
@@ -29,6 +28,7 @@ import ru.jamsys.core.resource.jdbc.JdbcRequest;
 import ru.jamsys.core.resource.jdbc.JdbcResource;
 import ru.jamsys.tank.data.NHLBoxScore;
 import ru.jamsys.tank.data.NHLPlayerList;
+import ru.jamsys.telegram.NotificationDataAndTemplate;
 
 import java.util.*;
 
@@ -58,7 +58,7 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
         private List<String> activeGame = new ArrayList<>();
         private Map<String, String> boxScore = new HashMap<>();
         private Map<String, String> savedData = new HashMap<>();
-        private Map<String, String> event = new LinkedHashMap<>(); // key - idPlayer; value - template
+        private Map<String, NotificationDataAndTemplate> event = new LinkedHashMap<>(); // key - idPlayer; value - template
         private Map<String, List<Integer>> subscriber = new HashMap<>(); // key - idPlayer;
         private List<String> endGames = new ArrayList<>();
         private Map<String, String> mapIdPlayerGame = new HashMap<>(); // key - idPlayer; value - gameName
@@ -98,7 +98,7 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                         promise.skipAllStep("active game is empty");
                     }
                 })
-                .thenWithResource("getBoxScore", HttpResource.class, (run, _, promise, httpResource) -> {
+                .thenWithResource("getBoxScoreByActiveGame", HttpResource.class, (run, _, promise, httpResource) -> {
                     Context context = promise.getRepositoryMapClass(Context.class);
                     for (String idGame : context.getActiveGame()) {
                         if (!run.get()) {
@@ -146,14 +146,13 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                                 context.getEndGames().add(idGame);
                                 logToTelegram("Finish game: " + idGame);
                             }
-                            Map<String, String> newEventScoringByPlayer = NHLBoxScore.getNewEventScoringByPlayer(
+                            Map<String, NotificationDataAndTemplate> newEventScoringByPlayer = NHLBoxScore.getNewEventScoringByPlayer(
                                     context.getSavedData().get(idGame),
                                     data
                             );
-                            newEventScoringByPlayer.forEach(
-                                    (idPlayer, _) -> context
-                                            .getMapIdPlayerGame()
-                                            .put(idPlayer, idGame.substring(idGame.indexOf("_") + 1))
+                            newEventScoringByPlayer.forEach((idPlayer, _) -> context
+                                    .getMapIdPlayerGame()
+                                    .put(idPlayer, idGame)
                             );
                             context.getEvent().putAll(newEventScoringByPlayer);
                             //logToTelegram(idGame + ":" + UtilJson.toStringPretty(context.getEvent(), "{}"));
@@ -187,25 +186,16 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
 
                     UtilRisc.forEach(atomicBoolean, context.getSubscriber(), (idPlayer, listIdChat) -> {
                         try {
-                            Map<String, Object> player = NHLPlayerList.findById(
-                                    idPlayer,
-                                    response.getData()
-                            );
+                            Map<String, Object> player = NHLPlayerList.findById(idPlayer, response.getData());
                             if (player == null || player.isEmpty()) {
                                 return;
                             }
-                            String message = TemplateTwix.template(
+                            new SendNotification(
+                                    context.getMapIdPlayerGame().getOrDefault(idPlayer, ""),
+                                    NHLPlayerList.Player.fromMap(player),
                                     context.getEvent().get(idPlayer),
-                                    new HashMapBuilder<String, String>()
-                                            .append("playerName", NHLPlayerList.getPlayerName(player))
-                                            .append("gameName", context.getMapIdPlayerGame().getOrDefault(idPlayer, ""))
-                            );
-                            //System.out.println("SEND TO CLIENT: " + message);
-                            UtilRisc.forEach(atomicBoolean, listIdChat, idChat -> {
-                                if (telegramBotComponent.getHandler() != null) {
-                                    telegramBotComponent.getHandler().send(idChat, message, null);
-                                }
-                            });
+                                    listIdChat
+                            ).generate().run();
                         } catch (Throwable e) {
                             App.error(e);
                         }

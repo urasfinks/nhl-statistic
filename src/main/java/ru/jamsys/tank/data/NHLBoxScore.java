@@ -3,6 +3,7 @@ package ru.jamsys.tank.data;
 import ru.jamsys.core.App;
 import ru.jamsys.core.extension.builder.HashMapBuilder;
 import ru.jamsys.core.flat.util.*;
+import ru.jamsys.telegram.NotificationDataAndTemplate;
 
 import java.io.IOException;
 import java.text.DateFormat;
@@ -129,10 +130,10 @@ public class NHLBoxScore {
         return scoringPlaysCurrent;
     }
 
-    public static String getEnumGame(List<Map<String, Object>> listPlaysCurrent) {
+    public static List<String> getEnumGame(List<Map<String, Object>> listPlaysCurrent) {
         List<String> timeGoal = new ArrayList<>();
         listPlaysCurrent.forEach(map -> timeGoal.add(map.get("scoreTime") + " " + periodExpand(map.get("period").toString())));
-        return String.join(", ", timeGoal);
+        return timeGoal;
     }
 
     public static String periodExpand(String period) {
@@ -151,20 +152,10 @@ public class NHLBoxScore {
         }
     }
 
-    public static void addGoalsInformation(StringBuilder sb, List<Map<String, Object>> listPlaysCurrent) {
-        sb.append(" scored ");
-        sb.append(listPlaysCurrent.size());
-        sb.append(listPlaysCurrent.size() > 1 ? " goals" : " goal");
-        if (!listPlaysCurrent.isEmpty()) {
-            sb.append(": ");
-            sb.append(getEnumGame(listPlaysCurrent));
-        }
-        sb.append(".");
-    }
 
-    public static Map<String, String> getNewEventScoringByPlayer(String last, String current) throws Throwable {
+    public static Map<String, NotificationDataAndTemplate> getNewEventScoringByPlayer(String last, String current) throws Throwable {
 
-        Map<String, String> result = new HashMap<>();
+        Map<String, NotificationDataAndTemplate> result = new HashMap<>();
 
         Map<String, List<Map<String, Object>>> scoringPlaysLast = getScoringPlaysMap(last);
         Map<String, List<Map<String, Object>>> scoringPlaysCurrent = getScoringPlaysMap(current);
@@ -183,28 +174,21 @@ public class NHLBoxScore {
                 for (Map<String, Object> event : newEventScoringByPlayer) {
                     notify.add(event.get("type").toString());
                 }
+                NotificationDataAndTemplate notificationDataAndTemplate = new NotificationDataAndTemplate();
+
                 if (notify.contains("goal")) {
-                    StringBuilder sb = new StringBuilder();
-                    sb.append(newEventScoringByPlayer.size() > 1 ? "GOALS!" : "GOAL!");
-                    sb.append(" Game ${gameName}. ${playerName}");
-                    addGoalsInformation(sb, listPlaysCurrent);
-                    result.put(idPlayer, sb.toString());
+                    notificationDataAndTemplate.setAction(newEventScoringByPlayer.size() > 1 ? "GOALS" : "GOAL");
                 } else if (notify.size() == 1 && notify.contains("cancel")) {
-                    StringBuilder sb = new StringBuilder();
-                    sb.append("CANCEL! Game ${gameName}. ${playerName}");
-                    addGoalsInformation(sb, listPlaysCurrent);
-                    result.put(idPlayer, sb.toString());
+                    notificationDataAndTemplate.setAction("CANCEL");
                 } else if (notify.size() == 1 && notify.contains("changeScoreTime")) {
-                    StringBuilder sb = new StringBuilder();
-                    sb.append("CORRECTION! Game ${gameName}. ${playerName}");
-                    addGoalsInformation(sb, listPlaysCurrent);
-                    result.put(idPlayer, sb.toString());
+                    notificationDataAndTemplate.setAction("CORRECTION");
                 } else {
-                    StringBuilder sb = new StringBuilder();
-                    sb.append("CANCEL+CORRECTION! Game ${gameName}. ${playerName}");
-                    addGoalsInformation(sb, listPlaysCurrent);
-                    result.put(idPlayer, sb.toString());
+                    notificationDataAndTemplate.setAction("CANCEL+CORRECTION");
                 }
+                notificationDataAndTemplate.setScoredTitle(listPlaysCurrent.size() > 1 ? "goals" : "goal");
+                notificationDataAndTemplate.setScoredGoal(listPlaysCurrent.size());
+                notificationDataAndTemplate.setScoredEnum(getEnumGame(listPlaysCurrent));
+                result.put(idPlayer, notificationDataAndTemplate);
             }
         });
         return result;
