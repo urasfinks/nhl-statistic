@@ -32,7 +32,7 @@ public class Tank01CacheRequest implements PromiseGenerator {
 
     @Override
     public Promise generate() {
-        return App.get(ServicePromise.class).get(getClass().getSimpleName(), 6000L)
+        return App.get(ServicePromise.class).get(getClass().getSimpleName(), 60_000L)
                 .extension(promise -> promise.setRepositoryMapClass(Tank01Response.class, new Tank01Response()))
                 .thenWithResource("select", JdbcResource.class, (_, _, promise, jdbcResource) -> {
                     Tank01Response response = promise.getRepositoryMapClass(Tank01Response.class);

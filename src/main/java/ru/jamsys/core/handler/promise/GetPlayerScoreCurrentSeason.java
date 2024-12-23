@@ -40,7 +40,7 @@ public class GetPlayerScoreCurrentSeason implements PromiseGenerator {
 
     @Override
     public Promise generate() {
-        return App.get(ServicePromise.class).get(getClass().getSimpleName(), 6000L)
+        return App.get(ServicePromise.class).get(getClass().getSimpleName(), 60_000L)
                 .thenWithResource("select", JdbcResource.class, (_, _, promise, jdbcResource) -> {
                     List<Map<String, Object>> execute = jdbcResource.execute(new JdbcRequest(JTPrevGoal.SELECT)
                             .addArg("id_game", idGame)

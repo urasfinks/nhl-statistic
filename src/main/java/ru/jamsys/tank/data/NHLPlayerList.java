@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.experimental.Accessors;
 import ru.jamsys.core.flat.util.UtilFileResource;
 import ru.jamsys.core.flat.util.UtilJson;
 
@@ -66,6 +67,7 @@ public class NHLPlayerList {
 
     @Getter
     @Setter
+    @Accessors(chain = true)
     @ToString
     public static class Player {
 

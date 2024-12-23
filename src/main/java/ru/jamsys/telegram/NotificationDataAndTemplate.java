@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 import ru.jamsys.core.flat.template.twix.TemplateTwix;
 
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ import java.util.Map;
 
 @Getter
 @Setter
+@Accessors(chain = true)
 public class NotificationDataAndTemplate {
 
     //action=GOAL, scoredTitle= goal, scoredGoal=1, scoredEnum=: 10:18 2nd period
@@ -26,7 +28,7 @@ public class NotificationDataAndTemplate {
     private String extra = "";
 
     private int scoredPrevGoalCurrentSeason; // Кол-во голов в этом сезоне до текущего матча
-    private int scoredBeforeCurrentSeason = 853; // Кол-во голов до этого сезона
+    private int scoredBeforeCurrentSeason = 0; // 853 - Овечкин Кол-во голов до этого сезона
     private int scoreGretzky = 894; // Кол-во голов у Gretzky
 
     private int goalsInSeason;

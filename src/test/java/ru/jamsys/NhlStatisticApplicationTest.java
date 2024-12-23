@@ -5,10 +5,12 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import ru.jamsys.core.App;
 import ru.jamsys.core.component.ServicePromise;
+import ru.jamsys.core.handler.promise.GetPlayerScoreCurrentSeason;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.resource.http.client.HttpResponse;
 import ru.jamsys.core.resource.notification.telegram.TelegramNotificationRequest;
 import ru.jamsys.core.resource.notification.telegram.TelegramNotificationResource;
+import ru.jamsys.tank.data.NHLPlayerList;
 
 class NhlStatisticApplicationTest {
 
@@ -28,8 +30,14 @@ class NhlStatisticApplicationTest {
     }
 
     @Test
-    void testGoalInSeason() {
-        //new GetPlayerScoreCurrentSeason("xxkaa", "3101").generate().run().await(50_000L);
+    void getPlayerScoreCurrentSeason() {
+        NHLPlayerList.Player player = new NHLPlayerList.Player()
+                .setPlayerID("4874723")
+                .setPos("RW")
+                .setLongName("Dylan Guenther")
+                .setTeam("UTA")
+                .setTeamID("33");
+        new GetPlayerScoreCurrentSeason("20241008_CHI@UTA", player).generate().run().await(50_000L);
     }
 
     @SuppressWarnings("unused")

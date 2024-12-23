@@ -186,6 +186,9 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
 
                     UtilRisc.forEach(atomicBoolean, context.getSubscriber(), (idPlayer, listIdChat) -> {
                         try {
+                            if (listIdChat.isEmpty()) {
+                                return;
+                            }
                             Map<String, Object> player = NHLPlayerList.findById(idPlayer, response.getData());
                             if (player == null || player.isEmpty()) {
                                 return;
