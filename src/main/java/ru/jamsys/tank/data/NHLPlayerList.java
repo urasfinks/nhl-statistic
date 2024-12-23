@@ -1,5 +1,9 @@
 package ru.jamsys.tank.data;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import ru.jamsys.core.flat.util.UtilFileResource;
 import ru.jamsys.core.flat.util.UtilJson;
 
@@ -54,6 +58,23 @@ public class NHLPlayerList {
             }
         }
         return null;
+    }
+
+    @Getter
+    @Setter
+    @ToString
+    public static class Player {
+
+        String pos;
+        String playerID;
+        String team;
+        String longName;
+        String teamID;
+
+        public static Player fromMap(Map<String, Object> map) {
+            ObjectMapper objectMapper = new ObjectMapper();
+            return objectMapper.convertValue(map, Player.class);
+        }
     }
 
 }
