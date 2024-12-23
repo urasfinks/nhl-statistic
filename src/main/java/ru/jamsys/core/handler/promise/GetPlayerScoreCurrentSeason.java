@@ -50,7 +50,7 @@ public class GetPlayerScoreCurrentSeason implements PromiseGenerator {
                             .setDebug(false)
                     );
                     if (!execute.isEmpty()) {
-                        promise.setRepositoryMap("score", execute.getFirst().get("prev_goal").toString());
+                        promise.setRepositoryMap("prev_goal", execute.getFirst().get("prev_goal").toString());
                         promise.skipAllStep("already cache");
                     }
                 })
@@ -92,7 +92,7 @@ public class GetPlayerScoreCurrentSeason implements PromiseGenerator {
                                     response.getBody(),
                                     lisIdGameInSeason
                             ).forEach((_, countGoal) -> this.countGoal.addAndGet(countGoal));
-                            promise.setRepositoryMap("score", String.valueOf(this.countGoal.get()));
+                            promise.setRepositoryMap("prev_goal", String.valueOf(this.countGoal.get()));
                         })
                 .thenWithResource(
                         "insert",
