@@ -87,7 +87,6 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
             return null;
         }
         return servicePromise.get(getClass().getSimpleName(), 50_000L)
-                .setDebug(false)
                 .thenWithResource("getActiveGame", JdbcResource.class, (_, _, promise, jdbcResource) -> {
                     Context context = promise.setRepositoryMapClass(Context.class, new Context());
                     jdbcResource.execute(
@@ -241,7 +240,8 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                         });
                     }
                 })
-                .onError((_, _, promise) -> System.out.println(promise.getLogString()));
+                .onError((_, _, promise) -> System.out.println(promise.getLogString()))
+                .setDebug(false);
     }
 
 }
