@@ -32,6 +32,9 @@ public class NHLPlayerList {
     }
 
     public static List<Map<String, Object>> findByName(String userName, String json) throws Throwable {
+        if (json == null) {
+            throw new RuntimeException("json is empty");
+        }
         @SuppressWarnings("unchecked")
         Map<String, Object> parsed = UtilJson.toObject(json, Map.class);
         List<Map<String, Object>> result = new ArrayList<>();

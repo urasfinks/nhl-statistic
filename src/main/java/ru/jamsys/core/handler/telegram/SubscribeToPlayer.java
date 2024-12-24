@@ -4,14 +4,15 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
+import ru.jamsys.core.App;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.extension.builder.HashMapBuilder;
 import ru.jamsys.core.extension.http.ServletResponseWriter;
 import ru.jamsys.core.flat.util.UtilJson;
 import ru.jamsys.core.flat.util.UtilTelegram;
-import ru.jamsys.core.handler.promise.Tank01Response;
 import ru.jamsys.core.flat.util.telegram.Button;
 import ru.jamsys.core.handler.promise.Tank01CacheRequest;
+import ru.jamsys.core.handler.promise.Tank01Response;
 import ru.jamsys.core.jt.JTScheduler;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
@@ -34,8 +35,6 @@ import java.util.Map;
 @SuppressWarnings("unused")
 public class SubscribeToPlayer implements PromiseGenerator, TelegramCommandHandler {
 
-    private String index;
-
     private final ServicePromise servicePromise;
 
     public SubscribeToPlayer(ServicePromise servicePromise) {
@@ -44,7 +43,7 @@ public class SubscribeToPlayer implements PromiseGenerator, TelegramCommandHandl
 
     @Override
     public Promise generate() {
-        Promise gen = servicePromise.get(index, 12_000L);
+        Promise gen = servicePromise.get(getClass().getSimpleName(), 12_000L);
         gen.then("check", (_, _, promise) -> {
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
                     if (NHLTeamSchedule.getActiveSeasonOrNext() == null) {
@@ -117,10 +116,10 @@ public class SubscribeToPlayer implements PromiseGenerator, TelegramCommandHandl
                         promise.skipAllStep("The subscription already exists");
                     }
                 })
-                .then("getPlayerList", new Tank01CacheRequest(NHLPlayerList::getUri).generate())
+                .then("getPlayerList2", new Tank01CacheRequest(NHLPlayerList::getUri).generate())
                 .then("findPlayerById", (_, _, promise) -> {
                     Tank01Response response = promise
-                            .getRepositoryMapClass(Promise.class, "getPlayerList")
+                            .getRepositoryMapClass(Promise.class, "getPlayerList2")
                             .getRepositoryMapClass(Tank01Response.class);
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
                     Map<String, Object> player = NHLPlayerList.findById(
@@ -190,6 +189,15 @@ public class SubscribeToPlayer implements PromiseGenerator, TelegramCommandHandl
                             NHLTeamSchedule.getGameTimeFormat(sortGameByTime.getFirst()),
                             NHLTeamSchedule.getGameTimeFormat(sortGameByTime.getLast())
                     )));
+                })
+                .onError((atomicBoolean, promiseTask, promise) -> {
+                    System.out.println(promise.getLogString());
+                    try {
+                        TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
+                        context.getTelegramBot().send(context.getIdChat(), "Bot error", null);
+                    } catch (Throwable th) {
+                        App.error(th);
+                    }
                 });
         return gen;
     }
