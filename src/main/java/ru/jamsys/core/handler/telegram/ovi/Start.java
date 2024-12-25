@@ -8,7 +8,6 @@ import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
 import ru.jamsys.telegram.TelegramCommandContext;
-import ru.jamsys.telegram.handler.NhlStatisticsBotCommandHandler;
 import ru.jamsys.telegram.handler.OviGoalsBotCommandHandler;
 
 @Setter
