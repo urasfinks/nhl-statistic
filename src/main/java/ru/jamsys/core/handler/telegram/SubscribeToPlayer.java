@@ -21,7 +21,7 @@ import ru.jamsys.core.resource.jdbc.JdbcResource;
 import ru.jamsys.tank.data.NHLPlayerList;
 import ru.jamsys.tank.data.NHLTeamSchedule;
 import ru.jamsys.telegram.TelegramCommandContext;
-import ru.jamsys.telegram.TelegramCommandHandler;
+import ru.jamsys.telegram.TelegramCommonCommandHandler;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -33,7 +33,7 @@ import java.util.Map;
 @Component
 @RequestMapping({"/subscribe_to_player/**", "/stp/**"})
 @SuppressWarnings("unused")
-public class SubscribeToPlayer implements PromiseGenerator, TelegramCommandHandler {
+public class SubscribeToPlayer implements PromiseGenerator, TelegramCommonCommandHandler {
 
     private final ServicePromise servicePromise;
 

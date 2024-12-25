@@ -8,10 +8,9 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 import ru.jamsys.NhlStatisticApplication;
 import ru.jamsys.core.component.manager.ManagerExpiration;
-import ru.jamsys.core.component.manager.item.RouteGeneratorRepository;
 import ru.jamsys.core.extension.LifeCycleComponent;
 import ru.jamsys.telegram.TelegramBot;
-import ru.jamsys.telegram.TelegramCommandHandler;
+import ru.jamsys.telegram.TelegramCommonCommandHandler;
 
 @SuppressWarnings("unused")
 @Component
@@ -22,11 +21,10 @@ public class TelegramBotComponent implements LifeCycleComponent {
 
     private final SecurityComponent securityComponent;
 
-    @Getter
-    private final RouteGeneratorRepository routerRepository;
+    private final RouteGenerator routeGenerator;
 
     @Getter
-    private TelegramBot handler;
+    private TelegramBot commonHandler;
 
     public TelegramBotComponent(
             SecurityComponent securityComponent,
@@ -35,7 +33,7 @@ public class TelegramBotComponent implements LifeCycleComponent {
     ) throws TelegramApiException {
         this.securityComponent = securityComponent;
         api = new TelegramBotsApi(DefaultBotSession.class);
-        routerRepository = routeGenerator.getRouterRepository(TelegramCommandHandler.class);
+        this.routeGenerator = routeGenerator;
     }
 
     @Override
@@ -47,8 +45,11 @@ public class TelegramBotComponent implements LifeCycleComponent {
     public void run() {
         if (NhlStatisticApplication.startTelegramListener) {
             try {
-                handler = new TelegramBot(new String(securityComponent.get("telegram.api.token")), routerRepository);
-                api.registerBot(handler);
+                commonHandler = new TelegramBot(
+                        new String(securityComponent.get("telegram.api.token")),
+                        routeGenerator.getRouterRepository(TelegramCommonCommandHandler.class)
+                );
+                api.registerBot(commonHandler);
             } catch (TelegramApiException e) {
                 throw new RuntimeException(e);
             }

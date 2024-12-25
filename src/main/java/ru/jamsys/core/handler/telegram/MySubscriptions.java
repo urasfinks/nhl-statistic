@@ -15,7 +15,7 @@ import ru.jamsys.core.promise.PromiseGenerator;
 import ru.jamsys.core.resource.jdbc.JdbcRequest;
 import ru.jamsys.core.resource.jdbc.JdbcResource;
 import ru.jamsys.telegram.TelegramCommandContext;
-import ru.jamsys.telegram.TelegramCommandHandler;
+import ru.jamsys.telegram.TelegramCommonCommandHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +26,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Getter
 @Component
 @RequestMapping({"/my_subscriptions/**", "/ms/**"})
-public class MySubscriptions implements PromiseGenerator, TelegramCommandHandler {
+public class MySubscriptions implements PromiseGenerator, TelegramCommonCommandHandler {
 
     private String index;
 
