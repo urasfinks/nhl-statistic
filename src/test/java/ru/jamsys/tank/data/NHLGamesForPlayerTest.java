@@ -68,7 +68,7 @@ class NHLGamesForPlayerTest {
     }
 
     @Test
-    public void checkSec() throws Throwable {
+    public void checkSec() {
         Assertions.assertEquals(60, NHLGamesForPlayer.getSec("00:01"));
         Assertions.assertEquals(3600, NHLGamesForPlayer.getSec("01:00"));
         Assertions.assertEquals(3660, NHLGamesForPlayer.getSec("01:01"));
