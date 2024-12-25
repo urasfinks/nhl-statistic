@@ -54,8 +54,8 @@ public class SendNotification implements PromiseGenerator {
                     TelegramBotComponent telegramBotComponent = App.get(TelegramBotComponent.class);
                     System.out.println("SEND TO CLIENT: " + message);
                     UtilRisc.forEach(atomicBoolean, listIdChat, idChat -> {
-                        if (telegramBotComponent.getCommonHandler() != null) {
-                            telegramBotComponent.getCommonHandler().send(idChat, message, null);
+                        if (telegramBotComponent.getNhlStatisticsBot() != null) {
+                            telegramBotComponent.getNhlStatisticsBot().send(idChat, message, null);
                         }
                     });
                 })

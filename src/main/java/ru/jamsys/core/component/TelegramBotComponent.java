@@ -9,8 +9,9 @@ import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 import ru.jamsys.NhlStatisticApplication;
 import ru.jamsys.core.component.manager.ManagerExpiration;
 import ru.jamsys.core.extension.LifeCycleComponent;
-import ru.jamsys.telegram.TelegramBot;
-import ru.jamsys.telegram.TelegramCommonCommandHandler;
+import ru.jamsys.telegram.bot.NhlStatisticsBot;
+import ru.jamsys.telegram.handler.NhlStatisticsBotCommandHandler;
+import ru.jamsys.telegram.handler.OviGoalsBotCommandHandler;
 
 @SuppressWarnings("unused")
 @Component
@@ -24,7 +25,10 @@ public class TelegramBotComponent implements LifeCycleComponent {
     private final RouteGenerator routeGenerator;
 
     @Getter
-    private TelegramBot commonHandler;
+    private NhlStatisticsBot nhlStatisticsBot;
+
+    @Getter
+    private NhlStatisticsBot oviGoalsBot;
 
     public TelegramBotComponent(
             SecurityComponent securityComponent,
@@ -45,11 +49,23 @@ public class TelegramBotComponent implements LifeCycleComponent {
     public void run() {
         if (NhlStatisticApplication.startTelegramListener) {
             try {
-                commonHandler = new TelegramBot(
-                        new String(securityComponent.get("telegram.api.token")),
-                        routeGenerator.getRouterRepository(TelegramCommonCommandHandler.class)
+                nhlStatisticsBot = new NhlStatisticsBot(
+                        "nhl_statistics_bot",
+                        new String(securityComponent.get("telegram.api.token.nhl_statistics_bot")),
+                        routeGenerator.getRouterRepository(NhlStatisticsBotCommandHandler.class)
                 );
-                api.registerBot(commonHandler);
+                api.registerBot(nhlStatisticsBot);
+            } catch (TelegramApiException e) {
+                throw new RuntimeException(e);
+            }
+
+            try {
+                oviGoalsBot = new NhlStatisticsBot(
+                        "ovi_goals_bot",
+                        new String(securityComponent.get("telegram.api.token.ovi_goals_bot")),
+                        routeGenerator.getRouterRepository(OviGoalsBotCommandHandler.class)
+                );
+                api.registerBot(oviGoalsBot);
             } catch (TelegramApiException e) {
                 throw new RuntimeException(e);
             }

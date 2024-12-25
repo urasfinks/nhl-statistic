@@ -1,12 +1,9 @@
 package ru.jamsys.telegram;
 
+import lombok.Getter;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
-import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
-import org.telegram.telegrambots.meta.api.objects.commands.scope.BotCommandScopeDefault;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.jamsys.core.App;
 import ru.jamsys.core.component.manager.item.RouteGeneratorRepository;
 import ru.jamsys.core.component.manager.item.Session;
@@ -22,21 +19,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class TelegramBot extends TelegramLongPollingBot {
+public abstract class AbstractBot extends TelegramLongPollingBot {
 
     private final RouteGeneratorRepository routerRepository;
     private final Map<Long, String> stepHandler;
 
-    public TelegramBot(String botToken, RouteGeneratorRepository routerRepository) throws TelegramApiException {
-        super(botToken);
-        this.routerRepository = routerRepository;
-        List<BotCommand> list = new ArrayList<>();
-        list.add(new BotCommand("/subscribe_to_player", "Follow a player to stay updated"));
-        list.add(new BotCommand("/my_subscriptions", "See the list of players you're following"));
-        list.add(new BotCommand("/remove_subscription", "Unfollow a player from your list"));
-        execute(new SetMyCommands(list, new BotCommandScopeDefault(), null));
+    @Getter
+    private final String botUsername;
 
-        stepHandler = new Session<>("TelegramContext", Long.class, 60_000L);
+    public AbstractBot(String botUsername, String botToken, RouteGeneratorRepository routerRepository) {
+        super(botToken);
+        this.botUsername = botUsername;
+        this.routerRepository = routerRepository;
+        stepHandler = new Session<>("TelegramContext_" + botUsername, Long.class, 60_000L);
     }
 
     @Override
@@ -44,7 +39,6 @@ public class TelegramBot extends TelegramLongPollingBot {
         if (msg == null) {
             return;
         }
-        //System.out.println(UtilJson.toStringPretty(msg, "{}"));
         if (msg.hasCallbackQuery()) {
             send(UtilTelegram.answerCallbackQuery(msg, ""));
         }
@@ -114,6 +108,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         send(UtilTelegram.message(idChat, data, buttons));
     }
 
+    @SuppressWarnings("all")
     public <T extends Serializable, Method extends BotApiMethod<T>> T send(Method method) {
         try {
             execute(method);
@@ -123,9 +118,45 @@ public class TelegramBot extends TelegramLongPollingBot {
         return null;
     }
 
-    @Override
-    public String getBotUsername() {
-        return "ovi_goals_bot";
+    public static List<String> splitMessageSmart(String message, int maxLength) {
+        List<String> parts = new ArrayList<>();
+
+        while (message.length() > maxLength) {
+            // Попробуем найти перенос строки или конец предложения
+            int splitIndex = findSplitIndex(message, maxLength);
+
+            // Добавляем часть текста в список
+            parts.add(message.substring(0, splitIndex).trim());
+            // Обрезаем обработанную часть
+            message = message.substring(splitIndex).trim();
+        }
+
+        // Добавляем оставшийся текст
+        if (!message.isEmpty()) {
+            parts.add(message);
+        }
+
+        return parts;
+    }
+
+    public static int findSplitIndex(String message, int maxLength) {
+        // Ищем последний перенос строки до maxLength
+        int newlineIndex = message.lastIndexOf('\n', maxLength);
+        if (newlineIndex != -1) {
+            return newlineIndex + 1; // Включаем перенос строки
+        }
+
+        // Ищем конец предложения (точка, восклицательный знак, вопросительный знак)
+        int sentenceEndIndex = Math.max(
+                Math.max(message.lastIndexOf('.', maxLength), message.lastIndexOf('!', maxLength)),
+                message.lastIndexOf('?', maxLength)
+        );
+        if (sentenceEndIndex != -1) {
+            return sentenceEndIndex + 1; // Включаем знак конца предложения
+        }
+
+        // Если ничего не найдено, разрезаем по maxLength
+        return maxLength;
     }
 
 }

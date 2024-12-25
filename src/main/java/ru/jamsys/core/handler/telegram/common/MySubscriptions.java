@@ -1,4 +1,4 @@
-package ru.jamsys.core.handler.telegram;
+package ru.jamsys.core.handler.telegram.common;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -14,8 +14,9 @@ import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
 import ru.jamsys.core.resource.jdbc.JdbcRequest;
 import ru.jamsys.core.resource.jdbc.JdbcResource;
+import ru.jamsys.telegram.AbstractBot;
 import ru.jamsys.telegram.TelegramCommandContext;
-import ru.jamsys.telegram.TelegramCommonCommandHandler;
+import ru.jamsys.telegram.handler.NhlStatisticsBotCommandHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,14 +26,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Setter
 @Getter
 @Component
-@RequestMapping({"/remove_subscription/**", "/rs/**"})
-public class RemoveSubscriptions implements PromiseGenerator, TelegramCommonCommandHandler {
-
-    private String index;
+@RequestMapping({"/my_subscriptions/**", "/ms/**"})
+public class MySubscriptions implements PromiseGenerator, NhlStatisticsBotCommandHandler {
 
     private final ServicePromise servicePromise;
 
-    public RemoveSubscriptions(ServicePromise servicePromise) {
+    public MySubscriptions(ServicePromise servicePromise) {
         this.servicePromise = servicePromise;
     }
 
@@ -40,7 +39,7 @@ public class RemoveSubscriptions implements PromiseGenerator, TelegramCommonComm
 
     @Override
     public Promise generate() {
-        return servicePromise.get(index, 12_000L)
+        return servicePromise.get(getClass().getSimpleName(), 12_000L)
                 .then("check", (_, _, promise) -> {
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
                     if (context.getUriParameters().containsKey("id")) {
@@ -59,7 +58,7 @@ public class RemoveSubscriptions implements PromiseGenerator, TelegramCommonComm
                                 "At the moment, you don't have any subscriptions yet.",
                                 null
                         );
-                        promise.skipAllStep("subscribe empty");
+                        promise.skipAllStep("subscriptions empty");
                         return;
                     }
                     List<Button> buttons = new ArrayList<>();
@@ -72,7 +71,7 @@ public class RemoveSubscriptions implements PromiseGenerator, TelegramCommonComm
                                         map.get("count").toString()
                                 ),
                                 ServletResponseWriter.buildUrlQuery(
-                                        "/rs/",
+                                        "/ms/",
                                         new HashMapBuilder<>(context.getUriParameters())
                                                 .append("id", map.get("id_player").toString())
                                                 .append("a", map.get("player_about").toString())
@@ -81,10 +80,10 @@ public class RemoveSubscriptions implements PromiseGenerator, TelegramCommonComm
                         activeGame.addAndGet(Integer.parseInt(map.get("count").toString()));
                     });
                     context.getTelegramBot().send(context.getIdChat(), String.format(
-                            "You are subscribed to %d games. Select a player to unsubscribe.",
+                            "You are subscribed to %d games. Select a player to view detailed match information",
                             activeGame.get()
                     ), buttons);
-                    promise.skipAllStep("wait read id_player for unsubscribe");
+                    promise.skipAllStep("wait read id_player for more information");
                 })
                 .then("getSubscriptionsMarker", (_, _, promise) -> {
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
@@ -93,15 +92,26 @@ public class RemoveSubscriptions implements PromiseGenerator, TelegramCommonComm
                             context.getUriParameters().get("a")
                     ));
                 })
-                .thenWithResource("removeSubscription", JdbcResource.class, (_, _, promise, jdbcResource) -> {
+                .thenWithResource("getSubscriptionsPlayerGames", JdbcResource.class, (_, _, promise, jdbcResource) -> {
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
-                    jdbcResource.execute(new JdbcRequest(JTScheduler.REMOVE_MY_SUBSCRIBED)
+                    List<Map<String, Object>> execute = jdbcResource.execute(new JdbcRequest(JTScheduler.SELECT_MY_SUBSCRIBED_GAMES)
                             .addArg("id_chat", context.getIdChat())
                             .addArg("id_player", context.getUriParameters().get("id"))
                             .setDebug(false)
                     );
-                    context.getTelegramBot().send(context.getIdChat(), "Subscription remove", null);
-                });
+                    if (execute.isEmpty()) {
+                        context.getTelegramBot().send(
+                                context.getIdChat(),
+                                "There are no scheduled games at the moment.",
+                                null
+                        );
+                        return;
+                    }
+                    StringBuilder sb = new StringBuilder();
+                    execute.forEach(map -> sb.append(map.get("game_about")).append("\n"));
+                    AbstractBot.splitMessageSmart(sb.toString(), maxLength).forEach(s -> context.getTelegramBot().send(context.getIdChat(), s, null));
+                })
+                ;
     }
 
 }

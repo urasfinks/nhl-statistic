@@ -68,8 +68,8 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
         if (!NhlStatisticApplication.startTelegramListener) {
             System.out.println("logToTelegram:" + data);
         }
-        if (telegramBotComponent.getCommonHandler() != null) {
-            telegramBotComponent.getCommonHandler().send(
+        if (telegramBotComponent.getNhlStatisticsBot() != null) {
+            telegramBotComponent.getNhlStatisticsBot().send(
                     -4739098379L,
                     //290029195,
                     data,
@@ -83,7 +83,7 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
         if (mode.equals("test")) {
             return null;
         }
-        if (telegramBotComponent.getCommonHandler() == null && NhlStatisticApplication.startTelegramListener) {
+        if (telegramBotComponent.getNhlStatisticsBot() == null && NhlStatisticApplication.startTelegramListener) {
             return null;
         }
         return servicePromise.get(getClass().getSimpleName(), 50_000L)

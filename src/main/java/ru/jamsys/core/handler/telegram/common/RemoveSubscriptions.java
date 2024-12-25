@@ -1,4 +1,4 @@
-package ru.jamsys.core.handler.telegram;
+package ru.jamsys.core.handler.telegram.common;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -15,7 +15,7 @@ import ru.jamsys.core.promise.PromiseGenerator;
 import ru.jamsys.core.resource.jdbc.JdbcRequest;
 import ru.jamsys.core.resource.jdbc.JdbcResource;
 import ru.jamsys.telegram.TelegramCommandContext;
-import ru.jamsys.telegram.TelegramCommonCommandHandler;
+import ru.jamsys.telegram.handler.NhlStatisticsBotCommandHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,14 +25,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Setter
 @Getter
 @Component
-@RequestMapping({"/my_subscriptions/**", "/ms/**"})
-public class MySubscriptions implements PromiseGenerator, TelegramCommonCommandHandler {
-
-    private String index;
+@RequestMapping({"/remove_subscription/**", "/rs/**"})
+public class RemoveSubscriptions implements PromiseGenerator, NhlStatisticsBotCommandHandler {
 
     private final ServicePromise servicePromise;
 
-    public MySubscriptions(ServicePromise servicePromise) {
+    public RemoveSubscriptions(ServicePromise servicePromise) {
         this.servicePromise = servicePromise;
     }
 
@@ -40,7 +38,7 @@ public class MySubscriptions implements PromiseGenerator, TelegramCommonCommandH
 
     @Override
     public Promise generate() {
-        return servicePromise.get(index, 12_000L)
+        return servicePromise.get(getClass().getSimpleName(), 12_000L)
                 .then("check", (_, _, promise) -> {
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
                     if (context.getUriParameters().containsKey("id")) {
@@ -59,7 +57,7 @@ public class MySubscriptions implements PromiseGenerator, TelegramCommonCommandH
                                 "At the moment, you don't have any subscriptions yet.",
                                 null
                         );
-                        promise.skipAllStep("subscriptions empty");
+                        promise.skipAllStep("subscribe empty");
                         return;
                     }
                     List<Button> buttons = new ArrayList<>();
@@ -72,7 +70,7 @@ public class MySubscriptions implements PromiseGenerator, TelegramCommonCommandH
                                         map.get("count").toString()
                                 ),
                                 ServletResponseWriter.buildUrlQuery(
-                                        "/ms/",
+                                        "/rs/",
                                         new HashMapBuilder<>(context.getUriParameters())
                                                 .append("id", map.get("id_player").toString())
                                                 .append("a", map.get("player_about").toString())
@@ -81,10 +79,10 @@ public class MySubscriptions implements PromiseGenerator, TelegramCommonCommandH
                         activeGame.addAndGet(Integer.parseInt(map.get("count").toString()));
                     });
                     context.getTelegramBot().send(context.getIdChat(), String.format(
-                            "You are subscribed to %d games. Select a player to view detailed match information",
+                            "You are subscribed to %d games. Select a player to unsubscribe.",
                             activeGame.get()
                     ), buttons);
-                    promise.skipAllStep("wait read id_player for more information");
+                    promise.skipAllStep("wait read id_player for unsubscribe");
                 })
                 .then("getSubscriptionsMarker", (_, _, promise) -> {
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
@@ -93,67 +91,15 @@ public class MySubscriptions implements PromiseGenerator, TelegramCommonCommandH
                             context.getUriParameters().get("a")
                     ));
                 })
-                .thenWithResource("getSubscriptionsPlayerGames", JdbcResource.class, (_, _, promise, jdbcResource) -> {
+                .thenWithResource("removeSubscription", JdbcResource.class, (_, _, promise, jdbcResource) -> {
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
-                    List<Map<String, Object>> execute = jdbcResource.execute(new JdbcRequest(JTScheduler.SELECT_MY_SUBSCRIBED_GAMES)
+                    jdbcResource.execute(new JdbcRequest(JTScheduler.REMOVE_MY_SUBSCRIBED)
                             .addArg("id_chat", context.getIdChat())
                             .addArg("id_player", context.getUriParameters().get("id"))
                             .setDebug(false)
                     );
-                    if (execute.isEmpty()) {
-                        context.getTelegramBot().send(
-                                context.getIdChat(),
-                                "There are no scheduled games at the moment.",
-                                null
-                        );
-                        return;
-                    }
-                    StringBuilder sb = new StringBuilder();
-                    execute.forEach(map -> sb.append(map.get("game_about")).append("\n"));
-                    splitMessageSmart(sb.toString(), maxLength).forEach(s -> context.getTelegramBot().send(context.getIdChat(), s, null));
-                })
-                ;
-    }
-
-    private List<String> splitMessageSmart(String message, int maxLength) {
-        List<String> parts = new ArrayList<>();
-
-        while (message.length() > maxLength) {
-            // Попробуем найти перенос строки или конец предложения
-            int splitIndex = findSplitIndex(message, maxLength);
-
-            // Добавляем часть текста в список
-            parts.add(message.substring(0, splitIndex).trim());
-            // Обрезаем обработанную часть
-            message = message.substring(splitIndex).trim();
-        }
-
-        // Добавляем оставшийся текст
-        if (!message.isEmpty()) {
-            parts.add(message);
-        }
-
-        return parts;
-    }
-
-    private int findSplitIndex(String message, int maxLength) {
-        // Ищем последний перенос строки до maxLength
-        int newlineIndex = message.lastIndexOf('\n', maxLength);
-        if (newlineIndex != -1) {
-            return newlineIndex + 1; // Включаем перенос строки
-        }
-
-        // Ищем конец предложения (точка, восклицательный знак, вопросительный знак)
-        int sentenceEndIndex = Math.max(
-                Math.max(message.lastIndexOf('.', maxLength), message.lastIndexOf('!', maxLength)),
-                message.lastIndexOf('?', maxLength)
-        );
-        if (sentenceEndIndex != -1) {
-            return sentenceEndIndex + 1; // Включаем знак конца предложения
-        }
-
-        // Если ничего не найдено, разрезаем по maxLength
-        return maxLength;
+                    context.getTelegramBot().send(context.getIdChat(), "Subscription remove", null);
+                });
     }
 
 }
