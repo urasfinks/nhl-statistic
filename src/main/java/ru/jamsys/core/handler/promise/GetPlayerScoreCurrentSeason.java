@@ -75,7 +75,7 @@ public class GetPlayerScoreCurrentSeason implements PromiseGenerator {
                                     promise,
                                     _ -> NHLGamesForPlayer.getUri(player.getPlayerID()));
 
-                            NHLGamesForPlayer.getOnlyGoalsFilterSeason(
+                            NHLGamesForPlayer.getOnlyGoalsFilter(
                                     response.getBody(),
                                     lisIdGameInSeason
                             ).forEach((_, countGoal) -> this.countGoal.addAndGet(countGoal));
