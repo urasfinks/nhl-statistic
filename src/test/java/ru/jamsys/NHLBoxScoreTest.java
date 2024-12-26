@@ -8,6 +8,7 @@ import ru.jamsys.core.flat.util.UtilJson;
 import ru.jamsys.tank.data.NHLBoxScore;
 import ru.jamsys.telegram.NotificationDataAndTemplate;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -454,6 +455,12 @@ class NHLBoxScoreTest {
         Assertions.assertEquals("time is it", NHLBoxScore.periodExpand("time is it"));
         String idGame = "20241012_NJ@WSH";
         Assertions.assertEquals("NJ@WSH", idGame.substring(idGame.indexOf("_") + 1));
+    }
+
+    @Test
+    void getPlayerStat() throws IOException {
+        Map<String, Object> playerStat = NHLBoxScore.getPlayerStat(NHLBoxScore.getExample5(), "4565257");
+        Assertions.assertEquals("1", playerStat.get("goals"));
     }
 
 }

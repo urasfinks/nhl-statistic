@@ -2,6 +2,7 @@ package ru.jamsys.tank.data;
 
 import ru.jamsys.core.App;
 import ru.jamsys.core.extension.builder.HashMapBuilder;
+import ru.jamsys.core.extension.exception.ForwardException;
 import ru.jamsys.core.flat.util.*;
 import ru.jamsys.telegram.NotificationDataAndTemplate;
 
@@ -13,8 +14,12 @@ import java.util.*;
 
 public class NHLBoxScore {
 
-    public static String getUri(String gameId) throws Exception {
-        return "/getNHLBoxScore?gameID=" + Util.urlEncode(gameId);
+    public static String getUri(String idGame) {
+        try {
+            return "/getNHLBoxScore?gameID=" + Util.urlEncode(idGame);
+        } catch (Exception e) {
+            throw new ForwardException(e);
+        }
     }
 
     public static String getExample4() throws IOException {
@@ -48,6 +53,23 @@ public class NHLBoxScore {
 
     public static String getExampleError() throws IOException {
         return UtilFileResource.getAsString("example/getNHLBoxScore_error.json");
+    }
+
+    public static Map<String, Object> parseBody(String json) throws Throwable {
+        if (json == null || json.isEmpty()) { //Так как в БД может быть ничего
+            throw new RuntimeException("empty json");
+        }
+        @SuppressWarnings("unchecked")
+        Map<String, Object> parsed = UtilJson.toObject(json, Map.class);
+        if (parsed.containsKey("error")) {
+            throw new RuntimeException(parsed.get("error").toString());
+        }
+        if (!parsed.containsKey("body")) {
+            throw new RuntimeException("body does not exist");
+        }
+        @SuppressWarnings("unchecked")
+        Map<String, Object> body = (Map<String, Object>) parsed.get("body");
+        return body;
     }
 
     public static List<Map<String, Object>> getScoringPlays(String json) throws Throwable {
@@ -274,6 +296,12 @@ public class NHLBoxScore {
             }
         });
         return res.stream().filter(map -> !map.get("type").equals("reduceCancel")).toList();
+    }
+
+    public static Map<String, Object> getPlayerStat(String json, String idPlayer) {
+        @SuppressWarnings("unchecked")
+        Map<String, Object> res = (Map<String, Object>) UtilJson.selector(json, "$.body.playerStats." + idPlayer);
+        return res;
     }
 
 }
