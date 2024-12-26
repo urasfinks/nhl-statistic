@@ -3,6 +3,7 @@ package ru.jamsys.core.handler.promise;
 import io.reactivex.rxjava3.functions.Supplier;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 import ru.jamsys.core.App;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.flat.util.tank.UtilTank01;
@@ -20,11 +21,14 @@ import java.util.Map;
 
 @Getter
 @Setter
+@Accessors(chain = true)
 public class Tank01CacheRequest implements PromiseGenerator {
 
     private Supplier<String> uriSupplier;
 
     private List<String> idGamesSeason = new ArrayList<>();
+
+    private boolean onlyCache = false;
 
     public Tank01CacheRequest(Supplier<String> uriSupplier) {
         this.uriSupplier = uriSupplier;
@@ -46,6 +50,9 @@ public class Tank01CacheRequest implements PromiseGenerator {
                         response.setData(execute.getFirst().get("data").toString());
                         promise.skipAllStep("already cache");
                     }
+                    if (onlyCache) {
+                        promise.skipAllStep("onlyCache");
+                    }
                 })
                 .thenWithResource("request", HttpResource.class, (_, _, promise, httpResource) -> {
                     Tank01Response response = promise.getRepositoryMapClass(Tank01Response.class);
@@ -64,7 +71,7 @@ public class Tank01CacheRequest implements PromiseGenerator {
                     );
                     response.setData(response.getData());
                 })
-        ;
+                ;
     }
 
 }
