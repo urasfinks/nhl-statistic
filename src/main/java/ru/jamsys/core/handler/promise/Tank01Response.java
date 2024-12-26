@@ -10,5 +10,4 @@ import lombok.experimental.Accessors;
 public class Tank01Response {
     String data;
     boolean cache = false;
-    String teamId;
 }
