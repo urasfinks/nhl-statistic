@@ -170,4 +170,22 @@ public class NHLTeamSchedule {
         }
     }
 
+    public static String getCurrentDateEpoch(){
+        return UtilDate.timestampFormatUTC(UtilDate.getTimestamp(), "yyyyMMdd");
+    }
+
+    public static String getGameToday(List<Map<String, Object>> parsedGameRaw, String cutDateEpoch) {
+        for (Map<String, Object> game : parsedGameRaw) {
+            try {
+                NHLTeamSchedule.extendGameTimeZone(game);
+            } catch (Exception e) {
+                App.error(e);
+            }
+            if (game.get("gameDateEpoch").equals(cutDateEpoch)) {
+                return game.get("gameID").toString();
+            }
+        }
+        return null;
+    }
+
 }

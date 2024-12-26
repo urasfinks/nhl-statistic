@@ -86,4 +86,13 @@ class NHLTeamScheduleTest {
         Assertions.assertEquals(2023, NHLTeamSchedule.getActiveSeasonOrNext("2023-04-30", "yyyy-MM-dd"));
     }
 
+    @Test
+    void getGameToday() throws Throwable {
+        String gameToday = NHLTeamSchedule.getGameToday(
+                NHLTeamSchedule.parseGameRaw(NHLTeamSchedule.getExample_18_2025()),
+                "20241213"
+        );
+        Assertions.assertEquals("20241212_LA@NJ", gameToday);
+    }
+
 }
