@@ -5,10 +5,7 @@ import ru.jamsys.core.flat.util.UtilFileResource;
 import ru.jamsys.core.flat.util.UtilJson;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class NHLGamesForPlayer {
@@ -52,14 +49,11 @@ public class NHLGamesForPlayer {
         return selector;
     }
 
-    public static Map<String, Object> getAggregateStatistic(String json, List<String> idGames) throws Throwable {
+    public static Map<String, Object> getAggregateStatistic(List<Map<String, Object>> data) throws Throwable {
         Map<String, AtomicInteger> pre = new HashMap<>();
         Map<String, Object> result = new HashMap<>();
         AtomicInteger countGame = new AtomicInteger(0);
-        parseBody(json).forEach((idGame, map) -> {
-            if (idGames != null && !idGames.contains(idGame)) {
-                return;
-            }
+        data.forEach((map) -> {
             countGame.incrementAndGet();
             map.forEach((key, value) -> {
                 String prepValue = value.toString();
@@ -85,6 +79,17 @@ public class NHLGamesForPlayer {
         result.put("shortHandedTimeOnIce", getSecFormat((int) result.get("shortHandedTimeOnIce")));
         result.put("powerPlayTimeOnIce", getSecFormat((int) result.get("powerPlayTimeOnIce")));
         return result;
+    }
+
+    public static Map<String, Object> getAggregateStatistic(String json, List<String> idGames) throws Throwable {
+        List<Map<String, Object>> data = new ArrayList<>();
+        parseBody(json).forEach((idGame, map) -> {
+            if (idGames != null && !idGames.contains(idGame)) {
+                return;
+            }
+            data.add(map);
+        });
+        return getAggregateStatistic(data);
     }
 
     public static int getSec(String time) {

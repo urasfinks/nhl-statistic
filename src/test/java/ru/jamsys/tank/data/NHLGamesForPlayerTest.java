@@ -65,6 +65,8 @@ class NHLGamesForPlayerTest {
                 lisIdGameInSeason
         );
         System.out.println(UtilJson.toStringPretty(aggregateStatistic, "{}"));
+        Assertions.assertEquals(15, aggregateStatistic.get("plusMinus"));
+        Assertions.assertEquals("00:51", aggregateStatistic.get("shortHandedTimeOnIce"));
     }
 
     @Test
