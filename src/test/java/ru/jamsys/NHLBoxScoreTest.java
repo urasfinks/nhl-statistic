@@ -400,7 +400,7 @@ class NHLBoxScoreTest {
                 NHLBoxScore.getExample4(),
                 NHLBoxScore.getExample5()
         );
-        Assertions.assertEquals("{2563036=GOAL! Game ${gameName}. ${playerName} scored 1 goal: 10:18 2nd period. He has 1 goals in season, 854 goals in career and only 40 goals till Gretzky all-time record}", result.toString());
+        Assertions.assertEquals("{2563036=GOAL! Game ${gameName}. ${playerName} scored 1 goal: 10:18 2nd period. He has 1 goals in season, 1 goals in career and only 893 goals till Gretzky all-time record}", result.toString());
     }
 
     @Test
@@ -409,7 +409,7 @@ class NHLBoxScoreTest {
                 NHLBoxScore.getExample5(),
                 NHLBoxScore.getExample4()
         );
-        Assertions.assertEquals("{2563036=CANCEL! Game ${gameName}. ${playerName} scored 0 goal. He has 0 goals in season, 853 goals in career and only 41 goals till Gretzky all-time record}", result.toString());
+        Assertions.assertEquals("{2563036=CANCEL! Game ${gameName}. ${playerName} scored 0 goal. He has 0 goals in season, 0 goals in career and only 894 goals till Gretzky all-time record}", result.toString());
     }
 
     @Test
@@ -418,7 +418,7 @@ class NHLBoxScoreTest {
                 NHLBoxScore.getExample6(),
                 NHLBoxScore.getExample6ChangeTime()
         );
-        Assertions.assertEquals("{2563036=CORRECTION! Game ${gameName}. ${playerName} scored 1 goal: 10:19 2nd period. He has 1 goals in season, 854 goals in career and only 40 goals till Gretzky all-time record}", result.toString());
+        Assertions.assertEquals("{2563036=CORRECTION! Game ${gameName}. ${playerName} scored 1 goal: 10:19 2nd period. He has 1 goals in season, 1 goals in career and only 893 goals till Gretzky all-time record}", result.toString());
     }
 
     @Test
@@ -427,7 +427,7 @@ class NHLBoxScoreTest {
                 NHLBoxScore.getExample7(),
                 NHLBoxScore.getExample7ManyChange()
         );
-        Assertions.assertEquals("{2563036=CANCEL+CORRECTION! Game ${gameName}. ${playerName} scored 2 goals: 10:20 2nd period, 10:20 2nd period. He has 2 goals in season, 855 goals in career and only 39 goals till Gretzky all-time record}", result.toString());
+        Assertions.assertEquals("{2563036=CANCEL+CORRECTION! Game ${gameName}. ${playerName} scored 2 goals: 10:20 2nd period, 10:20 2nd period. He has 2 goals in season, 2 goals in career and only 892 goals till Gretzky all-time record}", result.toString());
     }
 
     @Test

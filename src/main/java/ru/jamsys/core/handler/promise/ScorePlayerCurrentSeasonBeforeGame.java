@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @Getter
 @Setter
-public class GetPlayerScoreCurrentSeason implements PromiseGenerator {
+public class ScorePlayerCurrentSeasonBeforeGame implements PromiseGenerator {
 
     private String idGame;
 
@@ -30,7 +30,7 @@ public class GetPlayerScoreCurrentSeason implements PromiseGenerator {
 
     private AtomicInteger countGoal = new AtomicInteger(0);
 
-    public GetPlayerScoreCurrentSeason(String idGame, NHLPlayerList.Player player) {
+    public ScorePlayerCurrentSeasonBeforeGame(NHLPlayerList.Player player, String idGame) {
         this.idGame = idGame;
         this.player = player;
     }
@@ -63,10 +63,13 @@ public class GetPlayerScoreCurrentSeason implements PromiseGenerator {
                     //Вычитаем текущий матч так как надо считать кол-во голов до матча
                     lisIdGameInSeason.remove(idGame);
                 })
-                .then("getBoxScore", (_, _, promise) -> {
-                    Tank01Request tank01Request = new Tank01Request(() -> NHLGamesForPlayer.getUri(player.getPlayerID()));
-                    tank01Request.setNeedRequestApi(true);
-                    tank01Request.generate().run().await(50_000L);
+                .then("requestGamesForPlayer", new Tank01Request(() -> NHLGamesForPlayer.getUri(
+                        player.getPlayerID()
+                )).generate())
+                .then("parseGamesForPlayer", (_, _, promise) -> {
+                    Tank01Request tank01Request = promise
+                            .getRepositoryMapClass(Promise.class, "requestGamesForPlayer")
+                            .getRepositoryMapClass(Tank01Request.class);
                     NHLGamesForPlayer.getOnlyGoalsFilter(
                             tank01Request.getResponseData(),
                             lisIdGameInSeason

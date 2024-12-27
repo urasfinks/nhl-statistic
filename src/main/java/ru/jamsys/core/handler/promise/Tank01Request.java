@@ -8,6 +8,7 @@ import ru.jamsys.core.App;
 import ru.jamsys.core.component.SecurityComponent;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.component.ServiceProperty;
+import ru.jamsys.core.flat.util.UtilJson;
 import ru.jamsys.core.jt.JTHttpCache;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
@@ -37,7 +38,7 @@ public class Tank01Request implements PromiseGenerator {
 
     @Getter
     @Setter
-    private boolean needRequestApi = false;
+    private boolean alwaysRequestApi = false;
 
     public Tank01Request(Supplier<String> uriSupplier) {
         this.uriSupplier = uriSupplier;
@@ -58,14 +59,14 @@ public class Tank01Request implements PromiseGenerator {
 
                     if (!execute.isEmpty()) {
                         responseData = execute.getFirst().get("data").toString();
-                        if (!needRequestApi) {
+                        // Если данные есть и не надо всегда делать запрос - скипаем задачи
+                        if (!alwaysRequestApi) {
                             promise.skipAllStep("already cache");
                         }
-                        // onlyCache можно использовать только если данные есть в БД
-                        // Если говорят нужен запрос, это будет противоречить в режиме только кеш
-                        if (onlyCache && !needRequestApi) {
-                            promise.skipAllStep("onlyCache");
-                        }
+                    }
+                    // Если говорят нужен запрос, это будет противоречить в режиме только кеш
+                    if (onlyCache && !alwaysRequestApi) {
+                        promise.skipAllStep("onlyCache");
                     }
                 })
                 .thenWithResource("request", HttpResource.class, (_, _, promise, httpResource) -> {
@@ -100,8 +101,23 @@ public class Tank01Request implements PromiseGenerator {
         if (!execute.isStatus()) {
             throw execute.getException().getFirst().getValueRaw();
         }
-        if (!execute.getBody().contains("\"statusCode\": 200")) {
-            throw new RuntimeException("Not found statusCode 200");
+        if (execute.getBody() == null || execute.getBody().isEmpty()) {
+            throw new RuntimeException("empty response");
+        }
+
+        @SuppressWarnings("unchecked")
+        Map<String, Object> parsed = UtilJson.toObject(execute.getBody(), Map.class);
+        if (parsed.containsKey("error")) {
+            throw new RuntimeException(parsed.get("error").toString());
+        }
+        if (!parsed.containsKey("body")) {
+            throw new RuntimeException("body does not exist");
+        }
+        if (!parsed.containsKey("statusCode")) {
+            throw new RuntimeException("statusCode does not exist");
+        }
+        if (!parsed.get("statusCode").equals(200)) {
+            throw new RuntimeException("statusCode not equals 200");
         }
     }
 

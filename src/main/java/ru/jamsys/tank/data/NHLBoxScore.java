@@ -55,23 +55,6 @@ public class NHLBoxScore {
         return UtilFileResource.getAsString("example/getNHLBoxScore_error.json");
     }
 
-    public static Map<String, Object> parseBody(String json) throws Throwable {
-        if (json == null || json.isEmpty()) { //Так как в БД может быть ничего
-            throw new RuntimeException("empty json");
-        }
-        @SuppressWarnings("unchecked")
-        Map<String, Object> parsed = UtilJson.toObject(json, Map.class);
-        if (parsed.containsKey("error")) {
-            throw new RuntimeException(parsed.get("error").toString());
-        }
-        if (!parsed.containsKey("body")) {
-            throw new RuntimeException("body does not exist");
-        }
-        @SuppressWarnings("unchecked")
-        Map<String, Object> body = (Map<String, Object>) parsed.get("body");
-        return body;
-    }
-
     public static List<Map<String, Object>> getScoringPlays(String json) throws Throwable {
         if (json == null || json.isEmpty()) { //Так как в БД может быть ничего
             return new ArrayList<>();

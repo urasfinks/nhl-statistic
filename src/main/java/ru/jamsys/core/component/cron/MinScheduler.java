@@ -104,7 +104,7 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                             data = NHLBoxScore.getExample6();
                         } else {
                             Tank01Request tank01Request = new Tank01Request(() -> NHLBoxScore.getUri(idGame))
-                                    .setNeedRequestApi(true);
+                                    .setAlwaysRequestApi(true);
                             Promise req = tank01Request.generate().run().await(50_000L);
                             if (req.isException()) {
                                 throw req.getExceptionSource();

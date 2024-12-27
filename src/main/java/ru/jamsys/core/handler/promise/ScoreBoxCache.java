@@ -2,6 +2,7 @@ package ru.jamsys.core.handler.promise;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.Accessors;
 import ru.jamsys.core.App;
 import ru.jamsys.core.component.ServicePromise;
@@ -15,7 +16,8 @@ import java.util.Map;
 @Getter
 @Setter
 @Accessors(chain = true)
-public class CacheScore implements PromiseGenerator {
+@ToString
+public class ScoreBoxCache implements PromiseGenerator {
 
     private final NHLPlayerList.Player player;
 
@@ -23,7 +25,7 @@ public class CacheScore implements PromiseGenerator {
 
     private int goals = 0;
 
-    public CacheScore(NHLPlayerList.Player player, String idGame) {
+    public ScoreBoxCache(NHLPlayerList.Player player, String idGame) {
         this.player = player;
         this.idGame = idGame;
     }
@@ -31,9 +33,10 @@ public class CacheScore implements PromiseGenerator {
     @Override
     public Promise generate() {
         return App.get(ServicePromise.class).get(getClass().getSimpleName(), 60_000L)
-                .extension(promise -> promise.setRepositoryMapClass(CacheScore.class, this)) // Просто для отладки
+                .extension(promise -> promise.setRepositoryMapClass(ScoreBoxCache.class, this)) // Просто для отладки
                 .then("getScoreBox", new Tank01Request(() -> NHLBoxScore.getUri(getIdGame())).setOnlyCache(true).generate())
                 .then("parseScoreBox", (_, _, promise) -> {
+                    promise.getRepositoryMapClass(ScoreBoxCache.class); // Для отладки
                     Tank01Request response = promise
                             .getRepositoryMapClass(Promise.class, "getScoreBox")
                             .getRepositoryMapClass(Tank01Request.class);

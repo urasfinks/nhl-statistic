@@ -47,9 +47,6 @@ public class NHLGamesForPlayer {
     public static Map<String, Map<String, Object>> parseBody(String json) throws Throwable {
         @SuppressWarnings("unchecked")
         Map<String, Object> parsed = UtilJson.toObject(json, Map.class);
-        if (parsed.containsKey("error")) {
-            throw new RuntimeException(parsed.get("error").toString());
-        }
         @SuppressWarnings("unchecked")
         Map<String, Map<String, Object>> selector = (Map<String, Map<String, Object>>) UtilJson.selector(parsed, "body");
         return selector;

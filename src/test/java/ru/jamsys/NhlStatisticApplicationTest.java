@@ -6,10 +6,7 @@ import org.junit.jupiter.api.Test;
 import ru.jamsys.core.App;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.extension.builder.ArrayListBuilder;
-import ru.jamsys.core.handler.promise.GetPlayerScoreCurrentSeason;
-import ru.jamsys.core.handler.promise.OviStat;
-import ru.jamsys.core.handler.promise.SendNotification;
-import ru.jamsys.core.handler.promise.Tank01Request;
+import ru.jamsys.core.handler.promise.*;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.resource.http.client.HttpResponse;
 import ru.jamsys.core.resource.notification.telegram.TelegramNotificationRequest;
@@ -35,7 +32,7 @@ class NhlStatisticApplicationTest {
         App.shutdown();
     }
 
-    @Test
+    //@Test
     void getPlayerScoreCurrentSeason() {
         NHLPlayerList.Player player = new NHLPlayerList.Player()
                 .setPlayerID("4874723")
@@ -43,7 +40,10 @@ class NhlStatisticApplicationTest {
                 .setLongName("Dylan Guenther")
                 .setTeam("UTA")
                 .setTeamID("33");
-        new GetPlayerScoreCurrentSeason("20241008_CHI@UTA", player).generate().run().await(50_000L);
+        new ScorePlayerCurrentSeasonBeforeGame(player, "20241008_CHI@UTA")
+                .generate()
+                .run()
+                .await(50_000L);
     }
 
     //@Test
@@ -96,4 +96,22 @@ class NhlStatisticApplicationTest {
                 .await(60_000L, 200);
         System.out.println(tank01Request.getResponseData());
     }
+
+    //@Test
+    void testScoreCache() {
+        NHLPlayerList.Player player = new NHLPlayerList.Player()
+                .setPlayerID("4565257")
+                .setPos("RW")
+                .setLongName("Bobby Brink")
+                .setTeam("PHI")
+                .setTeamID("22");
+        ScoreBoxCache scoreBoxCache = new ScoreBoxCache(player, "20241129_NYR@PHI2");
+
+        scoreBoxCache.generate()
+                .run()
+                .await(60_000L);
+        System.out.println(scoreBoxCache.getGoals());
+
+    }
+
 }
