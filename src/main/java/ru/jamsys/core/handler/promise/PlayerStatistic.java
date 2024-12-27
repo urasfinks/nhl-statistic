@@ -28,6 +28,8 @@ public class PlayerStatistic implements PromiseGenerator {
 
     private final NHLPlayerList.Player player;
 
+    private String gameToday;
+
     public PlayerStatistic(NHLPlayerList.Player player, int scoreLastSeason) {
         this.player = player;
         this.scoreLastSeasons = new AtomicInteger(scoreLastSeason);
@@ -41,6 +43,7 @@ public class PlayerStatistic implements PromiseGenerator {
                     promise.getRepositoryMapClass(PlayerStatistic.class);
                     setDate(UtilDate.get("dd/MM/yyyy"));
                 })
+                // На текущий момент мы не знаем конкретную игру, поэтому получаем всё
                 .then("requestGameInSeason", new Tank01Request(() -> NHLTeamSchedule.getUri(
                         getPlayer().getTeamID(),
                         NHLTeamSchedule.getActiveSeasonOrNext() + ""
@@ -53,8 +56,10 @@ public class PlayerStatistic implements PromiseGenerator {
 
                     List<Map<String, Object>> listGame = NHLTeamSchedule.parseGameRaw(response.getResponseData());
                     listGame.forEach(map -> getLisIdGameInSeason().add(map.get("gameID").toString()));
+
                     String gameToday = NHLTeamSchedule.getGameToday(listGame, NHLTeamSchedule.getCurrentDateEpoch());
                     if (gameToday != null && !gameToday.isEmpty()) {
+                        setGameToday(gameToday);
                         getLisIdGameInSeason().remove(gameToday);
                     }
                 })

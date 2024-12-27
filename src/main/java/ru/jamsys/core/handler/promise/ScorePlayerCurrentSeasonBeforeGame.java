@@ -40,8 +40,8 @@ public class ScorePlayerCurrentSeasonBeforeGame implements PromiseGenerator {
         return App.get(ServicePromise.class).get(getClass().getSimpleName(), 60_000L)
                 .thenWithResource("select", JdbcResource.class, (_, _, promise, jdbcResource) -> {
                     List<Map<String, Object>> execute = jdbcResource.execute(new JdbcRequest(JTPrevGoal.SELECT)
-                            .addArg("id_game", idGame)
-                            .addArg("id_player", player.getPlayerID())
+                            .addArg("id_game", getIdGame())
+                            .addArg("id_player", getPlayer().getPlayerID())
                             .setDebug(false)
                     );
                     if (!execute.isEmpty()) {
@@ -50,7 +50,7 @@ public class ScorePlayerCurrentSeasonBeforeGame implements PromiseGenerator {
                     }
                 })
                 .then("requestGameInSeason", new Tank01Request(() -> NHLTeamSchedule.getUri(
-                        player.getTeamID(),
+                        getPlayer().getTeamID(),
                         NHLTeamSchedule.getActiveSeasonOrNext() + ""
                 )).generate())
                 .then("parseGameInSeason", (_, _, promise) -> {
@@ -58,13 +58,13 @@ public class ScorePlayerCurrentSeasonBeforeGame implements PromiseGenerator {
                             .getRepositoryMapClass(Promise.class, "requestGameInSeason")
                             .getRepositoryMapClass(Tank01Request.class);
                     NHLTeamSchedule.parseGameRaw(response.getResponseData()).forEach(
-                            map -> lisIdGameInSeason.add(map.get("gameID").toString())
+                            map -> getLisIdGameInSeason().add(map.get("gameID").toString())
                     );
                     //Вычитаем текущий матч так как надо считать кол-во голов до матча
-                    lisIdGameInSeason.remove(idGame);
+                    getLisIdGameInSeason().remove(getIdGame());
                 })
                 .then("requestGamesForPlayer", new Tank01Request(() -> NHLGamesForPlayer.getUri(
-                        player.getPlayerID()
+                        getPlayer().getPlayerID()
                 )).generate())
                 .then("parseGamesForPlayer", (_, _, promise) -> {
                     Tank01Request tank01Request = promise
@@ -72,18 +72,18 @@ public class ScorePlayerCurrentSeasonBeforeGame implements PromiseGenerator {
                             .getRepositoryMapClass(Tank01Request.class);
                     NHLGamesForPlayer.getOnlyGoalsFilter(
                             tank01Request.getResponseData(),
-                            lisIdGameInSeason
-                    ).forEach((_, countGoal) -> this.countGoal.addAndGet(countGoal));
-                    promise.setRepositoryMap("prev_goal", String.valueOf(this.countGoal.get()));
+                            getLisIdGameInSeason()
+                    ).forEach((_, countGoal) -> getCountGoal().addAndGet(countGoal));
+                    promise.setRepositoryMap("prev_goal", String.valueOf(getCountGoal().get()));
                 })
                 .thenWithResource(
                         "insert",
                         JdbcResource.class,
                         (_, _, _, jdbcResource)
                                 -> jdbcResource.execute(new JdbcRequest(JTPrevGoal.INSERT)
-                                .addArg("id_game", idGame)
-                                .addArg("id_player", player.getPlayerID())
-                                .addArg("prev_goal", countGoal.get())
+                                .addArg("id_game", getIdGame())
+                                .addArg("id_player", getPlayer().getPlayerID())
+                                .addArg("prev_goal", getCountGoal().get())
                                 .setDebug(false)
                         ))
                 .setDebug(true)
