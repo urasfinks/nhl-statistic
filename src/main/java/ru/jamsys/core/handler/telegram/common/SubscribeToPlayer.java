@@ -11,8 +11,7 @@ import ru.jamsys.core.extension.http.ServletResponseWriter;
 import ru.jamsys.core.flat.util.UtilJson;
 import ru.jamsys.core.flat.util.UtilTelegram;
 import ru.jamsys.core.flat.util.telegram.Button;
-import ru.jamsys.core.handler.promise.Tank01CacheRequest;
-import ru.jamsys.core.handler.promise.Tank01Response;
+import ru.jamsys.core.handler.promise.Tank01Request;
 import ru.jamsys.core.jt.JTScheduler;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
@@ -69,15 +68,15 @@ public class SubscribeToPlayer implements PromiseGenerator, NhlStatisticsBotComm
                         promise.goTo("findPlayerByIdMarker");
                     }
                 })
-                .then("getPlayerList", new Tank01CacheRequest(NHLPlayerList::getUri).generate())
+                .then("getPlayerList", new Tank01Request(NHLPlayerList::getUri).generate())
                 .then("findPlayerByName", (_, _, promise) -> {
-                    Tank01Response response = promise
+                    Tank01Request response = promise
                             .getRepositoryMapClass(Promise.class, "getPlayerList")
-                            .getRepositoryMapClass(Tank01Response.class);
+                            .getRepositoryMapClass(Tank01Request.class);
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
                     List<Map<String, Object>> userList = NHLPlayerList.findByName(
                             context.getUriParameters().get("namePlayer"),
-                            response.getData()
+                            response.getResponseData()
                     );
                     if (userList.isEmpty()) {
                         context.getTelegramBot().send(context.getIdChat(), "Player's not found", null);
@@ -116,15 +115,15 @@ public class SubscribeToPlayer implements PromiseGenerator, NhlStatisticsBotComm
                         promise.skipAllStep("The subscription already exists");
                     }
                 })
-                .then("getPlayerList2", new Tank01CacheRequest(NHLPlayerList::getUri).generate())
+                .then("getPlayerList2", new Tank01Request(NHLPlayerList::getUri).generate())
                 .then("findPlayerById", (_, _, promise) -> {
-                    Tank01Response response = promise
+                    Tank01Request response = promise
                             .getRepositoryMapClass(Promise.class, "getPlayerList2")
-                            .getRepositoryMapClass(Tank01Response.class);
+                            .getRepositoryMapClass(Tank01Request.class);
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
                     Map<String, Object> player = NHLPlayerList.findById(
                             context.getUriParameters().get("idPlayer"),
-                            response.getData()
+                            response.getResponseData()
                     );
                     if (player == null || player.isEmpty()) {
                         context.getTelegramBot().send(UtilTelegram.editMessage(context.getMsg(), "Not found player"));
@@ -136,7 +135,7 @@ public class SubscribeToPlayer implements PromiseGenerator, NhlStatisticsBotComm
                     context.getUriParameters().put("infoPlayer", playerInfo);
                     context.getUriParameters().put("idTeam", player.get("teamID").toString());
                 })
-                .then("getGameInSeason", new Tank01CacheRequest(() -> {
+                .then("getGameInSeason", new Tank01Request(() -> {
                     TelegramCommandContext context = gen.getRepositoryMapClass(TelegramCommandContext.class);
                     return NHLTeamSchedule.getUri(
                             context.getUriParameters().get("idTeam"),
@@ -144,15 +143,15 @@ public class SubscribeToPlayer implements PromiseGenerator, NhlStatisticsBotComm
                     );
                 }).generate())
                 .then("mergeScheduledGames", (_, _, promise) -> {
-                    Tank01Response response = promise
+                    Tank01Request response = promise
                             .getRepositoryMapClass(Promise.class, "getGameInSeason")
-                            .getRepositoryMapClass(Tank01Response.class);
+                            .getRepositoryMapClass(Tank01Request.class);
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
                     @SuppressWarnings("unchecked")
                     List<Map<String, Object>> game = (List<Map<String, Object>>) context.getAnyData().computeIfAbsent(
                             "findGames", _ -> new ArrayList<String>()
                     );
-                    game.addAll(NHLTeamSchedule.parseGameScheduledAndLive(response.getData()));
+                    game.addAll(NHLTeamSchedule.parseGameScheduledAndLive(response.getResponseData()));
                 })
                 .thenWithResource("insertSchedule", JdbcResource.class, (_, _, promise, jdbcResource) -> {
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);

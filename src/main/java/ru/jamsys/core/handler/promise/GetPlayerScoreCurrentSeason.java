@@ -4,12 +4,9 @@ import lombok.Getter;
 import lombok.Setter;
 import ru.jamsys.core.App;
 import ru.jamsys.core.component.ServicePromise;
-import ru.jamsys.core.flat.util.tank.UtilTank01;
 import ru.jamsys.core.jt.JTPrevGoal;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
-import ru.jamsys.core.resource.http.HttpResource;
-import ru.jamsys.core.resource.http.client.HttpResponse;
 import ru.jamsys.core.resource.jdbc.JdbcRequest;
 import ru.jamsys.core.resource.jdbc.JdbcResource;
 import ru.jamsys.tank.data.NHLGamesForPlayer;
@@ -52,35 +49,30 @@ public class GetPlayerScoreCurrentSeason implements PromiseGenerator {
                         promise.skipAllStep("already cache");
                     }
                 })
-                .then("requestGameInSeason", new Tank01CacheRequest(() -> NHLTeamSchedule.getUri(
+                .then("requestGameInSeason", new Tank01Request(() -> NHLTeamSchedule.getUri(
                         player.getTeamID(),
                         NHLTeamSchedule.getActiveSeasonOrNext() + ""
                 )).generate())
                 .then("parseGameInSeason", (_, _, promise) -> {
-                    Tank01Response response = promise
+                    Tank01Request response = promise
                             .getRepositoryMapClass(Promise.class, "requestGameInSeason")
-                            .getRepositoryMapClass(Tank01Response.class);
-                    NHLTeamSchedule.parseGameRaw(response.getData()).forEach(
+                            .getRepositoryMapClass(Tank01Request.class);
+                    NHLTeamSchedule.parseGameRaw(response.getResponseData()).forEach(
                             map -> lisIdGameInSeason.add(map.get("gameID").toString())
                     );
                     //Вычитаем текущий матч так как надо считать кол-во голов до матча
                     lisIdGameInSeason.remove(idGame);
                 })
-                .thenWithResource(
-                        "getBoxScore",
-                        HttpResource.class,
-                        (_, _, promise, httpResource) -> {
-                            HttpResponse response = UtilTank01.request(
-                                    httpResource,
-                                    promise,
-                                    _ -> NHLGamesForPlayer.getUri(player.getPlayerID()));
-
-                            NHLGamesForPlayer.getOnlyGoalsFilter(
-                                    response.getBody(),
-                                    lisIdGameInSeason
-                            ).forEach((_, countGoal) -> this.countGoal.addAndGet(countGoal));
-                            promise.setRepositoryMap("prev_goal", String.valueOf(this.countGoal.get()));
-                        })
+                .then("getBoxScore", (_, _, promise) -> {
+                    Tank01Request tank01Request = new Tank01Request(() -> NHLGamesForPlayer.getUri(player.getPlayerID()));
+                    tank01Request.setNeedRequestApi(true);
+                    tank01Request.generate().run().await(50_000L);
+                    NHLGamesForPlayer.getOnlyGoalsFilter(
+                            tank01Request.getResponseData(),
+                            lisIdGameInSeason
+                    ).forEach((_, countGoal) -> this.countGoal.addAndGet(countGoal));
+                    promise.setRepositoryMap("prev_goal", String.valueOf(this.countGoal.get()));
+                })
                 .thenWithResource(
                         "insert",
                         JdbcResource.class,

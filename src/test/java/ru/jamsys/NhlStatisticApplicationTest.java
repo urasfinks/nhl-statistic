@@ -7,6 +7,7 @@ import ru.jamsys.core.App;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.extension.builder.ArrayListBuilder;
 import ru.jamsys.core.handler.promise.GetPlayerScoreCurrentSeason;
+import ru.jamsys.core.handler.promise.OviStat;
 import ru.jamsys.core.handler.promise.SendNotification;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.resource.http.client.HttpResponse;
@@ -63,6 +64,11 @@ class NhlStatisticApplicationTest {
                 notificationDataAndTemplate,
                 new ArrayListBuilder<Integer>().append(290029195)
         ).generate().run().await(50_000L);
+    }
+
+    @Test
+    void getOviStat(){
+        new OviStat().generate().run().await(60_000L);
     }
 
     @SuppressWarnings("unused")

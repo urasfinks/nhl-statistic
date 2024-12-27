@@ -14,16 +14,12 @@ import ru.jamsys.core.extension.exception.ForwardException;
 import ru.jamsys.core.flat.template.cron.release.Cron1m;
 import ru.jamsys.core.flat.util.UtilJson;
 import ru.jamsys.core.flat.util.UtilRisc;
-import ru.jamsys.core.flat.util.tank.UtilTank01;
 import ru.jamsys.core.handler.promise.SendNotification;
-import ru.jamsys.core.handler.promise.Tank01CacheRequest;
-import ru.jamsys.core.handler.promise.Tank01Response;
+import ru.jamsys.core.handler.promise.Tank01Request;
 import ru.jamsys.core.jt.JTGameDiff;
 import ru.jamsys.core.jt.JTScheduler;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
-import ru.jamsys.core.resource.http.HttpResource;
-import ru.jamsys.core.resource.http.client.HttpResponse;
 import ru.jamsys.core.resource.jdbc.JdbcRequest;
 import ru.jamsys.core.resource.jdbc.JdbcResource;
 import ru.jamsys.tank.data.NHLBoxScore;
@@ -97,7 +93,7 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                         promise.skipAllStep("active game is empty");
                     }
                 })
-                .thenWithResource("getBoxScoreByActiveGame", HttpResource.class, (run, _, promise, httpResource) -> {
+                .then("getBoxScoreByActiveGame", (run, promiseTask, promise) -> {
                     Context context = promise.getRepositoryMapClass(Context.class);
                     for (String idGame : context.getActiveGame()) {
                         if (!run.get()) {
@@ -107,8 +103,13 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                         if (NhlStatisticApplication.dummySchedulerBoxScore) {
                             data = NHLBoxScore.getExample6();
                         } else {
-                            HttpResponse response = UtilTank01.request(httpResource, promise, _ -> NHLBoxScore.getUri(idGame));
-                            data = response.getBody();
+                            Tank01Request tank01Request = new Tank01Request(() -> NHLBoxScore.getUri(idGame))
+                                    .setNeedRequestApi(true);
+                            Promise req = tank01Request.generate().run().await(50_000L);
+                            if (req.isException()) {
+                                throw req.getExceptionSource();
+                            }
+                            data = tank01Request.getResponseData();
                         }
                         @SuppressWarnings("unchecked")
                         Map<String, Object> parsed = UtilJson.toObject(data, Map.class);
@@ -176,19 +177,19 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                             _ -> new ArrayList<>()
                     ).add(Integer.parseInt(map.get("id_chat").toString())));
                 })
-                .then("getPlayerList", new Tank01CacheRequest(NHLPlayerList::getUri).generate())
+                .then("getPlayerList", new Tank01Request(NHLPlayerList::getUri).generate())
                 .then("sendNotification", (atomicBoolean, _, promise) -> {
                     Context context = promise.getRepositoryMapClass(Context.class);
-                    Tank01Response response = promise
+                    Tank01Request response = promise
                             .getRepositoryMapClass(Promise.class, "getPlayerList")
-                            .getRepositoryMapClass(Tank01Response.class);
+                            .getRepositoryMapClass(Tank01Request.class);
 
                     UtilRisc.forEach(atomicBoolean, context.getSubscriber(), (idPlayer, listIdChat) -> {
                         try {
                             if (listIdChat.isEmpty()) {
                                 return;
                             }
-                            Map<String, Object> player = NHLPlayerList.findById(idPlayer, response.getData());
+                            Map<String, Object> player = NHLPlayerList.findById(idPlayer, response.getResponseData());
                             if (player == null || player.isEmpty()) {
                                 return;
                             }
