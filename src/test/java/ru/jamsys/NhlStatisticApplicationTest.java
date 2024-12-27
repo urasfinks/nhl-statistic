@@ -70,7 +70,7 @@ class NhlStatisticApplicationTest {
 
     @Test
     void getOviStat(){
-        new OviStat().generate().run().await(60_000L);
+        new OviStatistic().generate().run().await(60_000L);
     }
 
     @SuppressWarnings("unused")

@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @Getter
 @Setter
-public class PlayerStat implements PromiseGenerator {
+public class PlayerStatistic implements PromiseGenerator {
 
     private String date;
 
@@ -28,7 +28,7 @@ public class PlayerStat implements PromiseGenerator {
 
     private final NHLPlayerList.Player player;
 
-    public PlayerStat(NHLPlayerList.Player player, int scoreLastSeason) {
+    public PlayerStatistic(NHLPlayerList.Player player, int scoreLastSeason) {
         this.player = player;
         this.scoreLastSeasons = new AtomicInteger(scoreLastSeason);
     }
@@ -36,9 +36,9 @@ public class PlayerStat implements PromiseGenerator {
     @Override
     public Promise generate() {
         return App.get(ServicePromise.class).get(getClass().getSimpleName(), 60_000L)
-                .extension(promise -> promise.setRepositoryMapClass(PlayerStat.class, this)) // Просто для отладки
+                .extension(promise -> promise.setRepositoryMapClass(PlayerStatistic.class, this)) // Просто для отладки
                 .then("init", (_, _, promise) -> {
-                    promise.getRepositoryMapClass(PlayerStat.class);
+                    promise.getRepositoryMapClass(PlayerStatistic.class);
                     setDate(UtilDate.get("dd/MM/yyyy"));
                 })
                 .then("requestGameInSeason", new Tank01Request(() -> NHLTeamSchedule.getUri(
@@ -46,7 +46,7 @@ public class PlayerStat implements PromiseGenerator {
                         NHLTeamSchedule.getActiveSeasonOrNext() + ""
                 )).generate())
                 .then("parseGameInSeason", (_, _, promise) -> {
-                    promise.getRepositoryMapClass(PlayerStat.class);
+                    promise.getRepositoryMapClass(PlayerStatistic.class);
                     Tank01Request response = promise
                             .getRepositoryMapClass(Promise.class, "requestGameInSeason")
                             .getRepositoryMapClass(Tank01Request.class);
@@ -60,7 +60,7 @@ public class PlayerStat implements PromiseGenerator {
                 })
                 .then("requestGameByPlayer", new Tank01Request(() -> NHLGamesForPlayer.getUri(getPlayer().getPlayerID())).generate())
                 .then("parseGameByPlayer", (_, _, promise) -> {
-                    promise.getRepositoryMapClass(PlayerStat.class);
+                    promise.getRepositoryMapClass(PlayerStatistic.class);
                     Tank01Request response = promise
                             .getRepositoryMapClass(Promise.class, "requestGameByPlayer")
                             .getRepositoryMapClass(Tank01Request.class);

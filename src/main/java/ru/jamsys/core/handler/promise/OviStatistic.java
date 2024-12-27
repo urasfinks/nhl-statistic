@@ -6,9 +6,9 @@ import ru.jamsys.tank.data.NHLPlayerList;
 
 @Getter
 @Setter
-public class OviStat extends PlayerStat {
+public class OviStatistic extends PlayerStatistic {
 
-    public OviStat() {
+    public OviStatistic() {
         super(new NHLPlayerList.Player()
                         .setPlayerID("3101")
                         .setPos("LW")
