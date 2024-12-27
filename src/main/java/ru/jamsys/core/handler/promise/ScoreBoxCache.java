@@ -32,6 +32,9 @@ public class ScoreBoxCache implements PromiseGenerator {
 
     @Override
     public Promise generate() {
+        if (idGame == null) {
+            return null;
+        }
         return App.get(ServicePromise.class).get(getClass().getSimpleName(), 60_000L)
                 .extension(promise -> promise.setRepositoryMapClass(ScoreBoxCache.class, this)) // Просто для отладки
                 .then("getScoreBox", new Tank01Request(() -> NHLBoxScore.getUri(getIdGame())).setOnlyCache(true).generate())
@@ -47,7 +50,7 @@ public class ScoreBoxCache implements PromiseGenerator {
                         }
                     }
                 })
-                .setDebug(true)
+                .setDebug(false)
                 ;
     }
 

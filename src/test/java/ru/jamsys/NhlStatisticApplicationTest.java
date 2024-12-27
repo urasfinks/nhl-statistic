@@ -2,10 +2,10 @@ package ru.jamsys;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 import ru.jamsys.core.App;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.extension.builder.ArrayListBuilder;
+import ru.jamsys.core.flat.util.UtilJson;
 import ru.jamsys.core.handler.promise.*;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.resource.http.client.HttpResponse;
@@ -68,11 +68,6 @@ class NhlStatisticApplicationTest {
         ).generate().run().await(50_000L);
     }
 
-    @Test
-    void getOviStat(){
-        new OviStatistic().generate().run().await(60_000L);
-    }
-
     @SuppressWarnings("unused")
         //@Test
     void telegramSend() {
@@ -105,13 +100,38 @@ class NhlStatisticApplicationTest {
                 .setLongName("Bobby Brink")
                 .setTeam("PHI")
                 .setTeamID("22");
-        ScoreBoxCache scoreBoxCache = new ScoreBoxCache(player, "20241129_NYR@PHI2");
+        ScoreBoxCache scoreBoxCache = new ScoreBoxCache(player, "20241129_NYR@PHI");
 
         scoreBoxCache.generate()
                 .run()
                 .await(60_000L);
         System.out.println(scoreBoxCache.getGoals());
+    }
 
+    //@Test
+    void testPlayerStat() {
+        NHLPlayerList.Player player = new NHLPlayerList.Player()
+                .setPlayerID("4565257")
+                .setPos("RW")
+                .setLongName("Bobby Brink")
+                .setTeam("PHI")
+                .setTeamID("22");
+        PlayerStatistic playerStatistic = new PlayerStatistic(player, 999);
+        playerStatistic.setGameToday("20241129_NYR@PHI");
+
+        playerStatistic.generate()
+                .run()
+                .await(60_000L);
+        System.out.println(UtilJson.toStringPretty(playerStatistic, "{}"));
+    }
+
+    //@Test
+    void testPlayerOvi() {
+        PlayerStatistic playerStatistic = new PlayerStatisticOvi();
+        playerStatistic.generate()
+                .run()
+                .await(60_000L);
+        System.out.println(UtilJson.toStringPretty(playerStatistic, "{}"));
     }
 
 }
