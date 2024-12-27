@@ -9,10 +9,12 @@ import ru.jamsys.core.extension.builder.ArrayListBuilder;
 import ru.jamsys.core.handler.promise.GetPlayerScoreCurrentSeason;
 import ru.jamsys.core.handler.promise.OviStat;
 import ru.jamsys.core.handler.promise.SendNotification;
+import ru.jamsys.core.handler.promise.Tank01Request;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.resource.http.client.HttpResponse;
 import ru.jamsys.core.resource.notification.telegram.TelegramNotificationRequest;
 import ru.jamsys.core.resource.notification.telegram.TelegramNotificationResource;
+import ru.jamsys.tank.data.NHLBoxScore;
 import ru.jamsys.tank.data.NHLPlayerList;
 import ru.jamsys.telegram.NotificationDataAndTemplate;
 
@@ -83,5 +85,15 @@ class NhlStatisticApplicationTest {
                 .run()
                 .await(2000);
         System.out.println(promise.getLogString());
+    }
+
+    //@Test
+    void testRequest() {
+        Tank01Request tank01Request = new Tank01Request(() -> NHLBoxScore.getUri("20241129_NYR@PHI"));
+        tank01Request.setOnlyCache(true);
+        tank01Request.generate()
+                .run()
+                .await(60_000L, 200);
+        System.out.println(tank01Request.getResponseData());
     }
 }

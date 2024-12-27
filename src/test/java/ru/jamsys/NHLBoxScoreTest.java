@@ -208,11 +208,9 @@ class NHLBoxScoreTest {
     @Test
     void getScoringPlaysMapDiff10() {
         List<Map<String, Object>> last = new ArrayListBuilder<Map<String, Object>>()
-                .append(new HashMapBuilder<String, Object>().append("period", "1P").append("scoreTime", "3:14"))
-                ;
+                .append(new HashMapBuilder<String, Object>().append("period", "1P").append("scoreTime", "3:14"));
         List<Map<String, Object>> current = new ArrayListBuilder<Map<String, Object>>()
-                .append(new HashMapBuilder<String, Object>().append("period", "1P").append("scoreTime", "3:15"))
-                ;
+                .append(new HashMapBuilder<String, Object>().append("period", "1P").append("scoreTime", "3:15"));
         System.out.println("last");
         System.out.println(last);
         System.out.println("current");
@@ -227,11 +225,9 @@ class NHLBoxScoreTest {
     @Test
     void getScoringPlaysMapDiff11() {
         List<Map<String, Object>> last = new ArrayListBuilder<Map<String, Object>>()
-                .append(new HashMapBuilder<String, Object>().append("period", "1P").append("scoreTime", "3:14"))
-                ;
+                .append(new HashMapBuilder<String, Object>().append("period", "1P").append("scoreTime", "3:14"));
         List<Map<String, Object>> current = new ArrayListBuilder<Map<String, Object>>()
-                .append(new HashMapBuilder<String, Object>().append("period", "1P").append("scoreTime", "3:13"))
-                ;
+                .append(new HashMapBuilder<String, Object>().append("period", "1P").append("scoreTime", "3:13"));
         System.out.println("last");
         System.out.println(last);
         System.out.println("current");
@@ -246,12 +242,10 @@ class NHLBoxScoreTest {
     @Test
     void getScoringPlaysMapDiff12() {
         List<Map<String, Object>> last = new ArrayListBuilder<Map<String, Object>>()
-                .append(new HashMapBuilder<String, Object>().append("period", "1P").append("scoreTime", "3:14"))
-                ;
+                .append(new HashMapBuilder<String, Object>().append("period", "1P").append("scoreTime", "3:14"));
         List<Map<String, Object>> current = new ArrayListBuilder<Map<String, Object>>()
                 .append(new HashMapBuilder<String, Object>().append("period", "1P").append("scoreTime", "3:10"))
-                .append(new HashMapBuilder<String, Object>().append("period", "1P").append("scoreTime", "3:15"))
-                ;
+                .append(new HashMapBuilder<String, Object>().append("period", "1P").append("scoreTime", "3:15"));
         System.out.println("last");
         System.out.println(last);
         System.out.println("current");
@@ -266,12 +260,10 @@ class NHLBoxScoreTest {
     @Test
     void getScoringPlaysMapDiff13() {
         List<Map<String, Object>> last = new ArrayListBuilder<Map<String, Object>>()
-                .append(new HashMapBuilder<String, Object>().append("period", "1P").append("scoreTime", "3:14"))
-                ;
+                .append(new HashMapBuilder<String, Object>().append("period", "1P").append("scoreTime", "3:14"));
         List<Map<String, Object>> current = new ArrayListBuilder<Map<String, Object>>()
                 .append(new HashMapBuilder<String, Object>().append("period", "1P").append("scoreTime", "3:15"))
-                .append(new HashMapBuilder<String, Object>().append("period", "1P").append("scoreTime", "3:15"))
-                ;
+                .append(new HashMapBuilder<String, Object>().append("period", "1P").append("scoreTime", "3:15"));
         System.out.println("last");
         System.out.println(last);
         System.out.println("current");
@@ -286,12 +278,10 @@ class NHLBoxScoreTest {
     @Test
     void getScoringPlaysMapDiff14() {
         List<Map<String, Object>> last = new ArrayListBuilder<Map<String, Object>>()
-                .append(new HashMapBuilder<String, Object>().append("period", "1P").append("scoreTime", "3:14"))
-                ;
+                .append(new HashMapBuilder<String, Object>().append("period", "1P").append("scoreTime", "3:14"));
         List<Map<String, Object>> current = new ArrayListBuilder<Map<String, Object>>()
                 .append(new HashMapBuilder<String, Object>().append("period", "1P").append("scoreTime", "3:17"))
-                .append(new HashMapBuilder<String, Object>().append("period", "1P").append("scoreTime", "3:16"))
-                ;
+                .append(new HashMapBuilder<String, Object>().append("period", "1P").append("scoreTime", "3:16"));
         System.out.println("last");
         System.out.println(last);
         System.out.println("current");
@@ -308,13 +298,11 @@ class NHLBoxScoreTest {
         List<Map<String, Object>> last = new ArrayListBuilder<Map<String, Object>>()
                 .append(new HashMapBuilder<String, Object>().append("period", "1P").append("scoreTime", "2:56"))
                 .append(new HashMapBuilder<String, Object>().append("period", "1P").append("scoreTime", "3:45"))
-                .append(new HashMapBuilder<String, Object>().append("period", "1P").append("scoreTime", "4:10"))
-                ;
+                .append(new HashMapBuilder<String, Object>().append("period", "1P").append("scoreTime", "4:10"));
         List<Map<String, Object>> current = new ArrayListBuilder<Map<String, Object>>()
                 .append(new HashMapBuilder<String, Object>().append("period", "1P").append("scoreTime", "2:56"))
                 .append(new HashMapBuilder<String, Object>().append("period", "1P").append("scoreTime", "3:47"))
-                .append(new HashMapBuilder<String, Object>().append("period", "1P").append("scoreTime", "4:10"))
-                ;
+                .append(new HashMapBuilder<String, Object>().append("period", "1P").append("scoreTime", "4:10"));
         System.out.println("last");
         System.out.println(last);
         System.out.println("current");
@@ -331,14 +319,12 @@ class NHLBoxScoreTest {
         List<Map<String, Object>> last = new ArrayListBuilder<Map<String, Object>>()
                 .append(new HashMapBuilder<String, Object>().append("period", "1P").append("scoreTime", "2:56"))
                 .append(new HashMapBuilder<String, Object>().append("period", "1P").append("scoreTime", "3:45"))
-                .append(new HashMapBuilder<String, Object>().append("period", "1P").append("scoreTime", "4:10"))
-                ;
+                .append(new HashMapBuilder<String, Object>().append("period", "1P").append("scoreTime", "4:10"));
         List<Map<String, Object>> current = new ArrayListBuilder<Map<String, Object>>()
                 .append(new HashMapBuilder<String, Object>().append("period", "1P").append("scoreTime", "2:56"))
                 .append(new HashMapBuilder<String, Object>().append("period", "1P").append("scoreTime", "3:46"))
                 .append(new HashMapBuilder<String, Object>().append("period", "1P").append("scoreTime", "3:44"))
-                .append(new HashMapBuilder<String, Object>().append("period", "1P").append("scoreTime", "4:10"))
-                ;
+                .append(new HashMapBuilder<String, Object>().append("period", "1P").append("scoreTime", "4:10"));
         System.out.println("last");
         System.out.println(last);
         System.out.println("current");
@@ -355,13 +341,11 @@ class NHLBoxScoreTest {
         List<Map<String, Object>> last = new ArrayListBuilder<Map<String, Object>>()
                 .append(new HashMapBuilder<String, Object>().append("period", "1P").append("scoreTime", "2:56"))
                 .append(new HashMapBuilder<String, Object>().append("period", "1P").append("scoreTime", "3:45"))
-                .append(new HashMapBuilder<String, Object>().append("period", "1P").append("scoreTime", "4:10"))
-                ;
+                .append(new HashMapBuilder<String, Object>().append("period", "1P").append("scoreTime", "4:10"));
         List<Map<String, Object>> current = new ArrayListBuilder<Map<String, Object>>()
                 .append(new HashMapBuilder<String, Object>().append("period", "1P").append("scoreTime", "2:56"))
                 .append(new HashMapBuilder<String, Object>().append("period", "1P").append("scoreTime", "4:10"))
-                .append(new HashMapBuilder<String, Object>().append("period", "1P").append("scoreTime", "4:12"))
-                ;
+                .append(new HashMapBuilder<String, Object>().append("period", "1P").append("scoreTime", "4:12"));
         System.out.println("last");
         System.out.println(last);
         System.out.println("current");
@@ -447,7 +431,7 @@ class NHLBoxScoreTest {
     }
 
     @Test
-    void periodExpand(){
+    void periodExpand() {
         Assertions.assertEquals("1st period", NHLBoxScore.periodExpand("1P"));
         Assertions.assertEquals("2nd period", NHLBoxScore.periodExpand("2P"));
         Assertions.assertEquals("3rd period", NHLBoxScore.periodExpand("3P"));
