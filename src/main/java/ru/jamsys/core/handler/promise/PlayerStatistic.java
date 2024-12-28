@@ -18,7 +18,6 @@ import ru.jamsys.tank.data.NHLTeamSchedule;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @Getter
 @Setter
@@ -27,7 +26,9 @@ public class PlayerStatistic implements PromiseGenerator {
 
     private String date;
 
-    private final AtomicInteger scoreCurrentSeasons = new AtomicInteger(0);
+    private Map<String, Object> scoreToday;
+    private Map<String, Object> scoreCurrentSeasons;
+    private Map<String, Object> scoreTotal;
 
     private final int scoreLastSeason;
 
@@ -87,6 +88,7 @@ public class PlayerStatistic implements PromiseGenerator {
                                                     .getRepositoryMapClass(Promise.class, "scoreBoxCache")
                                                     .getRepositoryMapClass(ScoreBoxCache.class);
                                             setTodayGoals(scoreBoxCache.getGoals());
+                                            setScoreToday(scoreBoxCache.getAllStatistic());
                                         }
                                 ))
                         );
@@ -99,11 +101,17 @@ public class PlayerStatistic implements PromiseGenerator {
                     Tank01Request response = promise
                             .getRepositoryMapClass(Promise.class, "requestGameByPlayer")
                             .getRepositoryMapClass(Tank01Request.class);
-
-                    NHLGamesForPlayer.getOnlyGoalsFilter(
+                    setScoreCurrentSeasons(NHLGamesForPlayer.getAggregateStatistic(
                             response.getResponseData(),
                             getLisIdGameInSeason()
-                    ).forEach((_, countGoal) -> getScoreCurrentSeasons().addAndGet(countGoal));
+                    ));
+                    Map<String, Object> scoreToday = getScoreToday();
+                    if (scoreToday != null && !scoreToday.isEmpty()) {
+                        setScoreTotal(NHLGamesForPlayer.getAggregateStatistic(new ArrayListBuilder<Map<String, Object>>()
+                                .append(getScoreCurrentSeasons())
+                                .append(scoreToday)
+                        ));
+                    }
                 })
                 .setDebug(false)
                 ;

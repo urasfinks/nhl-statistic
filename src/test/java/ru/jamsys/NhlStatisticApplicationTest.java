@@ -106,6 +106,7 @@ class NhlStatisticApplicationTest {
                 .run()
                 .await(60_000L);
         System.out.println(scoreBoxCache.getGoals());
+        System.out.println(scoreBoxCache.getAllStatistic());
     }
 
     //@Test

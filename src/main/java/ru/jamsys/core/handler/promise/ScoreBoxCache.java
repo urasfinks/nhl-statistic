@@ -25,6 +25,8 @@ public class ScoreBoxCache implements PromiseGenerator {
 
     private int goals = 0;
 
+    private Map<String, Object> allStatistic;
+
     public ScoreBoxCache(NHLPlayerList.Player player, String idGame) {
         this.player = player;
         this.idGame = idGame;
@@ -45,6 +47,7 @@ public class ScoreBoxCache implements PromiseGenerator {
                             .getRepositoryMapClass(Tank01Request.class);
                     if (response.getResponseData() != null && !response.getResponseData().isEmpty()) {
                         Map<String, Object> playerStat = NHLBoxScore.getPlayerStat(response.getResponseData(), getPlayer().getPlayerID());
+                        setAllStatistic(playerStat);
                         if (playerStat.containsKey("goals")) {
                             setGoals(Integer.parseInt(playerStat.get("goals").toString()));
                         }

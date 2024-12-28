@@ -49,7 +49,7 @@ public class NHLGamesForPlayer {
         return selector;
     }
 
-    public static Map<String, Object> getAggregateStatistic(List<Map<String, Object>> data) throws Throwable {
+    public static Map<String, Object> getAggregateStatistic(List<Map<String, Object>> data) {
         Map<String, AtomicInteger> pre = new HashMap<>();
         Map<String, Object> result = new HashMap<>();
         AtomicInteger countGame = new AtomicInteger(0);
