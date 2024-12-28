@@ -3,6 +3,7 @@ package ru.jamsys;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import ru.jamsys.core.flat.util.UtilJson;
+import ru.jamsys.core.flat.util.UtilNHL;
 import ru.jamsys.tank.data.NHLTeamSchedule;
 
 import java.text.ParseException;
@@ -70,20 +71,20 @@ class NHLTeamScheduleTest {
 
     @Test
     void nhlSeason() throws ParseException {
-        Assertions.assertEquals(2025, NHLTeamSchedule.getActiveSeasonOrNext("2024-12-20", "yyyy-MM-dd"));
-        Assertions.assertEquals(2025, NHLTeamSchedule.getActiveSeasonOrNext("2024-11-20", "yyyy-MM-dd"));
-        Assertions.assertEquals(2025, NHLTeamSchedule.getActiveSeasonOrNext("2024-10-20", "yyyy-MM-dd"));
-        Assertions.assertEquals(2025, NHLTeamSchedule.getActiveSeasonOrNext("2024-10-01", "yyyy-MM-dd"));
+        Assertions.assertEquals(2025, UtilNHL.getActiveSeasonOrNext("2024-12-20", "yyyy-MM-dd"));
+        Assertions.assertEquals(2025, UtilNHL.getActiveSeasonOrNext("2024-11-20", "yyyy-MM-dd"));
+        Assertions.assertEquals(2025, UtilNHL.getActiveSeasonOrNext("2024-10-20", "yyyy-MM-dd"));
+        Assertions.assertEquals(2025, UtilNHL.getActiveSeasonOrNext("2024-10-01", "yyyy-MM-dd"));
 
-        Assertions.assertNull(NHLTeamSchedule.getActiveSeasonOrNext("2024-09-30", "yyyy-MM-dd"));
-        Assertions.assertNull(NHLTeamSchedule.getActiveSeasonOrNext("2024-05-01", "yyyy-MM-dd"));
+        Assertions.assertNull(UtilNHL.getActiveSeasonOrNext("2024-09-30", "yyyy-MM-dd"));
+        Assertions.assertNull(UtilNHL.getActiveSeasonOrNext("2024-05-01", "yyyy-MM-dd"));
 
-        Assertions.assertEquals(2024, NHLTeamSchedule.getActiveSeasonOrNext("2024-04-30", "yyyy-MM-dd"));
-        Assertions.assertEquals(2024, NHLTeamSchedule.getActiveSeasonOrNext("2024-01-01", "yyyy-MM-dd"));
+        Assertions.assertEquals(2024, UtilNHL.getActiveSeasonOrNext("2024-04-30", "yyyy-MM-dd"));
+        Assertions.assertEquals(2024, UtilNHL.getActiveSeasonOrNext("2024-01-01", "yyyy-MM-dd"));
 
-        Assertions.assertNull(NHLTeamSchedule.getActiveSeasonOrNext("2023-05-01", "yyyy-MM-dd"));
+        Assertions.assertNull(UtilNHL.getActiveSeasonOrNext("2023-05-01", "yyyy-MM-dd"));
 
-        Assertions.assertEquals(2023, NHLTeamSchedule.getActiveSeasonOrNext("2023-04-30", "yyyy-MM-dd"));
+        Assertions.assertEquals(2023, UtilNHL.getActiveSeasonOrNext("2023-04-30", "yyyy-MM-dd"));
     }
 
     @Test

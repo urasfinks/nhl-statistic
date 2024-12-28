@@ -8,6 +8,7 @@ import ru.jamsys.core.App;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.extension.builder.ArrayListBuilder;
 import ru.jamsys.core.flat.util.UtilDate;
+import ru.jamsys.core.flat.util.UtilNHL;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
 import ru.jamsys.core.promise.PromiseTask;
@@ -64,7 +65,7 @@ public class PlayerStatistic implements PromiseGenerator {
                 // На текущий момент мы не знаем конкретную игру, поэтому получаем всё
                 .then("requestGameInSeason", new Tank01Request(() -> NHLTeamSchedule.getUri(
                         getPlayer().getTeamID(),
-                        NHLTeamSchedule.getActiveSeasonOrNext() + ""
+                        UtilNHL.getActiveSeasonOrNext() + ""
                 )).generate())
                 .then("parseGameInSeason", (_, _, promise) -> {
                     promise.getRepositoryMapClass(PlayerStatistic.class);
@@ -76,7 +77,7 @@ public class PlayerStatistic implements PromiseGenerator {
                     listGame.forEach(map -> getLisIdGameInSeason().add(map.get("gameID").toString()));
                     setCountAllGame(listGame.size());
                     if (getGameToday() == null && !listGame.isEmpty()) {
-                        String gameToday = NHLTeamSchedule.getGameToday(listGame, NHLTeamSchedule.getCurrentDateEpoch());
+                        String gameToday = NHLTeamSchedule.getGameToday(listGame, UtilNHL.getCurrentDateEpoch());
                         if (gameToday != null && !gameToday.isEmpty()) {
                             setGameToday(gameToday);
                         }

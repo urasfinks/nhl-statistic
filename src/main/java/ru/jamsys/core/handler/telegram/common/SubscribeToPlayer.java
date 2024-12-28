@@ -9,6 +9,7 @@ import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.extension.builder.HashMapBuilder;
 import ru.jamsys.core.extension.http.ServletResponseWriter;
 import ru.jamsys.core.flat.util.UtilJson;
+import ru.jamsys.core.flat.util.UtilNHL;
 import ru.jamsys.core.flat.util.UtilTelegram;
 import ru.jamsys.core.flat.util.telegram.Button;
 import ru.jamsys.core.handler.promise.Tank01Request;
@@ -45,7 +46,7 @@ public class SubscribeToPlayer implements PromiseGenerator, NhlStatisticsBotComm
         Promise gen = servicePromise.get(getClass().getSimpleName(), 12_000L);
         gen.then("check", (_, _, promise) -> {
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
-                    if (NHLTeamSchedule.getActiveSeasonOrNext() == null) {
+                    if (UtilNHL.getActiveSeasonOrNext() == null) {
                         context.getTelegramBot().send(
                                 context.getIdChat(),
                                 "The regular season has not started yet. The subscription is available from October to April.",
@@ -139,7 +140,7 @@ public class SubscribeToPlayer implements PromiseGenerator, NhlStatisticsBotComm
                     TelegramCommandContext context = gen.getRepositoryMapClass(TelegramCommandContext.class);
                     return NHLTeamSchedule.getUri(
                             context.getUriParameters().get("idTeam"),
-                            NHLTeamSchedule.getActiveSeasonOrNext() + ""
+                            UtilNHL.getActiveSeasonOrNext() + ""
                     );
                 }).generate())
                 .then("mergeScheduledGames", (_, _, promise) -> {

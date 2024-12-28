@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import ru.jamsys.core.App;
 import ru.jamsys.core.component.ServicePromise;
+import ru.jamsys.core.flat.util.UtilNHL;
 import ru.jamsys.core.jt.JTPrevGoal;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
@@ -51,7 +52,7 @@ public class ScorePlayerCurrentSeasonBeforeGame implements PromiseGenerator {
                 })
                 .then("requestGameInSeason", new Tank01Request(() -> NHLTeamSchedule.getUri(
                         getPlayer().getTeamID(),
-                        NHLTeamSchedule.getActiveSeasonOrNext() + ""
+                        UtilNHL.getActiveSeasonOrNext() + ""
                 )).generate())
                 .then("parseGameInSeason", (_, _, promise) -> {
                     Tank01Request response = promise
