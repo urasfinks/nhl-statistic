@@ -54,7 +54,11 @@ public class NHLGamesForPlayer {
         Map<String, Object> result = new HashMap<>();
         AtomicInteger countGame = new AtomicInteger(0);
         data.forEach((map) -> {
-            countGame.incrementAndGet();
+            if (map.containsKey("countGame")) {
+                countGame.addAndGet(Integer.parseInt(map.get("countGame").toString()));
+            } else {
+                countGame.incrementAndGet();
+            }
             map.forEach((key, value) -> {
                 String prepValue = value.toString();
                 if (
