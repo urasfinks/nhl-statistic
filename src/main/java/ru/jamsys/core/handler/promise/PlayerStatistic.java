@@ -15,6 +15,8 @@ import ru.jamsys.tank.data.NHLGamesForPlayer;
 import ru.jamsys.tank.data.NHLPlayerList;
 import ru.jamsys.tank.data.NHLTeamSchedule;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -30,12 +32,17 @@ public class PlayerStatistic implements PromiseGenerator {
     private Map<String, Object> scoreCurrentSeasons;
     private Map<String, Object> scoreTotal;
 
+    private BigDecimal avgGoalsInGame = new BigDecimal(0);
+
     private final int scoreLastSeason;
 
     private int todayGoals = 0;
 
     @JsonIgnore
     private final List<String> lisIdGameInSeason = new ArrayList<>();
+
+    private int countAllGame = 0;
+    private int countTailGame = 0;
 
     private final NHLPlayerList.Player player;
 
@@ -67,7 +74,7 @@ public class PlayerStatistic implements PromiseGenerator {
 
                     List<Map<String, Object>> listGame = NHLTeamSchedule.parseGameRaw(response.getResponseData());
                     listGame.forEach(map -> getLisIdGameInSeason().add(map.get("gameID").toString()));
-
+                    setCountAllGame(listGame.size());
                     if (getGameToday() == null && !listGame.isEmpty()) {
                         String gameToday = NHLTeamSchedule.getGameToday(listGame, NHLTeamSchedule.getCurrentDateEpoch());
                         if (gameToday != null && !gameToday.isEmpty()) {
@@ -111,6 +118,14 @@ public class PlayerStatistic implements PromiseGenerator {
                                 .append(getScoreCurrentSeasons())
                                 .append(scoreToday)
                         ));
+                    }
+                    int playedGame = Integer.parseInt(getScoreTotal().getOrDefault("countGame", 0).toString());
+                    int playedGoals = Integer.parseInt(getScoreTotal().getOrDefault("goals", 0).toString());
+                    setCountTailGame(getCountAllGame() - playedGame);
+                    try {
+                        setAvgGoalsInGame(new BigDecimal(playedGoals).divide(new BigDecimal(playedGame), 5, RoundingMode.HALF_UP));
+                    } catch (Exception e) {
+                        App.error(e);
                     }
                 })
                 .setDebug(false)
