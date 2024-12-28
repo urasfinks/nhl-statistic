@@ -15,15 +15,15 @@ class NHLGamesForPlayerTest {
     void goals() throws Throwable {
 
         Set<String> game2024 = new HashSet<>();
-        NHLTeamSchedule.parseGameRaw(NHLTeamSchedule.getExample_WSH_2024()).forEach(
-                stringObjectMap -> game2024.add(stringObjectMap.get("gameID").toString())
-        );
-        //System.out.println(game2024);
+        new NHLTeamSchedule.Instance(NHLTeamSchedule.getExample_WSH_2024())
+                .getListGame()
+                .forEach(stringObjectMap -> game2024.add(stringObjectMap.get("gameID").toString()));
+
         Set<String> game2025 = new HashSet<>();
-        NHLTeamSchedule.parseGameRaw(NHLTeamSchedule.getExample_WSH_2025()).forEach(
-                stringObjectMap -> game2025.add(stringObjectMap.get("gameID").toString())
-        );
-        //System.out.println(game2025);
+        new NHLTeamSchedule.Instance(NHLTeamSchedule.getExample_WSH_2025())
+                .getListGame()
+                .forEach(stringObjectMap -> game2025.add(stringObjectMap.get("gameID").toString()));
+
         Map<String, Map<String, Object>> goals = NHLGamesForPlayer.parseBody(NHLGamesForPlayer.getExampleOvechkin());
         HashMap<String, AtomicInteger> xx = new HashMapBuilder<String, AtomicInteger>()
                 .append("2024", new AtomicInteger(0))
@@ -38,8 +38,8 @@ class NHLGamesForPlayerTest {
                 xx.get("2025").addAndGet(Integer.parseInt(o.get("goals").toString()));
             }
         });
-        System.out.println(xx);
-        System.out.println(all);
+        Assertions.assertEquals("{2024=31, 2025=15}", xx.toString());
+        Assertions.assertEquals("46", all.toString());
     }
 
     @Test
@@ -57,9 +57,9 @@ class NHLGamesForPlayerTest {
     @Test
     public void stat() throws Throwable {
         List<String> lisIdGameInSeason = new ArrayList<>();
-        NHLTeamSchedule.parseGameRaw(NHLTeamSchedule.getExample_WSH_2025()).forEach(
-                map -> lisIdGameInSeason.add(map.get("gameID").toString())
-        );
+        new NHLTeamSchedule.Instance(NHLTeamSchedule.getExample_WSH_2025())
+                .getListGame()
+                .forEach(map -> lisIdGameInSeason.add(map.get("gameID").toString()));
         Map<String, Object> aggregateStatistic = NHLGamesForPlayer.getAggregateStatistic(
                 NHLGamesForPlayer.getExampleOvechkin(),
                 lisIdGameInSeason

@@ -9,6 +9,7 @@ import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.extension.builder.HashMapBuilder;
 import ru.jamsys.core.extension.http.ServletResponseWriter;
 import ru.jamsys.core.flat.util.UtilJson;
+import ru.jamsys.core.flat.util.UtilListSort;
 import ru.jamsys.core.flat.util.UtilNHL;
 import ru.jamsys.core.flat.util.UtilTelegram;
 import ru.jamsys.core.flat.util.telegram.Button;
@@ -152,13 +153,19 @@ public class SubscribeToPlayer implements PromiseGenerator, NhlStatisticsBotComm
                     List<Map<String, Object>> game = (List<Map<String, Object>>) context.getAnyData().computeIfAbsent(
                             "findGames", _ -> new ArrayList<String>()
                     );
-                    game.addAll(NHLTeamSchedule.parseGameScheduledAndLive(response.getResponseData()));
+                    game.addAll(new NHLTeamSchedule.Instance(response.getResponseData())
+                            .getScheduledAndLive()
+                            .getListGame());
                 })
                 .thenWithResource("insertSchedule", JdbcResource.class, (_, _, promise, jdbcResource) -> {
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
                     @SuppressWarnings("unchecked")
                     List<Map<String, Object>> game = (List<Map<String, Object>>) context.getAnyData().get("findGames");
-                    List<Map<String, Object>> sortGameByTime = NHLTeamSchedule.getGameSortAndFilterByTime(game);
+                    List<Map<String, Object>> sortGameByTime = new NHLTeamSchedule.Instance(game)
+                            .getScheduledAndLive()
+                            .getFutureGame()
+                            .sort(UtilListSort.Type.ASC)
+                            .getListGame();
                     if (sortGameByTime.isEmpty()) {
                         context.getTelegramBot().send(UtilTelegram.editMessage(context.getMsg(), "Not found games"));
                         return;

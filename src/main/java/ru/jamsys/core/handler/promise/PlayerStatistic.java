@@ -73,11 +73,12 @@ public class PlayerStatistic implements PromiseGenerator {
                             .getRepositoryMapClass(Promise.class, "requestGameInSeason")
                             .getRepositoryMapClass(Tank01Request.class);
 
-                    List<Map<String, Object>> listGame = NHLTeamSchedule.parseGameRaw(response.getResponseData());
+                    List<Map<String, Object>> listGame = new NHLTeamSchedule.Instance(response.getResponseData()).getListGame();
                     listGame.forEach(map -> getLisIdGameInSeason().add(map.get("gameID").toString()));
                     setCountAllGame(listGame.size());
                     if (getGameToday() == null && !listGame.isEmpty()) {
-                        String gameToday = NHLTeamSchedule.getGameToday(listGame, UtilNHL.getCurrentDateEpoch());
+                        NHLTeamSchedule.Instance instance = new NHLTeamSchedule.Instance(listGame);
+                        String gameToday = instance.getGameToday(UtilNHL.getCurrentDateEpoch());
                         if (gameToday != null && !gameToday.isEmpty()) {
                             setGameToday(gameToday);
                         }

@@ -1,19 +1,15 @@
 package ru.jamsys.tank.data;
 
+import lombok.Getter;
+import lombok.Setter;
 import ru.jamsys.core.App;
 import ru.jamsys.core.flat.util.*;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.Month;
-import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,6 +19,7 @@ public class NHLTeamSchedule {
         return "/getNHLTeamSchedule?teamID=" + idTeam + "&season=" + season;
     }
 
+    @SuppressWarnings("unused")
     public static String getExample_18_2024() throws IOException {
         return UtilFileResource.getAsString("example/NJ_2024.json");
     }
@@ -86,38 +83,57 @@ public class NHLTeamSchedule {
         );
     }
 
-    public static List<Map<String, Object>> parseGameRaw(String json) throws Throwable {
-        @SuppressWarnings("unchecked")
-        Map<String, Object> parsed = UtilJson.toObject(json, Map.class);
-        if (parsed.containsKey("error")) {
-            throw new RuntimeException(parsed.get("error").toString());
-        }
-        @SuppressWarnings("unchecked")
-        List<Map<String, Object>> selector = (List<Map<String, Object>>) UtilJson.selector(parsed, "body.schedule");
-        return selector;
-    }
+    @Getter
+    @Setter
+    public static class Instance {
 
-    public static List<Map<String, Object>> parseGameScheduledAndLive(String json) throws Throwable {
-        Map<String, Object> teams = NHLTeams.getTeams();
-        @SuppressWarnings("unchecked")
-        Map<String, Object> parsed = UtilJson.toObject(json, Map.class);
-        if (parsed.containsKey("error")) {
-            throw new RuntimeException(parsed.get("error").toString());
-        }
-        @SuppressWarnings("unchecked")
-        List<Map<String, Object>> selector = (List<Map<String, Object>>) UtilJson.selector(parsed, "body.schedule");
-        List<Map<String, Object>> result = new ArrayList<>();
+        private List<Map<String, Object>> listGame;
 
-        selector.forEach(game -> {
-            String gameStatus = game.get("gameStatus").toString(); // https://www.tank01.com/Guides_Game_Status_Code_NHL.html
-            if (game.containsKey("gameStatus") &&
-                    (
-                            gameStatus.equals("Scheduled")
-                                    || gameStatus.equals("Live - In Progress")
-                    )
-            ) {
-                game.put("homeTeam", teams.get(game.get("home")) + " (" + game.get("home") + ")");
-                game.put("awayTeam", teams.get(game.get("away")) + " (" + game.get("away") + ")");
+        public Instance(List<Map<String, Object>> listGame) {
+            this.listGame = listGame;
+        }
+
+        public Instance(String json) throws Throwable {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> parsed = UtilJson.toObject(json, Map.class);
+            if (parsed.containsKey("error")) {
+                throw new RuntimeException(parsed.get("error").toString());
+            }
+            @SuppressWarnings("unchecked")
+            List<Map<String, Object>> selector = (List<Map<String, Object>>) UtilJson.selector(parsed, "body.schedule");
+            this.listGame = selector;
+        }
+
+        public String getGameToday(String nowDateEpoch) {
+            for (Map<String, Object> game : listGame) {
+                try {
+                    NHLTeamSchedule.extendGameTimeZone(game);
+                } catch (Exception e) {
+                    App.error(e);
+                }
+                if (game.get("gameDateEpoch").equals(nowDateEpoch)) {
+                    return game.get("gameID").toString();
+                }
+            }
+            return null;
+        }
+
+        public Instance sort(UtilListSort.Type type) {
+            List<Map<String, Object>> gameTimeEpoch = UtilListSort.sort(
+                    getListGame(),
+                    type,
+                    stringObjectMap -> new BigDecimal(stringObjectMap.get("gameTime_epoch").toString()).longValue()
+            );
+            return new Instance(gameTimeEpoch);
+        }
+
+        public Instance extend() throws Throwable {
+            Map<String, Object> teams = NHLTeams.getTeams();
+            List<Map<String, Object>> result = new ArrayList<>();
+            getListGame().forEach(stringObjectMap -> {
+                Map<String, Object> game = new HashMap<>(stringObjectMap);
+                game.put("homeTeam", teams.get(game.get("home").toString()) + " (" + game.get("home") + ")");
+                game.put("awayTeam", teams.get(game.get("away").toString()) + " (" + game.get("away") + ")");
                 game.put("about", game.get("homeTeam") + " vs " + game.get("awayTeam"));
                 try {
                     NHLTeamSchedule.extendGameTimeZone(game);
@@ -125,41 +141,36 @@ public class NHLTeamSchedule {
                     App.error(e);
                 }
                 result.add(game);
-            }
-        });
-        return result;
-    }
-
-    public static List<Map<String, Object>> getGameSortAndFilterByTime(List<Map<String, Object>> listGame) {
-        long currentTimestamp = UtilDate.getTimestamp();
-        return UtilListSort.sort(
-                listGame.stream().filter(game -> {
-                    // Сейчас 14:26
-                    // Игра началась в 14:00
-                    // timestamp игры меньше чем сейчас
-                    // изначально планировал, что будем брать все игры у которых timestamp больше чем сейчас
-                    // Но тогда мы не возьмём игру, которая в процессе, поэтому сравнивать будем за вычитом времени игры
-                    long gameStartTimestamp = new BigDecimal(game.get("gameTime_epoch").toString()).longValue();
-                    // 5 часов просто накинул
-                    return gameStartTimestamp > (currentTimestamp - 5 * 60 * 60);
-                }).toList(),
-                UtilListSort.Type.ASC,
-                stringObjectMap -> new BigDecimal(stringObjectMap.get("gameTime_epoch").toString()).longValue()
-        );
-    }
-
-    public static String getGameToday(List<Map<String, Object>> parsedGameRaw, String cutDateEpoch) {
-        for (Map<String, Object> game : parsedGameRaw) {
-            try {
-                NHLTeamSchedule.extendGameTimeZone(game);
-            } catch (Exception e) {
-                App.error(e);
-            }
-            if (game.get("gameDateEpoch").equals(cutDateEpoch)) {
-                return game.get("gameID").toString();
-            }
+            });
+            return new Instance(result);
         }
-        return null;
+
+        public Instance getFutureGame() {
+            long currentTimestamp = UtilDate.getTimestamp();
+            List<Map<String, Object>> gameTimeEpoch = getListGame().stream().filter(game -> {
+                // Сейчас 14:26
+                // Игра началась в 14:00
+                // timestamp игры меньше чем сейчас
+                // изначально планировал, что будем брать все игры у которых timestamp больше чем сейчас
+                // Но тогда мы не возьмём игру, которая в процессе, поэтому сравнивать будем за вычитом времени игры
+                long gameStartTimestamp = new BigDecimal(game.get("gameTime_epoch").toString()).longValue();
+                // 5 часов просто накинул
+                return gameStartTimestamp > (currentTimestamp - 5 * 60 * 60);
+            }).toList();
+            return new Instance(gameTimeEpoch);
+        }
+
+        public Instance getScheduledAndLive() {
+            return new Instance(getListGame().stream().filter(game -> {
+                String gameStatus = game.get("gameStatus").toString(); // https://www.tank01.com/Guides_Game_Status_Code_NHL.html
+                return game.containsKey("gameStatus") &&
+                        (
+                                gameStatus.equals("Scheduled")
+                                        || gameStatus.equals("Live - In Progress")
+                        );
+            }).toList());
+        }
+
     }
 
 }

@@ -3,6 +3,7 @@ package ru.jamsys;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import ru.jamsys.core.flat.util.UtilJson;
+import ru.jamsys.core.flat.util.UtilListSort;
 import ru.jamsys.core.flat.util.UtilNHL;
 import ru.jamsys.tank.data.NHLTeamSchedule;
 
@@ -26,21 +27,34 @@ class NHLTeamScheduleTest {
 
     @Test
     void parseGameScheduledAndLive() throws Throwable {
-        List<Map<String, Object>> game = NHLTeamSchedule.parseGameScheduledAndLive(NHLTeamSchedule.getExample());
-        System.out.println(UtilJson.toStringPretty(game, "{}"));
+        List<Map<String, Object>> game = new NHLTeamSchedule.Instance(NHLTeamSchedule.getExample())
+                .getScheduledAndLive()
+                .sort(UtilListSort.Type.ASC)
+                .extend()
+                .getListGame();
+
+        Assertions.assertEquals(60, game.size());
+        Assertions.assertEquals("20241129_CHI@MIN", game.getFirst().get("gameID"));
+        Assertions.assertEquals("Minnesota Wild (MIN)", game.getFirst().get("homeTeam"));
     }
 
     @Test
     void getGameSortAndFilterByTime() throws Throwable {
-        List<Map<String, Object>> game = NHLTeamSchedule.parseGameScheduledAndLive(NHLTeamSchedule.getExample());
-        List<Map<String, Object>> sortGameByTime = NHLTeamSchedule.getGameSortAndFilterByTime(game);
-        System.out.println(UtilJson.toStringPretty(sortGameByTime.getFirst(), "{}"));
+        List<Map<String, Object>> sortGameByTime = new NHLTeamSchedule.Instance(NHLTeamSchedule.getExample())
+                .getScheduledAndLive()
+                .getFutureGame()
+                .sort(UtilListSort.Type.ASC)
+                .getListGame();
+        Assertions.assertEquals("20241229_DAL@CHI", sortGameByTime.getFirst().get("gameID"));
     }
 
     @Test
     void test() throws Throwable {
-        Map<String, Object> game = NHLTeamSchedule.parseGameScheduledAndLive(NHLTeamSchedule.getExample()).getFirst();
-        NHLTeamSchedule.extendGameTimeZone(game);
+        Map<String, Object> game = new NHLTeamSchedule.Instance(NHLTeamSchedule.getExample())
+                .getScheduledAndLive()
+                .extend()
+                .getListGame()
+                .getFirst();
         Assertions.assertEquals("-05:00", game.get("timeZone"));
     }
 
@@ -89,11 +103,8 @@ class NHLTeamScheduleTest {
 
     @Test
     void getGameToday() throws Throwable {
-        String gameToday = NHLTeamSchedule.getGameToday(
-                NHLTeamSchedule.parseGameRaw(NHLTeamSchedule.getExample_18_2025()),
-                "20241213"
-        );
-        Assertions.assertEquals("20241212_LA@NJ", gameToday);
+        NHLTeamSchedule.Instance instance = new NHLTeamSchedule.Instance(NHLTeamSchedule.getExample_18_2025());
+        Assertions.assertEquals("20241212_LA@NJ", instance.getGameToday("20241213"));
     }
 
 }
