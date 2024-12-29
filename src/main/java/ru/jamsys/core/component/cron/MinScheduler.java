@@ -14,7 +14,7 @@ import ru.jamsys.core.extension.exception.ForwardException;
 import ru.jamsys.core.flat.template.cron.release.Cron1m;
 import ru.jamsys.core.flat.util.UtilJson;
 import ru.jamsys.core.flat.util.UtilRisc;
-import ru.jamsys.core.handler.promise.SendNotification;
+import ru.jamsys.core.handler.promise.SendNotificationMultiply;
 import ru.jamsys.core.handler.promise.Tank01Request;
 import ru.jamsys.core.jt.JTGameDiff;
 import ru.jamsys.core.jt.JTScheduler;
@@ -193,7 +193,7 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                             if (player == null || player.isEmpty()) {
                                 return;
                             }
-                            new SendNotification(
+                            new SendNotificationMultiply(
                                     context.getMapIdPlayerGame().getOrDefault(idPlayer, ""),
                                     NHLPlayerList.Player.fromMap(player),
                                     context.getEvent().get(idPlayer),

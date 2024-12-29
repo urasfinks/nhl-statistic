@@ -2,7 +2,6 @@ package ru.jamsys;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 import ru.jamsys.core.App;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.extension.builder.ArrayListBuilder;
@@ -61,7 +60,7 @@ class NhlStatisticApplicationTest {
                 .setScoredTitle("goal")
                 .setScoredGoal(1)
                 .setScoredEnum(new ArrayListBuilder<String>().append("any enum period"));
-        new SendNotification(
+        new SendNotificationMultiply(
                 idGame,
                 player,
                 notificationDataAndTemplate,
