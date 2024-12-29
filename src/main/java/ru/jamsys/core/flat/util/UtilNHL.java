@@ -21,6 +21,14 @@ public class UtilNHL {
         return getActiveSeasonOrNext(LocalDate.ofInstant(input.toInstant(), ZoneId.systemDefault()));
     }
 
+    public static String seasonFormat(Integer season) {
+        if (season == null || String.valueOf(season).length() < 4) {
+            return "Сезон не определён";
+        }
+        int lastSeason = season - 1;
+        return lastSeason + "/" + String.valueOf(season).substring(2, 4);
+    }
+
     public static Integer getActiveSeasonOrNext(LocalDate date) {
         int year = date.getYear();
         if (date.getMonthValue() <= Month.APRIL.getValue()) {
@@ -32,7 +40,7 @@ public class UtilNHL {
         }
     }
 
-    public static String getCurrentDateEpoch(){
+    public static String getCurrentDateEpoch() {
         return UtilDate.timestampFormatUTC(UtilDate.getTimestamp(), "yyyyMMdd");
     }
 

@@ -29,7 +29,7 @@ public class NotificationDataAndTemplate {
 
     private int scoredPrevGoalCurrentSeason; // Кол-во голов в этом сезоне до текущего матча
     private int scoredBeforeCurrentSeason = 0; // 853 - Овечкин Кол-во голов до этого сезона
-    private int scoreGretzky = 894; // Кол-во голов у Gretzky
+    public static int scoreGretzky = 894; // Кол-во голов у Gretzky
 
     private int goalsInSeason;
     private int goalsInCareer;

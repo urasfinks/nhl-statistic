@@ -2,6 +2,7 @@ package ru.jamsys.tank.data;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import ru.jamsys.core.App;
 import ru.jamsys.core.flat.util.*;
 
@@ -67,22 +68,6 @@ public class NHLTeamSchedule {
         return UtilDate.timestampFormat(dateSec, format);
     }
 
-    public static String getGameTimeFormat(Map<String, Object> map) {
-        return String.format(
-                "%s (UTC%s)",
-                NHLTeamSchedule.getGameLocalTime(map, "dd/MM/yyyy HH:mm"),
-                map.get("timeZone")
-        );
-    }
-
-    public static String getGameAbout(Map<String, Object> map) {
-        return String.format("%s %s vs %s",
-                getGameTimeFormat(map),
-                map.get("homeTeam"),
-                map.get("awayTeam")
-        );
-    }
-
     @Getter
     @Setter
     public static class Instance {
@@ -127,21 +112,9 @@ public class NHLTeamSchedule {
             return new Instance(gameTimeEpoch);
         }
 
-        public Instance extend() throws Throwable {
-            Map<String, Object> teams = NHLTeams.getTeams();
+        public Instance extend() {
             List<Map<String, Object>> result = new ArrayList<>();
-            getListGame().forEach(stringObjectMap -> {
-                Map<String, Object> game = new HashMap<>(stringObjectMap);
-                game.put("homeTeam", teams.get(game.get("home").toString()) + " (" + game.get("home") + ")");
-                game.put("awayTeam", teams.get(game.get("away").toString()) + " (" + game.get("away") + ")");
-                game.put("about", game.get("homeTeam") + " vs " + game.get("awayTeam"));
-                try {
-                    NHLTeamSchedule.extendGameTimeZone(game);
-                } catch (Exception e) {
-                    App.error(e);
-                }
-                result.add(game);
-            });
+            getListGame().forEach(stringObjectMap -> result.add(new Game(stringObjectMap).extend().getData()));
             return new Instance(result);
         }
 
@@ -169,6 +142,72 @@ public class NHLTeamSchedule {
                                         || gameStatus.equals("Live - In Progress")
                         );
             }).toList());
+        }
+
+        public Game getGame(int index) {
+            return new Game(listGame.get(index));
+        }
+
+    }
+
+    @Getter
+    @ToString
+    public static class Game {
+
+        public static Map<String, Object> teams;
+
+        static {
+            try {
+                teams = NHLTeams.getTeams();
+            } catch (Throwable e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        private final Map<String, Object> data;
+
+        public Game(Map<String, Object> data) {
+            this.data = data;
+        }
+
+        public String getMoscowDate() {
+            return UtilDate.timestampFormatUTC(
+                    new BigDecimal(data.get("gameTime_epoch").toString()).longValue() + 3 * 60 * 60,
+                    "dd.MM.yyyy HH:mm"
+            );
+        }
+
+        public Game extend() {
+            Map<String, Object> game = new HashMap<>(data);
+            try {
+                NHLTeamSchedule.extendGameTimeZone(game);
+                game.put("homeTeam", teams.get(game.get("home").toString()) + " (" + game.get("home") + ")");
+                game.put("awayTeam", teams.get(game.get("away").toString()) + " (" + game.get("away") + ")");
+                game.put("about", game.get("homeTeam") + " vs " + game.get("awayTeam"));
+            } catch (Throwable e) {
+                App.error(e);
+            }
+            return new Game(game);
+        }
+
+        public String getGameTimeFormat() {
+            return String.format(
+                    "%s (UTC%s)",
+                    NHLTeamSchedule.getGameLocalTime(data, "dd/MM/yyyy HH:mm"),
+                    data.get("timeZone")
+            );
+        }
+
+        public String getGameAbout() {
+            return String.format("%s %s vs %s",
+                    getGameTimeFormat(),
+                    data.get("homeTeam"),
+                    data.get("awayTeam")
+            );
+        }
+
+        public String toggleTeam(String team) {
+            return extend().getData().get(data.get("away").equals(team) ? "homeTeam" : "awayTeam").toString();
         }
 
     }

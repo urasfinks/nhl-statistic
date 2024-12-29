@@ -179,7 +179,7 @@ public class SubscribeToPlayer implements PromiseGenerator, NhlStatisticsBotComm
                             .addArg("time_game_start", new BigDecimal(
                                     map.get("gameTime_epoch").toString()
                             ).longValue() * 1000)
-                            .addArg("game_about", NHLTeamSchedule.getGameAbout(map))
+                            .addArg("game_about", new NHLTeamSchedule.Game(map).getGameAbout())
                             .addArg("player_about", context.getUriParameters().get("infoPlayer"))
                             .addArg("test", UtilJson.toStringPretty(map, "{}"))
                             .nextBatch());
@@ -193,8 +193,8 @@ public class SubscribeToPlayer implements PromiseGenerator, NhlStatisticsBotComm
 
                             sortGameByTime.size(),
                             context.getUriParameters().get("infoPlayer"),
-                            NHLTeamSchedule.getGameTimeFormat(sortGameByTime.getFirst()),
-                            NHLTeamSchedule.getGameTimeFormat(sortGameByTime.getLast())
+                            new NHLTeamSchedule.Game(sortGameByTime.getFirst()).getGameTimeFormat(),
+                            new NHLTeamSchedule.Game(sortGameByTime.getLast()).getGameTimeFormat()
                     )));
                 })
                 .onError((atomicBoolean, promiseTask, promise) -> {

@@ -2,6 +2,7 @@ package ru.jamsys;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import ru.jamsys.core.App;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.extension.builder.ArrayListBuilder;
@@ -126,13 +127,14 @@ class NhlStatisticApplicationTest {
         System.out.println(UtilJson.toStringPretty(playerStatistic, "{}"));
     }
 
-    //@Test
+    @Test
     void testPlayerOvi() {
         PlayerStatistic playerStatistic = new PlayerStatisticOvi();
         playerStatistic.generate()
                 .run()
                 .await(60_000L);
         System.out.println(UtilJson.toStringPretty(playerStatistic, "{}"));
+        System.out.println(playerStatistic.getMessage());
     }
 
 }

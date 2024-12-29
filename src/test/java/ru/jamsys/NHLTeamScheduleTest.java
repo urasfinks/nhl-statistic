@@ -7,6 +7,7 @@ import ru.jamsys.core.flat.util.UtilListSort;
 import ru.jamsys.core.flat.util.UtilNHL;
 import ru.jamsys.tank.data.NHLTeamSchedule;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -46,6 +47,26 @@ class NHLTeamScheduleTest {
                 .sort(UtilListSort.Type.ASC)
                 .getListGame();
         Assertions.assertEquals("20241229_DAL@CHI", sortGameByTime.getFirst().get("gameID"));
+    }
+
+    @Test
+    void getMoscowGameDate() throws Throwable {
+        NHLTeamSchedule.Game game = new NHLTeamSchedule.Instance(NHLTeamSchedule.getExample())
+                .getScheduledAndLive()
+                .getFutureGame()
+                .sort(UtilListSort.Type.ASC)
+                .getGame(0).extend();
+        Assertions.assertEquals("30.12.2024 04:30", game.getMoscowDate());
+    }
+
+    @Test
+    void toggle() throws Throwable {
+        NHLTeamSchedule.Game game = new NHLTeamSchedule.Instance(NHLTeamSchedule.getExample())
+                .getScheduledAndLive()
+                .getFutureGame()
+                .sort(UtilListSort.Type.ASC)
+                .getGame(0);
+        Assertions.assertEquals("Dallas Stars (DAL)", game.toggleTeam("CHI"));
     }
 
     @Test
@@ -99,6 +120,17 @@ class NHLTeamScheduleTest {
         Assertions.assertNull(UtilNHL.getActiveSeasonOrNext("2023-05-01", "yyyy-MM-dd"));
 
         Assertions.assertEquals(2023, UtilNHL.getActiveSeasonOrNext("2023-04-30", "yyyy-MM-dd"));
+    }
+
+    @Test
+    void seasonFormat() {
+        Assertions.assertEquals("Сезон не определён", UtilNHL.seasonFormat(null));
+        Assertions.assertEquals("Сезон не определён", UtilNHL.seasonFormat(1));
+        Assertions.assertEquals("Сезон не определён", UtilNHL.seasonFormat(11));
+        Assertions.assertEquals("Сезон не определён", UtilNHL.seasonFormat(111));
+        Assertions.assertEquals("1110/11", UtilNHL.seasonFormat(1111));
+        Assertions.assertEquals("2024/25", UtilNHL.seasonFormat(2025));
+        Assertions.assertEquals("2023/24", UtilNHL.seasonFormat(2024));
     }
 
     @Test
