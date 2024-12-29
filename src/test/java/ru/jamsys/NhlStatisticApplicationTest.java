@@ -56,8 +56,7 @@ class NhlStatisticApplicationTest {
                 .setTeam("UTA")
                 .setTeamID("33");
         GameEventData gameEventData = new GameEventData()
-                .setAction("GOAL")
-                .setScoredTitle("goal")
+                .setAction(GameEventData.Action.GOAL)
                 .setScoredGoal(1)
                 .setScoredEnum(new ArrayListBuilder<String>().append("any enum period"));
         new SendNotificationGameEvent(

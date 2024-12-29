@@ -182,15 +182,14 @@ public class NHLBoxScore {
                 GameEventData gameEventData = new GameEventData();
 
                 if (notify.contains("goal")) {
-                    gameEventData.setAction(newEventScoringByPlayer.size() > 1 ? "GOALS" : "GOAL");
+                    gameEventData.setAction(GameEventData.Action.GOAL);
                 } else if (notify.size() == 1 && notify.contains("cancel")) {
-                    gameEventData.setAction("CANCEL");
+                    gameEventData.setAction(GameEventData.Action.CANCEL);
                 } else if (notify.size() == 1 && notify.contains("changeScoreTime")) {
-                    gameEventData.setAction("CORRECTION");
+                    gameEventData.setAction(GameEventData.Action.CORRECTION);
                 } else {
-                    gameEventData.setAction("CANCEL+CORRECTION");
+                    gameEventData.setAction(GameEventData.Action.CANCEL_CORRECTION);
                 }
-                gameEventData.setScoredTitle(listPlaysCurrent.size() > 1 ? "goals" : "goal");
                 gameEventData.setScoredGoal(listPlaysCurrent.size());
                 gameEventData.setScoredEnum(getEnumGame(listPlaysCurrent));
                 result.put(idPlayer, gameEventData);

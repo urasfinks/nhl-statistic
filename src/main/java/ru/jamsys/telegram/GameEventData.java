@@ -12,9 +12,17 @@ import java.util.List;
 @Accessors(chain = true)
 public class GameEventData {
 
+    public enum Action {
+        START_GAME,
+        GOAL,
+        CORRECTION,
+        CANCEL,
+        CANCEL_CORRECTION,
+        FINISH_GAME
+    }
+
     //action=GOAL, scoredTitle= goal, scoredGoal=1, scoredEnum=: 10:18 2nd period
-    private String action;
-    private String scoredTitle;
+    private Action action;
     private int scoredGoal;
     private List<String> scoredEnum = new ArrayList<>();
     private String playerName;
