@@ -28,9 +28,9 @@ import ru.jamsys.telegram.GameEventData;
 
 import java.util.*;
 
+@SuppressWarnings("unused")
 @Component
 @Lazy
-@SuppressWarnings("unused")
 public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
 
     private final ServicePromise servicePromise;

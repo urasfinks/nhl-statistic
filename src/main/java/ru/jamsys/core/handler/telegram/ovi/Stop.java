@@ -16,6 +16,7 @@ import ru.jamsys.telegram.handler.OviGoalsBotCommandHandler;
 import java.util.List;
 import java.util.Map;
 
+@SuppressWarnings("unused")
 @Setter
 @Getter
 @Component

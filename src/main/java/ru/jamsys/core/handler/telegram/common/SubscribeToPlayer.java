@@ -29,11 +29,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+@SuppressWarnings("unused")
 @Setter
 @Getter
 @Component
 @RequestMapping({"/subscribe_to_player/**", "/stp/**"})
-@SuppressWarnings("unused")
 public class SubscribeToPlayer implements PromiseGenerator, NhlStatisticsBotCommandHandler {
 
     private final ServicePromise servicePromise;

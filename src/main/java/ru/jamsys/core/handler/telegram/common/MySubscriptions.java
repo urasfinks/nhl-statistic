@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+@SuppressWarnings("unused")
 @Setter
 @Getter
 @Component
