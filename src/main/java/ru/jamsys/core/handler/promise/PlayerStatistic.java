@@ -19,7 +19,6 @@ import ru.jamsys.core.promise.PromiseTask;
 import ru.jamsys.tank.data.NHLGamesForPlayer;
 import ru.jamsys.tank.data.NHLPlayerList;
 import ru.jamsys.tank.data.NHLTeamSchedule;
-import ru.jamsys.telegram.template.EventTemplate;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
