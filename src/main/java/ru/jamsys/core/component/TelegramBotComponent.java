@@ -10,6 +10,7 @@ import ru.jamsys.NhlStatisticApplication;
 import ru.jamsys.core.component.manager.ManagerExpiration;
 import ru.jamsys.core.extension.LifeCycleComponent;
 import ru.jamsys.telegram.bot.NhlStatisticsBot;
+import ru.jamsys.telegram.bot.OviGoalsBot;
 import ru.jamsys.telegram.handler.NhlStatisticsBotCommandHandler;
 import ru.jamsys.telegram.handler.OviGoalsBotCommandHandler;
 
@@ -28,7 +29,7 @@ public class TelegramBotComponent implements LifeCycleComponent {
     private NhlStatisticsBot nhlStatisticsBot;
 
     @Getter
-    private NhlStatisticsBot oviGoalsBot;
+    private OviGoalsBot oviGoalsBot;
 
     public TelegramBotComponent(
             SecurityComponent securityComponent,
@@ -60,7 +61,7 @@ public class TelegramBotComponent implements LifeCycleComponent {
             }
 
             try {
-                oviGoalsBot = new NhlStatisticsBot(
+                oviGoalsBot = new OviGoalsBot(
                         "ovi_goals_bot",
                         new String(securityComponent.get("telegram.api.token.ovi_goals_bot")),
                         routeGenerator.getRouterRepository(OviGoalsBotCommandHandler.class)
