@@ -86,6 +86,12 @@ public class NHLTeamSchedule {
             this.listGame = selector;
         }
 
+        public List<Game> getListGameObject() {
+            List<Game> result = new ArrayList<>();
+            listGame.forEach(map -> result.add(new Game(map)));
+            return result;
+        }
+
         public String getGameToday(String nowDateEpoch) {
             for (Map<String, Object> game : listGame) {
                 try {
@@ -177,6 +183,13 @@ public class NHLTeamSchedule {
             return UtilDate.timestampFormatUTC(
                     new BigDecimal(data.get("gameTime_epoch").toString()).longValue() + 3 * 60 * 60,
                     "dd.MM.yyyy HH:mm"
+            );
+        }
+
+        public String getMoscowDate(String format) {
+            return UtilDate.timestampFormatUTC(
+                    new BigDecimal(data.get("gameTime_epoch").toString()).longValue() + 3 * 60 * 60,
+                    format
             );
         }
 

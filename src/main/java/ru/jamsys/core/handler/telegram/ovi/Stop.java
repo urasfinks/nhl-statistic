@@ -28,8 +28,6 @@ public class Stop implements PromiseGenerator, OviGoalsBotCommandHandler {
         this.servicePromise = servicePromise;
     }
 
-    private int maxLength = 3000;
-
     private boolean success = true;
 
     @Override

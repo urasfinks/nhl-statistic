@@ -109,7 +109,8 @@ public class MySubscriptions implements PromiseGenerator, NhlStatisticsBotComman
                     }
                     StringBuilder sb = new StringBuilder();
                     execute.forEach(map -> sb.append(map.get("game_about")).append("\n"));
-                    AbstractBot.splitMessageSmart(sb.toString(), maxLength).forEach(s -> context.getTelegramBot().send(context.getIdChat(), s, null));
+                    AbstractBot.splitMessageSmart(sb.toString(), maxLength)
+                            .forEach(s -> context.getTelegramBot().send(context.getIdChat(), s, null));
                 })
                 ;
     }

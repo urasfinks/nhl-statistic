@@ -33,8 +33,6 @@ public class Start implements PromiseGenerator, OviGoalsBotCommandHandler {
         this.servicePromise = servicePromise;
     }
 
-    private int maxLength = 3000;
-
     private boolean success;
 
     @Override
