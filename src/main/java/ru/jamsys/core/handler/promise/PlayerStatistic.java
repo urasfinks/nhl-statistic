@@ -124,7 +124,7 @@ public class PlayerStatistic implements PromiseGenerator {
                 .extension(promise -> promise.setRepositoryMapClass(PlayerStatistic.class, this)) // Просто для отладки
                 .then("init", (_, _, promise) -> {
                     promise.getRepositoryMapClass(PlayerStatistic.class);
-                    setDate(UtilDate.get("dd/MM/yyyy"));
+                    setDate(UtilDate.get("dd.MM.yyyy"));
                 })
                 // На текущий момент мы не знаем конкретную игру, поэтому получаем всё
                 .then("requestGameInSeason", new Tank01Request(() -> NHLTeamSchedule.getUri(

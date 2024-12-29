@@ -5,6 +5,7 @@ import lombok.Setter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
 import ru.jamsys.core.component.ServicePromise;
+import ru.jamsys.core.handler.promise.ovi.SendStartNotification;
 import ru.jamsys.core.jt.JTOviSubscriber;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
@@ -16,6 +17,7 @@ import ru.jamsys.telegram.handler.OviGoalsBotCommandHandler;
 import java.util.List;
 import java.util.Map;
 
+@SuppressWarnings("unused")
 @Setter
 @Getter
 @Component
@@ -58,6 +60,8 @@ public class Start implements PromiseGenerator, OviGoalsBotCommandHandler {
                                 "Уведомления включены",
                                 null
                         );
+                    } else {
+                        new SendStartNotification(context).generate().run();
                     }
                 })
                 ;
