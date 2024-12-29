@@ -4,8 +4,11 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
+import ru.jamsys.core.App;
+import ru.jamsys.core.component.DelaySenderComponent;
 import ru.jamsys.core.component.ServicePromise;
-import ru.jamsys.core.handler.promise.ovi.SendStartNotification;
+import ru.jamsys.core.handler.promise.PlayerStatistic;
+import ru.jamsys.core.handler.promise.PlayerStatisticOvi;
 import ru.jamsys.core.jt.JTOviSubscriber;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
@@ -60,9 +63,34 @@ public class Start implements PromiseGenerator, OviGoalsBotCommandHandler {
                                 "Уведомления включены",
                                 null
                         );
-                    } else {
-                        new SendStartNotification(context).generate().run();
+                        promise.skipAllStep("already notification");
                     }
+                })
+                .then("ovi", new PlayerStatisticOvi().generate())
+                .then("send", (_, _, promise) -> {
+                    TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
+                    PlayerStatistic ovi = promise.getRepositoryMapClass(Promise.class, "ovi")
+                            .getRepositoryMapClass(PlayerStatistic.class);
+                    context.getTelegramBot().send(
+                            context.getIdChat(),
+                            String.format("""
+                                            Саня снова в деле! Включи уведомления, чтобы не пропустить ни одного гола.
+                                            
+                                            Поддержим Ови на пути к величию! 🏒🔥
+                                            
+                                            %s
+                                            """,
+                                    ovi.getMessage()
+                            ),
+                            null
+                    );
+                    App.get(DelaySenderComponent.class).add(context, """
+                            Ты также можешь воспользоваться дополнительными командами:
+                            
+                            /stats — Текущая статистика: количество голов, оставшихся до рекорда, и статистика по сезону.
+                            /schedule — Ближайшие игры Александра Овечкина и команды Washington Capitals.
+                            /stop — Отключить уведомления
+                            """, 10_000L);
                 })
                 ;
     }
