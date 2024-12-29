@@ -19,46 +19,44 @@ import java.util.Map;
 @Setter
 @Getter
 @Component
-@RequestMapping({"/start"})
-public class Start implements PromiseGenerator, OviGoalsBotCommandHandler {
+@RequestMapping({"/stop"})
+public class Stop implements PromiseGenerator, OviGoalsBotCommandHandler {
 
     private final ServicePromise servicePromise;
 
-    public Start(ServicePromise servicePromise) {
+    public Stop(ServicePromise servicePromise) {
         this.servicePromise = servicePromise;
     }
 
     private int maxLength = 3000;
 
-    private boolean success;
+    private boolean success = true;
 
     @Override
     public Promise generate() {
         return servicePromise.get(getClass().getSimpleName(), 12_000L)
-                .extension(promise -> promise.setRepositoryMapClass(Start.class, this))
-                .thenWithResource("subscribe", JdbcResource.class, (_, _, promise, jdbcResource) -> {
+                .extension(promise -> promise.setRepositoryMapClass(Stop.class, this))
+                .thenWithResource("unsubscribe", JdbcResource.class, (_, _, promise, jdbcResource) -> {
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
                     List<Map<String, Object>> result = jdbcResource.execute(new JdbcRequest(JTOviSubscriber.SELECT)
                             .addArg("id_chat", context.getIdChat())
                     );
-                    if (!result.isEmpty()) {
+                    if (result.isEmpty()) {
                         setSuccess(false);
                     } else {
                         setSuccess(true);
-                        jdbcResource.execute(new JdbcRequest(JTOviSubscriber.INSERT)
+                        jdbcResource.execute(new JdbcRequest(JTOviSubscriber.DELETE)
                                 .addArg("id_chat", context.getIdChat())
                         );
                     }
                 })
                 .then("check", (_, _, promise) -> {
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
-                    if (!isSuccess()) {
-                        context.getTelegramBot().send(
-                                context.getIdChat(),
-                                "Уведомления включены",
-                                null
-                        );
-                    }
+                    context.getTelegramBot().send(
+                            context.getIdChat(),
+                            isSuccess() ? "Уведомления отключены. Буду рад видеть тебя снова!" : "Включить уведомления /start",
+                            null
+                    );
                 })
                 ;
     }
