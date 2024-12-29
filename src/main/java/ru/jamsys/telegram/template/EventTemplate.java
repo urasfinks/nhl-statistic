@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.Setter;
 import ru.jamsys.core.flat.template.twix.TemplateTwix;
+import ru.jamsys.core.flat.util.UtilNHL;
 import ru.jamsys.telegram.EventData;
 
 import java.util.LinkedHashMap;
@@ -15,7 +16,6 @@ import java.util.Map;
 @Setter
 public class EventTemplate {
 
-    public static int scoreGretzky = 894; // Кол-во голов у Gretzky
 
     final EventData data;
 
@@ -40,7 +40,7 @@ public class EventTemplate {
 
         goalsInSeason = data.getScoredBeforeCurrentSeason() + data.getScoredGoal();
         goalsInCareer = goalsInSeason + data.getScoredBeforeCurrentSeason();
-        gretzkyOffset = scoreGretzky - (goalsInCareer);
+        gretzkyOffset = UtilNHL.getScoreGretzky() - (goalsInCareer);
 
         Map<String, String> arg = new LinkedHashMap<>();
 

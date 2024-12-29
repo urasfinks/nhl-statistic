@@ -67,7 +67,7 @@ public class PlayerStatistic implements PromiseGenerator {
         int assists = Integer.parseInt(scoreTotal.getOrDefault("assists", "").toString());
 
         int totalGoals = scoreLastSeason + seasonGoals;
-        int gretzkyOffset = EventTemplate.scoreGretzky - totalGoals;
+        int gretzkyOffset = UtilNHL.getScoreGretzky() - totalGoals;
 
         String templateNextGame = "";
         if (nextGame != null) {

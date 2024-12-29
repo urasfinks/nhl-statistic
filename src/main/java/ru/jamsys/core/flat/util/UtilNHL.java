@@ -10,6 +10,10 @@ import java.util.Date;
 
 public class UtilNHL {
 
+    public static int getScoreGretzky() { // Кол-во голов у Gretzky
+        return 894;
+    }
+
     // Метод для определения сезона по дате
     public static Integer getActiveSeasonOrNext() {
         return getActiveSeasonOrNext(LocalDate.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
