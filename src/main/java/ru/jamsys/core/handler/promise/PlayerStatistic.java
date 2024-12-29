@@ -35,7 +35,9 @@ public class PlayerStatistic implements PromiseGenerator {
     private String date;
 
     private Map<String, Object> scoreToday;
+
     private Map<String, Object> scoreCurrentSeasons;
+
     private Map<String, Object> scoreTotal;
 
     private BigDecimal avgGoalsInGame = new BigDecimal(0);
@@ -47,7 +49,6 @@ public class PlayerStatistic implements PromiseGenerator {
     @JsonIgnore
     private final List<String> lisIdGameInSeason = new ArrayList<>();
 
-    private int countAllGame = 0;
     private int countTailGame = 0;
 
     private final NHLPlayerList.Player player;
@@ -140,7 +141,7 @@ public class PlayerStatistic implements PromiseGenerator {
                     setNextGame(instance.getFutureGame().sort(UtilListSort.Type.ASC).getListGame().getFirst());
                     List<Map<String, Object>> listGame = instance.getListGame();
                     listGame.forEach(map -> getLisIdGameInSeason().add(map.get("gameID").toString()));
-                    setCountAllGame(listGame.size());
+                    setCountTailGame(instance.getFutureGame().sort(UtilListSort.Type.ASC).getListGame().size());
                     if (getGameToday() == null && !listGame.isEmpty()) {
                         String gameToday = instance.getGameToday(UtilNHL.getCurrentDateEpoch());
                         if (gameToday != null && !gameToday.isEmpty()) {
@@ -187,7 +188,6 @@ public class PlayerStatistic implements PromiseGenerator {
                     setScoreTotal(NHLGamesForPlayer.getAggregateStatistic(complex));
                     int playedGame = Integer.parseInt(getScoreTotal().getOrDefault("countGame", 0).toString());
                     int playedGoals = Integer.parseInt(getScoreTotal().getOrDefault("goals", 0).toString());
-                    setCountTailGame(getCountAllGame() - playedGame);
                     try {
                         setAvgGoalsInGame(new BigDecimal(playedGoals).divide(new BigDecimal(playedGame), 5, RoundingMode.HALF_UP));
                     } catch (Exception e) {

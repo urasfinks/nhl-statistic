@@ -9,10 +9,7 @@ import ru.jamsys.core.flat.util.*;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class NHLTeamSchedule {
 
@@ -146,6 +143,12 @@ public class NHLTeamSchedule {
 
         public Game getGame(int index) {
             return new Game(listGame.get(index));
+        }
+
+        public Set<String> getIdGame() {
+            Set<String> result = new LinkedHashSet<>();
+            listGame.forEach(stringObjectMap -> result.add(stringObjectMap.get("gameID").toString()));
+            return result;
         }
 
     }

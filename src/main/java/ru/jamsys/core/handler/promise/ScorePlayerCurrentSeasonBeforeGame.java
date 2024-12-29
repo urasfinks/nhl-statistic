@@ -58,9 +58,7 @@ public class ScorePlayerCurrentSeasonBeforeGame implements PromiseGenerator {
                     Tank01Request response = promise
                             .getRepositoryMapClass(Promise.class, "requestGameInSeason")
                             .getRepositoryMapClass(Tank01Request.class);
-                    new NHLTeamSchedule.Instance(response.getResponseData())
-                            .getListGame()
-                            .forEach(map -> getLisIdGameInSeason().add(map.get("gameID").toString()));
+                    getLisIdGameInSeason().addAll(new NHLTeamSchedule.Instance(response.getResponseData()).getIdGame());
                     //Вычитаем текущий матч так как надо считать кол-во голов до матча
                     getLisIdGameInSeason().remove(getIdGame());
                 })

@@ -13,16 +13,11 @@ class NHLGamesForPlayerTest {
 
     @Test
     void goals() throws Throwable {
+        NHLTeamSchedule.Instance sch2024 = new NHLTeamSchedule.Instance(NHLTeamSchedule.getExample_WSH_2024());
+        Set<String> game2024 = sch2024.getIdGame();
 
-        Set<String> game2024 = new HashSet<>();
-        new NHLTeamSchedule.Instance(NHLTeamSchedule.getExample_WSH_2024())
-                .getListGame()
-                .forEach(stringObjectMap -> game2024.add(stringObjectMap.get("gameID").toString()));
-
-        Set<String> game2025 = new HashSet<>();
-        new NHLTeamSchedule.Instance(NHLTeamSchedule.getExample_WSH_2025())
-                .getListGame()
-                .forEach(stringObjectMap -> game2025.add(stringObjectMap.get("gameID").toString()));
+        NHLTeamSchedule.Instance sch2025 = new NHLTeamSchedule.Instance(NHLTeamSchedule.getExample_WSH_2025());
+        Set<String> game2025 = sch2025.getIdGame();
 
         Map<String, Map<String, Object>> goals = NHLGamesForPlayer.parseBody(NHLGamesForPlayer.getExampleOvechkin());
         HashMap<String, AtomicInteger> xx = new HashMapBuilder<String, AtomicInteger>()
