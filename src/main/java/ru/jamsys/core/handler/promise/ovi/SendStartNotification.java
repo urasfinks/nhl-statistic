@@ -3,7 +3,7 @@ package ru.jamsys.core.handler.promise.ovi;
 import lombok.Getter;
 import lombok.Setter;
 import ru.jamsys.core.App;
-import ru.jamsys.core.component.DelaySender;
+import ru.jamsys.core.component.DelaySenderComponent;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.handler.promise.PlayerStatistic;
 import ru.jamsys.core.handler.promise.PlayerStatisticOvi;
@@ -41,7 +41,7 @@ public class SendStartNotification implements PromiseGenerator {
                             ),
                             null
                     );
-                    App.get(DelaySender.class).add(context, """
+                    App.get(DelaySenderComponent.class).add(context, """
                             Ты также можешь воспользоваться дополнительными командами:
                             
                             /stats — Текущая статистика: количество голов, оставшихся до рекорда, и статистика по сезону.

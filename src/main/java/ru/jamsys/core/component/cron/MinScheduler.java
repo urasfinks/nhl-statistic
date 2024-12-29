@@ -24,7 +24,7 @@ import ru.jamsys.core.resource.jdbc.JdbcRequest;
 import ru.jamsys.core.resource.jdbc.JdbcResource;
 import ru.jamsys.tank.data.NHLBoxScore;
 import ru.jamsys.tank.data.NHLPlayerList;
-import ru.jamsys.telegram.NotificationDataAndTemplate;
+import ru.jamsys.telegram.EventData;
 
 import java.util.*;
 
@@ -54,7 +54,7 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
         private List<String> activeGame = new ArrayList<>();
         private Map<String, String> boxScore = new HashMap<>();
         private Map<String, String> savedData = new HashMap<>();
-        private Map<String, NotificationDataAndTemplate> event = new LinkedHashMap<>(); // key - idPlayer; value - template
+        private Map<String, EventData> event = new LinkedHashMap<>(); // key - idPlayer; value - template
         private Map<String, List<Integer>> subscriber = new HashMap<>(); // key - idPlayer;
         private List<String> endGames = new ArrayList<>();
         private Map<String, String> mapIdPlayerGame = new HashMap<>(); // key - idPlayer; value - gameName
@@ -146,7 +146,7 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                                 context.getEndGames().add(idGame);
                                 logToTelegram("Finish game: " + idGame);
                             }
-                            Map<String, NotificationDataAndTemplate> newEventScoringByPlayer = NHLBoxScore.getNewEventScoringByPlayer(
+                            Map<String, EventData> newEventScoringByPlayer = NHLBoxScore.getNewEventScoringByPlayer(
                                     context.getSavedData().get(idGame),
                                     data
                             );

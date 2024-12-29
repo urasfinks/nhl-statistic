@@ -9,7 +9,7 @@ import ru.jamsys.core.flat.util.UtilRisc;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
 import ru.jamsys.tank.data.NHLPlayerList;
-import ru.jamsys.telegram.NotificationDataAndTemplate;
+import ru.jamsys.telegram.EventData;
 
 import java.util.List;
 
@@ -21,19 +21,19 @@ public class SendNotificationMultiply implements PromiseGenerator {
 
     private final NHLPlayerList.Player player;
 
-    private final NotificationDataAndTemplate notificationDataAndTemplate;
+    private final EventData eventData;
 
     private final List<Integer> listIdChat;
 
     public SendNotificationMultiply(
             String idGame,
             NHLPlayerList.Player player,
-            NotificationDataAndTemplate notificationDataAndTemplate,
+            EventData eventData,
             List<Integer> listIdChat
     ) {
         this.idGame = idGame;
         this.player = player;
-        this.notificationDataAndTemplate = notificationDataAndTemplate;
+        this.eventData = eventData;
         this.listIdChat = listIdChat;
     }
 
@@ -46,11 +46,11 @@ public class SendNotificationMultiply implements PromiseGenerator {
                 .then("lastGoals", new ScorePlayerCurrentSeasonBeforeGame(player, idGame).generate())
                 .then("send", (atomicBoolean, _, promise) -> {
                     String prevGoal = promise.getRepositoryMapClass(Promise.class, "lastGoals").getRepositoryMap(String.class, "prev_goal", "0");
-                    notificationDataAndTemplate
+                    eventData
                             .setPlayerName(NHLPlayerList.getPlayerName(player))
                             .setGameName(idGame.substring(idGame.indexOf("_") + 1))
                             .setScoredPrevGoalCurrentSeason(Integer.parseInt(prevGoal));
-                    String message = notificationDataAndTemplate.toString();
+                    String message = eventData.toString();
                     TelegramBotComponent telegramBotComponent = App.get(TelegramBotComponent.class);
                     System.out.println("SEND TO CLIENT: " + message);
                     UtilRisc.forEach(atomicBoolean, listIdChat, idChat -> {

@@ -4,7 +4,7 @@ import ru.jamsys.core.App;
 import ru.jamsys.core.extension.builder.HashMapBuilder;
 import ru.jamsys.core.extension.exception.ForwardException;
 import ru.jamsys.core.flat.util.*;
-import ru.jamsys.telegram.NotificationDataAndTemplate;
+import ru.jamsys.telegram.EventData;
 
 import java.io.IOException;
 import java.text.DateFormat;
@@ -158,9 +158,9 @@ public class NHLBoxScore {
     }
 
 
-    public static Map<String, NotificationDataAndTemplate> getNewEventScoringByPlayer(String last, String current) throws Throwable {
+    public static Map<String, EventData> getNewEventScoringByPlayer(String last, String current) throws Throwable {
 
-        Map<String, NotificationDataAndTemplate> result = new HashMap<>();
+        Map<String, EventData> result = new HashMap<>();
 
         Map<String, List<Map<String, Object>>> scoringPlaysLast = getScoringPlaysMap(last);
         Map<String, List<Map<String, Object>>> scoringPlaysCurrent = getScoringPlaysMap(current);
@@ -179,21 +179,21 @@ public class NHLBoxScore {
                 for (Map<String, Object> event : newEventScoringByPlayer) {
                     notify.add(event.get("type").toString());
                 }
-                NotificationDataAndTemplate notificationDataAndTemplate = new NotificationDataAndTemplate();
+                EventData eventData = new EventData();
 
                 if (notify.contains("goal")) {
-                    notificationDataAndTemplate.setAction(newEventScoringByPlayer.size() > 1 ? "GOALS" : "GOAL");
+                    eventData.setAction(newEventScoringByPlayer.size() > 1 ? "GOALS" : "GOAL");
                 } else if (notify.size() == 1 && notify.contains("cancel")) {
-                    notificationDataAndTemplate.setAction("CANCEL");
+                    eventData.setAction("CANCEL");
                 } else if (notify.size() == 1 && notify.contains("changeScoreTime")) {
-                    notificationDataAndTemplate.setAction("CORRECTION");
+                    eventData.setAction("CORRECTION");
                 } else {
-                    notificationDataAndTemplate.setAction("CANCEL+CORRECTION");
+                    eventData.setAction("CANCEL+CORRECTION");
                 }
-                notificationDataAndTemplate.setScoredTitle(listPlaysCurrent.size() > 1 ? "goals" : "goal");
-                notificationDataAndTemplate.setScoredGoal(listPlaysCurrent.size());
-                notificationDataAndTemplate.setScoredEnum(getEnumGame(listPlaysCurrent));
-                result.put(idPlayer, notificationDataAndTemplate);
+                eventData.setScoredTitle(listPlaysCurrent.size() > 1 ? "goals" : "goal");
+                eventData.setScoredGoal(listPlaysCurrent.size());
+                eventData.setScoredEnum(getEnumGame(listPlaysCurrent));
+                result.put(idPlayer, eventData);
             }
         });
         return result;

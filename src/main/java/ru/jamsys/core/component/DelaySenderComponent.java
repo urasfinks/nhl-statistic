@@ -11,11 +11,11 @@ import ru.jamsys.telegram.TelegramCommandContext;
 
 @Component
 @Lazy
-public class DelaySender {
+public class DelaySenderComponent {
 
     final Broker<NotificationObject> broker;
 
-    public DelaySender(ManagerBroker managerBroker) {
+    public DelaySenderComponent(ManagerBroker managerBroker) {
         managerBroker.initAndGet(
                 NotificationObject.class.getSimpleName(),
                 NotificationObject.class,

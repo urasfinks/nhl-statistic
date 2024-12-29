@@ -19,7 +19,7 @@ import ru.jamsys.core.promise.PromiseTask;
 import ru.jamsys.tank.data.NHLGamesForPlayer;
 import ru.jamsys.tank.data.NHLPlayerList;
 import ru.jamsys.tank.data.NHLTeamSchedule;
-import ru.jamsys.telegram.NotificationDataAndTemplate;
+import ru.jamsys.telegram.template.EventTemplate;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -67,7 +67,7 @@ public class PlayerStatistic implements PromiseGenerator {
         int assists = Integer.parseInt(scoreTotal.getOrDefault("assists", "").toString());
 
         int totalGoals = scoreLastSeason + seasonGoals;
-        int gretzkyOffset = NotificationDataAndTemplate.scoreGretzky - totalGoals;
+        int gretzkyOffset = EventTemplate.scoreGretzky - totalGoals;
 
         String templateNextGame = "";
         if (nextGame != null) {
