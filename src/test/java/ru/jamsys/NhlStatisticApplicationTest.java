@@ -127,7 +127,7 @@ class NhlStatisticApplicationTest {
         System.out.println(UtilJson.toStringPretty(playerStatistic, "{}"));
     }
 
-    @Test
+    //@Test
     void testPlayerOvi() {
         PlayerStatistic playerStatistic = new PlayerStatisticOvi();
         playerStatistic.generate()

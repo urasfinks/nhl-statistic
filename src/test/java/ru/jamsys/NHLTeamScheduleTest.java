@@ -7,7 +7,6 @@ import ru.jamsys.core.flat.util.UtilListSort;
 import ru.jamsys.core.flat.util.UtilNHL;
 import ru.jamsys.tank.data.NHLTeamSchedule;
 
-import java.io.IOException;
 import java.text.ParseException;
 import java.time.Instant;
 import java.time.LocalDateTime;

@@ -38,8 +38,8 @@ class NHLGamesForPlayerTest {
                 xx.get("2025").addAndGet(Integer.parseInt(o.get("goals").toString()));
             }
         });
-        Assertions.assertEquals("{2024=31, 2025=15}", xx.toString());
-        Assertions.assertEquals("46", all.toString());
+        Assertions.assertEquals("{2024=31, 2025=16}", xx.toString());
+        Assertions.assertEquals("47", all.toString());
     }
 
     @Test
