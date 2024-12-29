@@ -78,9 +78,8 @@ public class PlayerStatistic implements PromiseGenerator {
             );
         }
 
-
         return TemplateTwix.template("""
-                Статистика Александра Овечкина на ${currentDate}:
+                Статистика Александра Овечкина на ${currentDate} (GMT+03:00):
                 🎯 Забито голов: ${totalGoals}
                 🏆 До рекорда осталось: ${gretzkyOffset}
                 📅 Сезон ${seasonTitle}: ${countGame} ${countGamePostfix}, ${seasonGoals} ${seasonGoalsPostfix}, ${assists} ${assistsPostfix}, ${score} ${scorePostfix}, осталось ${countTailGame} ${countTailGamePostfix} в регулярном чемпионате
@@ -123,7 +122,7 @@ public class PlayerStatistic implements PromiseGenerator {
                 .extension(promise -> promise.setRepositoryMapClass(PlayerStatistic.class, this)) // Просто для отладки
                 .then("init", (_, _, promise) -> {
                     promise.getRepositoryMapClass(PlayerStatistic.class);
-                    setDate(UtilDate.get("dd.MM.yyyy"));
+                    setDate(UtilDate.timestampFormatUTC(UtilDate.getTimestamp() + 3 * 60 * 60, "dd.MM.yyyy HH:mm"));
                 })
                 // На текущий момент мы не знаем конкретную игру, поэтому получаем всё
                 .then("requestGameInSeason", new Tank01Request(() -> NHLTeamSchedule.getUri(
