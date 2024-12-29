@@ -9,31 +9,32 @@ import ru.jamsys.core.flat.util.UtilRisc;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
 import ru.jamsys.tank.data.NHLPlayerList;
-import ru.jamsys.telegram.EventData;
+import ru.jamsys.telegram.GameEventData;
+import ru.jamsys.telegram.template.GameEventTemplate;
 
 import java.util.List;
 
 @Getter
 @Setter
-public class SendNotificationMultiply implements PromiseGenerator {
+public class SendNotificationGameEvent implements PromiseGenerator {
 
     private final String idGame;
 
     private final NHLPlayerList.Player player;
 
-    private final EventData eventData;
+    private final GameEventData gameEventData;
 
     private final List<Integer> listIdChat;
 
-    public SendNotificationMultiply(
+    public SendNotificationGameEvent(
             String idGame,
             NHLPlayerList.Player player,
-            EventData eventData,
+            GameEventData gameEventData,
             List<Integer> listIdChat
     ) {
         this.idGame = idGame;
         this.player = player;
-        this.eventData = eventData;
+        this.gameEventData = gameEventData;
         this.listIdChat = listIdChat;
     }
 
@@ -46,11 +47,11 @@ public class SendNotificationMultiply implements PromiseGenerator {
                 .then("lastGoals", new ScorePlayerCurrentSeasonBeforeGame(player, idGame).generate())
                 .then("send", (atomicBoolean, _, promise) -> {
                     String prevGoal = promise.getRepositoryMapClass(Promise.class, "lastGoals").getRepositoryMap(String.class, "prev_goal", "0");
-                    eventData
+                    gameEventData
                             .setPlayerName(NHLPlayerList.getPlayerName(player))
                             .setGameName(idGame.substring(idGame.indexOf("_") + 1))
                             .setScoredPrevGoalCurrentSeason(Integer.parseInt(prevGoal));
-                    String message = eventData.toString();
+                    String message = new GameEventTemplate(gameEventData).toString();
                     TelegramBotComponent telegramBotComponent = App.get(TelegramBotComponent.class);
                     System.out.println("SEND TO CLIENT: " + message);
                     UtilRisc.forEach(atomicBoolean, listIdChat, idChat -> {

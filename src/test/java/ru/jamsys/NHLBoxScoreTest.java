@@ -6,8 +6,8 @@ import ru.jamsys.core.extension.builder.ArrayListBuilder;
 import ru.jamsys.core.extension.builder.HashMapBuilder;
 import ru.jamsys.core.flat.util.UtilJson;
 import ru.jamsys.tank.data.NHLBoxScore;
-import ru.jamsys.telegram.EventData;
-import ru.jamsys.telegram.template.EventTemplate;
+import ru.jamsys.telegram.GameEventData;
+import ru.jamsys.telegram.template.GameEventTemplate;
 
 import java.io.IOException;
 import java.util.List;
@@ -397,38 +397,38 @@ class NHLBoxScoreTest {
 
     @Test
     void getDiffPlayerGoal() throws Throwable {
-        Map<String, EventData> result = NHLBoxScore.getNewEventScoringByPlayer(
+        Map<String, GameEventData> result = NHLBoxScore.getNewEventScoringByPlayer(
                 NHLBoxScore.getExample4(),
                 NHLBoxScore.getExample5()
         );
-        Assertions.assertEquals("GOAL! Game ${gameName}. ${playerName} scored 1 goal: 10:18 2nd period. He has 1 goals in season, 1 goals in career and only 893 goals till Gretzky all-time record", new EventTemplate(result.get("2563036")).toString());
+        Assertions.assertEquals("GOAL! Game ${gameName}. ${playerName} scored 1 goal: 10:18 2nd period. He has 1 goals in season, 1 goals in career and only 893 goals till Gretzky all-time record", new GameEventTemplate(result.get("2563036")).toString());
     }
 
     @Test
     void getDiffPlayerCancel() throws Throwable {
-        Map<String, EventData> result = NHLBoxScore.getNewEventScoringByPlayer(
+        Map<String, GameEventData> result = NHLBoxScore.getNewEventScoringByPlayer(
                 NHLBoxScore.getExample5(),
                 NHLBoxScore.getExample4()
         );
-        Assertions.assertEquals("CANCEL! Game ${gameName}. ${playerName} scored 0 goal. He has 0 goals in season, 0 goals in career and only 894 goals till Gretzky all-time record", new EventTemplate(result.get("2563036")).toString());
+        Assertions.assertEquals("CANCEL! Game ${gameName}. ${playerName} scored 0 goal. He has 0 goals in season, 0 goals in career and only 894 goals till Gretzky all-time record", new GameEventTemplate(result.get("2563036")).toString());
     }
 
     @Test
     void getDiffPlayerChangeTime() throws Throwable {
-        Map<String, EventData> result = NHLBoxScore.getNewEventScoringByPlayer(
+        Map<String, GameEventData> result = NHLBoxScore.getNewEventScoringByPlayer(
                 NHLBoxScore.getExample6(),
                 NHLBoxScore.getExample6ChangeTime()
         );
-        Assertions.assertEquals("CORRECTION! Game ${gameName}. ${playerName} scored 1 goal: 10:19 2nd period. He has 1 goals in season, 1 goals in career and only 893 goals till Gretzky all-time record", new EventTemplate(result.get("2563036")).toString());
+        Assertions.assertEquals("CORRECTION! Game ${gameName}. ${playerName} scored 1 goal: 10:19 2nd period. He has 1 goals in season, 1 goals in career and only 893 goals till Gretzky all-time record", new GameEventTemplate(result.get("2563036")).toString());
     }
 
     @Test
     void getDiffPlayerManyChange() throws Throwable {
-        Map<String, EventData> result = NHLBoxScore.getNewEventScoringByPlayer(
+        Map<String, GameEventData> result = NHLBoxScore.getNewEventScoringByPlayer(
                 NHLBoxScore.getExample7(),
                 NHLBoxScore.getExample7ManyChange()
         );
-        Assertions.assertEquals("CANCEL+CORRECTION! Game ${gameName}. ${playerName} scored 2 goals: 10:20 2nd period, 10:20 2nd period. He has 2 goals in season, 2 goals in career and only 892 goals till Gretzky all-time record", new EventTemplate(result.get("2563036")).toString());
+        Assertions.assertEquals("CANCEL+CORRECTION! Game ${gameName}. ${playerName} scored 2 goals: 10:20 2nd period, 10:20 2nd period. He has 2 goals in season, 2 goals in career and only 892 goals till Gretzky all-time record", new GameEventTemplate(result.get("2563036")).toString());
     }
 
     @Test

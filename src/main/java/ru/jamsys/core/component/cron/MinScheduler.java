@@ -14,7 +14,7 @@ import ru.jamsys.core.extension.exception.ForwardException;
 import ru.jamsys.core.flat.template.cron.release.Cron1m;
 import ru.jamsys.core.flat.util.UtilJson;
 import ru.jamsys.core.flat.util.UtilRisc;
-import ru.jamsys.core.handler.promise.SendNotificationMultiply;
+import ru.jamsys.core.handler.promise.SendNotificationGameEvent;
 import ru.jamsys.core.handler.promise.Tank01Request;
 import ru.jamsys.core.jt.JTGameDiff;
 import ru.jamsys.core.jt.JTScheduler;
@@ -24,7 +24,7 @@ import ru.jamsys.core.resource.jdbc.JdbcRequest;
 import ru.jamsys.core.resource.jdbc.JdbcResource;
 import ru.jamsys.tank.data.NHLBoxScore;
 import ru.jamsys.tank.data.NHLPlayerList;
-import ru.jamsys.telegram.EventData;
+import ru.jamsys.telegram.GameEventData;
 
 import java.util.*;
 
@@ -54,7 +54,7 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
         private List<String> activeGame = new ArrayList<>();
         private Map<String, String> boxScore = new HashMap<>();
         private Map<String, String> savedData = new HashMap<>();
-        private Map<String, EventData> event = new LinkedHashMap<>(); // key - idPlayer; value - template
+        private Map<String, GameEventData> event = new LinkedHashMap<>(); // key - idPlayer; value - template
         private Map<String, List<Integer>> subscriber = new HashMap<>(); // key - idPlayer;
         private List<String> endGames = new ArrayList<>();
         private Map<String, String> mapIdPlayerGame = new HashMap<>(); // key - idPlayer; value - gameName
@@ -146,7 +146,7 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                                 context.getEndGames().add(idGame);
                                 logToTelegram("Finish game: " + idGame);
                             }
-                            Map<String, EventData> newEventScoringByPlayer = NHLBoxScore.getNewEventScoringByPlayer(
+                            Map<String, GameEventData> newEventScoringByPlayer = NHLBoxScore.getNewEventScoringByPlayer(
                                     context.getSavedData().get(idGame),
                                     data
                             );
@@ -193,7 +193,7 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                             if (player == null || player.isEmpty()) {
                                 return;
                             }
-                            new SendNotificationMultiply(
+                            new SendNotificationGameEvent(
                                     context.getMapIdPlayerGame().getOrDefault(idPlayer, ""),
                                     NHLPlayerList.Player.fromMap(player),
                                     context.getEvent().get(idPlayer),

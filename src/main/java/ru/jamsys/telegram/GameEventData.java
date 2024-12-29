@@ -10,7 +10,7 @@ import java.util.List;
 @Getter
 @Setter
 @Accessors(chain = true)
-public class EventData {
+public class GameEventData {
 
     //action=GOAL, scoredTitle= goal, scoredGoal=1, scoredEnum=: 10:18 2nd period
     private String action;

@@ -13,7 +13,7 @@ import ru.jamsys.core.resource.notification.telegram.TelegramNotificationRequest
 import ru.jamsys.core.resource.notification.telegram.TelegramNotificationResource;
 import ru.jamsys.tank.data.NHLBoxScore;
 import ru.jamsys.tank.data.NHLPlayerList;
-import ru.jamsys.telegram.EventData;
+import ru.jamsys.telegram.GameEventData;
 
 class NhlStatisticApplicationTest {
 
@@ -55,15 +55,15 @@ class NhlStatisticApplicationTest {
                 .setLongName("Dylan Guenther")
                 .setTeam("UTA")
                 .setTeamID("33");
-        EventData eventData = new EventData()
+        GameEventData gameEventData = new GameEventData()
                 .setAction("GOAL")
                 .setScoredTitle("goal")
                 .setScoredGoal(1)
                 .setScoredEnum(new ArrayListBuilder<String>().append("any enum period"));
-        new SendNotificationMultiply(
+        new SendNotificationGameEvent(
                 idGame,
                 player,
-                eventData,
+                gameEventData,
                 new ArrayListBuilder<Integer>().append(290029195)
         ).generate().run().await(50_000L);
     }

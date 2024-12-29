@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import ru.jamsys.core.flat.template.twix.TemplateTwix;
 import ru.jamsys.core.flat.util.UtilNHL;
-import ru.jamsys.telegram.EventData;
+import ru.jamsys.telegram.GameEventData;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -14,10 +14,10 @@ import java.util.Map;
 
 @Getter
 @Setter
-public class EventTemplate {
+public class GameEventTemplate {
 
 
-    final EventData data;
+    final GameEventData data;
 
     private String extra = "";
 
@@ -29,11 +29,12 @@ public class EventTemplate {
 
     public String template = "${action}! Game ${gameName}. ${playerName} scored ${scoredGoal} ${scoredTitle}${extra}. He has ${goalsInSeason} goals in season, ${goalsInCareer} goals in career and only ${gretzkyOffset} goals till Gretzky all-time record";
 
-    public EventTemplate(EventData data) {
+    public GameEventTemplate(GameEventData data) {
         this.data = data;
     }
 
-    public String compile(String template) {
+    @Override
+    public String toString() {
         if (!data.getScoredEnum().isEmpty()) {
             extra = ": " + String.join(", ", data.getScoredEnum());
         }
@@ -43,38 +44,25 @@ public class EventTemplate {
         gretzkyOffset = UtilNHL.getScoreGretzky() - (goalsInCareer);
 
         Map<String, String> arg = new LinkedHashMap<>();
-
-        ObjectMapper om = new ObjectMapper();
-        om.convertValue(this, new TypeReference<Map<String, Object>>() {
-        }).forEach((key, value) -> {
-            if (value != null) {
-                if (value instanceof List<?>) {
-                    @SuppressWarnings("unchecked")
-                    List<String> value1 = (List<String>) value;
-                    arg.put(key, String.join(", ", value1));
-                } else {
-                    arg.put(key, value.toString());
-                }
-            }
-        });
-        om.convertValue(data, new TypeReference<Map<String, Object>>() {
-        }).forEach((key, value) -> {
-            if (value != null) {
-                if (value instanceof List<?>) {
-                    @SuppressWarnings("unchecked")
-                    List<String> value1 = (List<String>) value;
-                    arg.put(key, String.join(", ", value1));
-                } else {
-                    arg.put(key, value.toString());
-                }
-            }
-        });
+        extend(arg, this);
+        extend(arg, data);
         return TemplateTwix.template(template, arg, true);
     }
 
-    @Override
-    public String toString() {
-        return compile(template);
+    private void extend(Map<String, String> arg, Object object) {
+        ObjectMapper om = new ObjectMapper();
+        om.convertValue(object, new TypeReference<Map<String, Object>>() {
+        }).forEach((key, value) -> {
+            if (value != null) {
+                if (value instanceof List<?>) {
+                    @SuppressWarnings("unchecked")
+                    List<String> value1 = (List<String>) value;
+                    arg.put(key, String.join(", ", value1));
+                } else {
+                    arg.put(key, value.toString());
+                }
+            }
+        });
     }
 
 }
