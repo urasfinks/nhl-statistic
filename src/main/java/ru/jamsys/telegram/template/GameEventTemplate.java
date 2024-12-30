@@ -42,9 +42,8 @@ public class GameEventTemplate {
         if (!data.getScoredEnum().isEmpty()) {
             extra = ": " + String.join(", ", data.getScoredEnum());
         }
-
-        goalsInSeason = data.getScoredBeforeCurrentSeason() + data.getScoredGoal();
-        goalsInCareer = goalsInSeason + data.getScoredBeforeCurrentSeason();
+        goalsInSeason = data.getScoredPrevGoal() + data.getScoredGoal();
+        goalsInCareer = goalsInSeason + data.getScoredLastSeason();
         gretzkyOffset = UtilNHL.getScoreGretzky() - (goalsInCareer);
         scoredTitle = data.getScoredGoal() > 1 ? "goals" : "goal";
         action = data.getAction().toString();

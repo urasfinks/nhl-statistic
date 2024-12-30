@@ -50,7 +50,7 @@ public class SendNotificationGameEvent implements PromiseGenerator {
                     gameEventData
                             .setPlayerName(NHLPlayerList.getPlayerName(player))
                             .setGameName(idGame.substring(idGame.indexOf("_") + 1))
-                            .setScoredPrevGoalCurrentSeason(Integer.parseInt(prevGoal));
+                            .setScoredPrevGoal(Integer.parseInt(prevGoal));
                     String message = new GameEventTemplate(gameEventData).toString();
                     TelegramBotComponent telegramBotComponent = App.get(TelegramBotComponent.class);
                     System.out.println("SEND TO CLIENT: " + message);

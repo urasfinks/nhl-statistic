@@ -6,6 +6,7 @@ import ru.jamsys.core.extension.builder.ArrayListBuilder;
 import ru.jamsys.core.extension.builder.HashMapBuilder;
 import ru.jamsys.core.flat.util.UtilJson;
 import ru.jamsys.tank.data.NHLBoxScore;
+import ru.jamsys.tank.data.NHLPlayerList;
 import ru.jamsys.telegram.GameEventData;
 import ru.jamsys.telegram.template.GameEventTemplate;
 
@@ -402,6 +403,30 @@ class NHLBoxScoreTest {
                 NHLBoxScore.getExample5()
         );
         Assertions.assertEquals("GOAL! Game ${gameName}. ${playerName} scored 1 goal: 10:18 2nd period. He has 1 goals in season, 1 goals in career and only 893 goals till Gretzky all-time record", new GameEventTemplate(result.get("2563036")).toString());
+    }
+
+    @Test
+    void testSeasonGoal() {
+        String idGame = "20241008_CHI@UTA";
+        NHLPlayerList.Player player = new NHLPlayerList.Player()
+                .setPlayerID("4874723")
+                .setPos("RW")
+                .setLongName("Dylan Guenther")
+                .setTeam("UTA")
+                .setTeamID("33");
+        GameEventData gameEventData = new GameEventData();
+        gameEventData
+                .setAction(GameEventData.Action.GOAL)
+                .setScoredGoal(5)
+                .setScoredEnum(new ArrayListBuilder<String>().append("any enum period"))
+                .setPlayerName(NHLPlayerList.getPlayerName(player))
+                .setGameName(idGame.substring(idGame.indexOf("_") + 1))
+                .setScoredLastSeason(400)
+                .setScoredPrevGoal(10);
+        Assertions.assertEquals(
+                "GOAL! Game CHI@UTA. Dylan Guenther (UTA) scored 5 goals: any enum period. He has 15 goals in season, 415 goals in career and only 479 goals till Gretzky all-time record",
+                new GameEventTemplate(gameEventData).toString()
+        );
     }
 
     @Test

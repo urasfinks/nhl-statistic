@@ -42,30 +42,27 @@ class NHLTeamScheduleTest {
     void getGameSortAndFilterByTime() throws Throwable {
         List<Map<String, Object>> sortGameByTime = new NHLTeamSchedule.Instance(NHLTeamSchedule.getExample())
                 .getScheduledAndLive()
-                .getFutureGame()
                 .sort(UtilListSort.Type.ASC)
                 .getListGame();
-        Assertions.assertEquals("20241229_DAL@CHI", sortGameByTime.getFirst().get("gameID"));
+        Assertions.assertEquals("20241129_CHI@MIN", sortGameByTime.getFirst().get("gameID"));
     }
 
     @Test
     void getMoscowGameDate() throws Throwable {
         NHLTeamSchedule.Game game = new NHLTeamSchedule.Instance(NHLTeamSchedule.getExample())
                 .getScheduledAndLive()
-                .getFutureGame()
                 .sort(UtilListSort.Type.ASC)
                 .getGame(0).extend();
-        Assertions.assertEquals("30.12.2024 04:30", game.getMoscowDate());
+        Assertions.assertEquals("29.11.2024 22:00", game.getMoscowDate());
     }
 
     @Test
     void toggle() throws Throwable {
         NHLTeamSchedule.Game game = new NHLTeamSchedule.Instance(NHLTeamSchedule.getExample())
                 .getScheduledAndLive()
-                .getFutureGame()
                 .sort(UtilListSort.Type.ASC)
                 .getGame(0);
-        Assertions.assertEquals("Dallas Stars (DAL)", game.toggleTeam("CHI"));
+        Assertions.assertEquals("Minnesota Wild (MIN)", game.toggleTeam("CHI"));
     }
 
     @Test
