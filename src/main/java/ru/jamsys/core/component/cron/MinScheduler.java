@@ -13,8 +13,10 @@ import ru.jamsys.core.extension.UniqueClassName;
 import ru.jamsys.core.extension.exception.ForwardException;
 import ru.jamsys.core.flat.template.cron.release.Cron1m;
 import ru.jamsys.core.flat.util.UtilJson;
+import ru.jamsys.core.flat.util.UtilNHL;
 import ru.jamsys.core.flat.util.UtilRisc;
 import ru.jamsys.core.handler.promise.SendNotificationGameEvent;
+import ru.jamsys.core.handler.promise.SendNotificationGameEventOvi;
 import ru.jamsys.core.handler.promise.Tank01Request;
 import ru.jamsys.core.jt.JTGameDiff;
 import ru.jamsys.core.jt.JTScheduler;
@@ -52,7 +54,7 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
     @Getter
     public static class Context {
         private List<String> activeGame = new ArrayList<>();
-        private Map<String, String> boxScore = new HashMap<>();
+        private Map<String, String> boxScore = new HashMap<>(); //key - idGame; value Api Response
         private Map<String, String> savedData = new HashMap<>();
         private Map<String, GameEventData> event = new LinkedHashMap<>(); // key - idPlayer; value - template
         private Map<String, List<Integer>> subscriber = new HashMap<>(); // key - idPlayer;
@@ -145,6 +147,12 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                             if (NHLBoxScore.isFinish(data)) {
                                 context.getEndGames().add(idGame);
                                 logToTelegram("Finish game: " + idGame);
+                                if (UtilNHL.isOviGame(idGame)) {
+                                    new SendNotificationGameEventOvi(
+                                            idGame,
+                                            new GameEventData().setAction(GameEventData.Action.FINISH_GAME)
+                                    ).generate().run();
+                                }
                             }
                             Map<String, GameEventData> newEventScoringByPlayer = NHLBoxScore.getNewEventScoringByPlayer(
                                     context.getSavedData().get(idGame),
@@ -193,10 +201,18 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                             if (player == null || player.isEmpty()) {
                                 return;
                             }
+                            GameEventData gameEventData = context.getEvent().get(idPlayer);
+                            if (UtilNHL.isOvi(idPlayer)) {
+                                gameEventData.setScoredLastSeason(UtilNHL.getOviScoreLastSeason());
+                                new SendNotificationGameEventOvi(
+                                        context.getMapIdPlayerGame().getOrDefault(idPlayer, ""),
+                                        gameEventData
+                                ).generate().run();
+                            }
                             new SendNotificationGameEvent(
                                     context.getMapIdPlayerGame().getOrDefault(idPlayer, ""),
                                     NHLPlayerList.Player.fromMap(player),
-                                    context.getEvent().get(idPlayer),
+                                    gameEventData,
                                     listIdChat
                             ).generate().run();
                         } catch (Throwable e) {
@@ -208,17 +224,23 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                 // новой рассылать
                 .thenWithResource("saveData", JdbcResource.class, (run, _, promise, jdbcResource) -> {
                     Context context = promise.getRepositoryMapClass(Context.class);
-                    UtilRisc.forEach(run, context.getBoxScore(), (key, data) -> {
-                        if (context.getSavedData().get(key) == null) {
-                            logToTelegram("Start game: " + key);
+                    UtilRisc.forEach(run, context.getBoxScore(), (idGame, data) -> {
+                        if (context.getSavedData().get(idGame) == null) {
+                            logToTelegram("Start game: " + idGame);
+                            if (UtilNHL.isOviGame(idGame)) {
+                                new SendNotificationGameEventOvi(
+                                        idGame,
+                                        new GameEventData().setAction(GameEventData.Action.START_GAME)
+                                ).generate().run();
+                            }
                         }
                         try {
                             jdbcResource.execute(
-                                    new JdbcRequest(context.getSavedData().get(key) == null
+                                    new JdbcRequest(context.getSavedData().get(idGame) == null
                                             ? JTGameDiff.INSERT
                                             : JTGameDiff.UPDATE
                                     )
-                                            .addArg("id_game", key)
+                                            .addArg("id_game", idGame)
                                             .addArg("scoring_plays", data)
                             );
                         } catch (Throwable e) {
