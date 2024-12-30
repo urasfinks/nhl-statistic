@@ -85,7 +85,7 @@ public class ScorePlayerCurrentSeasonBeforeGame implements PromiseGenerator {
                                 .addArg("prev_goal", getCountGoal().get())
                                 .setDebug(false)
                         ))
-                .setDebug(true)
+                .setDebug(false)
                 ;
     }
 

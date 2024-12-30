@@ -22,6 +22,7 @@ public enum JTGameDiff implements JdbcRequestRepository {
                 ${IN.id_game::VARCHAR},
                 ${IN.scoring_plays::VARCHAR}
             )
+            ON CONFLICT DO NOTHING
             """, StatementType.SELECT_WITH_AUTO_COMMIT),
 
     UPDATE("""

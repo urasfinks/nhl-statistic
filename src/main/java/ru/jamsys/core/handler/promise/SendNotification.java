@@ -30,7 +30,7 @@ public class SendNotification implements PromiseGenerator {
                             null
                     );
                 })
-                .setDebug(true)
+                .setDebug(false)
                 ;
     }
 

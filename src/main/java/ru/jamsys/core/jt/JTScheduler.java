@@ -64,6 +64,7 @@ public enum JTScheduler implements JdbcRequestRepository {
                 ${IN.player_about::VARCHAR},
                 ${IN.test::VARCHAR}
             )
+            ON CONFLICT DO NOTHING
             """, StatementType.SELECT_WITH_AUTO_COMMIT),
 
     SELECT_ACTIVE_GAME("""

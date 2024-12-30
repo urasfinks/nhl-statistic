@@ -26,6 +26,7 @@ public enum JTPrevGoal implements JdbcRequestRepository {
                 ${IN.id_player::NUMBER},
                 ${IN.prev_goal::NUMBER}
             )
+            ON CONFLICT DO NOTHING
             """, StatementType.SELECT_WITH_AUTO_COMMIT)
     ;
 

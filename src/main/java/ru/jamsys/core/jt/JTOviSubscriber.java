@@ -37,6 +37,7 @@ public enum JTOviSubscriber implements JdbcRequestRepository {
             VALUES (
                 ${IN.id_chat::NUMBER}
             )
+            ON CONFLICT DO NOTHING
             """, StatementType.SELECT_WITH_AUTO_COMMIT);
 
     private final JdbcTemplate jdbcTemplate;

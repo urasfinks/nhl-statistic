@@ -15,6 +15,7 @@ public enum JTHttpCache implements JdbcRequestRepository {
     INSERT("""
             INSERT INTO http_cache (url, data)
             VALUES (${IN.url::VARCHAR}, ${IN.data::VARCHAR})
+            ON CONFLICT DO NOTHING
             """, StatementType.SELECT_WITH_AUTO_COMMIT),
 
     UPDATE("""

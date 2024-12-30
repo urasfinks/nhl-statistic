@@ -60,7 +60,7 @@ public class SendNotificationGameEvent implements PromiseGenerator {
                         }
                     });
                 })
-                .setDebug(true)
+                .setDebug(false)
                 ;
     }
 
