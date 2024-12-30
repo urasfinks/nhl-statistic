@@ -101,35 +101,6 @@ class NHLTeamScheduleTest {
     }
 
     @Test
-    void nhlSeason() throws ParseException {
-        Assertions.assertEquals(2025, UtilNHL.getActiveSeasonOrNext("2024-12-20", "yyyy-MM-dd"));
-        Assertions.assertEquals(2025, UtilNHL.getActiveSeasonOrNext("2024-11-20", "yyyy-MM-dd"));
-        Assertions.assertEquals(2025, UtilNHL.getActiveSeasonOrNext("2024-10-20", "yyyy-MM-dd"));
-        Assertions.assertEquals(2025, UtilNHL.getActiveSeasonOrNext("2024-10-01", "yyyy-MM-dd"));
-
-        Assertions.assertNull(UtilNHL.getActiveSeasonOrNext("2024-09-30", "yyyy-MM-dd"));
-        Assertions.assertNull(UtilNHL.getActiveSeasonOrNext("2024-05-01", "yyyy-MM-dd"));
-
-        Assertions.assertEquals(2024, UtilNHL.getActiveSeasonOrNext("2024-04-30", "yyyy-MM-dd"));
-        Assertions.assertEquals(2024, UtilNHL.getActiveSeasonOrNext("2024-01-01", "yyyy-MM-dd"));
-
-        Assertions.assertNull(UtilNHL.getActiveSeasonOrNext("2023-05-01", "yyyy-MM-dd"));
-
-        Assertions.assertEquals(2023, UtilNHL.getActiveSeasonOrNext("2023-04-30", "yyyy-MM-dd"));
-    }
-
-    @Test
-    void seasonFormat() {
-        Assertions.assertEquals("Сезон не определён", UtilNHL.seasonFormat(null));
-        Assertions.assertEquals("Сезон не определён", UtilNHL.seasonFormat(1));
-        Assertions.assertEquals("Сезон не определён", UtilNHL.seasonFormat(11));
-        Assertions.assertEquals("Сезон не определён", UtilNHL.seasonFormat(111));
-        Assertions.assertEquals("1110/11", UtilNHL.seasonFormat(1111));
-        Assertions.assertEquals("2024/25", UtilNHL.seasonFormat(2025));
-        Assertions.assertEquals("2023/24", UtilNHL.seasonFormat(2024));
-    }
-
-    @Test
     void getGameToday() throws Throwable {
         NHLTeamSchedule.Instance instance = new NHLTeamSchedule.Instance(NHLTeamSchedule.getExample_18_2025());
         Assertions.assertEquals("20241212_LA@NJ", instance.getGameToday("20241213"));

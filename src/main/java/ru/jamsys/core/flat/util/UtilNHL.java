@@ -1,5 +1,7 @@
 package ru.jamsys.core.flat.util;
 
+import ru.jamsys.tank.data.NHLPlayerList;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -46,6 +48,34 @@ public class UtilNHL {
 
     public static String getCurrentDateEpoch() {
         return UtilDate.timestampFormatUTC(UtilDate.getTimestamp(), "yyyyMMdd");
+    }
+
+    public static NHLPlayerList.Player getOvi() {
+        return new NHLPlayerList.Player()
+                .setPlayerID("3101")
+                .setPos("LW")
+                .setLongName("Alex Ovechkin")
+                .setTeam("WSH")
+                .setTeamID("31");
+    }
+
+    public static int getOviScoreLastSeason() {
+        return 853;
+    }
+
+    public static boolean isOvi(String idPlayer) {
+        return getOvi().getPlayerID().equals(idPlayer);
+    }
+
+    public static boolean isOviGame(String idGame) {
+        String team = getOvi().getTeam();
+        if (idGame == null) {
+            return false;
+        }
+        if (idGame.endsWith("@" + team)) {
+            return true;
+        }
+        return idGame.contains("_" + team + "@");
     }
 
 }
