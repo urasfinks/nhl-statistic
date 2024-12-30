@@ -51,12 +51,12 @@ public class Schedule implements PromiseGenerator, OviGoalsBotCommandHandler {
                                         %s — 🆚 %s, %s (GMT+03:00)
                                         """,
                                 game.getMoscowDate("dd.MM.yyyy"),
-                                game.toggleTeam("WSH"),
+                                game.toggleTeam(UtilNHL.getOvi().getTeam()),
                                 game.getMoscowDate("HH:mm")
                         )).append("\n");
                     });
                     AbstractBot.splitMessageSmart(String.format("""
-                                            📅 Расписание ближайших игр Александра Овечкина и Washington Capitals
+                                            📅 Расписание ближайших игр Александра Овечкина и Washington Capitals (WSH)
                                             
                                             %s
                                             

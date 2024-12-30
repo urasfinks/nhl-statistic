@@ -27,6 +27,8 @@ public class ScorePlayerCurrentSeasonBeforeGame implements PromiseGenerator {
 
     private NHLPlayerList.Player player;
 
+    private NHLTeamSchedule.Instance allGameInSeason;
+
     private List<String> lisIdGameInSeason = new ArrayList<>();
 
     private AtomicInteger countGoal = new AtomicInteger(0);
@@ -39,6 +41,7 @@ public class ScorePlayerCurrentSeasonBeforeGame implements PromiseGenerator {
     @Override
     public Promise generate() {
         return App.get(ServicePromise.class).get(getClass().getSimpleName(), 60_000L)
+                .extension(promise -> promise.setRepositoryMapClass(ScorePlayerCurrentSeasonBeforeGame.class, this))
                 .thenWithResource("select", JdbcResource.class, (_, _, promise, jdbcResource) -> {
                     List<Map<String, Object>> execute = jdbcResource.execute(new JdbcRequest(JTPrevGoal.SELECT)
                             .addArg("id_game", getIdGame())
@@ -58,7 +61,9 @@ public class ScorePlayerCurrentSeasonBeforeGame implements PromiseGenerator {
                     Tank01Request response = promise
                             .getRepositoryMapClass(Promise.class, "requestGameInSeason")
                             .getRepositoryMapClass(Tank01Request.class);
-                    getLisIdGameInSeason().addAll(new NHLTeamSchedule.Instance(response.getResponseData()).getIdGame());
+                    NHLTeamSchedule.Instance instance = new NHLTeamSchedule.Instance(response.getResponseData());
+                    setAllGameInSeason(instance);
+                    getLisIdGameInSeason().addAll(instance.getIdGame());
                     //Вычитаем текущий матч так как надо считать кол-во голов до матча
                     getLisIdGameInSeason().remove(getIdGame());
                 })

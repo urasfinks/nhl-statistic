@@ -75,6 +75,15 @@ public class NHLTeamSchedule {
             this.listGame = listGame;
         }
 
+        public Game getById(String idGame) {
+            for (Game game : getListGameObject()) {
+                if (game.getId().equals(idGame)) {
+                    return game;
+                }
+            }
+            return null;
+        }
+
         public Instance(String json) throws Throwable {
             @SuppressWarnings("unchecked")
             Map<String, Object> parsed = UtilJson.toObject(json, Map.class);
@@ -177,6 +186,10 @@ public class NHLTeamSchedule {
 
         public Game(Map<String, Object> data) {
             this.data = data;
+        }
+
+        public String getId() {
+            return data.get("gameID").toString();
         }
 
         public String getMoscowDate() {

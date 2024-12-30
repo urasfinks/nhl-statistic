@@ -73,7 +73,7 @@ public class PlayerStatistic implements PromiseGenerator {
             NHLTeamSchedule.Game game = new NHLTeamSchedule.Game(nextGame);
             templateNextGame = String.format(
                     "Следующая игра: 🆚 %s, %s (GMT+03:00)",
-                    game.toggleTeam("WSH"),
+                    game.toggleTeam(UtilNHL.getOvi().getTeam()),
                     game.getMoscowDate()
             );
         }

@@ -27,6 +27,7 @@ public class GameEventData {
     private List<String> scoredEnum = new ArrayList<>();
     private String playerName;
     private String gameName;
+    private String teamsScore;
 
     private int scoredPrevGoal; // Кол-во голов в этом сезоне до текущего матча
     private int scoredLastSeason = 0; // Кол-во голов до этого сезона

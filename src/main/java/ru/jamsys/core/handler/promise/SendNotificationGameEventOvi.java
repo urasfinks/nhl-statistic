@@ -41,11 +41,14 @@ public class SendNotificationGameEventOvi implements PromiseGenerator {
         return App.get(ServicePromise.class).get(getClass().getSimpleName(), 60_000L)
                 .then("lastGoals", new ScorePlayerCurrentSeasonBeforeGame(player, idGame).generate())
                 .then("send", (atomicBoolean, _, promise) -> {
-                    String prevGoal = promise.getRepositoryMapClass(Promise.class, "lastGoals").getRepositoryMap(String.class, "prev_goal", "0");
+                    ScorePlayerCurrentSeasonBeforeGame stat = promise
+                            .getRepositoryMapClass(Promise.class, "lastGoals")
+                            .getRepositoryMapClass(ScorePlayerCurrentSeasonBeforeGame.class);
+
                     gameEventData
                             .setPlayerName(NHLPlayerList.getPlayerName(player))
-                            .setGameName(idGame.substring(idGame.indexOf("_") + 1))
-                            .setScoredPrevGoal(Integer.parseInt(prevGoal));
+                            .setGameName(stat.getAllGameInSeason().getById(idGame).toggleTeam(UtilNHL.getOvi().getTeam()))
+                            .setScoredPrevGoal(stat.getCountGoal().get());
                     String message = new GameEventTemplateOvi(gameEventData).toString();
                     TelegramBotComponent telegramBotComponent = App.get(TelegramBotComponent.class);
                     System.out.println("SEND TO CLIENT: " + message);
