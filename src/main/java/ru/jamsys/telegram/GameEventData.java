@@ -29,6 +29,6 @@ public class GameEventData {
     private String gameName;
 
     private int scoredPrevGoal; // Кол-во голов в этом сезоне до текущего матча
-    private int scoredLastSeason = 0; // 853 - Овечкин Кол-во голов до этого сезона
+    private int scoredLastSeason = 0; // Кол-во голов до этого сезона
 
 }
