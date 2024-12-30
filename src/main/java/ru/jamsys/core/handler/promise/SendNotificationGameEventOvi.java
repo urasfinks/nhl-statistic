@@ -8,6 +8,7 @@ import ru.jamsys.core.component.TelegramBotComponent;
 import ru.jamsys.core.flat.util.UtilNHL;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
+import ru.jamsys.tank.data.NHLGamesForPlayer;
 import ru.jamsys.tank.data.NHLPlayerList;
 import ru.jamsys.telegram.GameEventData;
 import ru.jamsys.telegram.template.GameEventTemplateOvi;
@@ -53,6 +54,9 @@ public class SendNotificationGameEventOvi implements PromiseGenerator {
 //                            telegramBotComponent.getNhlStatisticsBot().send(idChat, message, null);
 //                        }
 //                    });
+                    if (gameEventData.getAction().equals(GameEventData.Action.FINISH_GAME)) {
+                        new HttpCacheReset(NHLGamesForPlayer.getUri(player.getPlayerID())).generate().run();
+                    }
                 })
                 .setDebug(false)
                 ;

@@ -12,6 +12,12 @@ public enum JTHttpCache implements JdbcRequestRepository {
                 url = ${IN.url::VARCHAR};
             """, StatementType.SELECT_WITH_AUTO_COMMIT),
 
+    DELETE("""
+            DELETE FROM http_cache
+            WHERE
+                url = ${IN.url::VARCHAR};
+            """, StatementType.SELECT_WITH_AUTO_COMMIT),
+
     INSERT("""
             INSERT INTO http_cache (url, data)
             VALUES (${IN.url::VARCHAR}, ${IN.data::VARCHAR})

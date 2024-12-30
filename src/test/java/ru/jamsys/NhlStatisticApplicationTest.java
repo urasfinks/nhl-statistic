@@ -6,12 +6,14 @@ import ru.jamsys.core.App;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.extension.builder.ArrayListBuilder;
 import ru.jamsys.core.flat.util.UtilJson;
+import ru.jamsys.core.flat.util.UtilNHL;
 import ru.jamsys.core.handler.promise.*;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.resource.http.client.HttpResponse;
 import ru.jamsys.core.resource.notification.telegram.TelegramNotificationRequest;
 import ru.jamsys.core.resource.notification.telegram.TelegramNotificationResource;
 import ru.jamsys.tank.data.NHLBoxScore;
+import ru.jamsys.tank.data.NHLGamesForPlayer;
 import ru.jamsys.tank.data.NHLPlayerList;
 import ru.jamsys.telegram.GameEventData;
 
@@ -134,6 +136,12 @@ class NhlStatisticApplicationTest {
                 .await(60_000L);
         System.out.println(UtilJson.toStringPretty(playerStatistic, "{}"));
         System.out.println(playerStatistic.getMessage());
+    }
+
+    //@Test
+    void httpCacheReset() {
+        NHLPlayerList.Player player = UtilNHL.getOvi();
+        new HttpCacheReset(NHLGamesForPlayer.getUri(player.getPlayerID())).generate().run().await(50_000L);
     }
 
 }
