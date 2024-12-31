@@ -68,8 +68,6 @@ public class GameEventTemplateOvi {
         action = switch (data.getAction()) {
             case GameEventData.Action.GOAL -> "🚨 ГОООЛ!";
             case GameEventData.Action.CANCEL -> "❌ Гол отменён!";
-            case GameEventData.Action.CANCEL_CORRECTION -> "❌✅ Корректировка.";
-            case GameEventData.Action.CORRECTION -> "✅ Корректировка.";
             default -> data.getAction().toString();
         };
 
@@ -85,10 +83,6 @@ public class GameEventTemplateOvi {
             return TemplateTwix.template(templateGoal, arg, true);
         } else if (data.getAction().equals(GameEventData.Action.CANCEL)) {
             return TemplateTwix.template(templateCancel, arg, true);
-        } else if (data.getAction().equals(GameEventData.Action.CORRECTION)) {
-            return TemplateTwix.template(templateCorrection, arg, true);
-        } else if (data.getAction().equals(GameEventData.Action.CANCEL_CORRECTION)) {
-            return TemplateTwix.template(templateCancelCorrection, arg, true);
         }
         return null;
     }

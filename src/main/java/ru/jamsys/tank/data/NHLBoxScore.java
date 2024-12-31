@@ -7,6 +7,7 @@ import ru.jamsys.core.extension.exception.ForwardException;
 import ru.jamsys.core.flat.util.Util;
 import ru.jamsys.core.flat.util.UtilFileResource;
 import ru.jamsys.core.flat.util.UtilJson;
+import ru.jamsys.telegram.GameEventData;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -55,6 +56,11 @@ public class NHLBoxScore {
 
     public static String getExampleError() throws IOException {
         return UtilFileResource.getAsString("example/getNHLBoxScore_error.json");
+    }
+
+    public static Map<String, List<GameEventData>> getEvent(){
+        Map<String, List<GameEventData>> result = new HashMap<>();
+        return result;
     }
 
     public static List<Map<String, Object>> getScoringPlays(String json) throws Throwable {

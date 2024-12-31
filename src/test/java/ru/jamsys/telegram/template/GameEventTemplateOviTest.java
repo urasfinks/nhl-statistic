@@ -46,18 +46,5 @@ class GameEventTemplateOviTest {
                 new GameEventTemplateOvi(gameEventData.setAction(GameEventData.Action.CANCEL)).toString()
         );
 
-        Assertions.assertEquals(
-                """
-                        ✅ Корректировка. 2 гола: 10:19 3nd period, 10:18 2-й период.
-                        Washington Capitals (WSH) 1 - 0 Detroit Red Wings (DET)""",
-                new GameEventTemplateOvi(gameEventData.setAction(GameEventData.Action.CORRECTION)).toString()
-        );
-
-        Assertions.assertEquals(
-                """
-                        ❌✅ Корректировка. 2 гола: 10:18 2-й период. До рекорда Гретцки осталось 23 гола.
-                        Washington Capitals (WSH) 1 - 0 Detroit Red Wings (DET)""",
-                new GameEventTemplateOvi(gameEventData.setAction(GameEventData.Action.CANCEL_CORRECTION)).toString()
-        );
     }
 }
