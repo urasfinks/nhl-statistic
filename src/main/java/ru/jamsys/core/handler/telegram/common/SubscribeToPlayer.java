@@ -8,10 +8,7 @@ import ru.jamsys.core.App;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.extension.builder.HashMapBuilder;
 import ru.jamsys.core.extension.http.ServletResponseWriter;
-import ru.jamsys.core.flat.util.UtilJson;
-import ru.jamsys.core.flat.util.UtilListSort;
-import ru.jamsys.core.flat.util.UtilNHL;
-import ru.jamsys.core.flat.util.UtilTelegram;
+import ru.jamsys.core.flat.util.*;
 import ru.jamsys.core.flat.util.telegram.Button;
 import ru.jamsys.core.handler.promise.Tank01Request;
 import ru.jamsys.core.jt.JTScheduler;
@@ -50,7 +47,7 @@ public class SubscribeToPlayer implements PromiseGenerator, NhlStatisticsBotComm
                     if (UtilNHL.getActiveSeasonOrNext() == null) {
                         context.getTelegramBot().send(
                                 context.getIdChat(),
-                                "The regular season has not started yet. The subscription is available from October to April.",
+                                "Регулярный сезон ещё не начался. Подписка доступна с октября по Апрель",
                                 null
                         );
                         promise.skipAllStep("Not found run season");
@@ -60,7 +57,7 @@ public class SubscribeToPlayer implements PromiseGenerator, NhlStatisticsBotComm
                         context.getStepHandler().put(context.getIdChat(), context.getUriPath() + "/?namePlayer=");
                         context.getTelegramBot().send(
                                 context.getIdChat(),
-                                "Enter the player's name:",
+                                "Введи имя игрока на английском языке:",
                                 null
                         );
                         promise.skipAllStep("wait player name");
@@ -81,7 +78,7 @@ public class SubscribeToPlayer implements PromiseGenerator, NhlStatisticsBotComm
                             response.getResponseData()
                     );
                     if (userList.isEmpty()) {
-                        context.getTelegramBot().send(context.getIdChat(), "Player's not found", null);
+                        context.getTelegramBot().send(context.getIdChat(), "Игрок не найден", null);
                         return;
                     }
                     int counter = 0;
@@ -100,7 +97,7 @@ public class SubscribeToPlayer implements PromiseGenerator, NhlStatisticsBotComm
                             break;
                         }
                     }
-                    context.getTelegramBot().send(context.getIdChat(), "Choose Player:", buttons);
+                    context.getTelegramBot().send(context.getIdChat(), "Выбери игрока:", buttons);
                     promise.skipAllStep("wait id_player");
                 })
                 .then("findPlayerByIdMarker", (_, _, _) -> {
@@ -113,7 +110,7 @@ public class SubscribeToPlayer implements PromiseGenerator, NhlStatisticsBotComm
                             .setDebug(false)
                     );
                     if (!execute.isEmpty()) {
-                        context.getTelegramBot().send(UtilTelegram.editMessage(context.getMsg(), "The subscription already exists."));
+                        context.getTelegramBot().send(UtilTelegram.editMessage(context.getMsg(), "Подписка уже существует"));
                         promise.skipAllStep("The subscription already exists");
                     }
                 })
@@ -128,7 +125,7 @@ public class SubscribeToPlayer implements PromiseGenerator, NhlStatisticsBotComm
                             response.getResponseData()
                     );
                     if (player == null || player.isEmpty()) {
-                        context.getTelegramBot().send(UtilTelegram.editMessage(context.getMsg(), "Not found player"));
+                        context.getTelegramBot().send(UtilTelegram.editMessage(context.getMsg(), "Игрок не найден"));
                         promise.skipAllStep("Not found player");
                         return;
                     }
@@ -167,7 +164,7 @@ public class SubscribeToPlayer implements PromiseGenerator, NhlStatisticsBotComm
                             .sort(UtilListSort.Type.ASC)
                             .getListGame();
                     if (sortGameByTime.isEmpty()) {
-                        context.getTelegramBot().send(UtilTelegram.editMessage(context.getMsg(), "Not found games"));
+                        context.getTelegramBot().send(UtilTelegram.editMessage(context.getMsg(), "Игры не найдены"));
                         return;
                     }
                     JdbcRequest jdbcRequest = new JdbcRequest(JTScheduler.INSERT);
@@ -186,12 +183,13 @@ public class SubscribeToPlayer implements PromiseGenerator, NhlStatisticsBotComm
 
                     jdbcResource.execute(jdbcRequest);
 
-                    context.getTelegramBot().send(UtilTelegram.editMessage(context.getMsg(), String.format(
-                            "A subscription for %d games featuring %s has been created." +
-                                    " The first game is on %s, and the last game is on %s." +
-                                    " See more information in the subscriptions.",
-
+                    context.getTelegramBot().send(UtilTelegram.editMessage(context.getMsg(), String.format("""
+                                    Создана подписка на %d %s %s.
+                                    Первая игра будет: %s, последняя: %s.
+                                    Для детального отображения запланированных игр используй: /my_subscriptions
+                                    """,
                             sortGameByTime.size(),
+                            Util.digitTranslate(sortGameByTime.size(), "игру", "игры", "игр"),
                             context.getUriParameters().get("infoPlayer"),
                             new NHLTeamSchedule.Game(sortGameByTime.getFirst()).getGameTimeFormat(),
                             new NHLTeamSchedule.Game(sortGameByTime.getLast()).getGameTimeFormat()
@@ -201,7 +199,7 @@ public class SubscribeToPlayer implements PromiseGenerator, NhlStatisticsBotComm
                     System.out.println(promise.getLogString());
                     try {
                         TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
-                        context.getTelegramBot().send(context.getIdChat(), "Bot error", null);
+                        context.getTelegramBot().send(context.getIdChat(), "Бот сломался", null);
                     } catch (Throwable th) {
                         App.error(th);
                     }

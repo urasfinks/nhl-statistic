@@ -55,7 +55,7 @@ public class RemoveSubscriptions implements PromiseGenerator, NhlStatisticsBotCo
                     if (execute.isEmpty()) {
                         context.getTelegramBot().send(
                                 context.getIdChat(),
-                                "At the moment, you don't have any subscriptions yet.",
+                                "В текущей момент подписок нет",
                                 null
                         );
                         promise.skipAllStep("subscribe empty");
@@ -80,7 +80,7 @@ public class RemoveSubscriptions implements PromiseGenerator, NhlStatisticsBotCo
                         activeGame.addAndGet(Integer.parseInt(map.get("count").toString()));
                     });
                     context.getTelegramBot().send(context.getIdChat(), String.format(
-                            "You are subscribed to %d games. Select a player to unsubscribe.",
+                            "Ты подписан на %d игр. Выбери игрока для удаления подписки",
                             activeGame.get()
                     ), buttons);
                     promise.skipAllStep("wait read id_player for unsubscribe");
@@ -99,7 +99,7 @@ public class RemoveSubscriptions implements PromiseGenerator, NhlStatisticsBotCo
                             .addArg("id_player", context.getUriParameters().get("id"))
                             .setDebug(false)
                     );
-                    context.getTelegramBot().send(context.getIdChat(), "Subscription remove", null);
+                    context.getTelegramBot().send(context.getIdChat(), "Подписка удалена", null);
                 });
     }
 

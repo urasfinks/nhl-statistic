@@ -56,7 +56,7 @@ public class MySubscriptions implements PromiseGenerator, NhlStatisticsBotComman
                     if (execute.isEmpty()) {
                         context.getTelegramBot().send(
                                 context.getIdChat(),
-                                "At the moment, you don't have any subscriptions yet.",
+                                "В текущий момент подписок нет",
                                 null
                         );
                         promise.skipAllStep("subscriptions empty");
@@ -81,7 +81,7 @@ public class MySubscriptions implements PromiseGenerator, NhlStatisticsBotComman
                         activeGame.addAndGet(Integer.parseInt(map.get("count").toString()));
                     });
                     context.getTelegramBot().send(context.getIdChat(), String.format(
-                            "You are subscribed to %d games. Select a player to view detailed match information",
+                            "Ты подписан на %d матчей. Выбери игрока для отображения детальной информации",
                             activeGame.get()
                     ), buttons);
                     promise.skipAllStep("wait read id_player for more information");
@@ -103,7 +103,7 @@ public class MySubscriptions implements PromiseGenerator, NhlStatisticsBotComman
                     if (execute.isEmpty()) {
                         context.getTelegramBot().send(
                                 context.getIdChat(),
-                                "There are no scheduled games at the moment.",
+                                "В текущий момент запланированных игр нет",
                                 null
                         );
                         return;
