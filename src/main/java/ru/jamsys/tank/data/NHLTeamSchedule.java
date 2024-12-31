@@ -207,7 +207,7 @@ public class NHLTeamSchedule {
         public String getGameTimeFormat() {
             return String.format(
                     "%s (UTC%s)",
-                    NHLTeamSchedule.getGameLocalTime(data, "dd/MM/yyyy HH:mm"),
+                    NHLTeamSchedule.getGameLocalTime(data, "dd.MM.yyyy HH:mm"),
                     data.get("timeZone")
             );
         }

@@ -185,14 +185,14 @@ public class SubscribeToPlayer implements PromiseGenerator, NhlStatisticsBotComm
 
                     context.getTelegramBot().send(UtilTelegram.editMessage(context.getMsg(), String.format("""
                                     Создана подписка на %d %s %s.
-                                    Первая игра будет: %s, последняя: %s.
-                                    Для детального отображения запланированных игр используй: /my_subscriptions
+                                    Первая игра будет: %s (GMT+03:00), последняя: %s (GMT+03:00).
+                                    Для детального отображения запланированных игр используй: /my
                                     """,
                             sortGameByTime.size(),
                             Util.digitTranslate(sortGameByTime.size(), "игру", "игры", "игр"),
                             context.getUriParameters().get("infoPlayer"),
-                            new NHLTeamSchedule.Game(sortGameByTime.getFirst()).getGameTimeFormat(),
-                            new NHLTeamSchedule.Game(sortGameByTime.getLast()).getGameTimeFormat()
+                            new NHLTeamSchedule.Game(sortGameByTime.getFirst()).getMoscowDate(),
+                            new NHLTeamSchedule.Game(sortGameByTime.getLast()).getMoscowDate()
                     )));
                 })
                 .onError((atomicBoolean, promiseTask, promise) -> {
