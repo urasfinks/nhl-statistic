@@ -36,7 +36,7 @@ class NhlStatisticApplicationTest {
     }
 
     @SuppressWarnings("unused")
-    //@Test
+        //@Test
     void getPlayerScoreCurrentSeason() {
         NHLPlayerList.Player player = new NHLPlayerList.Player()
                 .setPlayerID("4874723")
@@ -51,7 +51,7 @@ class NhlStatisticApplicationTest {
     }
 
     @SuppressWarnings("unused")
-    //@Test
+        //@Test
     void sendNotification() {
         String idGame = "20241008_CHI@UTA";
         NHLPlayerList.Player player = new NHLPlayerList.Player()
@@ -92,7 +92,7 @@ class NhlStatisticApplicationTest {
     }
 
     @SuppressWarnings("unused")
-    //@Test
+        //@Test
     void testRequest() {
         Tank01Request tank01Request = new Tank01Request(() -> NHLBoxScore.getUri("20241129_NYR@PHI"));
         tank01Request.setOnlyCache(true);
@@ -103,7 +103,7 @@ class NhlStatisticApplicationTest {
     }
 
     @SuppressWarnings("unused")
-    //@Test
+        //@Test
     void testScoreCache() {
         NHLPlayerList.Player player = new NHLPlayerList.Player()
                 .setPlayerID("4565257")
@@ -121,7 +121,7 @@ class NhlStatisticApplicationTest {
     }
 
     @SuppressWarnings("unused")
-    //@Test
+        //@Test
     void testPlayerStat() {
         NHLPlayerList.Player player = new NHLPlayerList.Player()
                 .setPlayerID("4565257")
@@ -139,7 +139,7 @@ class NhlStatisticApplicationTest {
     }
 
     @SuppressWarnings("unused")
-    //@Test
+        //@Test
     void testPlayerOvi() {
         PlayerStatistic playerStatistic = new PlayerStatistic(UtilNHL.getOvi(), UtilNHL.getOviScoreLastSeason());
         playerStatistic.generate()
@@ -150,14 +150,14 @@ class NhlStatisticApplicationTest {
     }
 
     @SuppressWarnings("unused")
-    //@Test
+        //@Test
     void httpCacheReset() {
         NHLPlayerList.Player player = UtilNHL.getOvi();
         new HttpCacheReset(NHLGamesForPlayer.getUri(player.getPlayerID())).generate().run().await(50_000L);
     }
 
     @SuppressWarnings("unused")
-    //@Test
+        //@Test
     void sendOvi() {
         String idGame = "20241008_CHI@UTA";
         NHLPlayerList.Player player = UtilNHL.getOvi();

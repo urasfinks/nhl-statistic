@@ -30,7 +30,7 @@ import java.util.Map;
 @Setter
 @Getter
 @Component
-@RequestMapping({"/subscribe_to_player/**", "/stp/**"})
+@RequestMapping({"/subscribe/**", "/stp/**"})
 public class SubscribeToPlayer implements PromiseGenerator, NhlStatisticsBotCommandHandler {
 
     private final ServicePromise servicePromise;

@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.extension.builder.HashMapBuilder;
 import ru.jamsys.core.extension.http.ServletResponseWriter;
+import ru.jamsys.core.flat.util.Util;
 import ru.jamsys.core.flat.util.UtilTelegram;
 import ru.jamsys.core.flat.util.telegram.Button;
 import ru.jamsys.core.jt.JTScheduler;
@@ -27,7 +28,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Setter
 @Getter
 @Component
-@RequestMapping({"/my_subscriptions/**", "/ms/**"})
+@RequestMapping({"/my/**", "/ms/**"})
 public class MySubscriptions implements PromiseGenerator, NhlStatisticsBotCommandHandler {
 
     private final ServicePromise servicePromise;
@@ -81,8 +82,9 @@ public class MySubscriptions implements PromiseGenerator, NhlStatisticsBotComman
                         activeGame.addAndGet(Integer.parseInt(map.get("count").toString()));
                     });
                     context.getTelegramBot().send(context.getIdChat(), String.format(
-                            "Ты подписан на %d матчей. Выбери игрока для отображения детальной информации",
-                            activeGame.get()
+                            "Подписка на %d %s. Выбери игрока для отображения детальной информации",
+                            activeGame.get(),
+                            Util.digitTranslate(activeGame.get(), "матч", "матча", "матчей")
                     ), buttons);
                     promise.skipAllStep("wait read id_player for more information");
                 })

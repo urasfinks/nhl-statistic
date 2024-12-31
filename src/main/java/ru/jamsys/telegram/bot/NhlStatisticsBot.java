@@ -15,9 +15,9 @@ public class NhlStatisticsBot extends AbstractBot {
     public NhlStatisticsBot(String botUsername, String botToken, RouteGeneratorRepository routerRepository) throws TelegramApiException {
         super(botUsername, botToken, routerRepository);
         List<BotCommand> list = new ArrayList<>();
-        list.add(new BotCommand("/subscribe_to_player", "Подписаться на игрока"));
-        list.add(new BotCommand("/my_subscriptions", "Мои подписки"));
-        list.add(new BotCommand("/remove_subscription", "Удалить подписку"));
+        list.add(new BotCommand("/subscribe", "Подписаться на игрока"));
+        list.add(new BotCommand("/my", "Мои подписки"));
+        list.add(new BotCommand("/remove", "Удалить подписку"));
         execute(new SetMyCommands(list, new BotCommandScopeDefault(), null));
     }
 
