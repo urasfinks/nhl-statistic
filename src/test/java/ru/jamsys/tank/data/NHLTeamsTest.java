@@ -1,15 +1,15 @@
 package ru.jamsys.tank.data;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import ru.jamsys.core.flat.util.UtilJson;
-
-import java.util.Map;
 
 class NHLTeamsTest {
 
     @Test
     void getTeams() throws Throwable {
-        Map<String, Object> teams = NHLTeams.getTeams(NHLTeams.getExample());
-        System.out.println(UtilJson.toStringPretty(teams, "{}"));
+        NHLTeams.Team wsh = NHLTeams.teams.getByAbv("WSH");
+        Assertions.assertEquals("Washington Capitals (WSH)", wsh.getAbout());
+        NHLTeams.Team vgk = NHLTeams.teams.getById("30");
+        Assertions.assertEquals("Vegas Golden Knights (VGK)", vgk.getAbout());
     }
 }
