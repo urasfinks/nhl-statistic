@@ -2,7 +2,6 @@ package ru.jamsys.telegram.template;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import ru.jamsys.core.extension.builder.ArrayListBuilder;
 import ru.jamsys.core.flat.util.UtilNHL;
 import ru.jamsys.tank.data.NHLPlayerList;
 import ru.jamsys.telegram.GameEventData;
@@ -15,35 +14,53 @@ class GameEventTemplateOviTest {
         NHLPlayerList.Player player = UtilNHL.getOvi();
         GameEventData gameEventData = new GameEventData();
         gameEventData
+                .setTimeRu("14:14, 2-й период")
                 .setAction(GameEventData.Action.GOAL)
                 .setScoredGoal(2)
-                .setScoredEnum(new ArrayListBuilder<String>()
-                        .append("10:19 3nd period")
-                        .append("10:18 2nd period")
-                )
                 .setPlayerName(NHLPlayerList.getPlayerName(player))
-                .setGameName("Detroit Red Wings (DET)")
+                .setGameName("Washington Capitals (WSH) 🆚 Detroit Red Wings (DET)")
                 .setScoredLastSeason(UtilNHL.getOviScoreLastSeason())
                 .setTeamsScore("Washington Capitals (WSH) 1 - 0 Detroit Red Wings (DET)")
-                .setScoredPrevGoal(16);
+                .setScoredPrevGoal(16)
+
+                .setScoredAssists(1)
+                .setScoredShots(2)
+                .setScoredAssists(3)
+                .setScoredHits(4)
+                .setScoredPenaltiesInMinutes(5)
+                .setScoredTimeOnIce("15:00")
+        ;
 
         Assertions.assertEquals(
                 "Начало игры Washington Capitals (WSH) 🆚 Detroit Red Wings (DET)",
                 new GameEventTemplateOvi(gameEventData.setAction(GameEventData.Action.START_GAME)).toString()
         );
 
-        Assertions.assertEquals(
-                """
-                        🚨 ГОООЛ! Александр Овечкин в этом матче забил 2 гола: 10:19 3nd period, 10:18 2-й период. В сезоне это 18-й, в карьере 871-й гол! До рекорда Гретцки осталось 23 гола.
+        Assertions.assertEquals("""
+                        🚨 ГОООЛ! 14:14, 2-й период. Александр Овечкин забивает свой 871-й гол в карьере! До рекорда Гретцки осталось 23 гола.
                         Washington Capitals (WSH) 1 - 0 Detroit Red Wings (DET)""",
                 new GameEventTemplateOvi(gameEventData.setAction(GameEventData.Action.GOAL)).toString()
         );
 
-        Assertions.assertEquals(
-                """
+        Assertions.assertEquals("""
                         ❌ Гол отменён! До рекорда Гретцки осталось 23 гола.
                         Washington Capitals (WSH) 1 - 0 Detroit Red Wings (DET)""",
                 new GameEventTemplateOvi(gameEventData.setAction(GameEventData.Action.CANCEL)).toString()
+        );
+
+        Assertions.assertEquals("""
+                        Матч завершен.
+                        Washington Capitals (WSH) 1 - 0 Detroit Red Wings (DET).
+                        
+                        Статистика Александра Овечкина в матче:
+                        🎯 Голы: 2
+                        🥅 Броски по воротам: 2
+                        🏒 Передачи: 3
+                        🌟 Очки: 5
+                        🥷 Силовые приемы: 4
+                        🥊 Штрафные минуты: 5
+                        ⏰ Время на льду: 15:00""",
+                new GameEventTemplateOvi(gameEventData.setAction(GameEventData.Action.FINISH_GAME)).toString()
         );
 
     }

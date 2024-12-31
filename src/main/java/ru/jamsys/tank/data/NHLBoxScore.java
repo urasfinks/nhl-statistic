@@ -25,6 +25,14 @@ public class NHLBoxScore {
         }
     }
 
+    public static String getExample() throws IOException {
+        return UtilFileResource.getAsString("example/getNHLBoxScore.json");
+    }
+
+    public static String getExampleChange() throws IOException {
+        return UtilFileResource.getAsString("example/getNHLBoxScore_change.json");
+    }
+
     public static String getExample4() throws IOException {
         return UtilFileResource.getAsString("example/getNHLBoxScore4.json");
     }
@@ -42,24 +50,36 @@ public class NHLBoxScore {
         return UtilFileResource.getAsString("example/getNHLBoxScore6.json");
     }
 
-    public static String getExample6ChangeTime() throws IOException {
-        return UtilFileResource.getAsString("example/getNHLBoxScore6_change_time.json");
-    }
-
-    public static String getExample7() throws IOException {
-        return UtilFileResource.getAsString("example/getNHLBoxScore7.json");
-    }
-
-    public static String getExample7ManyChange() throws IOException {
-        return UtilFileResource.getAsString("example/getNHLBoxScore7_many_change.json");
-    }
-
     public static String getExampleError() throws IOException {
         return UtilFileResource.getAsString("example/getNHLBoxScore_error.json");
     }
 
-    public static Map<String, List<GameEventData>> getEvent(){
+    public static Map<String, List<GameEventData>> getEvent(String lastJson, String currentJson) throws Throwable {
         Map<String, List<GameEventData>> result = new HashMap<>();
+        Instance lastInstance = new Instance(lastJson);
+        Instance currentInstance = new Instance(currentJson);
+        lastInstance.getPlayerStats().forEach((idPlayer, lastStat) -> {
+            Map<String, Object> currentStat = currentInstance.getPlayerStats().get(idPlayer);
+            // Бывает такое что тупо нет goal
+            if (lastStat.containsKey("goals") && currentStat.containsKey("goals")
+                    && !lastStat.get("goals").equals(currentStat.get("goals"))) {
+                int lastGoals = Integer.parseInt(lastStat.get("goals").toString());
+                int currentGoals = Integer.parseInt(currentStat.get("goals").toString());
+                int diff = currentGoals - lastGoals;
+                List<Map<String, Object>> listGoal = (diff > 0 ? currentInstance : lastInstance).getPlayer(idPlayer).getListGoal();
+                getLastNElements(listGoal, Math.abs(diff)).forEach(map -> {
+                    result.computeIfAbsent(idPlayer, s -> new ArrayList<>()).add(new GameEventData()
+                            .setAction(diff > 0 ? GameEventData.Action.GOAL : GameEventData.Action.CANCEL)
+                            .setTeamsScore(currentInstance.getScoreHome())
+                            .setGameName(currentInstance.getAboutHome())
+                                    .setScoredGoal(currentGoals)
+                            .setTimeEn(map.get("scoreTime") + " " + periodExpandEn(map.get("period").toString()))
+                            .setTimeRu(map.get("scoreTime") + " " + periodExpandRu(map.get("period").toString()))
+                            .setPlayerName(currentStat.get("longName").toString())
+                    );
+                });
+            }
+        });
         return result;
     }
 
@@ -90,13 +110,16 @@ public class NHLBoxScore {
         return Integer.parseInt(gameStatusCode) == 2;
     }
 
-    public static List<String> getEnumGame(List<Map<String, Object>> listPlaysCurrent) {
-        List<String> timeGoal = new ArrayList<>();
-        listPlaysCurrent.forEach(map -> timeGoal.add(map.get("scoreTime") + " " + periodExpand(map.get("period").toString())));
-        return timeGoal;
+    public static String periodExpandRu(String period) {
+        return periodExpandEn(period)
+                .replaceAll("undefined period", "неизвестный период")
+                .replaceAll("1st period", "1-й период")
+                .replaceAll("2nd period", "2-й период")
+                .replaceAll("3rd period", "3-й период")
+                .replaceAll("overtime", "доп. время");
     }
 
-    public static String periodExpand(String period) {
+    public static String periodExpandEn(String period) {
         if (period == null || period.isEmpty()) {
             return "undefined period";
         } else if (period.equals("1P")) {
@@ -111,7 +134,6 @@ public class NHLBoxScore {
             return period;
         }
     }
-
 
     public static Map<String, Object> getPlayerStat(String json, String idPlayer) {
         @SuppressWarnings("unchecked")
@@ -131,6 +153,7 @@ public class NHLBoxScore {
         final private Map<String, Integer> scoreMap = new HashMap<>();
 
         final String scoreHome;
+        final String aboutHome;
 
         public Instance(String json) throws Throwable {
             if (json == null || json.isEmpty()) { //Так как в БД может быть ничего
@@ -154,6 +177,19 @@ public class NHLBoxScore {
             scoreMap.put(teamAway.getAbv(), Integer.parseInt(body.get("awayTotal").toString()));
 
             scoreHome = getScore(teamHome.getAbv());
+            aboutHome = getAbout(teamHome.getAbv());
+        }
+
+        public String getAbout(String firstTeamAbv) {
+            StringBuilder sb = new StringBuilder();
+            ArrayList<String> strings = new ArrayList<>(scoreMap.keySet());
+            strings.remove(firstTeamAbv);
+            String lastTeamAbv = strings.getLast();
+            sb.append(NHLTeams.teams.getByAbv(firstTeamAbv).getAbout())
+                    .append(" 🆚 ")
+                    .append(NHLTeams.teams.getByAbv(lastTeamAbv).getAbout())
+            ;
+            return sb.toString();
         }
 
         public String getScore(String firstTeamAbv) {
@@ -202,6 +238,16 @@ public class NHLBoxScore {
             this.stat = stat;
         }
 
+    }
+
+    public static <T> List<T> getLastNElements(List<T> list, int n) {
+        if (list == null || n <= 0) {
+            return List.of(); // Возвращаем пустой список, если входные данные некорректны
+        }
+
+        // Если n больше длины списка, возвращаем весь список
+        int fromIndex = Math.max(0, list.size() - n);
+        return list.subList(fromIndex, list.size());
     }
 
 }

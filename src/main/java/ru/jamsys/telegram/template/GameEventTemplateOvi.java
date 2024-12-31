@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.Setter;
+import ru.jamsys.core.extension.builder.HashMapBuilder;
 import ru.jamsys.core.flat.template.twix.TemplateTwix;
 import ru.jamsys.core.flat.util.Util;
 import ru.jamsys.core.flat.util.UtilNHL;
@@ -17,35 +18,39 @@ import java.util.Map;
 @Setter
 public class GameEventTemplateOvi {
 
-
     final GameEventData data;
-
-    private String extra = "";
-
-    private String action = "";
-
-    private String scoredTitle = "";
 
     private int goalsInSeason;
 
     private int goalsInCareer;
 
+    private int score;
+
     private int gretzkyOffset;
 
-    public String templateGoal = """
-            ${action} Александр Овечкин в этом матче забил ${scoredGoal} ${scoredTitle}${extra}. В сезоне это ${goalsInSeason}-й, в карьере ${goalsInCareer}-й гол! До рекорда Гретцки осталось ${gretzkyOffset} гола.
-            ${teamsScore}""";
+    private String gretzkyOffsetPostfix;
 
-    public String templateCancel = """
-            ${action} До рекорда Гретцки осталось ${gretzkyOffset} гола.
-            ${teamsScore}""";
-
-    public String templateCorrection = """
-            ${action} ${scoredGoal} ${scoredTitle}${extra}.
-            ${teamsScore}""";
-    public String templateCancelCorrection = """
-            ${action} ${scoredGoal} ${scoredTitle}${extra}. До рекорда Гретцки осталось ${gretzkyOffset} гола.
-            ${teamsScore}""";
+    Map<GameEventData.Action, String> template = new HashMapBuilder<GameEventData.Action, String>()
+            .append(GameEventData.Action.START_GAME, """
+                    Начало игры ${gameName}""")
+            .append(GameEventData.Action.GOAL, """
+                    🚨 ГОООЛ! ${timeRu}. Александр Овечкин забивает свой ${goalsInCareer}-й гол в карьере! До рекорда Гретцки осталось ${gretzkyOffset} ${gretzkyOffsetPostfix}.
+                    ${teamsScore}""")
+            .append(GameEventData.Action.CANCEL, """
+                    ❌ Гол отменён! До рекорда Гретцки осталось ${gretzkyOffset} ${gretzkyOffsetPostfix}.
+                    ${teamsScore}""")
+            .append(GameEventData.Action.FINISH_GAME, """
+                    Матч завершен.
+                    ${teamsScore}.
+                    
+                    Статистика Александра Овечкина в матче:
+                    🎯 Голы: ${scoredGoal}
+                    🥅 Броски по воротам: ${scoredShots}
+                    🏒 Передачи: ${scoredAssists}
+                    🌟 Очки: ${score}
+                    🥷 Силовые приемы: ${scoredHits}
+                    🥊 Штрафные минуты: ${scoredPenaltiesInMinutes}
+                    ⏰ Время на льду: ${scoredTimeOnIce}""");
 
     public GameEventTemplateOvi(GameEventData data) {
         this.data = data;
@@ -53,38 +58,16 @@ public class GameEventTemplateOvi {
 
     @Override
     public String toString() {
-        if (!data.getScoredEnum().isEmpty()) {
-            extra = ": " + String.join(", ", data.getScoredEnum())
-                    .replaceAll("undefined period", "неизвестный период")
-                    .replaceAll("1st period", "1-й период")
-                    .replaceAll("2nd period", "2-й период")
-                    .replaceAll("3rd period", "3-й период")
-                    .replaceAll("overtime", "доп. время");
-        }
         goalsInSeason = data.getScoredPrevGoal() + data.getScoredGoal();
         goalsInCareer = goalsInSeason + data.getScoredLastSeason();
         gretzkyOffset = UtilNHL.getScoreGretzky() - (goalsInCareer);
-        scoredTitle = Util.digitTranslate(data.getScoredGoal(), "гол", "гола", "голов");
-        action = switch (data.getAction()) {
-            case GameEventData.Action.GOAL -> "🚨 ГОООЛ!";
-            case GameEventData.Action.CANCEL -> "❌ Гол отменён!";
-            default -> data.getAction().toString();
-        };
+        gretzkyOffsetPostfix = Util.digitTranslate(gretzkyOffset, "гол", "гола", "голов");
+        score = data.getScoredGoal() + data.getScoredAssists();
 
         Map<String, String> arg = new LinkedHashMap<>();
         extend(arg, data);
         extend(arg, this);
-
-        if (data.getAction().equals(GameEventData.Action.START_GAME)) {
-            return "Начало игры Washington Capitals (WSH) 🆚 " + data.getGameName();
-        } else if (data.getAction().equals(GameEventData.Action.FINISH_GAME)) {
-
-        } else if (data.getAction().equals(GameEventData.Action.GOAL)) {
-            return TemplateTwix.template(templateGoal, arg, true);
-        } else if (data.getAction().equals(GameEventData.Action.CANCEL)) {
-            return TemplateTwix.template(templateCancel, arg, true);
-        }
-        return null;
+        return TemplateTwix.template(template.get(data.getAction()), arg, true);
     }
 
     private void extend(Map<String, String> arg, Object object) {

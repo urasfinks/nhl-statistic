@@ -2,7 +2,6 @@ package ru.jamsys;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import ru.jamsys.core.extension.builder.ArrayListBuilder;
 import ru.jamsys.core.flat.util.UtilJson;
 import ru.jamsys.tank.data.NHLBoxScore;
 import ru.jamsys.tank.data.NHLPlayerList;
@@ -10,6 +9,7 @@ import ru.jamsys.telegram.GameEventData;
 import ru.jamsys.telegram.template.GameEventTemplate;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 class NHLBoxScoreTest {
@@ -43,24 +43,25 @@ class NHLBoxScoreTest {
         gameEventData
                 .setAction(GameEventData.Action.GOAL)
                 .setScoredGoal(5)
-                .setScoredEnum(new ArrayListBuilder<String>().append("any enum period"))
                 .setPlayerName(NHLPlayerList.getPlayerName(player))
                 .setGameName(idGame.substring(idGame.indexOf("_") + 1))
                 .setScoredLastSeason(400)
                 .setScoredPrevGoal(10);
         Assertions.assertEquals(
-                "GOAL! Game CHI@UTA. Dylan Guenther (UTA) scored 5 goals: any enum period. He has 15 goals in season, 415 goals in career and only 479 goals till Gretzky all-time record",
+                """
+                        🚨 ГОООЛ! ${timeRu}. Dylan Guenther (UTA) забивает свой 15-й гол в сезоне!.
+                        ${teamsScore}""",
                 new GameEventTemplate(gameEventData).toString()
         );
     }
 
     @Test
-    void periodExpand() {
-        Assertions.assertEquals("1st period", NHLBoxScore.periodExpand("1P"));
-        Assertions.assertEquals("2nd period", NHLBoxScore.periodExpand("2P"));
-        Assertions.assertEquals("3rd period", NHLBoxScore.periodExpand("3P"));
-        Assertions.assertEquals("overtime", NHLBoxScore.periodExpand("OT"));
-        Assertions.assertEquals("time is it", NHLBoxScore.periodExpand("time is it"));
+    void periodExpandEn() {
+        Assertions.assertEquals("1st period", NHLBoxScore.periodExpandEn("1P"));
+        Assertions.assertEquals("2nd period", NHLBoxScore.periodExpandEn("2P"));
+        Assertions.assertEquals("3rd period", NHLBoxScore.periodExpandEn("3P"));
+        Assertions.assertEquals("overtime", NHLBoxScore.periodExpandEn("OT"));
+        Assertions.assertEquals("time is it", NHLBoxScore.periodExpandEn("time is it"));
         String idGame = "20241012_NJ@WSH";
         Assertions.assertEquals("NJ@WSH", idGame.substring(idGame.indexOf("_") + 1));
     }
@@ -80,6 +81,13 @@ class NHLBoxScoreTest {
         Assertions.assertEquals("Philadelphia Flyers (PHI) 2 - 0 New York Rangers (NYR)", instance.getScoreHome());
         Assertions.assertEquals("New York Rangers (NYR) 0 - 2 Philadelphia Flyers (PHI)", instance.getScore("NYR"));
         System.out.println(UtilJson.toStringPretty(instance, "{}"));
+    }
+
+    @Test
+    void getEvent() throws Throwable {
+        Map<String, List<GameEventData>> event = NHLBoxScore.getEvent(NHLBoxScore.getExample(), NHLBoxScore.getExampleChange());
+        System.out.println(UtilJson.toStringPretty(event, "{}"));
+        Assertions.assertEquals("19:18 3rd period", event.get("4874723").getFirst().getTimeEn());
     }
 
 }

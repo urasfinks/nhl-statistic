@@ -61,7 +61,7 @@ class NhlStatisticApplicationTest {
                 .setAction(GameEventData.Action.GOAL)
                 .setScoredGoal(1)
                 .setScoredLastSeason(300)
-                .setScoredEnum(new ArrayListBuilder<String>().append("any enum period"));
+                ;
         new SendNotificationGameEvent(
                 idGame,
                 player,

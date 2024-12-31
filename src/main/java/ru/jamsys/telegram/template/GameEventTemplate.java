@@ -4,7 +4,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.Setter;
+import ru.jamsys.core.extension.builder.HashMapBuilder;
 import ru.jamsys.core.flat.template.twix.TemplateTwix;
+import ru.jamsys.core.flat.util.Util;
 import ru.jamsys.core.flat.util.UtilNHL;
 import ru.jamsys.telegram.GameEventData;
 
@@ -16,22 +18,39 @@ import java.util.Map;
 @Setter
 public class GameEventTemplate {
 
-
     final GameEventData data;
-
-    private String extra = "";
-
-    private String action = "";
-
-    private String scoredTitle = "";
 
     private int goalsInSeason;
 
     private int goalsInCareer;
 
+    private int score;
+
     private int gretzkyOffset;
 
-    public String template = "${action}! Game ${gameName}. ${playerName} scored ${scoredGoal} ${scoredTitle}${extra}. He has ${goalsInSeason} goals in season, ${goalsInCareer} goals in career and only ${gretzkyOffset} goals till Gretzky all-time record";
+    private String gretzkyOffsetPostfix;
+
+    Map<GameEventData.Action, String> template = new HashMapBuilder<GameEventData.Action, String>()
+            .append(GameEventData.Action.START_GAME, """
+                    Начало игры ${gameName}""")
+            .append(GameEventData.Action.GOAL, """
+                    🚨 ГОООЛ! ${timeRu}. ${playerName} забивает свой ${goalsInSeason}-й гол в сезоне!.
+                    ${teamsScore}""")
+            .append(GameEventData.Action.CANCEL, """
+                    ❌ Гол отменён!.
+                    ${teamsScore}""")
+            .append(GameEventData.Action.FINISH_GAME, """
+                    Матч завершен.
+                    ${teamsScore}.
+                    
+                    Статистика ${playerName} в матче:
+                    🎯 Голы: ${scoredGoal}
+                    🥅 Броски по воротам: ${scoredShots}
+                    🏒 Передачи: ${scoredAssists}
+                    🌟 Очки: ${score}
+                    🥷 Силовые приемы: ${scoredHits}
+                    🥊 Штрафные минуты: ${scoredPenaltiesInMinutes}
+                    ⏰ Время на льду: ${scoredTimeOnIce}""");
 
     public GameEventTemplate(GameEventData data) {
         this.data = data;
@@ -39,22 +58,16 @@ public class GameEventTemplate {
 
     @Override
     public String toString() {
-        if (!data.getScoredEnum().isEmpty()) {
-            extra = ": " + String.join(", ", data.getScoredEnum());
-        }
         goalsInSeason = data.getScoredPrevGoal() + data.getScoredGoal();
         goalsInCareer = goalsInSeason + data.getScoredLastSeason();
         gretzkyOffset = UtilNHL.getScoreGretzky() - (goalsInCareer);
-        scoredTitle = data.getScoredGoal() > 1 ? "goals" : "goal";
-        action = data.getAction().toString();
-        if (action.equals("CANCEL_CORRECTION")) {
-            action = "CANCEL+CORRECTION";
-        }
+        gretzkyOffsetPostfix = Util.digitTranslate(gretzkyOffset, "гол", "гола", "голов");
+        score = data.getScoredGoal() + data.getScoredAssists();
 
         Map<String, String> arg = new LinkedHashMap<>();
         extend(arg, data);
         extend(arg, this);
-        return TemplateTwix.template(template, arg, true);
+        return TemplateTwix.template(template.get(data.getAction()), arg, true);
     }
 
     private void extend(Map<String, String> arg, Object object) {
