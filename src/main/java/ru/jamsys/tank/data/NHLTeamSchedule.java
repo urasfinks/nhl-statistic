@@ -172,16 +172,6 @@ public class NHLTeamSchedule {
     @ToString
     public static class Game {
 
-        public static Map<String, Object> teams;
-
-        static {
-            try {
-                teams = NHLTeams.getTeams();
-            } catch (Throwable e) {
-                throw new RuntimeException(e);
-            }
-        }
-
         private final Map<String, Object> data;
 
         public Game(Map<String, Object> data) {
@@ -210,8 +200,9 @@ public class NHLTeamSchedule {
             Map<String, Object> game = new HashMap<>(data);
             try {
                 NHLTeamSchedule.extendGameTimeZone(game);
-                game.put("homeTeam", teams.get(game.get("home").toString()) + " (" + game.get("home") + ")");
-                game.put("awayTeam", teams.get(game.get("away").toString()) + " (" + game.get("away") + ")");
+
+                game.put("homeTeam", NHLTeams.teams.getByAbv(game.get("home").toString()).getAbout());
+                game.put("awayTeam", NHLTeams.teams.getByAbv(game.get("away").toString()).getAbout());
                 game.put("about", game.get("homeTeam") + " vs " + game.get("awayTeam"));
             } catch (Throwable e) {
                 App.error(e);
