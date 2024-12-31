@@ -263,7 +263,11 @@ public class NHLBoxScore {
         }
 
         public String getLongName() {
-            return stat.get("longName").toString();
+            if (UtilNHL.isOvi(stat.get("playerID").toString())) {
+                return "Александр Овечкин";
+            } else {
+                return stat.get("longName").toString();
+            }
         }
 
     }
