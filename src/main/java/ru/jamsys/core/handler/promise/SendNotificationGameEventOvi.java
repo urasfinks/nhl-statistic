@@ -46,8 +46,6 @@ public class SendNotificationGameEventOvi implements PromiseGenerator {
                             .getRepositoryMapClass(ScorePlayerCurrentSeasonBeforeGame.class);
 
                     gameEventData
-                            .setPlayerName(NHLPlayerList.getPlayerName(player))
-                            .setGameName(stat.getAllGameInSeason().getById(idGame).toggleTeam(UtilNHL.getOvi().getTeam()))
                             .setScoredPrevGoal(stat.getCountGoal().get());
                     String message = new GameEventTemplateOvi(gameEventData).toString();
                     TelegramBotComponent telegramBotComponent = App.get(TelegramBotComponent.class);

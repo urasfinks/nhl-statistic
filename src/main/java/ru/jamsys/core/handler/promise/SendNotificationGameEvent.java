@@ -48,8 +48,6 @@ public class SendNotificationGameEvent implements PromiseGenerator {
                 .then("send", (atomicBoolean, _, promise) -> {
                     String prevGoal = promise.getRepositoryMapClass(Promise.class, "lastGoals").getRepositoryMap(String.class, "prev_goal", "0");
                     gameEventData
-                            .setPlayerName(NHLPlayerList.getPlayerName(player))
-                            .setGameName(idGame.substring(idGame.indexOf("_") + 1))
                             .setScoredPrevGoal(Integer.parseInt(prevGoal));
                     String message = new GameEventTemplate(gameEventData).toString();
                     TelegramBotComponent telegramBotComponent = App.get(TelegramBotComponent.class);

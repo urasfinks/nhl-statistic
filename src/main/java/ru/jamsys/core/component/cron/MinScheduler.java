@@ -56,7 +56,7 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
         private List<String> activeGame = new ArrayList<>();
         private Map<String, String> boxScore = new HashMap<>(); //key - idGame; value Api Response
         private Map<String, String> savedData = new HashMap<>();
-        private Map<String, GameEventData> event = new LinkedHashMap<>(); // key - idPlayer; value - template
+        private Map<String, List<GameEventData>> event = new LinkedHashMap<>(); // key - idPlayer; value - template
         private Map<String, List<Integer>> subscriber = new HashMap<>(); // key - idPlayer;
         private List<String> endGames = new ArrayList<>();
         private Map<String, String> mapIdPlayerGame = new HashMap<>(); // key - idPlayer; value - gameName
@@ -148,13 +148,30 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                                 context.getEndGames().add(idGame);
                                 logToTelegram("Finish game: " + idGame);
                                 if (UtilNHL.isOviGame(idGame)) {
+                                    NHLBoxScore.Instance instance = new NHLBoxScore.Instance(data);
+                                    NHLBoxScore.Player oviStat = instance.getPlayer(UtilNHL.getOvi().getPlayerID());
                                     new SendNotificationGameEventOvi(
                                             idGame,
-                                            new GameEventData().setAction(GameEventData.Action.FINISH_GAME)
+                                            new GameEventData(
+                                                    GameEventData.Action.FINISH_GAME,
+                                                    instance.getAboutGame(),
+                                                    instance.getScoreGame("WSH"),
+                                                    UtilNHL.getOvi().getLongName(),
+                                                    "" //TODO:
+                                            )
+                                                    .setAction(GameEventData.Action.FINISH_GAME)
+                                                    .setScoredGoal(oviStat.getGoals())
+                                                    .setScoredAssists(oviStat.getScoredAssists())
+                                                    .setScoredShots(oviStat.getScoredShots())
+                                                    .setScoredAssists(oviStat.getScoredAssists())
+                                                    .setScoredHits(oviStat.getScoredHits())
+                                                    .setScoredPenaltiesInMinutes(oviStat.getScoredPenaltiesInMinutes())
+                                                    .setScoredTimeOnIce(oviStat.getScoredTimeOnIce())
+
                                     ).generate().run();
                                 }
                             }
-                            Map<String, GameEventData> newEventScoringByPlayer = NHLBoxScore.getNewEventScoringByPlayer(
+                            Map<String, List<GameEventData>> newEventScoringByPlayer = NHLBoxScore.getEvent(
                                     context.getSavedData().get(idGame),
                                     data
                             );
@@ -201,20 +218,21 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                             if (player == null || player.isEmpty()) {
                                 return;
                             }
-                            GameEventData gameEventData = context.getEvent().get(idPlayer);
-                            if (UtilNHL.isOvi(idPlayer)) {
-                                gameEventData.setScoredLastSeason(UtilNHL.getOviScoreLastSeason());
-                                new SendNotificationGameEventOvi(
+                            List<GameEventData> gameEventDataList = context.getEvent().get(idPlayer);
+                            gameEventDataList.forEach(gameEventData -> {
+                                if (UtilNHL.isOvi(idPlayer)) {
+                                    new SendNotificationGameEventOvi(
+                                            context.getMapIdPlayerGame().getOrDefault(idPlayer, ""),
+                                            gameEventData
+                                    ).generate().run();
+                                }
+                                new SendNotificationGameEvent(
                                         context.getMapIdPlayerGame().getOrDefault(idPlayer, ""),
-                                        gameEventData
+                                        NHLPlayerList.Player.fromMap(player),
+                                        gameEventData,
+                                        listIdChat
                                 ).generate().run();
-                            }
-                            new SendNotificationGameEvent(
-                                    context.getMapIdPlayerGame().getOrDefault(idPlayer, ""),
-                                    NHLPlayerList.Player.fromMap(player),
-                                    gameEventData,
-                                    listIdChat
-                            ).generate().run();
+                            });
                         } catch (Throwable e) {
                             App.error(e);
                         }
@@ -228,10 +246,22 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                         if (context.getSavedData().get(idGame) == null) {
                             logToTelegram("Start game: " + idGame);
                             if (UtilNHL.isOviGame(idGame)) {
-                                new SendNotificationGameEventOvi(
-                                        idGame,
-                                        new GameEventData().setAction(GameEventData.Action.START_GAME)
-                                ).generate().run();
+                                try {
+                                    NHLBoxScore.Instance instance = new NHLBoxScore.Instance(data);
+                                    new SendNotificationGameEventOvi(
+                                            idGame,
+                                            new GameEventData(
+                                                    GameEventData.Action.START_GAME,
+                                                    instance.getAboutGame("WSH"),
+                                                    instance.getScoreGame("WSH"),
+                                                    UtilNHL.getOvi().getLongName(),
+                                                    "" //TODO:
+                                            )
+                                    ).generate().run();
+
+                                } catch (Throwable e) {
+                                    App.error(e);
+                                }
                             }
                         }
                         try {

@@ -70,17 +70,19 @@ public class NHLBoxScore {
                 List<Map<String, Object>> listGoal = (diff > 0 ? currentInstance : lastInstance).getPlayer(idPlayer).getListGoal();
                 getLastNElements(listGoal, Math.abs(diff)).forEach(map -> result
                         .computeIfAbsent(idPlayer, _ -> new ArrayList<>())
-                        .add(new GameEventData()
-                                .setAction(diff > 0 ? GameEventData.Action.GOAL : GameEventData.Action.CANCEL)
-                                .setTeamsScore(currentInstance.getScoreGame())
-                                .setGameName(currentInstance.getAboutGame())
-                                .setScoredGoal(currentGoals)
-                                .setTime(map.get("scoreTime") + ", " + periodExpandRu(map.get("period").toString()))
-                                .setPlayerName(currentStat.get("longName").toString())
-                                .setScoredLastSeason(UtilNHL.isOvi(idPlayer)
-                                        ? UtilNHL.getOviScoreLastSeason()
-                                        : 0
+                        .add(new GameEventData(
+                                        diff > 0 ? GameEventData.Action.GOAL : GameEventData.Action.CANCEL,
+                                        currentInstance.getAboutGame(),
+                                        currentInstance.getScoreGame(),
+                                        currentInstance.getPlayer(idPlayer).getLongName(),
+                                        map.get("scoreTime") + ", " + periodExpandRu(map.get("period").toString())
                                 )
+                                        .setAction(diff > 0 ? GameEventData.Action.GOAL : GameEventData.Action.CANCEL)
+                                        .setScoredGoal(currentGoals)
+                                        .setScoredLastSeason(UtilNHL.isOvi(idPlayer)
+                                                ? UtilNHL.getOviScoreLastSeason()
+                                                : 0
+                                        )
                         )
                 );
             }
@@ -228,6 +230,40 @@ public class NHLBoxScore {
 
         public Player(Map<String, Object> stat) {
             this.stat = stat;
+        }
+
+        private int scoredShots;  //🥅 Броски по воротам – shots
+        private int scoredAssists;  //🏒 Передачи – assists
+        private int scoredHits;  //🥷 Силовые приемы – hits
+        private int scoredPenaltiesInMinutes;  //🥊 Штрафные минуты – penaltiesInMinutes
+        private String scoredTimeOnIce;  //⏰ Время на льду – timeOnIce
+
+        public int getGoals() {
+            return Integer.parseInt(stat.getOrDefault("goals", "0").toString());
+        }
+
+        public int getShots() {
+            return Integer.parseInt(stat.getOrDefault("shots", "0").toString());
+        }
+
+        public int getAssists() {
+            return Integer.parseInt(stat.getOrDefault("assists", "0").toString());
+        }
+
+        public int getHits() {
+            return Integer.parseInt(stat.getOrDefault("hits", "0").toString());
+        }
+
+        public int getPenaltiesInMinutes() {
+            return Integer.parseInt(stat.getOrDefault("penaltiesInMinutes", "0").toString());
+        }
+
+        public String getTimeOnIce() {
+            return stat.getOrDefault("timeOnIce", "00:00").toString();
+        }
+
+        public String getLongName() {
+            return stat.get("longName").toString();
         }
 
     }

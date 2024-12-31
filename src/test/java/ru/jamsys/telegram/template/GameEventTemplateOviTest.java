@@ -12,15 +12,17 @@ class GameEventTemplateOviTest {
     void testToString() {
 
         NHLPlayerList.Player player = UtilNHL.getOvi();
-        GameEventData gameEventData = new GameEventData();
+        GameEventData gameEventData = new GameEventData(
+                GameEventData.Action.GOAL,
+                "Washington Capitals (WSH) 🆚 Detroit Red Wings (DET)",
+                "Washington Capitals (WSH) 1 - 0 Detroit Red Wings (DET)",
+                NHLPlayerList.getPlayerName(player),
+                "14:14, 2-й период"
+        );
         gameEventData
-                .setTime("14:14, 2-й период")
                 .setAction(GameEventData.Action.GOAL)
                 .setScoredGoal(2)
-                .setPlayerName(NHLPlayerList.getPlayerName(player))
-                .setGameName("Washington Capitals (WSH) 🆚 Detroit Red Wings (DET)")
                 .setScoredLastSeason(UtilNHL.getOviScoreLastSeason())
-                .setTeamsScore("Washington Capitals (WSH) 1 - 0 Detroit Red Wings (DET)")
                 .setScoredPrevGoal(16)
 
                 .setScoredAssists(1)

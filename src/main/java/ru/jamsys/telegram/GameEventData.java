@@ -16,15 +16,26 @@ public class GameEventData {
         FINISH_GAME
     }
 
+    // Тип события
     private Action action;
-    private int scoredGoal;
-    private String playerName;
-    private String gameName;
-    private String teamsScore;
-    private String time;
 
+    final private String gameName; // Описание игры X (ABV) vs Y (ABV)
+    final private String teamsScore; // Состояние игры с X 1 - 1 Y
+    final private String playerName;
+    final private String time; // Время события
+
+    public GameEventData(Action action, String gameName, String teamsScore, String playerName, String time) {
+        this.action = action;
+        this.gameName = gameName;
+        this.teamsScore = teamsScore;
+        this.playerName = playerName;
+        this.time = time;
+    }
+
+    //Для событий игры
     private int scoredPrevGoal; // Кол-во голов в этом сезоне до текущего матча
     private int scoredLastSeason = 0; // Кол-во голов до этого сезона
+    private int scoredGoal; // Кол-во голов в текущей игре
 
     // Для события конца игры
     private int scoredShots;  //🥅 Броски по воротам – shots

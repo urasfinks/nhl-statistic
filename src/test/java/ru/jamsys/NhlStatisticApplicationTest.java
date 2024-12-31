@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeAll;
 import ru.jamsys.core.App;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.extension.builder.ArrayListBuilder;
+import ru.jamsys.core.flat.util.UtilDate;
 import ru.jamsys.core.flat.util.UtilJson;
 import ru.jamsys.core.flat.util.UtilNHL;
 import ru.jamsys.core.handler.promise.*;
@@ -57,11 +58,15 @@ class NhlStatisticApplicationTest {
                 .setLongName("Dylan Guenther")
                 .setTeam("UTA")
                 .setTeamID("33");
-        GameEventData gameEventData = new GameEventData()
-                .setAction(GameEventData.Action.GOAL)
+        GameEventData gameEventData = new GameEventData(
+                GameEventData.Action.GOAL,
+                "Washington Capitals (WSH) 🆚 Detroit Red Wings (DET)",
+                "Washington Capitals (WSH) 1 - 1 Detroit Red Wings (DET)",
+                NHLPlayerList.getPlayerName(player),
+                UtilDate.get("dd.MM.yyyy HH:mm:ss")
+        )
                 .setScoredGoal(1)
-                .setScoredLastSeason(300)
-                ;
+                .setScoredLastSeason(300);
         new SendNotificationGameEvent(
                 idGame,
                 player,
