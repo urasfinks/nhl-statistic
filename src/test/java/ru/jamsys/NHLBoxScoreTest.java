@@ -33,7 +33,6 @@ class NHLBoxScoreTest {
 
     @Test
     void testSeasonGoal() {
-        String idGame = "20241008_CHI@UTA";
         NHLPlayerList.Player player = new NHLPlayerList.Player()
                 .setPlayerID("4874723")
                 .setPos("RW")
