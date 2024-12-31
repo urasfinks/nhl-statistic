@@ -1,16 +1,18 @@
 package ru.jamsys.tank.data;
 
-import ru.jamsys.core.App;
-import ru.jamsys.core.extension.builder.HashMapBuilder;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Getter;
+import lombok.Setter;
 import ru.jamsys.core.extension.exception.ForwardException;
-import ru.jamsys.core.flat.util.*;
-import ru.jamsys.telegram.GameEventData;
+import ru.jamsys.core.flat.util.Util;
+import ru.jamsys.core.flat.util.UtilFileResource;
+import ru.jamsys.core.flat.util.UtilJson;
 
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class NHLBoxScore {
 
@@ -69,41 +71,6 @@ public class NHLBoxScore {
         return selector;
     }
 
-    public static Map<String, List<Map<String, Object>>> getScoringPlaysMap(String json) throws Throwable {
-        Map<String, List<Map<String, Object>>> result = new HashMap<>();
-        if (json == null || json.isEmpty()) { //Так как в БД может быть ничего
-            return result;
-        }
-
-        @SuppressWarnings("unchecked")
-        Map<String, Object> parsed = UtilJson.toObject(json, Map.class);
-        if (parsed.containsKey("error")) {
-            throw new RuntimeException(parsed.get("error").toString());
-        }
-        @SuppressWarnings("unchecked")
-        List<Map<String, Object>> selector = (List<Map<String, Object>>) UtilJson.selector(parsed, "body.scoringPlays");
-
-        selector.forEach(map -> {
-            @SuppressWarnings("unchecked")
-            Map<String, Object> o = (Map<String, Object>) map.get("goal");
-            result.computeIfAbsent(o.get("playerID").toString(), _ -> new ArrayList<>()).add(
-                    new HashMapBuilder<String, Object>()
-                            .append("period", map.get("period"))
-                            .append("scoreTime", map.get("scoreTime"))
-            );
-        });
-        return result;
-    }
-
-    public static String hashObject(Map<String, Object> stringObjectMap) {
-        try {
-            return Util.getHash(stringObjectMap.toString(), "md5");
-        } catch (Throwable e) {
-            App.error(e);
-        }
-        return null;
-    }
-
     public static boolean isFinish(String json) throws Throwable {
         if (json == null || json.isEmpty()) { //Так как в БД может быть ничего
             return false;
@@ -115,24 +82,6 @@ public class NHLBoxScore {
         }
         String gameStatusCode = (String) UtilJson.selector(parsed, "body.gameStatusCode");
         return Integer.parseInt(gameStatusCode) == 2;
-    }
-
-    public static List<Map<String, Object>> getNewEventScoring(String jsonLast, String jsonCurrent) throws Throwable {
-        List<Map<String, Object>> scoringPlaysLast = getScoringPlays(jsonLast);
-        List<Map<String, Object>> scoringPlaysCurrent = getScoringPlays(jsonCurrent);
-
-        List<String> listLast = scoringPlaysLast.stream().map(NHLBoxScore::hashObject).toList();
-        List<String> listCurrent = new ArrayList<>(scoringPlaysCurrent.stream().map(NHLBoxScore::hashObject).toList());
-
-        for (int i = listLast.size() - 1; i >= 0; i--) {
-            if (!listCurrent.isEmpty() && listCurrent.getLast().equals(listLast.get(i))) {
-                listCurrent.removeLast();
-                scoringPlaysCurrent.removeLast();
-            } else {
-                break;
-            }
-        }
-        return scoringPlaysCurrent;
     }
 
     public static List<String> getEnumGame(List<Map<String, Object>> listPlaysCurrent) {
@@ -158,132 +107,95 @@ public class NHLBoxScore {
     }
 
 
-    public static Map<String, GameEventData> getNewEventScoringByPlayer(String last, String current) throws Throwable {
-
-        Map<String, GameEventData> result = new HashMap<>();
-
-        Map<String, List<Map<String, Object>>> scoringPlaysLast = getScoringPlaysMap(last);
-        Map<String, List<Map<String, Object>>> scoringPlaysCurrent = getScoringPlaysMap(current);
-
-        Set<String> idPlayers = new HashSet<>();
-        idPlayers.addAll(scoringPlaysLast.keySet());
-        idPlayers.addAll(scoringPlaysCurrent.keySet());
-        idPlayers.forEach(idPlayer -> {
-            List<Map<String, Object>> listPlaysCurrent = scoringPlaysCurrent.getOrDefault(idPlayer, new ArrayList<>());
-            List<Map<String, Object>> newEventScoringByPlayer = getNewEventScoringByPlayer(
-                    scoringPlaysLast.getOrDefault(idPlayer, new ArrayList<>()),
-                    listPlaysCurrent
-            );
-            if (!newEventScoringByPlayer.isEmpty()) {
-                Set<String> notify = new HashSet<>();
-                for (Map<String, Object> event : newEventScoringByPlayer) {
-                    notify.add(event.get("type").toString());
-                }
-                GameEventData gameEventData = new GameEventData();
-
-                if (notify.contains("goal")) {
-                    gameEventData.setAction(GameEventData.Action.GOAL);
-                } else if (notify.size() == 1 && notify.contains("cancel")) {
-                    gameEventData.setAction(GameEventData.Action.CANCEL);
-                } else if (notify.size() == 1 && notify.contains("changeScoreTime")) {
-                    gameEventData.setAction(GameEventData.Action.CORRECTION);
-                } else {
-                    gameEventData.setAction(GameEventData.Action.CANCEL_CORRECTION);
-                }
-                gameEventData.setScoredGoal(listPlaysCurrent.size());
-                gameEventData.setScoredEnum(getEnumGame(listPlaysCurrent));
-                result.put(idPlayer, gameEventData);
-            }
-        });
-        return result;
-    }
-
-    public static List<Map<String, Object>> getNewEventScoringByPlayer(List<Map<String, Object>> last, List<Map<String, Object>> current) {
-        List<Map<String, Object>> res = new ArrayList<>();
-
-        last.reversed().forEach(map -> {
-            for (int i = current.size() - 1; i >= 0; i--) {
-                if (current.get(i).containsKey("findInLast")) {
-                    continue;
-                }
-                if (map.get("scoreTime").equals(current.get(i).get("scoreTime"))) {
-                    current.get(i).put("findInLast", true);
-                    map.put("findInCurrent", true);
-                    break;
-                }
-            }
-        });
-        current.reversed().forEach(map -> {
-            if (!map.containsKey("findInLast")) {
-                for (int i = last.size() - 1; i >= 0; i--) {
-                    if (last.get(i).containsKey("findInCurrent")) {
-                        continue;
-                    }
-                    if (map.get("scoreTime").equals(last.get(i).get("scoreTime"))) {
-                        last.get(i).put("findInCurrent", true);
-                        map.put("findInLast", true);
-                        break;
-                    }
-                }
-            }
-        });
-        List<Map<String, Object>> cancel = new ArrayList<>();
-        List<Map<String, Object>> goal = new ArrayList<>();
-
-        last.forEach(map -> {
-            if (!map.containsKey("findInCurrent")) {
-                map.put("type", "cancel");
-                res.add(map);
-                cancel.add(map);
-            }
-        });
-        current.forEach(map -> {
-            if (!map.containsKey("findInLast")) {
-                map.put("type", "goal");
-                res.add(map);
-                goal.add(map);
-            }
-        });
-
-        cancel.forEach(cancelMap -> {
-            List<Map<String, Object>> reduce = new ArrayList<>();
-            goal.forEach(goalMap -> {
-                if (!goalMap.get("type").equals("reduceCancel")) {
-                    try {
-                        long secOffset = Math.abs(UtilDate.diffSecond(
-                                cancelMap.get("scoreTime").toString(),
-                                goalMap.get("scoreTime").toString(),
-                                "H:mm"
-                        ));
-                        if (secOffset <= 3 * 60) {
-                            reduce.add(goalMap);
-                        }
-                    } catch (ParseException _) {
-                    }
-                }
-            });
-
-            if (!reduce.isEmpty()) {
-                Map<String, Object> first = UtilListSort.sort(reduce, UtilListSort.Type.ASC, map -> {
-                    DateFormat dateFormat = new SimpleDateFormat("H:mm");
-                    try {
-                        return dateFormat.parse(map.get("scoreTime").toString()).getTime();
-                    } catch (ParseException _) {
-                    }
-                    return 0L;
-                }).getFirst();
-                first.put("type", "reduceCancel");
-                cancelMap.put("type", "changeScoreTime");
-                cancelMap.put("newScoreTime", first.get("scoreTime"));
-            }
-        });
-        return res.stream().filter(map -> !map.get("type").equals("reduceCancel")).toList();
-    }
-
     public static Map<String, Object> getPlayerStat(String json, String idPlayer) {
         @SuppressWarnings("unchecked")
         Map<String, Object> res = (Map<String, Object>) UtilJson.selector(json, "$.body.playerStats." + idPlayer);
         return res;
+    }
+
+    @Getter
+    public static class Instance {
+
+        @JsonIgnore
+        final private List<Map<String, Object>> scoringPlays;
+
+        @JsonIgnore
+        final private Map<String, Map<String, Object>> playerStats;
+
+        final private Map<String, Integer> scoreMap = new HashMap<>();
+
+        final String scoreHome;
+
+        public Instance(String json) throws Throwable {
+            if (json == null || json.isEmpty()) { //Так как в БД может быть ничего
+                throw new RuntimeException("json empty");
+            }
+
+            @SuppressWarnings("unchecked")
+            Map<String, Object> body = (Map<String, Object>) UtilJson.toObject(json, Map.class).get("body");
+            @SuppressWarnings("unchecked")
+            List<Map<String, Object>> scoringPlays = (List<Map<String, Object>>) body.get("scoringPlays");
+            this.scoringPlays = scoringPlays;
+
+            @SuppressWarnings("unchecked")
+            Map<String, Map<String, Object>> playerStats = (Map<String, Map<String, Object>>) body.get("playerStats");
+            this.playerStats = playerStats;
+
+            NHLTeams.Team teamHome = NHLTeams.teams.getById(body.get("teamIDHome").toString());
+            NHLTeams.Team teamAway = NHLTeams.teams.getById(body.get("teamIDAway").toString());
+
+            scoreMap.put(teamHome.getAbv(), Integer.parseInt(body.get("homeTotal").toString()));
+            scoreMap.put(teamAway.getAbv(), Integer.parseInt(body.get("awayTotal").toString()));
+
+            scoreHome = getScore(teamHome.getAbv());
+        }
+
+        public String getScore(String firstTeamAbv) {
+            StringBuilder sb = new StringBuilder();
+            ArrayList<String> strings = new ArrayList<>(scoreMap.keySet());
+            strings.remove(firstTeamAbv);
+            String lastTeamAbv = strings.getLast();
+            sb.append(NHLTeams.teams.getByAbv(firstTeamAbv).getAbout())
+                    .append(" ")
+                    .append(scoreMap.get(firstTeamAbv))
+                    .append(" - ")
+                    .append(scoreMap.get(lastTeamAbv))
+                    .append(" ")
+                    .append(NHLTeams.teams.getByAbv(lastTeamAbv).getAbout())
+            ;
+            return sb.toString();
+        }
+
+        public Player getPlayer(String idPlayer) {
+            if (playerStats.containsKey(idPlayer)) {
+                Player player = new Player(playerStats.get(idPlayer));
+                scoringPlays.forEach(map -> {
+                    if (map.containsKey("goal")) {
+                        @SuppressWarnings("unchecked")
+                        Map<String, Object> goal = (Map<String, Object>) map.get("goal");
+                        if (goal.containsKey("playerID") && goal.get("playerID").equals(idPlayer)) {
+                            player.getListGoal().add(map);
+                        }
+                    }
+                });
+                return player;
+            }
+            return null;
+        }
+    }
+
+    @Getter
+    @Setter
+    public static class Player {
+
+        final private List<Map<String, Object>> listGoal = new ArrayList<>();
+
+        final private Map<String, Object> stat;
+
+        public Player(Map<String, Object> stat) {
+            this.stat = stat;
+        }
+
     }
 
 }
