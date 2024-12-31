@@ -7,6 +7,7 @@ import ru.jamsys.core.extension.exception.ForwardException;
 import ru.jamsys.core.flat.util.Util;
 import ru.jamsys.core.flat.util.UtilFileResource;
 import ru.jamsys.core.flat.util.UtilJson;
+import ru.jamsys.core.flat.util.UtilNHL;
 import ru.jamsys.telegram.GameEventData;
 
 import java.io.IOException;
@@ -67,14 +68,19 @@ public class NHLBoxScore {
                 int currentGoals = Integer.parseInt(currentStat.get("goals").toString());
                 int diff = currentGoals - lastGoals;
                 List<Map<String, Object>> listGoal = (diff > 0 ? currentInstance : lastInstance).getPlayer(idPlayer).getListGoal();
-                getLastNElements(listGoal, Math.abs(diff)).forEach(
-                        map -> result.computeIfAbsent(idPlayer, _ -> new ArrayList<>()).add(new GameEventData()
+                getLastNElements(listGoal, Math.abs(diff)).forEach(map -> result
+                        .computeIfAbsent(idPlayer, _ -> new ArrayList<>())
+                        .add(new GameEventData()
                                 .setAction(diff > 0 ? GameEventData.Action.GOAL : GameEventData.Action.CANCEL)
                                 .setTeamsScore(currentInstance.getScoreGame())
                                 .setGameName(currentInstance.getAboutGame())
                                 .setScoredGoal(currentGoals)
                                 .setTime(map.get("scoreTime") + ", " + periodExpandRu(map.get("period").toString()))
                                 .setPlayerName(currentStat.get("longName").toString())
+                                .setScoredLastSeason(UtilNHL.isOvi(idPlayer)
+                                        ? UtilNHL.getOviScoreLastSeason()
+                                        : 0
+                                )
                         )
                 );
             }

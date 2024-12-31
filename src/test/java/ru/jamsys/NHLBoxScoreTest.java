@@ -7,6 +7,7 @@ import ru.jamsys.tank.data.NHLBoxScore;
 import ru.jamsys.tank.data.NHLPlayerList;
 import ru.jamsys.telegram.GameEventData;
 import ru.jamsys.telegram.template.GameEventTemplate;
+import ru.jamsys.telegram.template.GameEventTemplateOvi;
 
 import java.io.IOException;
 import java.util.List;
@@ -88,6 +89,13 @@ class NHLBoxScoreTest {
         Map<String, List<GameEventData>> event = NHLBoxScore.getEvent(NHLBoxScore.getExample(), NHLBoxScore.getExampleChange());
         System.out.println(UtilJson.toStringPretty(event, "{}"));
         Assertions.assertEquals("19:18, 3-й период", event.get("4874723").getFirst().getTime());
+        Assertions.assertEquals("""
+                🚨 ГОООЛ! 19:18, 3-й период. Dylan Guenther забивает свой 2-й гол в сезоне!.
+                Utah Hockey Club (UTA) 5 - 2 Chicago Blackhawks (CHI)""", new GameEventTemplate(event.get("4874723").getFirst()).toString());
+        Assertions.assertEquals("""
+                🚨 ГОООЛ! 19:18, 3-й период. Александр Овечкин забивает свой 2-й гол в карьере! До рекорда Гретцки осталось 892 гола.
+                Utah Hockey Club (UTA) 5 - 2 Chicago Blackhawks (CHI)""", new GameEventTemplateOvi(event.get("4874723").getFirst()).toString());
+
     }
 
 }
