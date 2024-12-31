@@ -77,9 +77,9 @@ class NHLBoxScoreTest {
         NHLBoxScore.Instance instance = new NHLBoxScore.Instance(NHLBoxScore.getExample4());
         NHLBoxScore.Player player = instance.getPlayer("3900169");
         Assertions.assertEquals("1", player.getStat().get("goals"));
-        Assertions.assertEquals("Philadelphia Flyers (PHI) 2 - 0 New York Rangers (NYR)", instance.getScore("PHI"));
-        Assertions.assertEquals("Philadelphia Flyers (PHI) 2 - 0 New York Rangers (NYR)", instance.getScoreHome());
-        Assertions.assertEquals("New York Rangers (NYR) 0 - 2 Philadelphia Flyers (PHI)", instance.getScore("NYR"));
+        Assertions.assertEquals("Philadelphia Flyers (PHI) 2 - 0 New York Rangers (NYR)", instance.getScoreGame("PHI"));
+        Assertions.assertEquals("Philadelphia Flyers (PHI) 2 - 0 New York Rangers (NYR)", instance.getScoreGame());
+        Assertions.assertEquals("New York Rangers (NYR) 0 - 2 Philadelphia Flyers (PHI)", instance.getScoreGame("NYR"));
         System.out.println(UtilJson.toStringPretty(instance, "{}"));
     }
 

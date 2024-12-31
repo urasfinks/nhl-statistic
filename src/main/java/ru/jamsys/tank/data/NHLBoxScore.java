@@ -70,8 +70,8 @@ public class NHLBoxScore {
                 getLastNElements(listGoal, Math.abs(diff)).forEach(
                         map -> result.computeIfAbsent(idPlayer, _ -> new ArrayList<>()).add(new GameEventData()
                                 .setAction(diff > 0 ? GameEventData.Action.GOAL : GameEventData.Action.CANCEL)
-                                .setTeamsScore(currentInstance.getScoreHome())
-                                .setGameName(currentInstance.getAboutHome())
+                                .setTeamsScore(currentInstance.getScoreGame())
+                                .setGameName(currentInstance.getAboutGame())
                                 .setScoredGoal(currentGoals)
                                 .setTime(map.get("scoreTime") + ", " + periodExpandRu(map.get("period").toString()))
                                 .setPlayerName(currentStat.get("longName").toString())
@@ -137,8 +137,8 @@ public class NHLBoxScore {
 
         final private Map<String, Integer> scoreMap = new HashMap<>();
 
-        final String scoreHome;
-        final String aboutHome;
+        final String scoreGame;
+        final String aboutGame;
 
         public Instance(String json) throws Throwable {
             if (json == null || json.isEmpty()) { //Так как в БД может быть ничего
@@ -161,11 +161,12 @@ public class NHLBoxScore {
             scoreMap.put(teamHome.getAbv(), Integer.parseInt(body.get("homeTotal").toString()));
             scoreMap.put(teamAway.getAbv(), Integer.parseInt(body.get("awayTotal").toString()));
 
-            scoreHome = getScore(teamHome.getAbv());
-            aboutHome = getAbout(teamHome.getAbv());
+            scoreGame = getScoreGame(teamHome.getAbv());
+            aboutGame = getAboutGame(teamHome.getAbv());
+
         }
 
-        public String getAbout(String firstTeamAbv) {
+        public String getAboutGame(String firstTeamAbv) {
             StringBuilder sb = new StringBuilder();
             ArrayList<String> strings = new ArrayList<>(scoreMap.keySet());
             strings.remove(firstTeamAbv);
@@ -177,7 +178,7 @@ public class NHLBoxScore {
             return sb.toString();
         }
 
-        public String getScore(String firstTeamAbv) {
+        public String getScoreGame(String firstTeamAbv) {
             StringBuilder sb = new StringBuilder();
             ArrayList<String> strings = new ArrayList<>(scoreMap.keySet());
             strings.remove(firstTeamAbv);
