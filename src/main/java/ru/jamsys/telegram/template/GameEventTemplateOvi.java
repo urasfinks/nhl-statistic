@@ -32,16 +32,16 @@ public class GameEventTemplateOvi {
 
     Map<GameEventData.Action, String> template = new HashMapBuilder<GameEventData.Action, String>()
             .append(GameEventData.Action.START_GAME, """
-                    Начало игры ${gameName}""")
+                    Начало игры ${gameAbout}""")
             .append(GameEventData.Action.GOAL, """
                     🚨 ГОООЛ! ${time}. Александр Овечкин забивает свой ${goalsInCareer}-й гол в карьере! До рекорда Гретцки осталось ${gretzkyOffset} ${gretzkyOffsetPostfix}.
-                    ${teamsScore}""")
+                    ${gameScore}""")
             .append(GameEventData.Action.CANCEL, """
                     ❌ Гол отменён! До рекорда Гретцки осталось ${gretzkyOffset} ${gretzkyOffsetPostfix}.
-                    ${teamsScore}""")
+                    ${gameScore}""")
             .append(GameEventData.Action.FINISH_GAME, """
                     Матч завершен.
-                    ${teamsScore}.
+                    ${gameScore}.
                     
                     Статистика Александра Овечкина в матче:
                     🎯 Голы: ${scoredGoal}

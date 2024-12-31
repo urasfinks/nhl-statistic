@@ -19,15 +19,15 @@ public class GameEventData {
     // Тип события
     private Action action;
 
-    final private String gameName; // Описание игры X (ABV) vs Y (ABV)
-    final private String teamsScore; // Состояние игры с X 1 - 1 Y
+    final private String gameAbout; // Описание игры X (ABV) vs Y (ABV)
+    final private String gameScore; // Состояние игры с X 1 - 1 Y
     final private String playerName;
     final private String time; // Время события
 
-    public GameEventData(Action action, String gameName, String teamsScore, String playerName, String time) {
+    public GameEventData(Action action, String gameAbout, String gameScore, String playerName, String time) {
         this.action = action;
-        this.gameName = gameName;
-        this.teamsScore = teamsScore;
+        this.gameAbout = gameAbout;
+        this.gameScore = gameScore;
         this.playerName = playerName;
         this.time = time;
     }
