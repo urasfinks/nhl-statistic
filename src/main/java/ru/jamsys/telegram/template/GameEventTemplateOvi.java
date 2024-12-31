@@ -34,7 +34,7 @@ public class GameEventTemplateOvi {
             .append(GameEventData.Action.START_GAME, """
                     Начало игры ${gameName}""")
             .append(GameEventData.Action.GOAL, """
-                    🚨 ГОООЛ! ${timeRu}. Александр Овечкин забивает свой ${goalsInCareer}-й гол в карьере! До рекорда Гретцки осталось ${gretzkyOffset} ${gretzkyOffsetPostfix}.
+                    🚨 ГОООЛ! ${time}. Александр Овечкин забивает свой ${goalsInCareer}-й гол в карьере! До рекорда Гретцки осталось ${gretzkyOffset} ${gretzkyOffsetPostfix}.
                     ${teamsScore}""")
             .append(GameEventData.Action.CANCEL, """
                     ❌ Гол отменён! До рекорда Гретцки осталось ${gretzkyOffset} ${gretzkyOffsetPostfix}.

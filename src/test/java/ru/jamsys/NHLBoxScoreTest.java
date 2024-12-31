@@ -49,7 +49,7 @@ class NHLBoxScoreTest {
                 .setScoredPrevGoal(10);
         Assertions.assertEquals(
                 """
-                        🚨 ГОООЛ! ${timeRu}. Dylan Guenther (UTA) забивает свой 15-й гол в сезоне!.
+                        🚨 ГОООЛ! ${time}. Dylan Guenther (UTA) забивает свой 15-й гол в сезоне!.
                         ${teamsScore}""",
                 new GameEventTemplate(gameEventData).toString()
         );
@@ -87,7 +87,7 @@ class NHLBoxScoreTest {
     void getEvent() throws Throwable {
         Map<String, List<GameEventData>> event = NHLBoxScore.getEvent(NHLBoxScore.getExample(), NHLBoxScore.getExampleChange());
         System.out.println(UtilJson.toStringPretty(event, "{}"));
-        Assertions.assertEquals("19:18 3rd period", event.get("4874723").getFirst().getTimeEn());
+        Assertions.assertEquals("19:18 3-й период", event.get("4874723").getFirst().getTime());
     }
 
 }

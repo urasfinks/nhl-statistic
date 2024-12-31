@@ -67,34 +67,19 @@ public class NHLBoxScore {
                 int currentGoals = Integer.parseInt(currentStat.get("goals").toString());
                 int diff = currentGoals - lastGoals;
                 List<Map<String, Object>> listGoal = (diff > 0 ? currentInstance : lastInstance).getPlayer(idPlayer).getListGoal();
-                getLastNElements(listGoal, Math.abs(diff)).forEach(map -> {
-                    result.computeIfAbsent(idPlayer, s -> new ArrayList<>()).add(new GameEventData()
-                            .setAction(diff > 0 ? GameEventData.Action.GOAL : GameEventData.Action.CANCEL)
-                            .setTeamsScore(currentInstance.getScoreHome())
-                            .setGameName(currentInstance.getAboutHome())
-                                    .setScoredGoal(currentGoals)
-                            .setTimeEn(map.get("scoreTime") + " " + periodExpandEn(map.get("period").toString()))
-                            .setTimeRu(map.get("scoreTime") + " " + periodExpandRu(map.get("period").toString()))
-                            .setPlayerName(currentStat.get("longName").toString())
-                    );
-                });
+                getLastNElements(listGoal, Math.abs(diff)).forEach(
+                        map -> result.computeIfAbsent(idPlayer, _ -> new ArrayList<>()).add(new GameEventData()
+                                .setAction(diff > 0 ? GameEventData.Action.GOAL : GameEventData.Action.CANCEL)
+                                .setTeamsScore(currentInstance.getScoreHome())
+                                .setGameName(currentInstance.getAboutHome())
+                                .setScoredGoal(currentGoals)
+                                .setTime(map.get("scoreTime") + " " + periodExpandRu(map.get("period").toString()))
+                                .setPlayerName(currentStat.get("longName").toString())
+                        )
+                );
             }
         });
         return result;
-    }
-
-    public static List<Map<String, Object>> getScoringPlays(String json) throws Throwable {
-        if (json == null || json.isEmpty()) { //Так как в БД может быть ничего
-            return new ArrayList<>();
-        }
-        @SuppressWarnings("unchecked")
-        Map<String, Object> parsed = UtilJson.toObject(json, Map.class);
-        if (parsed.containsKey("error")) {
-            throw new RuntimeException(parsed.get("error").toString());
-        }
-        @SuppressWarnings("unchecked")
-        List<Map<String, Object>> selector = (List<Map<String, Object>>) UtilJson.selector(parsed, "body.scoringPlays");
-        return selector;
     }
 
     public static boolean isFinish(String json) throws Throwable {

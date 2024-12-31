@@ -14,7 +14,7 @@ class GameEventTemplateOviTest {
         NHLPlayerList.Player player = UtilNHL.getOvi();
         GameEventData gameEventData = new GameEventData();
         gameEventData
-                .setTimeRu("14:14, 2-й период")
+                .setTime("14:14, 2-й период")
                 .setAction(GameEventData.Action.GOAL)
                 .setScoredGoal(2)
                 .setPlayerName(NHLPlayerList.getPlayerName(player))
