@@ -35,6 +35,7 @@ class NhlStatisticApplicationTest {
         App.shutdown();
     }
 
+    @SuppressWarnings("unused")
     //@Test
     void getPlayerScoreCurrentSeason() {
         NHLPlayerList.Player player = new NHLPlayerList.Player()
@@ -49,6 +50,7 @@ class NhlStatisticApplicationTest {
                 .await(50_000L);
     }
 
+    @SuppressWarnings("unused")
     //@Test
     void sendNotification() {
         String idGame = "20241008_CHI@UTA";
@@ -89,6 +91,7 @@ class NhlStatisticApplicationTest {
         System.out.println(promise.getLogString());
     }
 
+    @SuppressWarnings("unused")
     //@Test
     void testRequest() {
         Tank01Request tank01Request = new Tank01Request(() -> NHLBoxScore.getUri("20241129_NYR@PHI"));
@@ -99,6 +102,7 @@ class NhlStatisticApplicationTest {
         System.out.println(tank01Request.getResponseData());
     }
 
+    @SuppressWarnings("unused")
     //@Test
     void testScoreCache() {
         NHLPlayerList.Player player = new NHLPlayerList.Player()
@@ -116,6 +120,7 @@ class NhlStatisticApplicationTest {
         System.out.println(scoreBoxCache.getAllStatistic());
     }
 
+    @SuppressWarnings("unused")
     //@Test
     void testPlayerStat() {
         NHLPlayerList.Player player = new NHLPlayerList.Player()
@@ -133,9 +138,10 @@ class NhlStatisticApplicationTest {
         System.out.println(UtilJson.toStringPretty(playerStatistic, "{}"));
     }
 
+    @SuppressWarnings("unused")
     //@Test
     void testPlayerOvi() {
-        PlayerStatistic playerStatistic = new PlayerStatisticOvi();
+        PlayerStatistic playerStatistic = new PlayerStatistic(UtilNHL.getOvi(), UtilNHL.getOviScoreLastSeason());
         playerStatistic.generate()
                 .run()
                 .await(60_000L);
@@ -143,10 +149,31 @@ class NhlStatisticApplicationTest {
         System.out.println(playerStatistic.getMessage());
     }
 
+    @SuppressWarnings("unused")
     //@Test
     void httpCacheReset() {
         NHLPlayerList.Player player = UtilNHL.getOvi();
         new HttpCacheReset(NHLGamesForPlayer.getUri(player.getPlayerID())).generate().run().await(50_000L);
+    }
+
+    @SuppressWarnings("unused")
+    //@Test
+    void sendOvi() {
+        String idGame = "20241008_CHI@UTA";
+        NHLPlayerList.Player player = UtilNHL.getOvi();
+        GameEventData gameEventData = new GameEventData(
+                GameEventData.Action.START_GAME,
+                "Washington Capitals (WSH) 🆚 Detroit Red Wings (DET)",
+                "Washington Capitals (WSH) 1 - 1 Detroit Red Wings (DET)",
+                NHLPlayerList.getPlayerName(player),
+                UtilDate.get("dd.MM.yyyy HH:mm:ss")
+        )
+                .setScoredGoal(1)
+                .setScoredLastSeason(300);
+        new SendNotificationGameEventOvi(
+                idGame,
+                gameEventData
+        ).generate().run().await(50_000L);
     }
 
 }

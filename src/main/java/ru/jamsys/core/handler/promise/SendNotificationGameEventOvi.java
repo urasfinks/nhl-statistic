@@ -6,8 +6,12 @@ import ru.jamsys.core.App;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.component.TelegramBotComponent;
 import ru.jamsys.core.flat.util.UtilNHL;
+import ru.jamsys.core.flat.util.UtilRisc;
+import ru.jamsys.core.jt.JTOviSubscriber;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
+import ru.jamsys.core.resource.jdbc.JdbcRequest;
+import ru.jamsys.core.resource.jdbc.JdbcResource;
 import ru.jamsys.tank.data.NHLGamesForPlayer;
 import ru.jamsys.tank.data.NHLPlayerList;
 import ru.jamsys.telegram.GameEventData;
@@ -15,6 +19,7 @@ import ru.jamsys.telegram.template.GameEventTemplateOvi;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -39,6 +44,10 @@ public class SendNotificationGameEventOvi implements PromiseGenerator {
     @Override
     public Promise generate() {
         return App.get(ServicePromise.class).get(getClass().getSimpleName(), 60_000L)
+                .thenWithResource("select", JdbcResource.class, (_, _, _, jdbcResource) -> {
+                    List<Map<String, Object>> execute = jdbcResource.execute(new JdbcRequest(JTOviSubscriber.SELECT_ALL));
+                    execute.forEach(map -> listIdChat.add(Integer.parseInt(map.get("id_chat").toString())));
+                })
                 .then("lastGoals", new ScorePlayerCurrentSeasonBeforeGame(player, idGame).generate())
                 .then("send", (atomicBoolean, _, promise) -> {
                     ScorePlayerCurrentSeasonBeforeGame stat = promise
@@ -50,11 +59,16 @@ public class SendNotificationGameEventOvi implements PromiseGenerator {
                     String message = new GameEventTemplateOvi(gameEventData).toString();
                     TelegramBotComponent telegramBotComponent = App.get(TelegramBotComponent.class);
                     System.out.println("SEND TO CLIENT: " + message);
-//                    UtilRisc.forEach(atomicBoolean, listIdChat, idChat -> {
-//                        if (telegramBotComponent.getNhlStatisticsBot() != null) {
-//                            telegramBotComponent.getNhlStatisticsBot().send(idChat, message, null);
-//                        }
-//                    });
+                    //TODO: remove
+                    listIdChat.clear();
+                    listIdChat.add(290029195);
+
+                    //System.out.println(UtilJson.toStringPretty(listIdChat, "[]"));
+                    UtilRisc.forEach(atomicBoolean, listIdChat, idChat -> {
+                        if (telegramBotComponent.getNhlStatisticsBot() != null) {
+                            telegramBotComponent.getNhlStatisticsBot().send(idChat, message, null);
+                        }
+                    });
                     if (gameEventData.getAction().equals(GameEventData.Action.FINISH_GAME)) {
                         new HttpCacheReset(NHLGamesForPlayer.getUri(player.getPlayerID())).generate().run();
                     }

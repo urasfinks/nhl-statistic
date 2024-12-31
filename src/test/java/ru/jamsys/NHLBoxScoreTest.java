@@ -92,36 +92,6 @@ class NHLBoxScoreTest {
         Assertions.assertEquals(0, player.getHits());
         Assertions.assertEquals(0, player.getPenaltiesInMinutes());
         Assertions.assertEquals("1:49", player.getTimeOnIce());
-        //{
-        //  "gameID" : "20241129_NYR@PHI",
-        //  "penalties" : "0",
-        //  "shootoutGoals" : "0",
-        //  "blockedShots" : "0",
-        //  "shotsMissedNet" : "0",
-        //  "shortHandedTimeOnIce" : "0:00",
-        //  "assists" : "0",
-        //  "timeOnIce" : "1:49",
-        //  "teamID" : "22",
-        //  "shifts" : "3",
-        //  "powerPlayPoints" : "0",
-        //  "powerPlayTimeOnIce" : "0:00",
-        //  "goals" : "1",
-        //  "faceoffsWon" : "0",
-        //  "plusMinus" : "+1",
-        //  "faceoffs" : "0",
-        //  "powerPlayGoals" : "0",
-        //  "takeaways" : "1",
-        //  "team" : "PHI",
-        //  "teamAbv" : "PHI",
-        //  "penaltiesInMinutes" : "0",
-        //  "hits" : "0",
-        //  "powerPlayAssists" : "0",
-        //  "shots" : "1",
-        //  "faceoffsLost" : "0",
-        //  "playerID" : "3900169",
-        //  "giveaways" : "0",
-        //  "longName" : "Travis Konecny"
-        //}
     }
 
     @Test

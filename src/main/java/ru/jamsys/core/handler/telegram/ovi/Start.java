@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import ru.jamsys.core.App;
 import ru.jamsys.core.component.DelaySenderComponent;
 import ru.jamsys.core.component.ServicePromise;
+import ru.jamsys.core.flat.util.UtilNHL;
 import ru.jamsys.core.handler.promise.PlayerStatistic;
-import ru.jamsys.core.handler.promise.PlayerStatisticOvi;
 import ru.jamsys.core.jt.JTOviSubscriber;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
@@ -64,7 +64,7 @@ public class Start implements PromiseGenerator, OviGoalsBotCommandHandler {
                         promise.skipAllStep("already notification");
                     }
                 })
-                .then("ovi", new PlayerStatisticOvi().generate())
+                .then("ovi", new PlayerStatistic(UtilNHL.getOvi(), UtilNHL.getOviScoreLastSeason()).generate())
                 .then("send", (_, _, promise) -> {
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
                     PlayerStatistic ovi = promise.getRepositoryMapClass(Promise.class, "ovi")
