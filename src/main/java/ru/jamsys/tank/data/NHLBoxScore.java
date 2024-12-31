@@ -73,7 +73,7 @@ public class NHLBoxScore {
                                 .setTeamsScore(currentInstance.getScoreHome())
                                 .setGameName(currentInstance.getAboutHome())
                                 .setScoredGoal(currentGoals)
-                                .setTime(map.get("scoreTime") + " " + periodExpandRu(map.get("period").toString()))
+                                .setTime(map.get("scoreTime") + ", " + periodExpandRu(map.get("period").toString()))
                                 .setPlayerName(currentStat.get("longName").toString())
                         )
                 );

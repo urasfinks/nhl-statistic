@@ -87,7 +87,7 @@ class NHLBoxScoreTest {
     void getEvent() throws Throwable {
         Map<String, List<GameEventData>> event = NHLBoxScore.getEvent(NHLBoxScore.getExample(), NHLBoxScore.getExampleChange());
         System.out.println(UtilJson.toStringPretty(event, "{}"));
-        Assertions.assertEquals("19:18 3-й период", event.get("4874723").getFirst().getTime());
+        Assertions.assertEquals("19:18, 3-й период", event.get("4874723").getFirst().getTime());
     }
 
 }
