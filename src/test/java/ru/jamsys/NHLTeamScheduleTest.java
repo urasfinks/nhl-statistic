@@ -50,7 +50,7 @@ class NHLTeamScheduleTest {
         NHLTeamSchedule.Game game = new NHLTeamSchedule.Instance(NHLTeamSchedule.getExample())
                 .getScheduledAndLive()
                 .sort(UtilListSort.Type.ASC)
-                .getGame(0).extend();
+                .getGame(0);
         Assertions.assertEquals("29.11.2024 22:00", game.getMoscowDate());
     }
 

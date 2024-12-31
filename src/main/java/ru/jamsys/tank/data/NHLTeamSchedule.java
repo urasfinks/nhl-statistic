@@ -126,7 +126,7 @@ public class NHLTeamSchedule {
 
         public Instance extend() {
             List<Map<String, Object>> result = new ArrayList<>();
-            getListGame().forEach(stringObjectMap -> result.add(new Game(stringObjectMap).extend().getData()));
+            getListGame().forEach(stringObjectMap -> result.add(new Game(stringObjectMap).getData()));
             return new Instance(result);
         }
 
@@ -176,6 +176,14 @@ public class NHLTeamSchedule {
 
         public Game(Map<String, Object> data) {
             this.data = data;
+            try {
+                NHLTeamSchedule.extendGameTimeZone(data);
+                data.put("homeTeam", NHLTeams.teams.getByAbv(data.get("home").toString()).getAbout());
+                data.put("awayTeam", NHLTeams.teams.getByAbv(data.get("away").toString()).getAbout());
+                data.put("about", data.get("homeTeam") + " vs " + data.get("awayTeam"));
+            } catch (Throwable e) {
+                App.error(e);
+            }
         }
 
         public String getId() {
@@ -196,20 +204,6 @@ public class NHLTeamSchedule {
             );
         }
 
-        public Game extend() {
-            Map<String, Object> game = new HashMap<>(data);
-            try {
-                NHLTeamSchedule.extendGameTimeZone(game);
-
-                game.put("homeTeam", NHLTeams.teams.getByAbv(game.get("home").toString()).getAbout());
-                game.put("awayTeam", NHLTeams.teams.getByAbv(game.get("away").toString()).getAbout());
-                game.put("about", game.get("homeTeam") + " vs " + game.get("awayTeam"));
-            } catch (Throwable e) {
-                App.error(e);
-            }
-            return new Game(game);
-        }
-
         public String getGameTimeFormat() {
             return String.format(
                     "%s (UTC%s)",
@@ -227,7 +221,7 @@ public class NHLTeamSchedule {
         }
 
         public String toggleTeam(String team) {
-            return extend().getData().get(data.get("away").equals(team) ? "homeTeam" : "awayTeam").toString();
+            return getData().get(data.get("away").equals(team) ? "homeTeam" : "awayTeam").toString();
         }
 
     }
