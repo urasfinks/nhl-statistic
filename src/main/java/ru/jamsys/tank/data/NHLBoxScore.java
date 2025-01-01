@@ -30,6 +30,10 @@ public class NHLBoxScore {
         return UtilFileResource.getAsString("example/getNHLBoxScore.json");
     }
 
+    public static String getExampleTorWSH() throws IOException {
+        return UtilFileResource.getAsString("example/boxTOR_WSH.json");
+    }
+
     public static String getExampleChange() throws IOException {
         return UtilFileResource.getAsString("example/getNHLBoxScore_change.json");
     }

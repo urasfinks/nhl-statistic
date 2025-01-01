@@ -24,13 +24,13 @@ public class SendNotificationGameEvent implements PromiseGenerator {
 
     private final GameEventData gameEventData;
 
-    private final List<Integer> listIdChat;
+    private final List<Long> listIdChat;
 
     public SendNotificationGameEvent(
             String idGame,
             NHLPlayerList.Player player,
             GameEventData gameEventData,
-            List<Integer> listIdChat
+            List<Long> listIdChat
     ) {
         this.idGame = idGame;
         this.player = player;

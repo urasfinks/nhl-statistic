@@ -58,7 +58,7 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
         private Map<String, String> currentData = new HashMap<>(); //key - idGame; value Api Response
         private Map<String, String> lastData = new HashMap<>();
         private Map<String, List<GameEventData>> playerEvent = new LinkedHashMap<>(); // key - idPlayer; value - template
-        private Map<String, List<Integer>> playerSubscriber = new HashMap<>(); // key - idPlayer;
+        private Map<String, List<Long>> playerSubscriber = new HashMap<>(); // key - idPlayer;
         private List<String> endGames = new ArrayList<>();
         private Map<String, String> mapIdPlayerGame = new HashMap<>(); // key - idPlayer; value - gameName
     }
@@ -78,14 +78,17 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
     }
 
     public Promise generate() {
-        String mode = serviceProperty.get(String.class, "run.mode", "prod");
-        if (mode.equals("test")) {
-            return null;
-        }
-        if (telegramBotComponent.getNhlStatisticsBot() == null && NhlStatisticApplication.startTelegramListener) {
-            return null;
-        }
         return servicePromise.get(getClass().getSimpleName(), 50_000L)
+                .then("check", (atomicBoolean, promiseTask, promise) -> {
+                    String mode = serviceProperty.get(String.class, "run.mode", "prod");
+                    if (mode.equals("test")) {
+                        promise.skipAllStep("mode test");
+                        return;
+                    }
+                    if (telegramBotComponent.getNhlStatisticsBot() == null && NhlStatisticApplication.startTelegramListener) {
+                        promise.skipAllStep("startTelegramListener = false");
+                    }
+                })
                 .thenWithResource("getActiveGame", JdbcResource.class, (_, _, promise, jdbcResource) -> {
                     Context context = promise.setRepositoryMapClass(Context.class, new Context());
                     jdbcResource.execute(
@@ -104,7 +107,7 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                         }
                         String data;
                         if (NhlStatisticApplication.dummySchedulerBoxScore) {
-                            data = NHLBoxScore.getExample6();
+                            data = NHLBoxScore.getExampleTorWSH();
                         } else {
                             Tank01Request tank01Request = new Tank01Request(() -> NHLBoxScore.getUri(idGame))
                                     .setAlwaysRequestApi(true);
@@ -147,10 +150,10 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                     UtilRisc.forEach(atomicBoolean, context.getCurrentData(), (idGame, data) -> {
                         try {
                             NHLBoxScore.Instance instance = new NHLBoxScore.Instance(data);
-                            Map<String, List<GameEventData>> playerEvent = NHLBoxScore.getEvent(
-                                    context.getLastData().get(idGame),
-                                    data
-                            );
+                            Map<String, List<GameEventData>> playerEvent = context.getLastData().get(idGame) == null
+                                    ? new HashMap<>()
+                                    : NHLBoxScore.getEvent(context.getLastData().get(idGame), data);
+
                             if (context.getLastData().get(idGame) == null) {
                                 logToTelegram("Start game: " + idGame);
                                 instance.
@@ -211,6 +214,7 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                             throw new ForwardException(e);
                         }
                     });
+                    //promise.skipAllStep("--");
                     // Если некому рассылать события, просто сохраним данные в БД
                     if (context.getPlayerEvent().isEmpty()) {
                         promise.goTo("saveData");
@@ -224,9 +228,10 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                                     .setDebug(false)
                     );
                     execute.forEach(map -> context.getPlayerSubscriber().computeIfAbsent(
-                            map.get("id_player").toString(),
-                            _ -> new ArrayList<>()
-                    ).add(Integer.parseInt(map.get("id_chat").toString())));
+                                    map.get("id_player").toString(),
+                                    _ -> new ArrayList<>()
+                            ).add(Long.parseLong(map.get("id_chat").toString()))
+                    );
                 })
                 .then("getPlayerList", new Tank01Request(NHLPlayerList::getUri).generate())
                 .then("sendNotification", (atomicBoolean, _, promise) -> {

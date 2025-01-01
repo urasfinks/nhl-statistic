@@ -31,7 +31,7 @@ public class SendNotificationGameEventOvi implements PromiseGenerator {
 
     private final GameEventData gameEventData;
 
-    private final List<Integer> listIdChat = new ArrayList<>();
+    private final List<Long> listIdChat = new ArrayList<>();
 
     public SendNotificationGameEventOvi(
             String idGame,
@@ -46,7 +46,7 @@ public class SendNotificationGameEventOvi implements PromiseGenerator {
         return App.get(ServicePromise.class).get(getClass().getSimpleName(), 60_000L)
                 .thenWithResource("select", JdbcResource.class, (_, _, _, jdbcResource) -> {
                     List<Map<String, Object>> execute = jdbcResource.execute(new JdbcRequest(JTOviSubscriber.SELECT_ALL));
-                    execute.forEach(map -> listIdChat.add(Integer.parseInt(map.get("id_chat").toString())));
+                    execute.forEach(map -> listIdChat.add(Long.parseLong(map.get("id_chat").toString())));
                 })
                 .then("lastGoals", new ScorePlayerCurrentSeasonBeforeGame(player, idGame).generate())
                 .then("send", (atomicBoolean, _, promise) -> {
@@ -59,9 +59,6 @@ public class SendNotificationGameEventOvi implements PromiseGenerator {
                     String message = new GameEventTemplateOvi(gameEventData).toString();
                     TelegramBotComponent telegramBotComponent = App.get(TelegramBotComponent.class);
                     System.out.println("SEND TO CLIENT: " + message);
-                    //TODO: remove
-                    listIdChat.clear();
-                    listIdChat.add(290029195);
 
                     //System.out.println(UtilJson.toStringPretty(listIdChat, "[]"));
                     UtilRisc.forEach(atomicBoolean, listIdChat, idChat -> {
