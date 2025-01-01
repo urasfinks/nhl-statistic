@@ -28,11 +28,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Getter
 @Component
 @RequestMapping({"/remove/**", "/rs/**"})
-public class RemoveSubscriptions implements PromiseGenerator, NhlStatisticsBotCommandHandler {
+public class Remove implements PromiseGenerator, NhlStatisticsBotCommandHandler {
 
     private final ServicePromise servicePromise;
 
-    public RemoveSubscriptions(ServicePromise servicePromise) {
+    public Remove(ServicePromise servicePromise) {
         this.servicePromise = servicePromise;
     }
 

@@ -29,11 +29,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Getter
 @Component
 @RequestMapping({"/my/**", "/ms/**"})
-public class MySubscriptions implements PromiseGenerator, NhlStatisticsBotCommandHandler {
+public class My implements PromiseGenerator, NhlStatisticsBotCommandHandler {
 
     private final ServicePromise servicePromise;
 
-    public MySubscriptions(ServicePromise servicePromise) {
+    public My(ServicePromise servicePromise) {
         this.servicePromise = servicePromise;
     }
 

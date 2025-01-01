@@ -31,11 +31,11 @@ import java.util.Map;
 @Getter
 @Component
 @RequestMapping({"/subscribe/**", "/stp/**"})
-public class SubscribeToPlayer implements PromiseGenerator, NhlStatisticsBotCommandHandler {
+public class Subscribe implements PromiseGenerator, NhlStatisticsBotCommandHandler {
 
     private final ServicePromise servicePromise;
 
-    public SubscribeToPlayer(ServicePromise servicePromise) {
+    public Subscribe(ServicePromise servicePromise) {
         this.servicePromise = servicePromise;
     }
 
