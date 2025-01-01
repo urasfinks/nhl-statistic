@@ -82,13 +82,16 @@ public class Start implements PromiseGenerator, OviGoalsBotCommandHandler {
                             ),
                             null
                     );
-                    App.get(DelaySenderComponent.class).add(context, """
-                            Ты также можешь воспользоваться дополнительными командами:
-                            
-                            /stats — Текущая статистика: количество голов, оставшихся до рекорда, и статистика по сезону.
-                            /schedule — Ближайшие игры Александра Овечкина и команды Washington Capitals.
-                            /stop — Отключить уведомления
-                            """, 10_000L);
+                    App.get(DelaySenderComponent.class).add(
+                            context,
+                            """
+                                    Ты также можешь воспользоваться дополнительными командами:
+                                    
+                                    /stats — Текущая статистика: количество голов, оставшихся до рекорда, и статистика по сезону.
+                                    /schedule — Ближайшие игры Александра Овечкина и команды Washington Capitals.
+                                    /stop — Отключить уведомления""",
+                            null,
+                            10_000L);
                 })
                 ;
     }

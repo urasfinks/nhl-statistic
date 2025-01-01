@@ -27,7 +27,7 @@ public class SendNotification implements PromiseGenerator {
                     context.getTelegramBot().send(
                             context.getIdChat(),
                             getNotificationObject().getMessage(),
-                            null
+                            getNotificationObject().getButtons()
                     );
                 })
                 .setDebug(false)

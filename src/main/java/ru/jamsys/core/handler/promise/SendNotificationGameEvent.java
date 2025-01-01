@@ -5,6 +5,7 @@ import lombok.Setter;
 import ru.jamsys.core.App;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.component.TelegramBotComponent;
+import ru.jamsys.core.flat.util.Util;
 import ru.jamsys.core.flat.util.UtilRisc;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
@@ -53,7 +54,9 @@ public class SendNotificationGameEvent implements PromiseGenerator {
                             .setScoredPrevGoal(Integer.parseInt(prevGoal));
                     String message = new GameEventTemplate(gameEventData).toString();
                     TelegramBotComponent telegramBotComponent = App.get(TelegramBotComponent.class);
-                    System.out.println("SEND TO CLIENT: " + message);
+
+                    Util.logConsole("SEND TO CLIENT: " + message);
+
                     UtilRisc.forEach(atomicBoolean, listIdChat, idChat -> {
                         if (telegramBotComponent.getNhlStatisticsBot() != null) {
                             telegramBotComponent.getNhlStatisticsBot().send(idChat, message, null);

@@ -3,8 +3,10 @@ package ru.jamsys.core.handler.promise;
 import lombok.Getter;
 import lombok.Setter;
 import ru.jamsys.core.App;
+import ru.jamsys.core.component.DelaySenderComponent;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.component.TelegramBotComponent;
+import ru.jamsys.core.flat.util.Util;
 import ru.jamsys.core.flat.util.UtilNHL;
 import ru.jamsys.core.flat.util.UtilRisc;
 import ru.jamsys.core.jt.JTOviSubscriber;
@@ -15,6 +17,7 @@ import ru.jamsys.core.resource.jdbc.JdbcResource;
 import ru.jamsys.tank.data.NHLGamesForPlayer;
 import ru.jamsys.tank.data.NHLPlayerList;
 import ru.jamsys.telegram.GameEventData;
+import ru.jamsys.telegram.TelegramCommandContext;
 import ru.jamsys.telegram.template.GameEventTemplateOvi;
 
 import java.util.ArrayList;
@@ -55,14 +58,13 @@ public class SendNotificationGameEventOvi implements PromiseGenerator {
                     ScorePlayerCurrentSeasonBeforeGame stat = promise
                             .getRepositoryMapClass(Promise.class, "lastGoals")
                             .getRepositoryMapClass(ScorePlayerCurrentSeasonBeforeGame.class);
-
                     gameEventData
                             .setScoredPrevGoal(stat.getCountGoal().get());
                     String message = new GameEventTemplateOvi(gameEventData).toString();
                     TelegramBotComponent telegramBotComponent = App.get(TelegramBotComponent.class);
-                    System.out.println("SEND TO CLIENT: " + message);
 
-                    //System.out.println(UtilJson.toStringPretty(listIdChat, "[]"));
+                    Util.logConsole("SEND TO CLIENT: " + message);
+
                     UtilRisc.forEach(atomicBoolean, listIdChat, idChat -> {
                         if (telegramBotComponent.getOviGoalsBot() != null) {
                             telegramBotComponent.getOviGoalsBot().send(idChat, message, null);
@@ -71,6 +73,28 @@ public class SendNotificationGameEventOvi implements PromiseGenerator {
                     if (gameEventData.getAction().equals(GameEventData.Action.FINISH_GAME)) {
                         new HttpCacheReset(NHLGamesForPlayer.getUri(player.getPlayerID())).generate().run();
                     }
+                    if (!gameEventData.getAction().equals(GameEventData.Action.FINISH_GAME)) {
+                        promise.skipAllStep("not finish game");
+                    }
+                })
+                .then("ovi", new PlayerStatistic(UtilNHL.getOvi(), UtilNHL.getOviScoreLastSeason()).generate())
+                .then("send", (atomicBoolean, _, promise) -> {
+                    PlayerStatistic ovi = promise.getRepositoryMapClass(Promise.class, "ovi")
+                            .getRepositoryMapClass(PlayerStatistic.class);
+                    String message = ovi.getMessage();
+                    TelegramBotComponent telegramBotComponent = App.get(TelegramBotComponent.class);
+                    UtilRisc.forEach(atomicBoolean, listIdChat, idChat -> {
+                        App.get(DelaySenderComponent.class)
+                                .add(
+                                        new TelegramCommandContext()
+                                                .setTelegramBot(telegramBotComponent.getOviGoalsBot())
+                                                .setIdChat(idChat),
+                                        message,
+                                        null,
+                                        10_000L
+                                );
+                    });
+
                 })
                 .setDebug(false)
                 ;

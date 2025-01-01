@@ -245,9 +245,7 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                 })
                 .then("send", (atomicBoolean, promiseTask, promise) -> {
                     Context context = promise.getRepositoryMapClass(Context.class);
-                    context.getNotificationList().forEach(promiseGenerator -> {
-                        promiseGenerator.generate().run();
-                    });
+                    context.getNotificationList().forEach(promiseGenerator -> promiseGenerator.generate().run());
                 })
                 // saveData в конце Promise специально на случай критичных рассылок, если сломается, то будет всё по
                 // новой рассылать
