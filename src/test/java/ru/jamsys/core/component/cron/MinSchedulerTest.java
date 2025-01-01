@@ -21,9 +21,9 @@ class MinSchedulerTest {
 
     @BeforeAll
     static void beforeAll() {
+        NhlStatisticApplication.startTelegramListener = false;
         App.getRunBuilder().addTestArguments().runCore();
         servicePromise = App.get(ServicePromise.class);
-        NhlStatisticApplication.startTelegramListener = false;
     }
 
     @AfterAll
@@ -42,12 +42,27 @@ class MinSchedulerTest {
         Assertions.assertEquals("[check::COMPUTE, getActiveGame::WAIT, getActiveGame::IO, getBoxScoreByActiveGame::WAIT, getBoxScoreByActiveGame::COMPUTE, getLastData::WAIT, getLastData::IO, getEvent::WAIT, getEvent::COMPUTE, selectSubscribers::WAIT, selectSubscribers::IO, getPlayerList::WAIT, getPlayerList::EXTERNAL_WAIT_COMPUTE, createNotification::WAIT, createNotification::COMPUTE, send::WAIT, send::COMPUTE, saveData::WAIT, saveData::IO, removeFinish::WAIT, removeFinish::IO]", promiseTest.getIndex().toString());
         promiseTest.remove("check");
         promiseTest.remove("getActiveGame");
-        promiseTest.replace("getBoxScoreByActiveGame", promise.createTaskCompute("getBoxScoreByActiveGame", (_, _, promise1) -> {
-            promise1.getRepositoryMapClass(MinScheduler.Context.class).getCurrentData().put("20241228_WSH@TOR", NHLBoxScore.getExampleTorWSH());
-        }));
-        promiseTest.replace("getLastData", promise.createTaskResource("getLastData", JdbcResource.class, (run, _, promise1, jdbcResource) -> {
-            promise1.getRepositoryMapClass(MinScheduler.Context.class).getLastData().put("20241228_WSH@TOR", null);
-        }));
+        promiseTest.replace(
+                "getBoxScoreByActiveGame",
+                promise.createTaskCompute(
+                        "getBoxScoreByActiveGame",
+                        (_, _, promise1) -> promise1
+                                .getRepositoryMapClass(MinScheduler.Context.class)
+                                .getCurrentData()
+                                .put("20241228_WSH@TOR", NHLBoxScore.getExampleTorWSH())
+                )
+        );
+        promiseTest.replace(
+                "getLastData",
+                promise.createTaskResource(
+                        "getLastData",
+                        JdbcResource.class,
+                        (_, _, promise1, _) -> promise1
+                                .getRepositoryMapClass(MinScheduler.Context.class)
+                                .getLastData()
+                                .put("20241228_WSH@TOR", null)
+                )
+        );
         promiseTest.removeAfter("getEvent");
         Assertions.assertEquals("[getBoxScoreByActiveGame::WAIT, getBoxScoreByActiveGame::COMPUTE, getLastData::WAIT, getLastData::IO, getEvent::WAIT, getEvent::COMPUTE]", promiseTest.getIndex().toString());
 
@@ -73,12 +88,27 @@ class MinSchedulerTest {
         Assertions.assertEquals("[check::COMPUTE, getActiveGame::WAIT, getActiveGame::IO, getBoxScoreByActiveGame::WAIT, getBoxScoreByActiveGame::COMPUTE, getLastData::WAIT, getLastData::IO, getEvent::WAIT, getEvent::COMPUTE, selectSubscribers::WAIT, selectSubscribers::IO, getPlayerList::WAIT, getPlayerList::EXTERNAL_WAIT_COMPUTE, createNotification::WAIT, createNotification::COMPUTE, send::WAIT, send::COMPUTE, saveData::WAIT, saveData::IO, removeFinish::WAIT, removeFinish::IO]", promiseTest.getIndex().toString());
         promiseTest.remove("check");
         promiseTest.remove("getActiveGame");
-        promiseTest.replace("getBoxScoreByActiveGame", promise.createTaskCompute("getBoxScoreByActiveGame", (_, _, promise1) -> {
-            promise1.getRepositoryMapClass(MinScheduler.Context.class).getCurrentData().put("20241228_WSH@TOR", NHLBoxScore.getExampleTorWSH());
-        }));
-        promiseTest.replace("getLastData", promise.createTaskResource("getLastData", JdbcResource.class, (run, _, promise1, jdbcResource) -> {
-            promise1.getRepositoryMapClass(MinScheduler.Context.class).getLastData().put("20241228_WSH@TOR", NHLBoxScore.getExampleTorWSH());
-        }));
+        promiseTest.replace(
+                "getBoxScoreByActiveGame",
+                promise.createTaskCompute(
+                        "getBoxScoreByActiveGame",
+                        (_, _, promise1) -> promise1
+                                .getRepositoryMapClass(MinScheduler.Context.class)
+                                .getCurrentData()
+                                .put("20241228_WSH@TOR", NHLBoxScore.getExampleTorWSH())
+                )
+        );
+        promiseTest.replace(
+                "getLastData",
+                promise.createTaskResource(
+                        "getLastData",
+                        JdbcResource.class,
+                        (_, _, promise1, _) -> promise1
+                                .getRepositoryMapClass(MinScheduler.Context.class)
+                                .getLastData()
+                                .put("20241228_WSH@TOR", NHLBoxScore.getExampleTorWSH())
+                )
+        );
         promiseTest.removeAfter("getEvent");
         Assertions.assertEquals("[getBoxScoreByActiveGame::WAIT, getBoxScoreByActiveGame::COMPUTE, getLastData::WAIT, getLastData::IO, getEvent::WAIT, getEvent::COMPUTE]", promiseTest.getIndex().toString());
 
@@ -103,12 +133,27 @@ class MinSchedulerTest {
         Assertions.assertEquals("[check::COMPUTE, getActiveGame::WAIT, getActiveGame::IO, getBoxScoreByActiveGame::WAIT, getBoxScoreByActiveGame::COMPUTE, getLastData::WAIT, getLastData::IO, getEvent::WAIT, getEvent::COMPUTE, selectSubscribers::WAIT, selectSubscribers::IO, getPlayerList::WAIT, getPlayerList::EXTERNAL_WAIT_COMPUTE, createNotification::WAIT, createNotification::COMPUTE, send::WAIT, send::COMPUTE, saveData::WAIT, saveData::IO, removeFinish::WAIT, removeFinish::IO]", promiseTest.getIndex().toString());
         promiseTest.remove("check");
         promiseTest.remove("getActiveGame");
-        promiseTest.replace("getBoxScoreByActiveGame", promise.createTaskCompute("getBoxScoreByActiveGame", (_, _, promise1) -> {
-            promise1.getRepositoryMapClass(MinScheduler.Context.class).getCurrentData().put("20241228_WSH@TOR", NHLBoxScore.getExampleTorWSH_live());
-        }));
-        promiseTest.replace("getLastData", promise.createTaskResource("getLastData", JdbcResource.class, (run, _, promise1, jdbcResource) -> {
-            promise1.getRepositoryMapClass(MinScheduler.Context.class).getLastData().put("20241228_WSH@TOR", NHLBoxScore.getExampleTorWSH());
-        }));
+        promiseTest.replace(
+                "getBoxScoreByActiveGame",
+                promise.createTaskCompute(
+                        "getBoxScoreByActiveGame",
+                        (_, _, promise1) -> promise1
+                                .getRepositoryMapClass(MinScheduler.Context.class)
+                                .getCurrentData()
+                                .put("20241228_WSH@TOR", NHLBoxScore.getExampleTorWSH_live())
+                )
+        );
+        promiseTest.replace(
+                "getLastData",
+                promise.createTaskResource(
+                        "getLastData",
+                        JdbcResource.class,
+                        (_, _, promise1, _) -> promise1
+                                .getRepositoryMapClass(MinScheduler.Context.class)
+                                .getLastData()
+                                .put("20241228_WSH@TOR", NHLBoxScore.getExampleTorWSH())
+                )
+        );
         promiseTest.removeAfter("getEvent");
         Assertions.assertEquals("[getBoxScoreByActiveGame::WAIT, getBoxScoreByActiveGame::COMPUTE, getLastData::WAIT, getLastData::IO, getEvent::WAIT, getEvent::COMPUTE]", promiseTest.getIndex().toString());
 
@@ -131,12 +176,27 @@ class MinSchedulerTest {
         Assertions.assertEquals("[check::COMPUTE, getActiveGame::WAIT, getActiveGame::IO, getBoxScoreByActiveGame::WAIT, getBoxScoreByActiveGame::COMPUTE, getLastData::WAIT, getLastData::IO, getEvent::WAIT, getEvent::COMPUTE, selectSubscribers::WAIT, selectSubscribers::IO, getPlayerList::WAIT, getPlayerList::EXTERNAL_WAIT_COMPUTE, createNotification::WAIT, createNotification::COMPUTE, send::WAIT, send::COMPUTE, saveData::WAIT, saveData::IO, removeFinish::WAIT, removeFinish::IO]", promiseTest.getIndex().toString());
         promiseTest.remove("check");
         promiseTest.remove("getActiveGame");
-        promiseTest.replace("getBoxScoreByActiveGame", promise.createTaskCompute("getBoxScoreByActiveGame", (_, _, promise1) -> {
-            promise1.getRepositoryMapClass(MinScheduler.Context.class).getCurrentData().put("20241228_WSH@TOR", NHLBoxScore.getExampleTorWSH_live());
-        }));
-        promiseTest.replace("getLastData", promise.createTaskResource("getLastData", JdbcResource.class, (run, _, promise1, jdbcResource) -> {
-            promise1.getRepositoryMapClass(MinScheduler.Context.class).getLastData().put("20241228_WSH@TOR", null);
-        }));
+        promiseTest.replace(
+                "getBoxScoreByActiveGame",
+                promise.createTaskCompute(
+                        "getBoxScoreByActiveGame",
+                        (_, _, promise1) -> promise1
+                                .getRepositoryMapClass(MinScheduler.Context.class)
+                                .getCurrentData()
+                                .put("20241228_WSH@TOR", NHLBoxScore.getExampleTorWSH_live())
+                )
+        );
+        promiseTest.replace(
+                "getLastData",
+                promise.createTaskResource(
+                        "getLastData",
+                        JdbcResource.class,
+                        (_, _, promise1, _) -> promise1
+                                .getRepositoryMapClass(MinScheduler.Context.class)
+                                .getLastData()
+                                .put("20241228_WSH@TOR", null)
+                )
+        );
         promiseTest.removeAfter("getEvent");
         Assertions.assertEquals("[getBoxScoreByActiveGame::WAIT, getBoxScoreByActiveGame::COMPUTE, getLastData::WAIT, getLastData::IO, getEvent::WAIT, getEvent::COMPUTE]", promiseTest.getIndex().toString());
 
@@ -161,12 +221,27 @@ class MinSchedulerTest {
         Assertions.assertEquals("[check::COMPUTE, getActiveGame::WAIT, getActiveGame::IO, getBoxScoreByActiveGame::WAIT, getBoxScoreByActiveGame::COMPUTE, getLastData::WAIT, getLastData::IO, getEvent::WAIT, getEvent::COMPUTE, selectSubscribers::WAIT, selectSubscribers::IO, getPlayerList::WAIT, getPlayerList::EXTERNAL_WAIT_COMPUTE, createNotification::WAIT, createNotification::COMPUTE, send::WAIT, send::COMPUTE, saveData::WAIT, saveData::IO, removeFinish::WAIT, removeFinish::IO]", promiseTest.getIndex().toString());
         promiseTest.remove("check");
         promiseTest.remove("getActiveGame");
-        promiseTest.replace("getBoxScoreByActiveGame", promise.createTaskCompute("getBoxScoreByActiveGame", (_, _, promise1) -> {
-            promise1.getRepositoryMapClass(MinScheduler.Context.class).getCurrentData().put("20241228_WSH@TOR", NHLBoxScore.getExampleTorWSH_liveChange());
-        }));
-        promiseTest.replace("getLastData", promise.createTaskResource("getLastData", JdbcResource.class, (run, _, promise1, jdbcResource) -> {
-            promise1.getRepositoryMapClass(MinScheduler.Context.class).getLastData().put("20241228_WSH@TOR", NHLBoxScore.getExampleTorWSH_live());
-        }));
+        promiseTest.replace(
+                "getBoxScoreByActiveGame",
+                promise.createTaskCompute(
+                        "getBoxScoreByActiveGame",
+                        (_, _, promise1) -> promise1
+                                .getRepositoryMapClass(MinScheduler.Context.class)
+                                .getCurrentData()
+                                .put("20241228_WSH@TOR", NHLBoxScore.getExampleTorWSH_liveChange())
+                )
+        );
+        promiseTest.replace(
+                "getLastData",
+                promise.createTaskResource(
+                        "getLastData",
+                        JdbcResource.class,
+                        (_, _, promise1, _) -> promise1
+                                .getRepositoryMapClass(MinScheduler.Context.class)
+                                .getLastData()
+                                .put("20241228_WSH@TOR", NHLBoxScore.getExampleTorWSH_live())
+                )
+        );
         promiseTest.removeAfter("getEvent");
         Assertions.assertEquals("[getBoxScoreByActiveGame::WAIT, getBoxScoreByActiveGame::COMPUTE, getLastData::WAIT, getLastData::IO, getEvent::WAIT, getEvent::COMPUTE]", promiseTest.getIndex().toString());
 
@@ -191,12 +266,27 @@ class MinSchedulerTest {
         Assertions.assertEquals("[check::COMPUTE, getActiveGame::WAIT, getActiveGame::IO, getBoxScoreByActiveGame::WAIT, getBoxScoreByActiveGame::COMPUTE, getLastData::WAIT, getLastData::IO, getEvent::WAIT, getEvent::COMPUTE, selectSubscribers::WAIT, selectSubscribers::IO, getPlayerList::WAIT, getPlayerList::EXTERNAL_WAIT_COMPUTE, createNotification::WAIT, createNotification::COMPUTE, send::WAIT, send::COMPUTE, saveData::WAIT, saveData::IO, removeFinish::WAIT, removeFinish::IO]", promiseTest.getIndex().toString());
         promiseTest.remove("check");
         promiseTest.remove("getActiveGame");
-        promiseTest.replace("getBoxScoreByActiveGame", promise.createTaskCompute("getBoxScoreByActiveGame", (_, _, promise1) -> {
-            promise1.getRepositoryMapClass(MinScheduler.Context.class).getCurrentData().put("20241228_WSH@TOR", NHLBoxScore.getExampleTorWSH_liveChange());
-        }));
-        promiseTest.replace("getLastData", promise.createTaskResource("getLastData", JdbcResource.class, (run, _, promise1, jdbcResource) -> {
-            promise1.getRepositoryMapClass(MinScheduler.Context.class).getLastData().put("20241228_WSH@TOR", NHLBoxScore.getExampleTorWSH_live());
-        }));
+        promiseTest.replace(
+                "getBoxScoreByActiveGame",
+                promise.createTaskCompute(
+                        "getBoxScoreByActiveGame",
+                        (_, _, promise1) -> promise1
+                                .getRepositoryMapClass(MinScheduler.Context.class)
+                                .getCurrentData()
+                                .put("20241228_WSH@TOR", NHLBoxScore.getExampleTorWSH_liveChange())
+                )
+        );
+        promiseTest.replace(
+                "getLastData",
+                promise.createTaskResource(
+                        "getLastData",
+                        JdbcResource.class,
+                        (_, _, promise1, _) -> promise1
+                                .getRepositoryMapClass(MinScheduler.Context.class)
+                                .getLastData()
+                                .put("20241228_WSH@TOR", NHLBoxScore.getExampleTorWSH_live())
+                )
+        );
         promiseTest.removeAfter("createNotification");
         Assertions.assertEquals("[getBoxScoreByActiveGame::WAIT, getBoxScoreByActiveGame::COMPUTE, getLastData::WAIT, getLastData::IO, getEvent::WAIT, getEvent::COMPUTE, selectSubscribers::WAIT, selectSubscribers::IO, getPlayerList::WAIT, getPlayerList::EXTERNAL_WAIT_COMPUTE, createNotification::WAIT, createNotification::COMPUTE]", promiseTest.getIndex().toString());
 

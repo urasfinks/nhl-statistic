@@ -1,6 +1,5 @@
 package ru.jamsys.core.handler.promise;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 import ru.jamsys.core.App;

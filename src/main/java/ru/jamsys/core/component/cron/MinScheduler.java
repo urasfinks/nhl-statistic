@@ -64,20 +64,6 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
         private List<PromiseGenerator> notificationList = new ArrayList<>();
     }
 
-    public void logToTelegram(String data) {
-        if (!NhlStatisticApplication.startTelegramListener) {
-            System.out.println("logToTelegram:" + data);
-        }
-        if (telegramBotComponent.getNhlStatisticsBot() != null) {
-            telegramBotComponent.getNhlStatisticsBot().send(
-                    -4739098379L,
-                    //290029195,
-                    data,
-                    null
-            );
-        }
-    }
-
     public Promise generate() {
         return servicePromise.get(getClass().getSimpleName(), 50_000L)
                 .extension(promise -> promise.setRepositoryMapClass(Context.class, new Context()))
@@ -153,7 +139,6 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                                     : NHLBoxScore.getEvent(context.getLastData().get(idGame), data);
 
                             if (context.getLastData().get(idGame) == null) {
-                                logToTelegram("Start game: " + idGame);
                                 currentBoxScore.getPlayerStats().forEach((idPlayer, _) -> {
                                             NHLBoxScore.Player player = currentBoxScore.getPlayer(idPlayer);
                                             playerEvent
@@ -170,7 +155,6 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                                 );
                             }
                             if (NHLBoxScore.isFinish(data)) {
-                                logToTelegram("Finish game: " + idGame);
                                 currentBoxScore.getPlayerStats().forEach((idPlayer, _) -> {
                                             NHLBoxScore.Player player = currentBoxScore.getPlayer(idPlayer);
                                             playerEvent.computeIfAbsent(idPlayer, _ -> new ArrayList<>())
