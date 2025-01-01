@@ -71,7 +71,7 @@ public abstract class AbstractBot extends TelegramLongPollingBot {
             if (match == null) {
                 send(UtilTelegram.message(
                         idChat,
-                        "Команда " + msg.getMessage().getText() + " не поддерживается",
+                        "Команда " + UtilTelegram.getData(msg) + " не поддерживается",
                         null
                 ));
                 return;
