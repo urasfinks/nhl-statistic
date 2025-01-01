@@ -178,8 +178,8 @@ public class NHLBoxScore {
             NHLTeams.Team teamHome = NHLTeams.teams.getById(body.get("teamIDHome").toString());
             NHLTeams.Team teamAway = NHLTeams.teams.getById(body.get("teamIDAway").toString());
 
-            scoreMap.put(teamHome.getAbv(), Integer.parseInt(body.get("homeTotal").toString()));
-            scoreMap.put(teamAway.getAbv(), Integer.parseInt(body.get("awayTotal").toString()));
+            scoreMap.put(teamHome.getAbv(), Integer.parseInt(body.getOrDefault("homeTotal", "0").toString()));
+            scoreMap.put(teamAway.getAbv(), Integer.parseInt(body.getOrDefault("awayTotal", "0").toString()));
 
             scoreGame = getScoreGame(teamHome.getAbv());
             aboutGame = getAboutGame(teamHome.getAbv());
