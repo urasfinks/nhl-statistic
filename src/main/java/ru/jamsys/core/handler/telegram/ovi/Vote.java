@@ -31,6 +31,8 @@ public class Vote implements PromiseGenerator, OviGoalsBotCommandHandler {
 
     private List<Map<String, Object>> vote;
 
+    private String extra = "Побъет ли Алекснадр Овечикн рекорд Уэйна Гретцки в этом сезоне?\n\n";
+
     public Vote(ServicePromise servicePromise) {
         this.servicePromise = servicePromise;
     }
@@ -39,6 +41,12 @@ public class Vote implements PromiseGenerator, OviGoalsBotCommandHandler {
     public Promise generate() {
         Promise gen = servicePromise.get(getClass().getSimpleName(), 12_000L);
         gen
+                .then("check", (atomicBoolean, promiseTask, promise) -> {
+                    TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
+                    if (context.getUriParameters().isEmpty()) {
+                        promise.goTo("agg");
+                    }
+                })
                 .thenWithResource("vote", JdbcResource.class, (_, _, promise, jdbcResource) -> {
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
                     boolean win = context.getUriParameters().getOrDefault("value", "true").equals("true");
@@ -46,6 +54,9 @@ public class Vote implements PromiseGenerator, OviGoalsBotCommandHandler {
                             .addArg("vote", win ? "true" : "false")
                             .addArg("id_chat", context.getIdChat())
                     );
+                    extra = "";
+                })
+                .thenWithResource("agg", JdbcResource.class, (_, _, promise, jdbcResource) -> {
                     vote = jdbcResource.execute(new JdbcRequest(JTOviSubscriber.VOTE));
                     if (vote.isEmpty()) {
                         promise.skipAllStep("vote empty");
@@ -69,10 +80,12 @@ public class Vote implements PromiseGenerator, OviGoalsBotCommandHandler {
                     double percentFalse = (aFalse * 100.0) / totalVotes;
 
                     String message = String.format("""
-                                    Статистика голосования:
+                                    %sСтатистика голосования:
+                                    
                                     Процент 'Да 🔥': %.2f%%
                                     Процент 'Нет ⛔': %.2f%%
                                     """,
+                            extra,
                             percentTrue,
                             percentFalse
                     );
