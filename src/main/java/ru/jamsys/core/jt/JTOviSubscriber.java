@@ -14,6 +14,14 @@ public enum JTOviSubscriber implements JdbcRequestRepository {
                 id_chat = ${IN.id_chat::NUMBER}
             """, StatementType.SELECT_WITH_AUTO_COMMIT),
 
+    VOTE("""
+            SELECT
+                vote,
+                count(*)
+            FROM ovi_subscriber
+            GROUP BY vote
+            """, StatementType.SELECT_WITH_AUTO_COMMIT),
+
     SELECT_ALL("""
             SELECT
                 *
