@@ -72,20 +72,21 @@ public class PlayerStatistic implements PromiseGenerator {
         if (nextGame != null) {
             NHLTeamSchedule.Game game = new NHLTeamSchedule.Game(nextGame);
             templateNextGame = String.format(
-                    "Следующая игра: 🆚 %s, %s (GMT+03:00)",
+                    "Следующая игра: 🆚 %s, %s",
                     game.toggleTeam(UtilNHL.getOvi().getTeam()),
                     game.getMoscowDate()
             );
         }
 
         return TemplateTwix.template("""
-                Статистика Александра Овечкина на ${currentDate} (GMT+03:00):
+                Статистика Александра Овечкина на ${currentDate}:
                 🎯 Забито голов: ${totalGoals}
                 🏆 До рекорда осталось: ${gretzkyOffset}
                 📅 Сезон ${seasonTitle}: ${countGame} ${countGamePostfix}, ${seasonGoals} ${seasonGoalsPostfix}, ${assists} ${assistsPostfix}, ${score} ${scorePostfix}, осталось ${countTailGame} ${countTailGamePostfix} в регулярном чемпионате
                 📈 Темп: В среднем ${avgGoalsInGame} гола за игру в этом сезоне
                 
                 ${templateNextGame}
+                📍 Время указано по МСК
                 """, new HashMapBuilder<String, String>()
                 .append("currentDate", date)
 

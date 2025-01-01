@@ -126,7 +126,7 @@ public class ScheduleCommon implements PromiseGenerator, NhlStatisticsBotCommand
                             
                             %s
                             
-                            📍 Время начала игр указано по МСК (GMT+03:00)
+                            📍 Время начала игр указано по МСК
                             """);
                 })
                 ;

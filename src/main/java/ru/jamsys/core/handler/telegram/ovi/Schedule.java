@@ -58,7 +58,7 @@ public class Schedule implements PromiseGenerator, OviGoalsBotCommandHandler {
                             
                             %s
                             
-                            📍 Время начала игр указано по МСК (GMT+03:00)
+                            📍 Время начала игр указано по МСК
                             """);
                 })
                 ;
@@ -68,7 +68,7 @@ public class Schedule implements PromiseGenerator, OviGoalsBotCommandHandler {
         StringBuilder sb = new StringBuilder();
         Paginator<NHLTeamSchedule.Game> paginator = new Paginator<>(listGame, 10);
         paginator.getPage(page).forEach(game -> sb.append(String.format("""
-                        %s — 🆚 %s, %s (GMT+03:00)
+                        %s — 🆚 %s, %s
                         """,
                 game.getMoscowDate("dd.MM.yyyy"),
                 game.toggleTeam(UtilNHL.getOvi().getTeam()),
