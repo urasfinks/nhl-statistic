@@ -31,8 +31,6 @@ public class PollResults implements PromiseGenerator, OviGoalsBotCommandHandler 
 
     private List<Map<String, Object>> vote;
 
-    private String extra = "Побъет ли Алекснадр Овечикн рекорд Уэйна Гретцки в этом сезоне?\n\n";
-
     public PollResults(ServicePromise servicePromise) {
         this.servicePromise = servicePromise;
     }
@@ -42,6 +40,7 @@ public class PollResults implements PromiseGenerator, OviGoalsBotCommandHandler 
         Promise gen = servicePromise.get(getClass().getSimpleName(), 12_000L);
         gen
                 .then("check", (atomicBoolean, promiseTask, promise) -> {
+                    promise.setRepositoryMapClass(String.class, "Побъет ли Алекснадр Овечикн рекорд Уэйна Гретцки в этом сезоне?\n\n");
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
                     if (context.getUriParameters().isEmpty()) {
                         promise.goTo("agg");
@@ -54,7 +53,7 @@ public class PollResults implements PromiseGenerator, OviGoalsBotCommandHandler 
                             .addArg("vote", win ? "true" : "false")
                             .addArg("id_chat", context.getIdChat())
                     );
-                    extra = "";
+                    promise.setRepositoryMapClass(String.class, "");
                 })
                 .thenWithResource("agg", JdbcResource.class, (_, _, promise, jdbcResource) -> {
                     vote = jdbcResource.execute(new JdbcRequest(JTOviSubscriber.VOTE));
@@ -82,10 +81,10 @@ public class PollResults implements PromiseGenerator, OviGoalsBotCommandHandler 
                     String message = String.format("""
                                     %sСтатистика голосования:
                                     
-                                    Процент 'Да 🔥': %.2f%%
-                                    Процент 'Нет ⛔': %.2f%%
+                                    Да 🔥 – %.2f%%
+                                    Нет ⛔ – %.2f%%
                                     """,
-                            extra,
+                            promise.getRepositoryMapClass(String.class),
                             percentTrue,
                             percentFalse
                     );

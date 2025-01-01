@@ -29,8 +29,6 @@ public class Stop implements PromiseGenerator, OviGoalsBotCommandHandler {
         this.servicePromise = servicePromise;
     }
 
-    private boolean success = true;
-
     @Override
     public Promise generate() {
         return servicePromise.get(getClass().getSimpleName(), 12_000L)
@@ -41,9 +39,9 @@ public class Stop implements PromiseGenerator, OviGoalsBotCommandHandler {
                             .addArg("id_chat", context.getIdChat())
                     );
                     if (result.isEmpty()) {
-                        setSuccess(false);
+                        promise.setRepositoryMapClass(Boolean.class, false);
                     } else {
-                        setSuccess(true);
+                        promise.setRepositoryMapClass(Boolean.class, true);
                         jdbcResource.execute(new JdbcRequest(JTOviSubscriber.DELETE)
                                 .addArg("id_chat", context.getIdChat())
                         );
@@ -53,7 +51,9 @@ public class Stop implements PromiseGenerator, OviGoalsBotCommandHandler {
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
                     context.getTelegramBot().send(
                             context.getIdChat(),
-                            isSuccess() ? "Уведомления отключены. Буду рад видеть тебя снова!" : "Включить уведомления /start",
+                            promise.getRepositoryMapClass(Boolean.class)
+                                    ? "Уведомления отключены. Буду рад видеть тебя снова!"
+                                    : "Включить уведомления /start",
                             null
                     );
                 })

@@ -36,8 +36,6 @@ public class Remove implements PromiseGenerator, NhlStatisticsBotCommandHandler 
         this.servicePromise = servicePromise;
     }
 
-    private int maxLength = 3000;
-
     @Override
     public Promise generate() {
         return servicePromise.get(getClass().getSimpleName(), 12_000L)

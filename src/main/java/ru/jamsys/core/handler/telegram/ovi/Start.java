@@ -37,8 +37,6 @@ public class Start implements PromiseGenerator, OviGoalsBotCommandHandler {
         this.servicePromise = servicePromise;
     }
 
-    private boolean success;
-
     @Override
     public Promise generate() {
         return servicePromise.get(getClass().getSimpleName(), 12_000L)
@@ -49,9 +47,9 @@ public class Start implements PromiseGenerator, OviGoalsBotCommandHandler {
                             .addArg("id_chat", context.getIdChat())
                     );
                     if (!result.isEmpty()) {
-                        setSuccess(false);
+                        promise.setRepositoryMapClass(Boolean.class, false);
                     } else {
-                        setSuccess(true);
+                        promise.setRepositoryMapClass(Boolean.class, true);
                         jdbcResource.execute(new JdbcRequest(JTOviSubscriber.INSERT)
                                 .addArg("id_chat", context.getIdChat())
                         );
@@ -59,7 +57,7 @@ public class Start implements PromiseGenerator, OviGoalsBotCommandHandler {
                 })
                 .then("check", (_, _, promise) -> {
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
-                    if (!isSuccess()) {
+                    if (!promise.getRepositoryMapClass(Boolean.class)) {
                         context.getTelegramBot().send(
                                 context.getIdChat(),
                                 "Уведомления включены",

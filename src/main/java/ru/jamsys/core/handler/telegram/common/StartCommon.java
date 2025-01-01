@@ -23,8 +23,6 @@ public class StartCommon implements PromiseGenerator, NhlStatisticsBotCommandHan
         this.servicePromise = servicePromise;
     }
 
-    private boolean success;
-
     @Override
     public Promise generate() {
         return servicePromise.get(getClass().getSimpleName(), 12_000L)
