@@ -99,7 +99,7 @@ public class Start implements PromiseGenerator, OviGoalsBotCommandHandler {
 
                     App.get(DelaySenderComponent.class).add(
                             context,
-                            "Побьет ли Алекснадр Овечкин рекорд Уэйна Гретцки в этом сезоне?",
+                            "Побьет ли Александр Овечкин рекорд Уэйна Гретцки в этом сезоне?",
                             new ArrayListBuilder<Button>()
                                     .append(new Button(
                                             "Да 🔥",
