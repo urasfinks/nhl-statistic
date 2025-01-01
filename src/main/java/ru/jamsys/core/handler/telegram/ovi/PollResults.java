@@ -40,7 +40,7 @@ public class PollResults implements PromiseGenerator, OviGoalsBotCommandHandler 
         Promise gen = servicePromise.get(getClass().getSimpleName(), 12_000L);
         gen
                 .then("check", (atomicBoolean, promiseTask, promise) -> {
-                    promise.setRepositoryMapClass(String.class, "Побъет ли Алекснадр Овечкин рекорд Уэйна Гретцки в этом сезоне?\n\n");
+                    promise.setRepositoryMapClass(String.class, "Побьет ли Алекснадр Овечкин рекорд Уэйна Гретцки в этом сезоне?\n\n");
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
                     if (context.getUriParameters().isEmpty()) {
                         promise.goTo("agg");
