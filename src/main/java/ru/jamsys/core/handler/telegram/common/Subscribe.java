@@ -186,7 +186,7 @@ public class Subscribe implements PromiseGenerator, NhlStatisticsBotCommandHandl
                     context.getTelegramBot().send(UtilTelegram.editMessage(context.getMsg(), String.format("""
                                     Создана подписка на %d %s %s.
                                     Первая игра будет: %s (GMT+03:00), последняя: %s (GMT+03:00).
-                                    Для детального отображения запланированных игр используй: /my
+                                    Для детального отображения запланированных игр используй: /schedule
                                     """,
                             sortGameByTime.size(),
                             Util.digitTranslate(sortGameByTime.size(), "игру", "игры", "игр"),

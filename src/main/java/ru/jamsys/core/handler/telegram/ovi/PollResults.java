@@ -24,8 +24,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Setter
 @Getter
 @Component
-@RequestMapping({"/vote/**"})
-public class Vote implements PromiseGenerator, OviGoalsBotCommandHandler {
+@RequestMapping({"/poll_results/**"})
+public class PollResults implements PromiseGenerator, OviGoalsBotCommandHandler {
 
     private final ServicePromise servicePromise;
 
@@ -33,7 +33,7 @@ public class Vote implements PromiseGenerator, OviGoalsBotCommandHandler {
 
     private String extra = "Побъет ли Алекснадр Овечикн рекорд Уэйна Гретцки в этом сезоне?\n\n";
 
-    public Vote(ServicePromise servicePromise) {
+    public PollResults(ServicePromise servicePromise) {
         this.servicePromise = servicePromise;
     }
 

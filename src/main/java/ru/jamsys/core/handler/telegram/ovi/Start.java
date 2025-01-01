@@ -92,6 +92,7 @@ public class Start implements PromiseGenerator, OviGoalsBotCommandHandler {
                                     Ты также можешь воспользоваться дополнительными командами:
                                     
                                     /stats — Текущая статистика: количество голов, оставшихся до рекорда, и статистика по сезону.
+                                    /poll_results - Статистика голосования.
                                     /schedule — Ближайшие игры Александра Овечкина и команды Washington Capitals.
                                     /stop — Отключить уведомления""",
                             null,
@@ -104,7 +105,7 @@ public class Start implements PromiseGenerator, OviGoalsBotCommandHandler {
                                     .append(new Button(
                                             "Да 🔥",
                                             ServletResponseWriter.buildUrlQuery(
-                                                    "/vote/",
+                                                    "/poll_results/",
                                                     new HashMapBuilder<>(context.getUriParameters())
                                                             .append("value", "true")
 
@@ -113,7 +114,7 @@ public class Start implements PromiseGenerator, OviGoalsBotCommandHandler {
                                     .append(new Button(
                                             "Нет ⛔",
                                             ServletResponseWriter.buildUrlQuery(
-                                                    "/vote/",
+                                                    "/poll_results/",
                                                     new HashMapBuilder<>(context.getUriParameters())
                                                             .append("value", "false")
 

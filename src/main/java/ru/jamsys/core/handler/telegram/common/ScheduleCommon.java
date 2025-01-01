@@ -10,16 +10,15 @@ import ru.jamsys.core.extension.builder.HashMapBuilder;
 import ru.jamsys.core.extension.http.ServletResponseWriter;
 import ru.jamsys.core.flat.util.Util;
 import ru.jamsys.core.flat.util.UtilJson;
-import ru.jamsys.core.flat.util.UtilNHL;
 import ru.jamsys.core.flat.util.UtilTelegram;
 import ru.jamsys.core.flat.util.telegram.Button;
+import ru.jamsys.core.handler.telegram.ovi.Schedule;
 import ru.jamsys.core.jt.JTScheduler;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
 import ru.jamsys.core.resource.jdbc.JdbcRequest;
 import ru.jamsys.core.resource.jdbc.JdbcResource;
 import ru.jamsys.tank.data.NHLTeamSchedule;
-import ru.jamsys.telegram.AbstractBot;
 import ru.jamsys.telegram.TelegramCommandContext;
 import ru.jamsys.telegram.handler.NhlStatisticsBotCommandHandler;
 
@@ -32,12 +31,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Setter
 @Getter
 @Component
-@RequestMapping({"/my/**", "/ms/**"})
-public class My implements PromiseGenerator, NhlStatisticsBotCommandHandler {
+@RequestMapping({"/schedule/**", "/ms/**"})
+public class ScheduleCommon implements PromiseGenerator, NhlStatisticsBotCommandHandler {
 
     private final ServicePromise servicePromise;
 
-    public My(ServicePromise servicePromise) {
+    public ScheduleCommon(ServicePromise servicePromise) {
         this.servicePromise = servicePromise;
     }
 
@@ -92,10 +91,12 @@ public class My implements PromiseGenerator, NhlStatisticsBotCommandHandler {
                 })
                 .then("getSubscriptionsMarker", (_, _, promise) -> {
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
-                    context.getTelegramBot().send(UtilTelegram.editMessage(
-                            context.getMsg(),
-                            context.getUriParameters().get("a")
-                    ));
+                    if (!context.getUriParameters().containsKey("page")) {
+                        context.getTelegramBot().send(UtilTelegram.editMessage(
+                                context.getMsg(),
+                                context.getUriParameters().get("a")
+                        ));
+                    }
                 })
                 .thenWithResource("getSubscriptionsPlayerGames", JdbcResource.class, (_, _, promise, jdbcResource) -> {
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
@@ -112,32 +113,21 @@ public class My implements PromiseGenerator, NhlStatisticsBotCommandHandler {
                         );
                         return;
                     }
-                    StringBuilder sb = new StringBuilder();
-                    execute.forEach(map -> {
+                    int page = Integer.parseInt(context.getUriParameters().getOrDefault("page", "1"));
+                    Schedule.paging(execute.stream().map(map -> {
                         try {
-                            NHLTeamSchedule.Game game = new NHLTeamSchedule.Game(UtilJson.getMapOrThrow(map.get("test").toString()));
-                            sb.append(String.format("""
-                                            %s — 🆚 %s, %s (GMT+03:00)
-                                            """,
-                                    game.getMoscowDate("dd.MM.yyyy"),
-                                    game.toggleTeam(UtilNHL.getOvi().getTeam()),
-                                    game.getMoscowDate("HH:mm")
-                            )).append("\n");
-                        } catch (Throwable th) {
-                            App.error(th);
+                            return new NHLTeamSchedule.Game(UtilJson.getMapOrThrow(map.get("test").toString()));
+                        } catch (Throwable e) {
+                            App.error(e);
                         }
-                    });
-
-                    AbstractBot.splitMessageSmart(String.format("""
-                                            📅 Расписание ближайших игр:
-                                            
-                                            %s
-                                            
-                                            📍 Время начала игр указано по МСК (GMT+03:00)
-                                            """,
-                                    sb
-                            ), 3000)
-                            .forEach(s -> context.getTelegramBot().send(context.getIdChat(), s, null));
+                        return null;
+                    }).toList(), page, context, """
+                            📅 Расписание ближайших игр:
+                            
+                            %s
+                            
+                            📍 Время начала игр указано по МСК (GMT+03:00)
+                            """);
                 })
                 ;
     }

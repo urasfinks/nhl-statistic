@@ -16,7 +16,7 @@ public class NhlStatisticsBot extends AbstractBot {
         super(botUsername, botToken, routerRepository);
         List<BotCommand> list = new ArrayList<>();
         list.add(new BotCommand("/subscribe", "Подписаться на игрока"));
-        list.add(new BotCommand("/my", "Мои подписки"));
+        list.add(new BotCommand("/schedule", "Расписание"));
         list.add(new BotCommand("/remove", "Удалить подписку"));
         execute(new SetMyCommands(list, new BotCommandScopeDefault(), null));
     }
