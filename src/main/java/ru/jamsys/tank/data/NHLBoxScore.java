@@ -34,6 +34,14 @@ public class NHLBoxScore {
         return UtilFileResource.getAsString("example/boxTOR_WSH.json");
     }
 
+    public static String getExampleTorWSH_live() throws IOException {
+        return UtilFileResource.getAsString("example/boxTOR_WSH_live.json");
+    }
+
+    public static String getExampleTorWSH_liveChange() throws IOException {
+        return UtilFileResource.getAsString("example/boxTOR_WSH_live_change.json");
+    }
+
     public static String getExampleChange() throws IOException {
         return UtilFileResource.getAsString("example/getNHLBoxScore_change.json");
     }

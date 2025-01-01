@@ -1,5 +1,6 @@
 package ru.jamsys.core.handler.promise;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 import ru.jamsys.core.App;
@@ -24,6 +25,8 @@ import java.util.Map;
 @Getter
 @Setter
 public class SendNotificationGameEventOvi implements PromiseGenerator {
+
+    private final String log = SendNotificationGameEventOvi.class.getSimpleName();
 
     private final String idGame;
 

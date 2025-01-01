@@ -27,7 +27,6 @@ class NhlStatisticApplicationTest {
         App.getRunBuilder().addTestArguments().runCore();
         servicePromise = App.get(ServicePromise.class);
         NhlStatisticApplication.startTelegramListener = false;
-        NhlStatisticApplication.dummySchedulerBoxScore = true;
     }
 
     @AfterAll

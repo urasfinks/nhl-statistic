@@ -18,6 +18,8 @@ import java.util.List;
 @Setter
 public class SendNotificationGameEvent implements PromiseGenerator {
 
+    private final String log = SendNotificationGameEvent.class.getSimpleName();
+
     private final String idGame;
 
     private final NHLPlayerList.Player player;

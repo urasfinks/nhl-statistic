@@ -61,6 +61,7 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
         private Map<String, List<Long>> playerSubscriber = new HashMap<>(); // key - idPlayer;
         private List<String> endGames = new ArrayList<>();
         private Map<String, String> mapIdPlayerGame = new HashMap<>(); // key - idPlayer; value - gameName
+        private List<PromiseGenerator> notificationList = new ArrayList<>();
     }
 
     public void logToTelegram(String data) {
@@ -79,6 +80,7 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
 
     public Promise generate() {
         return servicePromise.get(getClass().getSimpleName(), 50_000L)
+                .extension(promise -> promise.setRepositoryMapClass(Context.class, new Context()))
                 .then("check", (atomicBoolean, promiseTask, promise) -> {
                     String mode = serviceProperty.get(String.class, "run.mode", "prod");
                     if (mode.equals("test")) {
@@ -90,7 +92,7 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                     }
                 })
                 .thenWithResource("getActiveGame", JdbcResource.class, (_, _, promise, jdbcResource) -> {
-                    Context context = promise.setRepositoryMapClass(Context.class, new Context());
+                    Context context = promise.getRepositoryMapClass(Context.class);
                     jdbcResource.execute(
                             new JdbcRequest(JTScheduler.SELECT_ACTIVE_GAME).setDebug(false)
                     ).forEach(map -> context.getActiveGame().add(map.get("id_game").toString()));
@@ -105,18 +107,14 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                         if (!run.get()) {
                             return;
                         }
-                        String data;
-                        if (NhlStatisticApplication.dummySchedulerBoxScore) {
-                            data = NHLBoxScore.getExampleTorWSH();
-                        } else {
-                            Tank01Request tank01Request = new Tank01Request(() -> NHLBoxScore.getUri(idGame))
-                                    .setAlwaysRequestApi(true);
-                            Promise req = tank01Request.generate().run().await(50_000L);
-                            if (req.isException()) {
-                                throw req.getExceptionSource();
-                            }
-                            data = tank01Request.getResponseData();
+                        Tank01Request tank01Request = new Tank01Request(() -> NHLBoxScore.getUri(idGame))
+                                .setAlwaysRequestApi(true);
+                        Promise req = tank01Request.generate().run().await(50_000L);
+                        if (req.isException()) {
+                            throw req.getExceptionSource();
                         }
+                        String data = tank01Request.getResponseData();
+
                         @SuppressWarnings("unchecked")
                         Map<String, Object> parsed = UtilJson.toObject(data, Map.class);
                         if (!parsed.containsKey("error")) {
@@ -149,57 +147,50 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                     String curData = UtilDate.timestampFormatUTC(UtilDate.getTimestamp() + 3 * 60 * 60, "dd.MM.yyyy HH:mm");
                     UtilRisc.forEach(atomicBoolean, context.getCurrentData(), (idGame, data) -> {
                         try {
-                            NHLBoxScore.Instance instance = new NHLBoxScore.Instance(data);
+                            NHLBoxScore.Instance currentBoxScore = new NHLBoxScore.Instance(data);
                             Map<String, List<GameEventData>> playerEvent = context.getLastData().get(idGame) == null
                                     ? new HashMap<>()
                                     : NHLBoxScore.getEvent(context.getLastData().get(idGame), data);
 
                             if (context.getLastData().get(idGame) == null) {
                                 logToTelegram("Start game: " + idGame);
-                                instance.
-                                        getPlayerStats()
-                                        .forEach(
-                                                (idPlayer, _) -> {
-                                                    NHLBoxScore.Player player = instance.getPlayer(idPlayer);
-                                                    playerEvent
-                                                            .computeIfAbsent(idPlayer, _ -> new ArrayList<>())
-                                                            .add(new GameEventData(
-                                                                            GameEventData.Action.START_GAME,
-                                                                            instance.getAboutGame(),
-                                                                            instance.getScoreGame(),
-                                                                            player.getLongName(),
-                                                                            curData
-                                                                    )
-                                                            );
-                                                }
-                                        );
+                                currentBoxScore.getPlayerStats().forEach((idPlayer, _) -> {
+                                            NHLBoxScore.Player player = currentBoxScore.getPlayer(idPlayer);
+                                            playerEvent
+                                                    .computeIfAbsent(idPlayer, _ -> new ArrayList<>())
+                                                    .add(new GameEventData(
+                                                                    GameEventData.Action.START_GAME,
+                                                                    currentBoxScore.getAboutGame(),
+                                                                    currentBoxScore.getScoreGame(),
+                                                                    player.getLongName(),
+                                                                    curData
+                                                            )
+                                                    );
+                                        }
+                                );
                             }
                             if (NHLBoxScore.isFinish(data)) {
                                 logToTelegram("Finish game: " + idGame);
-                                instance.
-                                        getPlayerStats()
-                                        .forEach(
-                                                (idPlayer, _) -> {
-                                                    NHLBoxScore.Player player = instance.getPlayer(idPlayer);
-                                                    playerEvent
-                                                            .computeIfAbsent(idPlayer, _ -> new ArrayList<>())
-                                                            .add(new GameEventData(
-                                                                            GameEventData.Action.FINISH_GAME,
-                                                                            instance.getAboutGame(),
-                                                                            instance.getScoreGame(),
-                                                                            player.getLongName(),
-                                                                            curData
-                                                                    )
-                                                                            .setScoredGoal(player.getGoals())
-                                                                            .setScoredAssists(player.getScoredAssists())
-                                                                            .setScoredShots(player.getScoredShots())
-                                                                            .setScoredAssists(player.getScoredAssists())
-                                                                            .setScoredHits(player.getScoredHits())
-                                                                            .setScoredPenaltiesInMinutes(player.getScoredPenaltiesInMinutes())
-                                                                            .setScoredTimeOnIce(player.getScoredTimeOnIce())
-                                                            );
-                                                }
-                                        );
+                                currentBoxScore.getPlayerStats().forEach((idPlayer, _) -> {
+                                            NHLBoxScore.Player player = currentBoxScore.getPlayer(idPlayer);
+                                            playerEvent.computeIfAbsent(idPlayer, _ -> new ArrayList<>())
+                                                    .add(new GameEventData(
+                                                                    GameEventData.Action.FINISH_GAME,
+                                                                    currentBoxScore.getAboutGame(),
+                                                                    currentBoxScore.getScoreGame(),
+                                                                    player.getLongName(),
+                                                                    curData
+                                                            )
+                                                                    .setScoredGoal(player.getGoals())
+                                                                    .setScoredAssists(player.getScoredAssists())
+                                                                    .setScoredShots(player.getScoredShots())
+                                                                    .setScoredAssists(player.getScoredAssists())
+                                                                    .setScoredHits(player.getScoredHits())
+                                                                    .setScoredPenaltiesInMinutes(player.getScoredPenaltiesInMinutes())
+                                                                    .setScoredTimeOnIce(player.getScoredTimeOnIce())
+                                                    );
+                                        }
+                                );
 
                                 context.getEndGames().add(idGame);
                             }
@@ -214,7 +205,6 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                             throw new ForwardException(e);
                         }
                     });
-                    //promise.skipAllStep("--");
                     // Если некому рассылать события, просто сохраним данные в БД
                     if (context.getPlayerEvent().isEmpty()) {
                         promise.goTo("saveData");
@@ -234,7 +224,7 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                     );
                 })
                 .then("getPlayerList", new Tank01Request(NHLPlayerList::getUri).generate())
-                .then("sendNotification", (atomicBoolean, _, promise) -> {
+                .then("createNotification", (atomicBoolean, _, promise) -> {
                     Context context = promise.getRepositoryMapClass(Context.class);
                     Tank01Request response = promise
                             .getRepositoryMapClass(Promise.class, "getPlayerList")
@@ -252,21 +242,27 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                             List<GameEventData> gameEventDataList = context.getPlayerEvent().get(idPlayer);
                             gameEventDataList.forEach(gameEventData -> {
                                 if (UtilNHL.isOvi(idPlayer)) {
-                                    new SendNotificationGameEventOvi(
+                                    context.getNotificationList().add(new SendNotificationGameEventOvi(
                                             context.getMapIdPlayerGame().getOrDefault(idPlayer, ""),
                                             gameEventData
-                                    ).generate().run();
+                                    ));
                                 }
-                                new SendNotificationGameEvent(
+                                context.getNotificationList().add(new SendNotificationGameEvent(
                                         context.getMapIdPlayerGame().getOrDefault(idPlayer, ""),
                                         NHLPlayerList.Player.fromMap(player),
                                         gameEventData,
                                         listIdChat
-                                ).generate().run();
+                                ));
                             });
                         } catch (Throwable e) {
                             App.error(e);
                         }
+                    });
+                })
+                .then("send", (atomicBoolean, promiseTask, promise) -> {
+                    Context context = promise.getRepositoryMapClass(Context.class);
+                    context.getNotificationList().forEach(promiseGenerator -> {
+                        promiseGenerator.generate().run();
                     });
                 })
                 // saveData в конце Promise специально на случай критичных рассылок, если сломается, то будет всё по
