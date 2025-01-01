@@ -166,12 +166,11 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                                                                     curData
                                                             )
                                                                     .setScoredGoal(player.getGoals())
-                                                                    .setScoredAssists(player.getScoredAssists())
-                                                                    .setScoredShots(player.getScoredShots())
-                                                                    .setScoredAssists(player.getScoredAssists())
-                                                                    .setScoredHits(player.getScoredHits())
-                                                                    .setScoredPenaltiesInMinutes(player.getScoredPenaltiesInMinutes())
-                                                                    .setScoredTimeOnIce(player.getScoredTimeOnIce())
+                                                                    .setScoredAssists(player.getAssists())
+                                                                    .setScoredShots(player.getShots())
+                                                                    .setScoredHits(player.getHits())
+                                                                    .setScoredPenaltiesInMinutes(player.getPenaltiesInMinutes())
+                                                                    .setScoredTimeOnIce(player.getTimeOnIce())
                                                     );
                                         }
                                 );

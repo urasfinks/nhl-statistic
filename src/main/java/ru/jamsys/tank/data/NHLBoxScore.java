@@ -232,23 +232,24 @@ public class NHLBoxScore {
         }
     }
 
-    @Getter
     @Setter
     public static class Player {
 
+        @Getter
         final private List<Map<String, Object>> listGoal = new ArrayList<>();
 
+        @Getter
         final private Map<String, Object> stat;
 
         public Player(Map<String, Object> stat) {
             this.stat = stat;
         }
 
-        private int scoredShots;  //🥅 Броски по воротам – shots
-        private int scoredAssists;  //🏒 Передачи – assists
-        private int scoredHits;  //🥷 Силовые приемы – hits
-        private int scoredPenaltiesInMinutes;  //🥊 Штрафные минуты – penaltiesInMinutes
-        private String scoredTimeOnIce;  //⏰ Время на льду – timeOnIce
+//        private int scoredShots;  //🥅 Броски по воротам – shots
+//        private int scoredAssists;  //🏒 Передачи – assists
+//        private int scoredHits;  //🥷 Силовые приемы – hits
+//        private int scoredPenaltiesInMinutes;  //🥊 Штрафные минуты – penaltiesInMinutes
+//        private String scoredTimeOnIce;  //⏰ Время на льду – timeOnIce
 
         public int getGoals() {
             return Integer.parseInt(stat.getOrDefault("goals", "0").toString());
