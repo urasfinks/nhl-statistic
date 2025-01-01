@@ -7,7 +7,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import ru.jamsys.core.App;
 import ru.jamsys.core.component.DelaySenderComponent;
 import ru.jamsys.core.component.ServicePromise;
+import ru.jamsys.core.extension.builder.ArrayListBuilder;
+import ru.jamsys.core.extension.builder.HashMapBuilder;
+import ru.jamsys.core.extension.http.ServletResponseWriter;
 import ru.jamsys.core.flat.util.UtilNHL;
+import ru.jamsys.core.flat.util.telegram.Button;
 import ru.jamsys.core.handler.promise.PlayerStatistic;
 import ru.jamsys.core.jt.JTOviSubscriber;
 import ru.jamsys.core.promise.Promise;
@@ -92,6 +96,31 @@ public class Start implements PromiseGenerator, OviGoalsBotCommandHandler {
                                     /stop — Отключить уведомления""",
                             null,
                             10_000L);
+
+                    App.get(DelaySenderComponent.class).add(
+                            context,
+                            "Побъет ли Алекснадр Овечикн рекорд Уэйна Гретцки в этом сезоне?",
+                            new ArrayListBuilder<Button>()
+                                    .append(new Button(
+                                            "Да 🔥",
+                                            ServletResponseWriter.buildUrlQuery(
+                                                    "/vote/",
+                                                    new HashMapBuilder<>(context.getUriParameters())
+                                                            .append("value", "true")
+
+                                            )
+                                    ))
+                                    .append(new Button(
+                                            "Нет ⛔",
+                                            ServletResponseWriter.buildUrlQuery(
+                                                    "/vote/",
+                                                    new HashMapBuilder<>(context.getUriParameters())
+                                                            .append("value", "false")
+
+                                            )
+                                    ))
+                            ,
+                            20_000L);
                 })
                 ;
     }
