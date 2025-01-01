@@ -84,7 +84,9 @@ public abstract class AbstractBot extends TelegramLongPollingBot {
             if (!promise.isSetErrorHandler()) {
                 promise.onError((_, _, p) -> System.out.println(p.getLogString()));
             }
+
             promise.setRepositoryMapClass(TelegramCommandContext.class, new TelegramCommandContext()
+                    .setUserInfo(UtilTelegram.getUserInfo(msg))
                     .setIdChat(idChat)
                     .setMsg(msg)
                     .setStepHandler(stepHandler)

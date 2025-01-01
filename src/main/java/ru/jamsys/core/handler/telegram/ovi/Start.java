@@ -52,6 +52,7 @@ public class Start implements PromiseGenerator, OviGoalsBotCommandHandler {
                         promise.setRepositoryMapClass(Boolean.class, true);
                         jdbcResource.execute(new JdbcRequest(JTOviSubscriber.INSERT)
                                 .addArg("id_chat", context.getIdChat())
+                                .addArg("user_info", context.getUserInfo())
                         );
                     }
                 })

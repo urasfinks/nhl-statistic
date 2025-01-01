@@ -86,6 +86,7 @@ public class PlayerStatistic implements PromiseGenerator {
                 📈 Темп: В среднем ${avgGoalsInGame} гола за игру в этом сезоне
                 
                 ${templateNextGame}
+                
                 📍 Время указано по МСК
                 """, new HashMapBuilder<String, String>()
                 .append("currentDate", date)

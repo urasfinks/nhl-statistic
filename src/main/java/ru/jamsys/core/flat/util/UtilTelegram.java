@@ -45,6 +45,15 @@ public class UtilTelegram {
         return null;
     }
 
+    public static String getUserInfo(Update msg) {
+        if (msg.hasCallbackQuery()) {
+            return UtilJson.toStringPretty(msg.getCallbackQuery().getFrom(), "{}");
+        } else if (msg.hasMessage()) {
+            return UtilJson.toStringPretty(msg.getMessage().getFrom(), "{}");
+        }
+        return null;
+    }
+
     public static EditMessageText editMessage(Update msg, String data) {
         EditMessageText editMessage = new EditMessageText();
         editMessage.setChatId(getIdChat(msg));

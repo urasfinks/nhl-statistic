@@ -46,10 +46,12 @@ public enum JTOviSubscriber implements JdbcRequestRepository {
 
     INSERT("""
             INSERT INTO ovi_subscriber (
-                id_chat
+                id_chat,
+                user_info
             )
             VALUES (
-                ${IN.id_chat::NUMBER}
+                ${IN.id_chat::NUMBER},
+                ${IN.user_info::VARCHAR}
             )
             ON CONFLICT DO NOTHING
             """, StatementType.SELECT_WITH_AUTO_COMMIT);
