@@ -73,7 +73,7 @@ class NhlStatisticApplicationTest {
                 idGame,
                 player,
                 gameEventData,
-                new ArrayListBuilder<Integer>().append(290029195)
+                new ArrayListBuilder<Long>().append(290029195L)
         ).generate().run().await(50_000L);
     }
 
