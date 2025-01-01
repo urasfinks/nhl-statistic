@@ -80,6 +80,8 @@ class NHLBoxScoreTest {
         NHLBoxScore.Instance instance = new NHLBoxScore.Instance(NHLBoxScore.getExample4());
         NHLBoxScore.Player player = instance.getPlayer("3900169");
 
+
+        Assertions.assertEquals("(4:24, 1-й период)", player.getFinishTimeScore());
         Assertions.assertEquals("1", player.getStat().get("goals"));
         Assertions.assertEquals("Philadelphia Flyers (PHI) 2 - 0 New York Rangers (NYR)", instance.getScoreGame("PHI"));
         Assertions.assertEquals("Philadelphia Flyers (PHI) 2 - 0 New York Rangers (NYR)", instance.getScoreGame());

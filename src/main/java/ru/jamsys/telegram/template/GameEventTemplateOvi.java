@@ -44,7 +44,7 @@ public class GameEventTemplateOvi {
                     ${gameScore}.
                     
                     Статистика Александра Овечкина в матче:
-                    🎯 Голы: ${scoredGoal}
+                    🎯 Голы: ${scoredGoal} ${time}
                     🥅 Броски по воротам: ${scoredShots}
                     🏒 Передачи: ${scoredAssists}
                     🌟 Очки: ${score}

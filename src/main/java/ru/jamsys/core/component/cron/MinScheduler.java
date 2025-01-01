@@ -163,7 +163,7 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                                                                     currentBoxScore.getAboutGame(),
                                                                     currentBoxScore.getScoreGame(),
                                                                     player.getLongName(),
-                                                                    curData
+                                                                    player.getFinishTimeScore()
                                                             )
                                                                     .setScoredGoal(player.getGoals())
                                                                     .setScoredAssists(player.getAssists())

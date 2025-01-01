@@ -281,6 +281,15 @@ public class NHLBoxScore {
             }
         }
 
+        public String getFinishTimeScore() {
+            List<String> result = new ArrayList<>();
+            listGoal.forEach(map -> result.add(map.get("scoreTime") + ", " + periodExpandRu(map.get("period").toString())));
+            if (!result.isEmpty()) {
+                return "(" + String.join(" | ", result) + ")";
+            }
+            return "";
+        }
+
     }
 
     public static <T> List<T> getLastNElements(List<T> list, int n) {

@@ -44,7 +44,7 @@ public class GameEventTemplate {
                     ${gameScore}.
                     
                     Статистика в матче по игроку ${playerName}:
-                    🎯 Голы: ${scoredGoal}
+                    🎯 Голы: ${scoredGoal} ${time}
                     🥅 Броски по воротам: ${scoredShots}
                     🏒 Передачи: ${scoredAssists}
                     🌟 Очки: ${score}
