@@ -4,10 +4,13 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
+import ru.jamsys.core.App;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.extension.builder.HashMapBuilder;
 import ru.jamsys.core.extension.http.ServletResponseWriter;
 import ru.jamsys.core.flat.util.Util;
+import ru.jamsys.core.flat.util.UtilJson;
+import ru.jamsys.core.flat.util.UtilNHL;
 import ru.jamsys.core.flat.util.UtilTelegram;
 import ru.jamsys.core.flat.util.telegram.Button;
 import ru.jamsys.core.jt.JTScheduler;
@@ -15,6 +18,7 @@ import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
 import ru.jamsys.core.resource.jdbc.JdbcRequest;
 import ru.jamsys.core.resource.jdbc.JdbcResource;
+import ru.jamsys.tank.data.NHLTeamSchedule;
 import ru.jamsys.telegram.AbstractBot;
 import ru.jamsys.telegram.TelegramCommandContext;
 import ru.jamsys.telegram.handler.NhlStatisticsBotCommandHandler;
@@ -36,8 +40,6 @@ public class My implements PromiseGenerator, NhlStatisticsBotCommandHandler {
     public My(ServicePromise servicePromise) {
         this.servicePromise = servicePromise;
     }
-
-    private int maxLength = 3000;
 
     @Override
     public Promise generate() {
@@ -111,8 +113,30 @@ public class My implements PromiseGenerator, NhlStatisticsBotCommandHandler {
                         return;
                     }
                     StringBuilder sb = new StringBuilder();
-                    execute.forEach(map -> sb.append(map.get("game_about")).append("\n"));
-                    AbstractBot.splitMessageSmart(sb.toString(), maxLength)
+                    execute.forEach(map -> {
+                        try {
+                            NHLTeamSchedule.Game game = new NHLTeamSchedule.Game(UtilJson.getMapOrThrow(map.get("test").toString()));
+                            sb.append(String.format("""
+                                            %s — 🆚 %s, %s (GMT+03:00)
+                                            """,
+                                    game.getMoscowDate("dd.MM.yyyy"),
+                                    game.toggleTeam(UtilNHL.getOvi().getTeam()),
+                                    game.getMoscowDate("HH:mm")
+                            )).append("\n");
+                        } catch (Throwable th) {
+                            App.error(th);
+                        }
+                    });
+
+                    AbstractBot.splitMessageSmart(String.format("""
+                                            📅 Расписание ближайших игр:
+                                            
+                                            %s
+                                            
+                                            📍 Время начала игр указано по МСК (GMT+03:00)
+                                            """,
+                                    sb
+                            ), 3000)
                             .forEach(s -> context.getTelegramBot().send(context.getIdChat(), s, null));
                 })
                 ;

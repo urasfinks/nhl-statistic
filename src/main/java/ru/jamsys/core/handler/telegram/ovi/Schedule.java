@@ -46,15 +46,13 @@ public class Schedule implements PromiseGenerator, OviGoalsBotCommandHandler {
                             .getFutureGame()
                             .sort(UtilListSort.Type.ASC);
                     StringBuilder sb = new StringBuilder();
-                    instance.getListGameObject().forEach(game -> {
-                        sb.append(String.format("""
-                                        %s — 🆚 %s, %s (GMT+03:00)
-                                        """,
-                                game.getMoscowDate("dd.MM.yyyy"),
-                                game.toggleTeam(UtilNHL.getOvi().getTeam()),
-                                game.getMoscowDate("HH:mm")
-                        )).append("\n");
-                    });
+                    instance.getListGameObject().forEach(game -> sb.append(String.format("""
+                                    %s — 🆚 %s, %s (GMT+03:00)
+                                    """,
+                            game.getMoscowDate("dd.MM.yyyy"),
+                            game.toggleTeam(UtilNHL.getOvi().getTeam()),
+                            game.getMoscowDate("HH:mm")
+                    )).append("\n"));
                     AbstractBot.splitMessageSmart(String.format("""
                                             📅 Расписание ближайших игр Александра Овечкина и Washington Capitals (WSH)
                                             
