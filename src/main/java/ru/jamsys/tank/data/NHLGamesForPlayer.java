@@ -79,9 +79,9 @@ public class NHLGamesForPlayer {
         pre.remove("teamID");
         pre.put("countGame", countGame);
         pre.forEach((key, atomicInteger) -> result.put(key, atomicInteger.get()));
-        result.put("timeOnIce", getSecFormat((int) result.get("timeOnIce")));
-        result.put("shortHandedTimeOnIce", getSecFormat((int) result.get("shortHandedTimeOnIce")));
-        result.put("powerPlayTimeOnIce", getSecFormat((int) result.get("powerPlayTimeOnIce")));
+        result.put("timeOnIce", getSecFormat((int) result.getOrDefault("timeOnIce", 0)));
+        result.put("shortHandedTimeOnIce", getSecFormat((int) result.getOrDefault("shortHandedTimeOnIce", 0)));
+        result.put("powerPlayTimeOnIce", getSecFormat((int) result.getOrDefault("powerPlayTimeOnIce", 0)));
         return result;
     }
 
