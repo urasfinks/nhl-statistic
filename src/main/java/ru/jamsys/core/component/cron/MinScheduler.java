@@ -213,6 +213,8 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                             .getRepositoryMapClass(Promise.class, "getPlayerList")
                             .getRepositoryMapClass(Tank01Request.class);
 
+                    Map<String, List<Long>> startGameNotify = new HashMap<>(); // key - idGame
+
                     UtilRisc.forEach(atomicBoolean, context.getPlayerSubscriber(), (idPlayer, listIdChat) -> {
                         try {
                             if (listIdChat.isEmpty()) {
@@ -230,11 +232,21 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                                             gameEventData
                                     ));
                                 }
+                                List<Long> to = new ArrayList<>(listIdChat);
+                                if (gameEventData.getAction().equals(GameEventData.Action.START_GAME)) {
+                                    List<Long> alreadySend = startGameNotify.computeIfAbsent(gameEventData.getGameAbout(), _ -> new ArrayList<>());
+                                    to.removeAll(alreadySend);
+                                    if (to.isEmpty()) {
+                                        return;
+                                    }
+                                    alreadySend.addAll(to);
+                                }
+
                                 context.getNotificationList().add(new SendNotificationGameEvent(
                                         context.getMapIdPlayerGame().getOrDefault(idPlayer, ""),
                                         NHLPlayerList.Player.fromMap(player),
                                         gameEventData,
-                                        listIdChat
+                                        to
                                 ));
                             });
                         } catch (Throwable e) {

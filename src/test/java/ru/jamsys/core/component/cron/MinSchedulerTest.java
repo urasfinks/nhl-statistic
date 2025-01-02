@@ -64,6 +64,7 @@ class MinSchedulerTest {
                                 .put("20241228_WSH@TOR", null)
                 )
         );
+
         promiseTest.removeAfter("getEvent");
         Assertions.assertEquals("[getBoxScoreByActiveGame::WAIT, getBoxScoreByActiveGame::COMPUTE, getLastData::WAIT, getLastData::IO, getEvent::WAIT, getEvent::COMPUTE]", promiseTest.getIndex().toString());
 
@@ -358,6 +359,78 @@ class MinSchedulerTest {
         Assertions.assertEquals("[]", promise.getRepositoryMapClass(MinScheduler.Context.class).getEndGames().toString());
         Assertions.assertFalse(promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerSubscriber().get("3101").isEmpty());
         Assertions.assertEquals(2, promise.getRepositoryMapClass(MinScheduler.Context.class).getNotificationList().size());
+    }
+
+    @Test
+    void test7() {
+        Promise promise = new MinScheduler(
+                App.get(ServicePromise.class),
+                App.get(TelegramBotComponent.class),
+                App.get(ServiceProperty.class)
+        ).generate();
+        PromiseTest promiseTest = new PromiseTest(promise);
+        Assertions.assertEquals("[check::COMPUTE, getActiveGame::WAIT, getActiveGame::IO, getBoxScoreByActiveGame::WAIT, getBoxScoreByActiveGame::COMPUTE, getLastData::WAIT, getLastData::IO, getEvent::WAIT, getEvent::COMPUTE, selectSubscribers::WAIT, selectSubscribers::IO, getPlayerList::WAIT, getPlayerList::EXTERNAL_WAIT_COMPUTE, createNotification::WAIT, createNotification::COMPUTE, send::WAIT, send::COMPUTE, saveData::WAIT, saveData::IO, removeFinish::WAIT, removeFinish::IO]", promiseTest.getIndex().toString());
+        promiseTest.remove("check");
+        promiseTest.remove("getActiveGame");
+        promiseTest.replace(
+                "getBoxScoreByActiveGame",
+                promise.createTaskCompute(
+                        "getBoxScoreByActiveGame",
+                        (_, _, promise1) -> promise1
+                                .getRepositoryMapClass(MinScheduler.Context.class)
+                                .getCurrentData()
+                                .put("20241228_WSH@TOR", NHLBoxScore.getExampleTorWSH())
+                )
+        );
+        promiseTest.replace(
+                "getLastData",
+                promise.createTaskResource(
+                        "getLastData",
+                        JdbcResource.class,
+                        (_, _, promise1, _) -> promise1
+                                .getRepositoryMapClass(MinScheduler.Context.class)
+                                .getLastData()
+                                .put("20241228_WSH@TOR", null)
+                )
+        );
+        promiseTest.replace(
+                "selectSubscribers",
+                promise.createTaskResource(
+                        "selectSubscribers",
+                        JdbcResource.class,
+                        (_, _, promise1, _) -> {
+                            promise1
+                                    .getRepositoryMapClass(MinScheduler.Context.class)
+                                    .getPlayerSubscriber()
+                                    .computeIfAbsent("3101", _ -> new ArrayListBuilder<Long>()
+                                            .append(1L)
+                                            .append(2L)
+                                    );
+                            promise1
+                                    .getRepositoryMapClass(MinScheduler.Context.class)
+                                    .getPlayerSubscriber()
+                                    .computeIfAbsent("3025524", _ -> new ArrayListBuilder<Long>()
+                                            .append(1L)
+                                            .append(2L)
+                                    );
+                        }
+                )
+        );
+        promiseTest.removeAfter("createNotification");
+        Assertions.assertEquals("[getBoxScoreByActiveGame::WAIT, getBoxScoreByActiveGame::COMPUTE, getLastData::WAIT, getLastData::IO, getEvent::WAIT, getEvent::COMPUTE, selectSubscribers::WAIT, selectSubscribers::IO, getPlayerList::WAIT, getPlayerList::EXTERNAL_WAIT_COMPUTE, createNotification::WAIT, createNotification::COMPUTE]", promiseTest.getIndex().toString());
+
+        promise.then("saveData", (_, _, _) -> {
+        });
+
+        promise.setDebug(false).run().await(50_000L);
+        //System.out.println(UtilJson.toStringPretty(promise.getRepositoryMapClass(MinScheduler.Context.class).getNotificationList(), "{}"));
+        Assertions.assertEquals(5, promise.getRepositoryMapClass(MinScheduler.Context.class).getNotificationList().size());
+//        Assertions.assertEquals(1, promise.getRepositoryMapClass(MinScheduler.Context.class).getMapIdPlayerGame().size());
+//        Assertions.assertEquals(1, promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("3101").size());
+//        Assertions.assertEquals(GameEventData.Action.GOAL, promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("3101").getFirst().getAction());
+//        Assertions.assertEquals("[]", promise.getRepositoryMapClass(MinScheduler.Context.class).getEndGames().toString());
+//        Assertions.assertFalse(promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerSubscriber().get("3101").isEmpty());
+//        Assertions.assertEquals(2, promise.getRepositoryMapClass(MinScheduler.Context.class).getNotificationList().size());
     }
 
 }
