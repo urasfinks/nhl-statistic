@@ -79,11 +79,12 @@ public enum JTScheduler implements JdbcRequestRepository {
             """, StatementType.SELECT_WITH_AUTO_COMMIT),
 
     SELECT_SUBSCRIBER_BY_PLAYER("""
-           SELECT distinct on(id_chat)
+           SELECT
                *
            FROM scheduler
            WHERE
                id_player IN (${IN.id_players::IN_ENUM_NUMBER})
+               AND time_game_start < now()::timestamp
            """, StatementType.SELECT_WITH_AUTO_COMMIT);
 
     private final JdbcTemplate jdbcTemplate;
