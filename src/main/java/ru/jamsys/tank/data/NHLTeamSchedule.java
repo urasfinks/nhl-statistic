@@ -109,7 +109,7 @@ public class NHLTeamSchedule {
                     App.error(e);
                 }
                 if (game.get("gameDateEpoch").equals(nowDateEpoch)) {
-                    return game.get("gameID").toString();
+                    return game.getOrDefault("gameID", "--").toString();
                 }
             }
             return null;
@@ -147,7 +147,7 @@ public class NHLTeamSchedule {
 
         public Instance getScheduledAndLive() {
             return new Instance(getListGame().stream().filter(game -> {
-                String gameStatus = game.get("gameStatus").toString(); // https://www.tank01.com/Guides_Game_Status_Code_NHL.html
+                String gameStatus = game.getOrDefault("gameStatus", "--").toString(); // https://www.tank01.com/Guides_Game_Status_Code_NHL.html
                 return game.containsKey("gameStatus") &&
                         (
                                 gameStatus.equals("Scheduled")
@@ -178,8 +178,8 @@ public class NHLTeamSchedule {
             this.data = data;
             try {
                 NHLTeamSchedule.extendGameTimeZone(data);
-                data.put("homeTeam", NHLTeams.teams.getByAbv(data.get("home").toString()).getAbout());
-                data.put("awayTeam", NHLTeams.teams.getByAbv(data.get("away").toString()).getAbout());
+                data.put("homeTeam", NHLTeams.teams.getByAbv(data.getOrDefault("home", "--").toString()).getAbout());
+                data.put("awayTeam", NHLTeams.teams.getByAbv(data.getOrDefault("away", "--").toString()).getAbout());
                 data.put("about", data.get("homeTeam") + " vs " + data.get("awayTeam"));
             } catch (Throwable e) {
                 App.error(e);
@@ -187,7 +187,7 @@ public class NHLTeamSchedule {
         }
 
         public String getId() {
-            return data.get("gameID").toString();
+            return data.getOrDefault("gameID", "--").toString();
         }
 
         public String getMoscowDate() {
@@ -208,20 +208,20 @@ public class NHLTeamSchedule {
             return String.format(
                     "%s (UTC%s)",
                     NHLTeamSchedule.getGameLocalTime(data, "dd.MM.yyyy HH:mm"),
-                    data.get("timeZone")
+                    data.getOrDefault("timeZone", "%--:--")
             );
         }
 
         public String getGameAbout() {
             return String.format("%s %s vs %s",
                     getGameTimeFormat(),
-                    data.get("homeTeam"),
-                    data.get("awayTeam")
+                    data.getOrDefault("homeTeam", "--"),
+                    data.getOrDefault("awayTeam", "--")
             );
         }
 
         public String toggleTeam(String team) {
-            return getData().get(data.get("away").equals(team) ? "homeTeam" : "awayTeam").toString();
+            return getData().get(data.getOrDefault("away", "--").equals(team) ? "homeTeam" : "awayTeam").toString();
         }
 
     }
