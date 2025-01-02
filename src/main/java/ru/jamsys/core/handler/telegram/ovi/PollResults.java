@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import ru.jamsys.core.App;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.extension.builder.HashMapBuilder;
+import ru.jamsys.core.flat.util.Util;
 import ru.jamsys.core.jt.JTOviSubscriber;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
@@ -62,39 +63,12 @@ public class PollResults implements PromiseGenerator, OviGoalsBotCommandHandler 
                     }
                 })
                 .then("send", (atomicBoolean, promiseTask, promise) -> {
-                    Map<String, AtomicInteger> stat = new HashMapBuilder<String, AtomicInteger>()
-                            .append("true", new AtomicInteger(0))
-                            .append("false", new AtomicInteger(0));
-                    vote.forEach(map -> stat.computeIfAbsent(
-                            Objects.toString(map.getOrDefault("vote", "none"), "none"),
-                            _ -> new AtomicInteger(0)
-                    ).incrementAndGet());
-                    int aTrue = stat.get("true").get();
-                    int aFalse = stat.get("false").get();
-
-                    int totalVotes = aTrue + aFalse;
-
-                    // Подсчитаем проценты и форматируем вывод
-                    double percentTrue = (aTrue * 100.0) / totalVotes;
-                    double percentFalse = (aFalse * 100.0) / totalVotes;
-
-                    String message = String.format("""
-                                    %sСтатистика голосования:
-                                    
-                                    Да 🔥 – %.2f%%
-                                    Нет ⛔ – %.2f%%
-                                    """,
-                            promise.getRepositoryMapClass(String.class),
-                            percentTrue,
-                            percentFalse
-                    );
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
                     context.getTelegramBot().send(
                             context.getIdChat(),
-                            message,
+                            getStat(vote, promise.getRepositoryMapClass(String.class)),
                             null
                     );
-
                 })
                 .onError((atomicBoolean, promiseTask, promise) -> {
                     System.out.println(promise.getLogString());
@@ -106,6 +80,43 @@ public class PollResults implements PromiseGenerator, OviGoalsBotCommandHandler 
                     }
                 });
         return gen;
+    }
+
+    public static String getStat(List<Map<String, Object>> vote, String extra) {
+        Map<String, AtomicInteger> stat = new HashMapBuilder<String, AtomicInteger>()
+                .append("true", new AtomicInteger(0))
+                .append("false", new AtomicInteger(0));
+
+        vote.forEach(map -> {
+                    String count = map.getOrDefault("count", "0").toString();
+                    if (!Util.isNumeric(count)) {
+                        return;
+                    }
+                    stat.computeIfAbsent(
+                            Objects.toString(map.getOrDefault("vote", "none"), "none"),
+                            _ -> new AtomicInteger(0)
+                    ).addAndGet(Integer.parseInt(count));
+                }
+        );
+
+        int aTrue = stat.get("true").get();
+        int aFalse = stat.get("false").get();
+
+        int totalVotes = aTrue + aFalse;
+
+        // Подсчитаем проценты и форматируем вывод
+        double percentTrue = totalVotes == 0 ? 0 : ((aTrue * 100.0) / totalVotes);
+        double percentFalse = totalVotes == 0 ? 0 : ((aFalse * 100.0) / totalVotes);
+
+        return String.format("""
+                        %sСтатистика голосования:
+                        
+                        Да 🔥 – %.2f%%
+                        Нет ⛔ – %.2f%%""",
+                extra,
+                percentTrue,
+                percentFalse
+        );
     }
 
 }
