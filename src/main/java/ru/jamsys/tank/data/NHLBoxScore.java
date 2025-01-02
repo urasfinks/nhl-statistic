@@ -277,17 +277,25 @@ public class NHLBoxScore {
             return stat.getOrDefault("timeOnIce", "00:00").toString();
         }
 
+        public String getPlayerID() {
+            return stat.getOrDefault("playerID", "0").toString();
+        }
+
         public String getLongName() {
-            if (UtilNHL.isOvi(stat.get("playerID").toString())) {
+            if (UtilNHL.isOvi(getPlayerID())) {
                 return "Александр Овечкин";
             } else {
-                return stat.get("longName").toString();
+                return stat.getOrDefault("longName", "").toString();
             }
         }
 
         public String getFinishTimeScore() {
             List<String> result = new ArrayList<>();
-            listGoal.forEach(map -> result.add(map.get("scoreTime") + ", " + periodExpandRu(map.get("period").toString())));
+            listGoal.forEach(map -> result.add(
+                    map.getOrDefault("scoreTime", "--")
+                            + ", "
+                            + periodExpandRu(map.getOrDefault("period", "").toString()))
+            );
             if (!result.isEmpty()) {
                 return "(" + String.join(" | ", result) + ")";
             }
