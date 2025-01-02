@@ -45,7 +45,7 @@ public class NHLTeams {
 
         public Team getById(String idTeam) {
             for (Map<String, Object> team : list) {
-                if (team.get("teamID").equals(idTeam)) {
+                if (team.getOrDefault("teamID", "").equals(idTeam)) {
                     return new Team(team);
                 }
             }
@@ -54,7 +54,7 @@ public class NHLTeams {
 
         public Team getByAbv(String idTeam) {
             for (Map<String, Object> team : list) {
-                if (team.get("teamAbv").equals(idTeam)) {
+                if (team.getOrDefault("teamAbv", "").equals(idTeam)) {
                     return new Team(team);
                 }
             }
@@ -80,11 +80,16 @@ public class NHLTeams {
         }
 
         public String getAbout() {
-            return data.get("teamCity") + " " + data.get("teamName") + " (" + data.get("teamAbv") + ")";
+            return data.getOrDefault("teamCity", "--")
+                    + " "
+                    + data.getOrDefault("teamName", "--")
+                    + " ("
+                    + data.getOrDefault("teamAbv", "--")
+                    + ")";
         }
 
         public String getAbv() {
-            return data.get("teamAbv").toString();
+            return data.getOrDefault("teamAbv", "--").toString();
         }
 
     }
