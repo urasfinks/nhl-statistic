@@ -14,10 +14,6 @@ public class NHLGamesForPlayer {
         return "/getNHLGamesForPlayer?playerID=" + idPlayer + "&numberOfGames=10000";
     }
 
-    public static String getExample() throws IOException {
-        return UtilFileResource.getAsString("example/4565222.json");
-    }
-
     public static String getExampleOvechkin() throws IOException {
         return UtilFileResource.getAsString("example/3101.json");
     }
