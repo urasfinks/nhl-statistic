@@ -52,7 +52,7 @@ class NHLBoxScoreTest {
                 .setScoredPrevGoal(10);
         Assertions.assertEquals(
                 """
-                        🚨 ГОООЛ! 31.12.2024 16:43:53. Dylan Guenther (UTA) забивает свой 15-й гол в сезоне!.
+                        🚨 ГОООЛ! 31.12.2024 16:43:53. Dylan Guenther (UTA) забивает свой 15-й гол в сезоне!
                         Washington Capitals (WSH) 1 - 1 Detroit Red Wings (DET)""",
                 new GameEventTemplate(gameEventData).toString()
         );
@@ -102,7 +102,7 @@ class NHLBoxScoreTest {
         System.out.println(UtilJson.toStringPretty(event, "{}"));
         Assertions.assertEquals("19:18, 3-й период", event.get("4874723").getFirst().getTime());
         Assertions.assertEquals("""
-                🚨 ГОООЛ! 19:18, 3-й период. Dylan Guenther забивает свой 2-й гол в сезоне!.
+                🚨 ГОООЛ! 19:18, 3-й период. Dylan Guenther забивает свой 2-й гол в сезоне!
                 Utah Hockey Club (UTA) 5 - 2 Chicago Blackhawks (CHI)""", new GameEventTemplate(event.get("4874723").getFirst()).toString());
         Assertions.assertEquals("""
                 🚨 ГОООЛ! 19:18, 3-й период. Александр Овечкин забивает свой 2-й гол в карьере! До рекорда Гретцки осталось 892 гола.
