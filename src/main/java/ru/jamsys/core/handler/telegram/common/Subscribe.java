@@ -159,7 +159,6 @@ public class Subscribe implements PromiseGenerator, NhlStatisticsBotCommandHandl
                     @SuppressWarnings("unchecked")
                     List<Map<String, Object>> game = (List<Map<String, Object>>) context.getAnyData().get("findGames");
                     List<Map<String, Object>> sortGameByTime = new NHLTeamSchedule.Instance(game)
-                            .getScheduledAndLive()
                             .getFutureGame()
                             .sort(UtilListSort.Type.ASC)
                             .getListGame();
