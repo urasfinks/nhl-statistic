@@ -60,8 +60,20 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
         private Map<String, List<GameEventData>> playerEvent = new LinkedHashMap<>(); // key - idPlayer; value - template
         private Map<String, List<Long>> playerSubscriber = new HashMap<>(); // key - idPlayer;
         private List<String> endGames = new ArrayList<>();
-        private Map<String, String> mapIdPlayerGame = new HashMap<>(); // key - idPlayer; value - gameName
         private List<PromiseGenerator> notificationList = new ArrayList<>();
+        private Map<String, Set<String>> activeGamePlayer = new HashMap<>(); // key idGame; value: list idPlayer
+
+        public String getIdGame(String idPlayer) {
+            System.out.println();
+            for (String idGame : activeGamePlayer.keySet()) {
+                for (String curIdPlayer : activeGamePlayer.get(idGame)) {
+                    if (curIdPlayer.equals(idPlayer)) {
+                        return idGame;
+                    }
+                }
+            }
+            throw new RuntimeException("undefined idGame by idPlayer = " + idPlayer);
+        }
     }
 
     public Promise generate() {
@@ -85,7 +97,17 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                     // Если нет активных игр, нечего тут делать
                     if (context.getActiveGame().isEmpty()) {
                         promise.skipAllStep("active game is empty");
+                        return;
                     }
+                    jdbcResource.execute(
+                            new JdbcRequest(JTScheduler.SELECT_ACTIVE_GAME_PLAYER).setDebug(false)
+                    ).forEach(map -> context
+                            .getActiveGamePlayer()
+                            .computeIfAbsent(
+                                    map.getOrDefault("id_game", "--").toString(),
+                                    _ -> new HashSet<>()
+                            )
+                            .add(map.getOrDefault("id_player", "0").toString()));
                 })
                 .then("getBoxScoreByActiveGame", (run, promiseTask, promise) -> {
                     Context context = promise.getRepositoryMapClass(Context.class);
@@ -134,14 +156,22 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                     UtilRisc.forEach(atomicBoolean, context.getCurrentData(), (idGame, data) -> {
                         try {
                             NHLBoxScore.Instance currentBoxScore = new NHLBoxScore.Instance(data);
-                            Map<String, List<GameEventData>> playerEvent = context.getLastData().get(idGame) == null
+                            Map<String, List<GameEventData>> curGamePlayerEvent = context.getLastData().get(idGame) == null
                                     ? new HashMap<>()
                                     : NHLBoxScore.getEvent(context.getLastData().get(idGame), data);
-
+                            // Мержим idPlayer из BoxScore с idPlayer из подписок, так как первый json приходит без статистики по игрокам
+                            List<String> listIdPlayer = currentBoxScore.getListIdPlayer(context.getActiveGamePlayer().get(idGame));
                             if (context.getLastData().get(idGame) == null) {
-                                currentBoxScore.getPlayerStats().forEach((idPlayer, _) -> {
+                                listIdPlayer.forEach((idPlayer) -> {
+                                            context
+                                                    .getActiveGamePlayer()
+                                                    .computeIfAbsent(idGame, _ -> new HashSet<>())
+                                                    .add(idPlayer);
                                             NHLBoxScore.Player player = currentBoxScore.getPlayer(idPlayer);
-                                            playerEvent
+                                            if (player == null) {
+                                                player = NHLBoxScore.Player.getEmpty();
+                                            }
+                                            curGamePlayerEvent
                                                     .computeIfAbsent(idPlayer, _ -> new ArrayList<>())
                                                     .add(new GameEventData(
                                                                     GameEventData.Action.START_GAME,
@@ -155,9 +185,12 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                                 );
                             }
                             if (NHLBoxScore.isFinish(data)) {
-                                currentBoxScore.getPlayerStats().forEach((idPlayer, _) -> {
+                                listIdPlayer.forEach((idPlayer) -> {
                                             NHLBoxScore.Player player = currentBoxScore.getPlayer(idPlayer);
-                                            playerEvent.computeIfAbsent(idPlayer, _ -> new ArrayList<>())
+                                            if (player == null) {
+                                                player = NHLBoxScore.Player.getEmpty();
+                                            }
+                                            curGamePlayerEvent.computeIfAbsent(idPlayer, _ -> new ArrayList<>())
                                                     .add(new GameEventData(
                                                                     GameEventData.Action.FINISH_GAME,
                                                                     currentBoxScore.getAboutGame(),
@@ -178,11 +211,7 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                                 context.getEndGames().add(idGame);
                             }
 
-                            playerEvent.forEach((idPlayer, listGameEventData) -> context
-                                    .getMapIdPlayerGame()
-                                    .put(idPlayer, idGame)
-                            );
-                            context.getPlayerEvent().putAll(playerEvent);
+                            context.getPlayerEvent().putAll(curGamePlayerEvent);
                             //logToTelegram(idGame + ":" + UtilJson.toStringPretty(context.getEvent(), "{}"));
                         } catch (Throwable e) {
                             throw new ForwardException(e);
@@ -228,7 +257,7 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                             gameEventDataList.forEach(gameEventData -> {
                                 if (UtilNHL.isOvi(idPlayer)) {
                                     context.getNotificationList().add(new SendNotificationGameEventOvi(
-                                            context.getMapIdPlayerGame().getOrDefault(idPlayer, ""),
+                                            context.getIdGame(idPlayer),
                                             gameEventData
                                     ));
                                 }
@@ -243,7 +272,7 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                                 }
 
                                 context.getNotificationList().add(new SendNotificationGameEvent(
-                                        context.getMapIdPlayerGame().getOrDefault(idPlayer, ""),
+                                        context.getIdGame(idPlayer),
                                         NHLPlayerList.Player.fromMap(player),
                                         gameEventData,
                                         to

@@ -11,10 +11,7 @@ import ru.jamsys.core.flat.util.UtilNHL;
 import ru.jamsys.telegram.GameEventData;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class NHLBoxScore {
 
@@ -72,7 +69,7 @@ public class NHLBoxScore {
     }
 
     public static Map<String, List<GameEventData>> getEvent(String lastJson, String currentJson) throws Throwable {
-        Map<String, List<GameEventData>> result = new HashMap<>();
+        Map<String, List<GameEventData>> result = new HashMap<>(); //key: idPlayer; value: list GameEventData
         Instance lastInstance = new Instance(lastJson);
         Instance currentInstance = new Instance(currentJson);
         lastInstance.getPlayerStats().forEach((idPlayer, lastStat) -> {
@@ -173,11 +170,11 @@ public class NHLBoxScore {
             Map<String, Object> body = (Map<String, Object>) UtilJson.toObject(json, Map.class).get("body");
             @SuppressWarnings("unchecked")
             List<Map<String, Object>> scoringPlays = (List<Map<String, Object>>) body.get("scoringPlays");
-            this.scoringPlays = scoringPlays;
+            this.scoringPlays = scoringPlays != null ? scoringPlays : new ArrayList<>();
 
             @SuppressWarnings("unchecked")
             Map<String, Map<String, Object>> playerStats = (Map<String, Map<String, Object>>) body.get("playerStats");
-            this.playerStats = playerStats;
+            this.playerStats = playerStats != null ? playerStats : new HashMap<>();
 
             NHLTeams.Team teamHome = NHLTeams.teams.getById(body.get("teamIDHome").toString());
             NHLTeams.Team teamAway = NHLTeams.teams.getById(body.get("teamIDAway").toString());
@@ -188,6 +185,15 @@ public class NHLBoxScore {
             scoreGame = getScoreGame(teamHome.getAbv());
             aboutGame = getAboutGame(teamHome.getAbv());
 
+        }
+
+        public List<String> getListIdPlayer(Set<String> listIdPlayer) {
+            if (listIdPlayer == null) {
+                return playerStats.keySet().stream().toList();
+            }
+            HashSet<String> result = new HashSet<>(listIdPlayer);
+            result.addAll(playerStats.keySet());
+            return result.stream().toList();
         }
 
         public String getAboutGame(String firstTeamAbv) {
@@ -285,7 +291,7 @@ public class NHLBoxScore {
             if (UtilNHL.isOvi(getPlayerID())) {
                 return "Александр Овечкин";
             } else {
-                return stat.getOrDefault("longName", "").toString();
+                return stat.getOrDefault("longName", "--").toString();
             }
         }
 
@@ -300,6 +306,10 @@ public class NHLBoxScore {
                 return "(" + String.join(" | ", result) + ")";
             }
             return "";
+        }
+
+        public static Player getEmpty() {
+            return new Player(new HashMap<>());
         }
 
     }
