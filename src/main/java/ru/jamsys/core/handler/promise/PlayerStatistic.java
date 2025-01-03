@@ -52,7 +52,7 @@ public class PlayerStatistic implements PromiseGenerator {
 
     private final NHLPlayerList.Player player;
 
-    private String gameToday = null;
+    private String idGameToday = null;
 
     public PlayerStatistic(NHLPlayerList.Player player, int scoreLastSeason) {
         this.player = player;
@@ -138,21 +138,35 @@ public class PlayerStatistic implements PromiseGenerator {
                             .getRepositoryMapClass(Tank01Request.class);
 
                     NHLTeamSchedule.Instance instance = new NHLTeamSchedule.Instance(response.getResponseData());
-                    setNextGame(instance.getFutureGame().sort(UtilListSort.Type.ASC).getListGame().getFirst());
+
                     List<Map<String, Object>> listGame = instance.getListGame();
                     listGame.forEach(map -> getLisIdGameInSeason().add(map.get("gameID").toString()));
-                    setCountTailGame(instance.getFutureGame().sort(UtilListSort.Type.ASC).getListGame().size());
-                    if (getGameToday() == null && !listGame.isEmpty()) {
-                        String gameToday = instance.getGameToday(UtilNHL.getCurrentDateEpoch());
+                    if (getIdGameToday() == null && !listGame.isEmpty()) {
+                        String gameToday = instance.getIdGameToday(UtilNHL.getCurrentDateEpoch());
                         if (gameToday != null && !gameToday.isEmpty()) {
-                            setGameToday(gameToday);
+                            setIdGameToday(gameToday);
                         }
                     }
-                    if (getGameToday() != null && !getGameToday().isEmpty()) {
+                    setCountTailGame(instance
+                            .getFutureGame()
+                            .without(getIdGameToday())
+                            .sort(UtilListSort.Type.ASC)
+                            .getListGame()
+                            .size()
+                    );
+                    setNextGame(instance
+                            .getFutureGame()
+                            .without(getIdGameToday())
+                            .sort(UtilListSort.Type.ASC)
+                            .getListGame()
+                            .getFirst()
+                    );
+
+                    if (getIdGameToday() != null && !getIdGameToday().isEmpty()) {
                         promise.addToHead(new ArrayListBuilder<PromiseTask>()
                                 .append(promise.promiseToTask(
                                         "scoreBoxCache",
-                                        new ScoreBoxCache(getPlayer(), getGameToday()).generate()
+                                        new ScoreBoxCache(getPlayer(), getIdGameToday()).generate()
                                 ))
                                 .append(promise.createTaskWait("scoreBoxCache"))
                                 .append(promise.createTaskCompute(
@@ -165,7 +179,7 @@ public class PlayerStatistic implements PromiseGenerator {
                                         }
                                 ))
                         );
-                        getLisIdGameInSeason().remove(getGameToday());
+                        getLisIdGameInSeason().remove(getIdGameToday());
                     }
                 })
                 .then("requestGameByPlayer", new Tank01Request(() -> NHLGamesForPlayer.getUri(getPlayer().getPlayerID())).generate())

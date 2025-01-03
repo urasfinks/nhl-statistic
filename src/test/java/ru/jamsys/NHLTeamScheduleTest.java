@@ -101,7 +101,7 @@ class NHLTeamScheduleTest {
     @Test
     void getGameToday() throws Throwable {
         NHLTeamSchedule.Instance instance = new NHLTeamSchedule.Instance(NHLTeamSchedule.getExample_18_2025());
-        Assertions.assertEquals("20241212_LA@NJ", instance.getGameToday("20241213"));
+        Assertions.assertEquals("20241212_LA@NJ", instance.getIdGameToday("20241213"));
     }
 
 }

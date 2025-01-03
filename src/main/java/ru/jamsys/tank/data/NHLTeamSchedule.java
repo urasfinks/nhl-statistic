@@ -101,7 +101,7 @@ public class NHLTeamSchedule {
             return result;
         }
 
-        public String getGameToday(String nowDateEpoch) {
+        public String getIdGameToday(String nowDateEpoch) {
             for (Map<String, Object> game : listGame) {
                 try {
                     NHLTeamSchedule.extendGameTimeZone(game);
@@ -128,6 +128,20 @@ public class NHLTeamSchedule {
             List<Map<String, Object>> result = new ArrayList<>();
             getListGame().forEach(stringObjectMap -> result.add(new Game(stringObjectMap).getData()));
             return new Instance(result);
+        }
+
+        public Instance without(String idGame) {
+            if (idGame == null) {
+                return this;
+            }
+            List<Map<String, Object>> list = getListGame().
+                    stream().
+                    filter(game -> !game
+                            .getOrDefault("gameID", "--")
+                            .equals(idGame)
+                    )
+                    .toList();
+            return new Instance(list);
         }
 
         public Instance getFutureGame() {

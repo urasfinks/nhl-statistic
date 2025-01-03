@@ -129,7 +129,7 @@ class NhlStatisticApplicationTest {
                 .setTeam("PHI")
                 .setTeamID("22");
         PlayerStatistic playerStatistic = new PlayerStatistic(player, 999);
-        playerStatistic.setGameToday("20241129_NYR@PHI");
+        playerStatistic.setIdGameToday("20241129_NYR@PHI");
 
         playerStatistic.generate()
                 .run()
