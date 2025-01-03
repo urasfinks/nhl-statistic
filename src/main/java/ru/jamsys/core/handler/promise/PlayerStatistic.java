@@ -189,7 +189,7 @@ public class PlayerStatistic implements PromiseGenerator {
                     int playedGame = Integer.parseInt(getScoreTotal().getOrDefault("countGame", 0).toString());
                     int playedGoals = Integer.parseInt(getScoreTotal().getOrDefault("goals", 0).toString());
                     try {
-                        setAvgGoalsInGame(new BigDecimal(playedGoals).divide(new BigDecimal(playedGame), 5, RoundingMode.HALF_UP));
+                        setAvgGoalsInGame(new BigDecimal(playedGoals).divide(new BigDecimal(playedGame), 2, RoundingMode.HALF_UP));
                     } catch (Exception e) {
                         App.error(e);
                     }
