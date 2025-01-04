@@ -122,11 +122,21 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                             throw req.getExceptionSource();
                         }
                         String data = tank01Request.getResponseData();
-
-                        @SuppressWarnings("unchecked")
-                        Map<String, Object> parsed = UtilJson.toObject(data, Map.class);
-                        if (!parsed.containsKey("error")) {
-                            context.getCurrentData().put(idGame, data);
+                        // Если что-то не спрасилось - другие игры не должны страдать
+                        try {
+                            @SuppressWarnings("unchecked")
+                            Map<String, Object> parsed = UtilJson.toObject(data, Map.class);
+                            if (!parsed.containsKey("error")) {
+                                NHLBoxScore.Instance instance = new NHLBoxScore.Instance(data);
+                                // Получилось, что при старте был пустой список статистики и мы выслали уведомление, что
+                                // Овечкин не участвует в игре
+                                // Нет статистики нет начала игры
+                                if (!instance.getPlayerStats().isEmpty()) {
+                                    context.getCurrentData().put(idGame, data);
+                                }
+                            }
+                        } catch (Throwable e) {
+                            App.error(e);
                         }
                     }
                     // Если нет никаких данных, нет смысла ничего сверять
