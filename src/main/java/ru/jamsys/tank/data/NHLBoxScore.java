@@ -3,6 +3,7 @@ package ru.jamsys.tank.data;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
+import ru.jamsys.core.App;
 import ru.jamsys.core.extension.exception.ForwardException;
 import ru.jamsys.core.flat.util.Util;
 import ru.jamsys.core.flat.util.UtilFileResource;
@@ -308,8 +309,18 @@ public class NHLBoxScore {
             return "";
         }
 
-        public static Player getEmpty() {
-            return new Player(new HashMap<>());
+        public static Player getEmpty(String idPlayer) {
+            //TODO переделать по человечески через кеш
+            Map<String, Object> about = new HashMap<>();
+            try {
+                Map<String, Object> map = NHLPlayerList.findById(idPlayer, NHLPlayerList.getExample());
+                if (map != null) {
+                    about.putAll(map);
+                }
+            } catch (Throwable e) {
+                App.error(e);
+            }
+            return new Player(about);
         }
 
     }

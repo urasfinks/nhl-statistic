@@ -11,9 +11,11 @@ public class GameEventData {
 
     public enum Action {
         START_GAME,
+        START_GAME_NOT_PLAY,
         GOAL,
         CANCEL,
-        FINISH_GAME
+        FINISH_GAME,
+        FINISH_GAME_NOT_PLAY
     }
 
     // Тип события

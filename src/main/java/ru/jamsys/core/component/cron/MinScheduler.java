@@ -168,13 +168,17 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                                                     .computeIfAbsent(idGame, _ -> new HashSet<>())
                                                     .add(idPlayer);
                                             NHLBoxScore.Player player = currentBoxScore.getPlayer(idPlayer);
+                                    boolean inPlay = true;
                                             if (player == null) {
-                                                player = NHLBoxScore.Player.getEmpty();
+                                                player = NHLBoxScore.Player.getEmpty(idPlayer);
+                                                inPlay = false;
                                             }
                                             curGamePlayerEvent
                                                     .computeIfAbsent(idPlayer, _ -> new ArrayList<>())
                                                     .add(new GameEventData(
-                                                                    GameEventData.Action.START_GAME,
+                                                            inPlay
+                                                                    ? GameEventData.Action.START_GAME
+                                                                    : GameEventData.Action.START_GAME_NOT_PLAY,
                                                                     currentBoxScore.getAboutGame(),
                                                                     currentBoxScore.getScoreGame(),
                                                                     player.getLongName(),
@@ -187,12 +191,16 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                             if (NHLBoxScore.isFinish(data)) {
                                 listIdPlayer.forEach((idPlayer) -> {
                                             NHLBoxScore.Player player = currentBoxScore.getPlayer(idPlayer);
+                                    boolean inPlay = true;
                                             if (player == null) {
-                                                player = NHLBoxScore.Player.getEmpty();
+                                                player = NHLBoxScore.Player.getEmpty(idPlayer);
+                                                inPlay = false;
                                             }
                                             curGamePlayerEvent.computeIfAbsent(idPlayer, _ -> new ArrayList<>())
                                                     .add(new GameEventData(
-                                                                    GameEventData.Action.FINISH_GAME,
+                                                            inPlay
+                                                                    ? GameEventData.Action.FINISH_GAME
+                                                                    : GameEventData.Action.FINISH_GAME_NOT_PLAY,
                                                                     currentBoxScore.getAboutGame(),
                                                                     currentBoxScore.getScoreGame(),
                                                                     player.getLongName(),
