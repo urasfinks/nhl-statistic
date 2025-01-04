@@ -33,6 +33,9 @@ public class GameEventTemplate {
     Map<GameEventData.Action, String> template = new HashMapBuilder<GameEventData.Action, String>()
             .append(GameEventData.Action.START_GAME, """
                     Начало игры ${gameAbout}""")
+            .append(GameEventData.Action.START_GAME_NOT_PLAY, """
+                    Начало игры ${gameAbout}
+                    ❌ не принимает участие""")
             .append(GameEventData.Action.GOAL, """
                     🚨 ГОООЛ! ${time}. ${playerName} забивает свой ${goalsInSeason}-й гол в сезоне!
                     ${gameScore}""")
@@ -50,7 +53,8 @@ public class GameEventTemplate {
                     🌟 Очки: ${score}
                     🥷 Силовые приемы: ${scoredHits}
                     🥊 Штрафные минуты: ${scoredPenaltiesInMinutes}
-                    ⏰ Время на льду: ${scoredTimeOnIce}""");
+                    ⏰ Время на льду: ${scoredTimeOnIce}""")
+            ;
 
     public GameEventTemplate(GameEventData data) {
         this.data = data;

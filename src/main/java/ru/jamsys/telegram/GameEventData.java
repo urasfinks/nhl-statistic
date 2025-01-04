@@ -14,8 +14,7 @@ public class GameEventData {
         START_GAME_NOT_PLAY,
         GOAL,
         CANCEL,
-        FINISH_GAME,
-        FINISH_GAME_NOT_PLAY
+        FINISH_GAME
     }
 
     // Тип события

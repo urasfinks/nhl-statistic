@@ -163,62 +163,55 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                             List<String> listIdPlayer = currentBoxScore.getListIdPlayer(context.getActiveGamePlayer().get(idGame));
                             if (context.getLastData().get(idGame) == null) {
                                 listIdPlayer.forEach((idPlayer) -> {
-                                            context
-                                                    .getActiveGamePlayer()
-                                                    .computeIfAbsent(idGame, _ -> new HashSet<>())
-                                                    .add(idPlayer);
-                                            NHLBoxScore.Player player = currentBoxScore.getPlayer(idPlayer);
+                                    context
+                                            .getActiveGamePlayer()
+                                            .computeIfAbsent(idGame, _ -> new HashSet<>())
+                                            .add(idPlayer);
+                                    NHLBoxScore.Player player = currentBoxScore.getPlayer(idPlayer);
                                     boolean inPlay = true;
-                                            if (player == null) {
-                                                player = NHLBoxScore.Player.getEmpty(idPlayer);
-                                                inPlay = false;
-                                            }
-                                            curGamePlayerEvent
-                                                    .computeIfAbsent(idPlayer, _ -> new ArrayList<>())
-                                                    .add(new GameEventData(
+                                    if (player == null) {
+                                        player = NHLBoxScore.Player.getEmpty(idPlayer);
+                                        inPlay = false;
+                                    }
+                                    curGamePlayerEvent
+                                            .computeIfAbsent(idPlayer, _ -> new ArrayList<>())
+                                            .add(new GameEventData(
                                                             inPlay
                                                                     ? GameEventData.Action.START_GAME
                                                                     : GameEventData.Action.START_GAME_NOT_PLAY,
-                                                                    currentBoxScore.getAboutGame(),
-                                                                    currentBoxScore.getScoreGame(),
-                                                                    player.getLongName(),
-                                                                    curData
-                                                            )
-                                                    );
+                                                            currentBoxScore.getAboutGame(),
+                                                            currentBoxScore.getScoreGame(),
+                                                            player.getLongName(),
+                                                            curData
+                                                    )
+                                            );
                                         }
                                 );
                             }
                             if (NHLBoxScore.isFinish(data)) {
                                 listIdPlayer.forEach((idPlayer) -> {
-                                            NHLBoxScore.Player player = currentBoxScore.getPlayer(idPlayer);
-                                    boolean inPlay = true;
-                                            if (player == null) {
-                                                player = NHLBoxScore.Player.getEmpty(idPlayer);
-                                                inPlay = false;
-                                            }
-                                            curGamePlayerEvent.computeIfAbsent(idPlayer, _ -> new ArrayList<>())
-                                                    .add(new GameEventData(
-                                                            inPlay
-                                                                    ? GameEventData.Action.FINISH_GAME
-                                                                    : GameEventData.Action.FINISH_GAME_NOT_PLAY,
-                                                                    currentBoxScore.getAboutGame(),
-                                                                    currentBoxScore.getScoreGame(),
-                                                                    player.getLongName(),
-                                                                    player.getFinishTimeScore()
-                                                            )
-                                                                    .setScoredGoal(player.getGoals())
-                                                                    .setScoredAssists(player.getAssists())
-                                                                    .setScoredShots(player.getShots())
-                                                                    .setScoredHits(player.getHits())
-                                                                    .setScoredPenaltiesInMinutes(player.getPenaltiesInMinutes())
-                                                                    .setScoredTimeOnIce(player.getTimeOnIce())
-                                                    );
-                                        }
-                                );
+                                    NHLBoxScore.Player player = currentBoxScore.getPlayer(idPlayer);
+                                    if (player != null) {
+                                        curGamePlayerEvent.computeIfAbsent(idPlayer, _ -> new ArrayList<>())
+                                                .add(new GameEventData(
+                                                                GameEventData.Action.FINISH_GAME,
+                                                                currentBoxScore.getAboutGame(),
+                                                                currentBoxScore.getScoreGame(),
+                                                                player.getLongName(),
+                                                                player.getFinishTimeScore()
+                                                        )
+                                                                .setScoredGoal(player.getGoals())
+                                                                .setScoredAssists(player.getAssists())
+                                                                .setScoredShots(player.getShots())
+                                                                .setScoredHits(player.getHits())
+                                                                .setScoredPenaltiesInMinutes(player.getPenaltiesInMinutes())
+                                                                .setScoredTimeOnIce(player.getTimeOnIce())
+                                                );
+                                    }
 
+                                });
                                 context.getEndGames().add(idGame);
                             }
-
                             context.getPlayerEvent().putAll(curGamePlayerEvent);
                             //logToTelegram(idGame + ":" + UtilJson.toStringPretty(context.getEvent(), "{}"));
                         } catch (Throwable e) {
