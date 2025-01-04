@@ -141,24 +141,13 @@ public class Subscribe implements PromiseGenerator, NhlStatisticsBotCommandHandl
                             UtilNHL.getActiveSeasonOrNext() + ""
                     );
                 }).generate())
-                .then("mergeScheduledGames", (_, _, promise) -> {
+                .thenWithResource("insertSchedule", JdbcResource.class, (_, _, promise, jdbcResource) -> {
+                    TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
                     Tank01Request response = promise
                             .getRepositoryMapClass(Promise.class, "getGameInSeason")
                             .getRepositoryMapClass(Tank01Request.class);
-                    TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
-                    @SuppressWarnings("unchecked")
-                    List<Map<String, Object>> game = (List<Map<String, Object>>) context.getAnyData().computeIfAbsent(
-                            "findGames", _ -> new ArrayList<String>()
-                    );
-                    game.addAll(new NHLTeamSchedule.Instance(response.getResponseData())
-                            .getScheduledAndLive()
-                            .getListGame());
-                })
-                .thenWithResource("insertSchedule", JdbcResource.class, (_, _, promise, jdbcResource) -> {
-                    TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
-                    @SuppressWarnings("unchecked")
-                    List<Map<String, Object>> game = (List<Map<String, Object>>) context.getAnyData().get("findGames");
-                    List<Map<String, Object>> sortGameByTime = new NHLTeamSchedule.Instance(game)
+                    NHLTeamSchedule.Instance schedule = new NHLTeamSchedule.Instance(response.getResponseData());
+                    List<Map<String, Object>> sortGameByTime = schedule
                             .getFutureGame()
                             .sort(UtilListSort.Type.ASC)
                             .getListGame();
