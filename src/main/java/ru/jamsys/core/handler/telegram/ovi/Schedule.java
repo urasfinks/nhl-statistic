@@ -48,6 +48,7 @@ public class Schedule implements PromiseGenerator, OviGoalsBotCommandHandler {
                             .getRepositoryMapClass(Promise.class, "requestGameInSeason")
                             .getRepositoryMapClass(Tank01Request.class);
                     NHLTeamSchedule.Instance instance = new NHLTeamSchedule.Instance(response.getResponseData())
+                            .initAlreadyGame()
                             .getFutureGame()
                             .sort(UtilListSort.Type.ASC);
 

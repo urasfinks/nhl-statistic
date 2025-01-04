@@ -13,6 +13,15 @@ public enum JTGameDiff implements JdbcRequestRepository {
             WHERE
                 id_game = ${IN.id_game::VARCHAR}
             """, StatementType.SELECT_WITH_AUTO_COMMIT),
+
+    SELECT_ALREADY("""
+            SELECT
+                *
+            FROM game_diff
+            WHERE
+                id_game IN (${IN.id_game::IN_ENUM_VARCHAR})
+            """, StatementType.SELECT_WITH_AUTO_COMMIT),
+
     INSERT("""
             INSERT INTO game_diff (
                 id_game,

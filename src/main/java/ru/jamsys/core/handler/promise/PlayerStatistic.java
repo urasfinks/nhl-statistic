@@ -137,7 +137,8 @@ public class PlayerStatistic implements PromiseGenerator {
                             .getRepositoryMapClass(Promise.class, "requestGameInSeason")
                             .getRepositoryMapClass(Tank01Request.class);
 
-                    NHLTeamSchedule.Instance instance = new NHLTeamSchedule.Instance(response.getResponseData());
+                    NHLTeamSchedule.Instance instance = new NHLTeamSchedule.Instance(response.getResponseData())
+                            .initAlreadyGame();
 
                     List<Map<String, Object>> listGame = instance.getListGame();
                     listGame.forEach(map -> getLisIdGameInSeason().add(map.get("gameID").toString()));
@@ -149,14 +150,12 @@ public class PlayerStatistic implements PromiseGenerator {
                     }
                     setCountTailGame(instance
                             .getFutureGame()
-                            .without(getIdGameToday())
                             .sort(UtilListSort.Type.ASC)
                             .getListGame()
                             .size()
                     );
                     setNextGame(instance
                             .getFutureGame()
-                            .without(getIdGameToday())
                             .sort(UtilListSort.Type.ASC)
                             .getListGame()
                             .getFirst()

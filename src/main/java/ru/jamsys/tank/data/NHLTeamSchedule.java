@@ -5,6 +5,7 @@ import lombok.Setter;
 import lombok.ToString;
 import ru.jamsys.core.App;
 import ru.jamsys.core.flat.util.*;
+import ru.jamsys.core.handler.promise.AlreadyDiffIdGame;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -72,6 +73,8 @@ public class NHLTeamSchedule {
         private final String idTeam;
 
         private List<Map<String, Object>> listGame;
+
+        private List<String> listAlreadyDiffIdGame = new ArrayList<>();
 
         public Instance(List<Map<String, Object>> listGame, String idGame) {
             this.listGame = listGame;
@@ -141,33 +144,35 @@ public class NHLTeamSchedule {
             return new Instance(result, idTeam);
         }
 
-        public Instance without(String idGame) {
-            if (idGame == null) {
-                return this;
+        public Instance initAlreadyGame() {
+            if (listAlreadyDiffIdGame.isEmpty()) {
+                AlreadyDiffIdGame alreadyDiffIdGame = new AlreadyDiffIdGame(getIdGame().stream().toList());
+                alreadyDiffIdGame.generate().run().await(15_000L);
+                listAlreadyDiffIdGame = alreadyDiffIdGame.getListAlreadyDiffIdGame();
             }
-            List<Map<String, Object>> list = getListGame().
-                    stream().
-                    filter(game -> !game
-                            .getOrDefault("gameID", "--")
-                            .equals(idGame)
-                    )
-                    .toList();
-            return new Instance(list, idTeam);
+            return this;
         }
 
         public Instance getFutureGame() {
+            // Будущие игры это
+            // По ним нет сохранёнок в diff_games
+            // У них время начала больше чем текущее - 5 часов
             long currentTimestamp = UtilDate.getTimestamp();
-            List<Map<String, Object>> gameTimeEpoch = getListGame().stream().filter(game -> {
+            List<Map<String, Object>> list = getListGame().stream().filter(game -> {
                 // Сейчас 14:26
                 // Игра началась в 14:00
                 // timestamp игры меньше чем сейчас
                 // изначально планировал, что будем брать все игры у которых timestamp больше чем сейчас
                 // Но тогда мы не возьмём игру, которая в процессе, поэтому сравнивать будем за вычетом времени игры
+                Game gameInstance = new Game(game);
+                if (listAlreadyDiffIdGame.contains(gameInstance.getId())) {
+                    return false;
+                }
                 long gameStartTimestamp = new BigDecimal(game.get("gameTime_epoch").toString()).longValue();
                 // 5 часов просто накинул
                 return gameStartTimestamp > (currentTimestamp - 5 * 60 * 60);
             }).toList();
-            return new Instance(gameTimeEpoch, idTeam);
+            return new Instance(list, idTeam);
         }
 
         public Instance getScheduledAndLive() {
@@ -187,7 +192,7 @@ public class NHLTeamSchedule {
 
         public Set<String> getIdGame() {
             Set<String> result = new LinkedHashSet<>();
-            listGame.forEach(stringObjectMap -> result.add(stringObjectMap.get("gameID").toString()));
+            listGame.forEach(map -> result.add(map.get("gameID").toString()));
             return result;
         }
 
