@@ -88,6 +88,15 @@ public class NHLTeams {
                     + ")";
         }
 
+        public String getIdTeam() {
+            Object teamID = data.getOrDefault("teamID", "--");
+            if (teamID != null) {
+                return teamID.toString();
+            } else {
+                return "--";
+            }
+        }
+
         public String getAbv() {
             return data.getOrDefault("teamAbv", "--").toString();
         }
