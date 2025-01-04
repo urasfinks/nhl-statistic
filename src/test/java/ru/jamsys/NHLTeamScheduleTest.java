@@ -65,12 +65,12 @@ class NHLTeamScheduleTest {
 
     @Test
     void test() throws Throwable {
-        Map<String, Object> game = new NHLTeamSchedule.Instance(NHLTeamSchedule.getExample())
+         NHLTeamSchedule.Instance game = new NHLTeamSchedule.Instance(NHLTeamSchedule.getExample())
                 .getScheduledAndLive()
-                .extend()
-                .getListGame()
-                .getFirst();
-        Assertions.assertEquals("-05:00", game.get("timeZone"));
+                .extend();
+        Assertions.assertEquals("-05:00", game.getListGame().getFirst().get("timeZone"));
+        Assertions.assertEquals("7", game.getIdTeam());
+
     }
 
     @Test
