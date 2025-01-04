@@ -69,19 +69,13 @@ public class NHLTeamSchedule {
     @Setter
     public static class Instance {
 
+        private final String idTeam;
+
         private List<Map<String, Object>> listGame;
 
-        public Instance(List<Map<String, Object>> listGame) {
+        public Instance(List<Map<String, Object>> listGame, String idGame) {
             this.listGame = listGame;
-        }
-
-        public Game getById(String idGame) {
-            for (Game game : getListGameObject()) {
-                if (game.getId().equals(idGame)) {
-                    return game;
-                }
-            }
-            return null;
+            this.idTeam = idGame;
         }
 
         public Instance(String json) throws Throwable {
@@ -93,6 +87,23 @@ public class NHLTeamSchedule {
             @SuppressWarnings("unchecked")
             List<Map<String, Object>> selector = (List<Map<String, Object>>) UtilJson.selector(parsed, "body.schedule");
             this.listGame = selector;
+            Object teamAbv = UtilJson.selector(parsed, "body.team");
+            if (teamAbv != null && !teamAbv.toString().isEmpty()) {
+                NHLTeams.Team team = NHLTeams.teams.getByAbv(teamAbv.toString());
+                this.idTeam = team.getIdTeam();
+            } else {
+                throw new RuntimeException("team in response api not found");
+            }
+        }
+
+        @SuppressWarnings("unused")
+        public Game getById(String idGame) {
+            for (Game game : getListGameObject()) {
+                if (game.getId().equals(idGame)) {
+                    return game;
+                }
+            }
+            return null;
         }
 
         public List<Game> getListGameObject() {
@@ -116,18 +127,18 @@ public class NHLTeamSchedule {
         }
 
         public Instance sort(UtilListSort.Type type) {
-            List<Map<String, Object>> gameTimeEpoch = UtilListSort.sort(
+            List<Map<String, Object>> list = UtilListSort.sort(
                     getListGame(),
                     type,
                     stringObjectMap -> new BigDecimal(stringObjectMap.get("gameTime_epoch").toString()).longValue()
             );
-            return new Instance(gameTimeEpoch);
+            return new Instance(list, idTeam);
         }
 
         public Instance extend() {
             List<Map<String, Object>> result = new ArrayList<>();
             getListGame().forEach(stringObjectMap -> result.add(new Game(stringObjectMap).getData()));
-            return new Instance(result);
+            return new Instance(result, idTeam);
         }
 
         public Instance without(String idGame) {
@@ -141,7 +152,7 @@ public class NHLTeamSchedule {
                             .equals(idGame)
                     )
                     .toList();
-            return new Instance(list);
+            return new Instance(list, idTeam);
         }
 
         public Instance getFutureGame() {
@@ -151,12 +162,12 @@ public class NHLTeamSchedule {
                 // Игра началась в 14:00
                 // timestamp игры меньше чем сейчас
                 // изначально планировал, что будем брать все игры у которых timestamp больше чем сейчас
-                // Но тогда мы не возьмём игру, которая в процессе, поэтому сравнивать будем за вычитом времени игры
+                // Но тогда мы не возьмём игру, которая в процессе, поэтому сравнивать будем за вычетом времени игры
                 long gameStartTimestamp = new BigDecimal(game.get("gameTime_epoch").toString()).longValue();
                 // 5 часов просто накинул
                 return gameStartTimestamp > (currentTimestamp - 5 * 60 * 60);
             }).toList();
-            return new Instance(gameTimeEpoch);
+            return new Instance(gameTimeEpoch, idTeam);
         }
 
         public Instance getScheduledAndLive() {
@@ -167,7 +178,7 @@ public class NHLTeamSchedule {
                                 gameStatus.equals("Scheduled")
                                         || gameStatus.equals("Live - In Progress")
                         );
-            }).toList());
+            }).toList(), idTeam);
         }
 
         public Game getGame(int index) {
