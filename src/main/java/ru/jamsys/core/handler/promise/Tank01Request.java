@@ -11,6 +11,7 @@ import ru.jamsys.core.component.ServiceProperty;
 import ru.jamsys.core.flat.util.Util;
 import ru.jamsys.core.flat.util.UtilJson;
 import ru.jamsys.core.jt.JTHttpCache;
+import ru.jamsys.core.jt.JTLogRequest;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
 import ru.jamsys.core.resource.http.HttpResource;
@@ -81,6 +82,12 @@ public class Tank01Request implements PromiseGenerator {
                     promise.getRepositoryMapClass(Tank01Request.class);
                     jdbcResource.execute(
                             new JdbcRequest(dataFindInDb ? JTHttpCache.UPDATE : JTHttpCache.INSERT)
+                                    .addArg("url", uriSupplier.get())
+                                    .addArg("data", getResponseData())
+                                    .setDebug(false)
+                    );
+                    jdbcResource.execute(
+                            new JdbcRequest(JTLogRequest.INSERT)
                                     .addArg("url", uriSupplier.get())
                                     .addArg("data", getResponseData())
                                     .setDebug(false)

@@ -2,6 +2,7 @@ package ru.jamsys;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import ru.jamsys.core.App;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.extension.builder.ArrayListBuilder;
@@ -9,10 +10,10 @@ import ru.jamsys.core.flat.util.UtilDate;
 import ru.jamsys.core.flat.util.UtilJson;
 import ru.jamsys.core.flat.util.UtilNHL;
 import ru.jamsys.core.handler.promise.*;
+import ru.jamsys.core.jt.JTLogRequest;
 import ru.jamsys.core.promise.Promise;
-import ru.jamsys.core.resource.http.client.HttpResponse;
-import ru.jamsys.core.resource.notification.telegram.TelegramNotificationRequest;
-import ru.jamsys.core.resource.notification.telegram.TelegramNotificationResource;
+import ru.jamsys.core.resource.jdbc.JdbcRequest;
+import ru.jamsys.core.resource.jdbc.JdbcResource;
 import ru.jamsys.tank.data.NHLBoxScore;
 import ru.jamsys.tank.data.NHLGamesForPlayer;
 import ru.jamsys.tank.data.NHLPlayerList;
@@ -77,16 +78,24 @@ class NhlStatisticApplicationTest {
     }
 
     @SuppressWarnings("unused")
-        //@Test
+    //@Test
     void telegramSend() {
         Promise promise = servicePromise.get("testPromise", 6_000L);
         promise
-                .appendWithResource("http", TelegramNotificationResource.class, (_, _, _, telegramNotificationResource) -> {
-                    HttpResponse execute = telegramNotificationResource.execute(new TelegramNotificationRequest("Hello", "world"));
-                    System.out.println(execute);
+                .thenWithResource("insert", JdbcResource.class, (_, _, _, jdbcResource) -> {
+                    jdbcResource.execute(
+                            new JdbcRequest(JTLogRequest.INSERT)
+                                    .addArg("url", "url")
+                                    .addArg("data", "data")
+                                    .setDebug(false)
+                    );
                 })
+//                .appendWithResource("http", TelegramNotificationResource.class, (_, _, _, telegramNotificationResource) -> {
+//                    HttpResponse execute = telegramNotificationResource.execute(new TelegramNotificationRequest("Hello", "world"));
+//                    System.out.println(execute);
+//                })
                 .run()
-                .await(2000);
+                .await(20_000L);
         System.out.println(promise.getLogString());
     }
 
