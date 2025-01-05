@@ -8,6 +8,7 @@ import ru.jamsys.core.App;
 import ru.jamsys.core.component.SecurityComponent;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.component.ServiceProperty;
+import ru.jamsys.core.flat.util.Util;
 import ru.jamsys.core.flat.util.UtilJson;
 import ru.jamsys.core.jt.JTHttpCache;
 import ru.jamsys.core.promise.Promise;
@@ -71,7 +72,7 @@ public class Tank01Request implements PromiseGenerator {
                 })
                 .thenWithResource("request", HttpResource.class, (_, _, promise, httpResource) -> {
                     promise.getRepositoryMapClass(Tank01Request.class);
-                    System.out.println("Request: " + uriSupplier.get());
+                    Util.logConsole("Request: " + uriSupplier.get());
                     HttpResponse execute = httpResource.execute(getHttpClient(uriSupplier.get()));
                     checkResponse(execute);
                     responseData = execute.getBody();

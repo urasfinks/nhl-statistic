@@ -53,16 +53,6 @@ class MinSchedulerTest {
         }));
         //promiseTest.remove("getActiveGame");
         promiseTest.replace(
-                "getBoxScoreByActiveGame",
-                promise.createTaskCompute(
-                        "getBoxScoreByActiveGame",
-                        (_, _, promise1) -> promise1
-                                .getRepositoryMapClass(MinScheduler.Context.class)
-                                .getCurrentData()
-                                .put("20241228_WSH@TOR", NHLBoxScore.getExampleTorWSH_nullTotal())
-                )
-        );
-        promiseTest.replace(
                 "getLastData",
                 promise.createTaskResource(
                         "getLastData",
@@ -71,6 +61,16 @@ class MinSchedulerTest {
                                 .getRepositoryMapClass(MinScheduler.Context.class)
                                 .getLastData()
                                 .put("20241228_WSH@TOR", null)
+                )
+        );
+        promiseTest.replace(
+                "getBoxScoreByActiveGame",
+                promise.createTaskCompute(
+                        "getBoxScoreByActiveGame",
+                        (_, _, promise1) -> promise1
+                                .getRepositoryMapClass(MinScheduler.Context.class)
+                                .getCurrentData()
+                                .put("20241228_WSH@TOR", NHLBoxScore.getExampleTorWSH_nullTotal())
                 )
         );
 
@@ -99,16 +99,6 @@ class MinSchedulerTest {
         promiseTest.remove("check");
         promiseTest.remove("getActiveGame");
         promiseTest.replace(
-                "getBoxScoreByActiveGame",
-                promise.createTaskCompute(
-                        "getBoxScoreByActiveGame",
-                        (_, _, promise1) -> promise1
-                                .getRepositoryMapClass(MinScheduler.Context.class)
-                                .getCurrentData()
-                                .put("20241228_WSH@TOR", NHLBoxScore.getExampleTorWSH())
-                )
-        );
-        promiseTest.replace(
                 "getLastData",
                 promise.createTaskResource(
                         "getLastData",
@@ -117,6 +107,16 @@ class MinSchedulerTest {
                                 .getRepositoryMapClass(MinScheduler.Context.class)
                                 .getLastData()
                                 .put("20241228_WSH@TOR", null)
+                )
+        );
+        promiseTest.replace(
+                "getBoxScoreByActiveGame",
+                promise.createTaskCompute(
+                        "getBoxScoreByActiveGame",
+                        (_, _, promise1) -> promise1
+                                .getRepositoryMapClass(MinScheduler.Context.class)
+                                .getCurrentData()
+                                .put("20241228_WSH@TOR", NHLBoxScore.getExampleTorWSH())
                 )
         );
         promiseTest.removeAfter("getEvent");
@@ -144,16 +144,6 @@ class MinSchedulerTest {
         promiseTest.remove("check");
         promiseTest.remove("getActiveGame");
         promiseTest.replace(
-                "getBoxScoreByActiveGame",
-                promise.createTaskCompute(
-                        "getBoxScoreByActiveGame",
-                        (_, _, promise1) -> promise1
-                                .getRepositoryMapClass(MinScheduler.Context.class)
-                                .getCurrentData()
-                                .put("20241228_WSH@TOR", NHLBoxScore.getExampleTorWSH())
-                )
-        );
-        promiseTest.replace(
                 "getLastData",
                 promise.createTaskResource(
                         "getLastData",
@@ -161,6 +151,16 @@ class MinSchedulerTest {
                         (_, _, promise1, _) -> promise1
                                 .getRepositoryMapClass(MinScheduler.Context.class)
                                 .getLastData()
+                                .put("20241228_WSH@TOR", NHLBoxScore.getExampleTorWSH())
+                )
+        );
+        promiseTest.replace(
+                "getBoxScoreByActiveGame",
+                promise.createTaskCompute(
+                        "getBoxScoreByActiveGame",
+                        (_, _, promise1) -> promise1
+                                .getRepositoryMapClass(MinScheduler.Context.class)
+                                .getCurrentData()
                                 .put("20241228_WSH@TOR", NHLBoxScore.getExampleTorWSH())
                 )
         );
@@ -188,16 +188,6 @@ class MinSchedulerTest {
         promiseTest.remove("check");
         promiseTest.remove("getActiveGame");
         promiseTest.replace(
-                "getBoxScoreByActiveGame",
-                promise.createTaskCompute(
-                        "getBoxScoreByActiveGame",
-                        (_, _, promise1) -> promise1
-                                .getRepositoryMapClass(MinScheduler.Context.class)
-                                .getCurrentData()
-                                .put("20241228_WSH@TOR", NHLBoxScore.getExampleTorWSH_live())
-                )
-        );
-        promiseTest.replace(
                 "getLastData",
                 promise.createTaskResource(
                         "getLastData",
@@ -206,6 +196,16 @@ class MinSchedulerTest {
                                 .getRepositoryMapClass(MinScheduler.Context.class)
                                 .getLastData()
                                 .put("20241228_WSH@TOR", NHLBoxScore.getExampleTorWSH())
+                )
+        );
+        promiseTest.replace(
+                "getBoxScoreByActiveGame",
+                promise.createTaskCompute(
+                        "getBoxScoreByActiveGame",
+                        (_, _, promise1) -> promise1
+                                .getRepositoryMapClass(MinScheduler.Context.class)
+                                .getCurrentData()
+                                .put("20241228_WSH@TOR", NHLBoxScore.getExampleTorWSH_live())
                 )
         );
         promiseTest.removeAfter("getEvent");
@@ -230,16 +230,6 @@ class MinSchedulerTest {
         promiseTest.remove("check");
         promiseTest.remove("getActiveGame");
         promiseTest.replace(
-                "getBoxScoreByActiveGame",
-                promise.createTaskCompute(
-                        "getBoxScoreByActiveGame",
-                        (_, _, promise1) -> promise1
-                                .getRepositoryMapClass(MinScheduler.Context.class)
-                                .getCurrentData()
-                                .put("20241228_WSH@TOR", NHLBoxScore.getExampleTorWSH_live())
-                )
-        );
-        promiseTest.replace(
                 "getLastData",
                 promise.createTaskResource(
                         "getLastData",
@@ -248,6 +238,16 @@ class MinSchedulerTest {
                                 .getRepositoryMapClass(MinScheduler.Context.class)
                                 .getLastData()
                                 .put("20241228_WSH@TOR", null)
+                )
+        );
+        promiseTest.replace(
+                "getBoxScoreByActiveGame",
+                promise.createTaskCompute(
+                        "getBoxScoreByActiveGame",
+                        (_, _, promise1) -> promise1
+                                .getRepositoryMapClass(MinScheduler.Context.class)
+                                .getCurrentData()
+                                .put("20241228_WSH@TOR", NHLBoxScore.getExampleTorWSH_live())
                 )
         );
         promiseTest.removeAfter("getEvent");
@@ -274,16 +274,6 @@ class MinSchedulerTest {
         promiseTest.remove("check");
         promiseTest.remove("getActiveGame");
         promiseTest.replace(
-                "getBoxScoreByActiveGame",
-                promise.createTaskCompute(
-                        "getBoxScoreByActiveGame",
-                        (_, _, promise1) -> promise1
-                                .getRepositoryMapClass(MinScheduler.Context.class)
-                                .getCurrentData()
-                                .put("20241228_WSH@TOR", NHLBoxScore.getExampleTorWSH_liveChange())
-                )
-        );
-        promiseTest.replace(
                 "getLastData",
                 promise.createTaskResource(
                         "getLastData",
@@ -292,6 +282,16 @@ class MinSchedulerTest {
                                 .getRepositoryMapClass(MinScheduler.Context.class)
                                 .getLastData()
                                 .put("20241228_WSH@TOR", NHLBoxScore.getExampleTorWSH_live())
+                )
+        );
+        promiseTest.replace(
+                "getBoxScoreByActiveGame",
+                promise.createTaskCompute(
+                        "getBoxScoreByActiveGame",
+                        (_, _, promise1) -> promise1
+                                .getRepositoryMapClass(MinScheduler.Context.class)
+                                .getCurrentData()
+                                .put("20241228_WSH@TOR", NHLBoxScore.getExampleTorWSH_liveChange())
                 )
         );
         promiseTest.removeAfter("getEvent");
@@ -324,16 +324,6 @@ class MinSchedulerTest {
                     .add("3101");
         }));
         promiseTest.replace(
-                "getBoxScoreByActiveGame",
-                promise.createTaskCompute(
-                        "getBoxScoreByActiveGame",
-                        (_, _, promise1) -> promise1
-                                .getRepositoryMapClass(MinScheduler.Context.class)
-                                .getCurrentData()
-                                .put("20241228_WSH@TOR", NHLBoxScore.getExampleTorWSH_liveChange())
-                )
-        );
-        promiseTest.replace(
                 "getLastData",
                 promise.createTaskResource(
                         "getLastData",
@@ -342,6 +332,16 @@ class MinSchedulerTest {
                                 .getRepositoryMapClass(MinScheduler.Context.class)
                                 .getLastData()
                                 .put("20241228_WSH@TOR", NHLBoxScore.getExampleTorWSH_live())
+                )
+        );
+        promiseTest.replace(
+                "getBoxScoreByActiveGame",
+                promise.createTaskCompute(
+                        "getBoxScoreByActiveGame",
+                        (_, _, promise1) -> promise1
+                                .getRepositoryMapClass(MinScheduler.Context.class)
+                                .getCurrentData()
+                                .put("20241228_WSH@TOR", NHLBoxScore.getExampleTorWSH_liveChange())
                 )
         );
         promiseTest.replace(
@@ -382,16 +382,6 @@ class MinSchedulerTest {
         promiseTest.remove("check");
         promiseTest.remove("getActiveGame");
         promiseTest.replace(
-                "getBoxScoreByActiveGame",
-                promise.createTaskCompute(
-                        "getBoxScoreByActiveGame",
-                        (_, _, promise1) -> promise1
-                                .getRepositoryMapClass(MinScheduler.Context.class)
-                                .getCurrentData()
-                                .put("20241228_WSH@TOR", NHLBoxScore.getExampleTorWSH())
-                )
-        );
-        promiseTest.replace(
                 "getLastData",
                 promise.createTaskResource(
                         "getLastData",
@@ -400,6 +390,16 @@ class MinSchedulerTest {
                                 .getRepositoryMapClass(MinScheduler.Context.class)
                                 .getLastData()
                                 .put("20241228_WSH@TOR", null)
+                )
+        );
+        promiseTest.replace(
+                "getBoxScoreByActiveGame",
+                promise.createTaskCompute(
+                        "getBoxScoreByActiveGame",
+                        (_, _, promise1) -> promise1
+                                .getRepositoryMapClass(MinScheduler.Context.class)
+                                .getCurrentData()
+                                .put("20241228_WSH@TOR", NHLBoxScore.getExampleTorWSH())
                 )
         );
         promiseTest.replace(
@@ -433,6 +433,49 @@ class MinSchedulerTest {
 
         promise.setDebug(false).run().await(50_000L);
         Assertions.assertEquals(5, promise.getRepositoryMapClass(MinScheduler.Context.class).getNotificationList().size());
+
+    }
+
+    @Test
+    void test8() {
+        Promise promise = new MinScheduler(
+                App.get(ServicePromise.class),
+                App.get(TelegramBotComponent.class),
+                App.get(ServiceProperty.class)
+        ).generate();
+        PromiseTest promiseTest = new PromiseTest(promise);
+        promiseTest.remove("check");
+        promiseTest.remove("getActiveGame");
+        promiseTest.replace(
+                "getLastData",
+                promise.createTaskResource(
+                        "getLastData",
+                        JdbcResource.class,
+                        (_, _, promise1, _) -> promise1
+                                .getRepositoryMapClass(MinScheduler.Context.class)
+                                .getLastData()
+                                .put("20250104_BOS@TOR", NHLBoxScore.getExample_20250104_BOS_TOR())
+                )
+        );
+        promiseTest.replace(
+                "getBoxScoreByActiveGame",
+                promise.createTaskCompute(
+                        "getBoxScoreByActiveGame",
+                        (_, _, promise1) -> promise1
+                                .getRepositoryMapClass(MinScheduler.Context.class)
+                                .getCurrentData()
+                                .put("20250104_BOS@TOR", NHLBoxScore.getExample_20250104_BOS_TOR_2())
+                )
+        );
+        promiseTest.removeAfter("getEvent");
+        Assertions.assertEquals("[getBoxScoreByActiveGame::WAIT, getBoxScoreByActiveGame::COMPUTE, getLastData::WAIT, getLastData::IO, getEvent::WAIT, getEvent::COMPUTE]", promiseTest.getIndex().toString());
+
+        promise.then("saveData", (_, _, _) -> {
+        });
+        promise.setDebug(false).run().await(50_000L);
+
+        //System.out.println(UtilJson.toStringPretty(promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("3899937"), "{}"));
+        Assertions.assertEquals(GameEventData.Action.GOAL, promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("3899937").getFirst().getAction());
 
     }
 

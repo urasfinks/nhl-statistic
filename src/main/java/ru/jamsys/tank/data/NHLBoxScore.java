@@ -69,6 +69,14 @@ public class NHLBoxScore {
         return UtilFileResource.getAsString("example/getNHLBoxScore_error.json");
     }
 
+    public static String getExample_20250104_BOS_TOR() throws IOException {
+        return UtilFileResource.getAsString("example/20250104_BOS_TOR.json");
+    }
+
+    public static String getExample_20250104_BOS_TOR_2() throws IOException {
+        return UtilFileResource.getAsString("example/20250104_BOS_TOR_2.json");
+    }
+
     public static Map<String, List<GameEventData>> getEvent(String lastJson, String currentJson) throws Throwable {
         Map<String, List<GameEventData>> result = new HashMap<>(); //key: idPlayer; value: list GameEventData
         Instance lastInstance = new Instance(lastJson);
