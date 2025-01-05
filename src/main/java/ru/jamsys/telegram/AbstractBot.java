@@ -67,6 +67,22 @@ public abstract class AbstractBot extends TelegramLongPollingBot {
             }
         }
         if (data.startsWith("/")) {
+            if (idChat < 0) {
+                send(UtilTelegram.message(
+                        idChat,
+                        "Группы не поддерживаются",
+                        null
+                ));
+                return;
+            }
+            if (UtilTelegram.isBot(msg)) {
+                send(UtilTelegram.message(
+                        idChat,
+                        "Боты не поддерживаются",
+                        null
+                ));
+                return;
+            }
             PromiseGenerator match = routerRepository.match(data);
             if (match == null) {
                 send(UtilTelegram.message(

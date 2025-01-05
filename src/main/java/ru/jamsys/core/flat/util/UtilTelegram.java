@@ -54,6 +54,16 @@ public class UtilTelegram {
         return null;
     }
 
+    public static boolean isBot(Update msg) {
+        if (msg.hasCallbackQuery()) {
+            return msg.getCallbackQuery().getFrom().getIsBot();
+        } else if (msg.hasMessage()) {
+            return msg.getMessage().getFrom().getIsBot();
+        }
+        // Если какие-то обходные пути будут, лучше прикрыть, так как я не знаю
+        return true;
+    }
+
     public static EditMessageText editMessage(Update msg, String data) {
         EditMessageText editMessage = new EditMessageText();
         editMessage.setChatId(getIdChat(msg));
