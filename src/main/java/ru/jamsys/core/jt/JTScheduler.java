@@ -73,7 +73,6 @@ public enum JTScheduler implements JdbcRequestRepository {
             FROM scheduler
             WHERE
             	time_game_start < now()::timestamp
-            GROUP BY id_game
             ORDER BY 2 DESC
             """, StatementType.SELECT_WITH_AUTO_COMMIT),
     ;
