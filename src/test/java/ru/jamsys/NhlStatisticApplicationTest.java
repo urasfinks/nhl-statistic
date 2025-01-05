@@ -2,7 +2,6 @@ package ru.jamsys;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 import ru.jamsys.core.App;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.extension.builder.ArrayListBuilder;
@@ -82,14 +81,12 @@ class NhlStatisticApplicationTest {
     void telegramSend() {
         Promise promise = servicePromise.get("testPromise", 6_000L);
         promise
-                .thenWithResource("insert", JdbcResource.class, (_, _, _, jdbcResource) -> {
-                    jdbcResource.execute(
-                            new JdbcRequest(JTLogRequest.INSERT)
-                                    .addArg("url", "url")
-                                    .addArg("data", "data")
-                                    .setDebug(false)
-                    );
-                })
+                .thenWithResource("insert", JdbcResource.class, (_, _, _, jdbcResource) -> jdbcResource.execute(
+                        new JdbcRequest(JTLogRequest.INSERT)
+                                .addArg("url", "url")
+                                .addArg("data", "data")
+                                .setDebug(false)
+                ))
 //                .appendWithResource("http", TelegramNotificationResource.class, (_, _, _, telegramNotificationResource) -> {
 //                    HttpResponse execute = telegramNotificationResource.execute(new TelegramNotificationRequest("Hello", "world"));
 //                    System.out.println(execute);
