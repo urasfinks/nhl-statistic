@@ -17,14 +17,17 @@ class NHLBoxScoreTest {
 
     @Test
     void isFinish() throws Throwable {
-        Assertions.assertFalse(NHLBoxScore.isFinish(NHLBoxScore.getExample4()));
-        Assertions.assertTrue(NHLBoxScore.isFinish(NHLBoxScore.getExample6()));
+        NHLBoxScore.Instance instance1 = new NHLBoxScore.Instance(NHLBoxScore.getExample4());
+        NHLBoxScore.Instance instance2 = new NHLBoxScore.Instance(NHLBoxScore.getExample6());
+        Assertions.assertFalse(instance1.isFinish());
+        Assertions.assertTrue(instance2.isFinish());
     }
 
     @Test
     void getError() {
         try {
-            NHLBoxScore.isFinish(NHLBoxScore.getExampleError());
+            NHLBoxScore.Instance instance = new NHLBoxScore.Instance(NHLBoxScore.getExampleError());
+            instance.isFinish();
             Assertions.fail();
         } catch (Throwable e) {
             Assertions.assertEquals("Game hasn't started yet. Game time is: 7:00p(ET) on 20241210", e.getMessage());

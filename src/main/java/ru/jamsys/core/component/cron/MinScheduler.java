@@ -1,5 +1,6 @@
 package ru.jamsys.core.component.cron;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.context.annotation.Lazy;
@@ -12,7 +13,6 @@ import ru.jamsys.core.component.TelegramBotComponent;
 import ru.jamsys.core.extension.UniqueClassName;
 import ru.jamsys.core.extension.exception.ForwardException;
 import ru.jamsys.core.flat.template.cron.release.Cron1m;
-import ru.jamsys.core.flat.util.UtilDate;
 import ru.jamsys.core.flat.util.UtilJson;
 import ru.jamsys.core.flat.util.UtilNHL;
 import ru.jamsys.core.flat.util.UtilRisc;
@@ -20,6 +20,7 @@ import ru.jamsys.core.handler.promise.SendNotificationGameEvent;
 import ru.jamsys.core.handler.promise.SendNotificationGameEventOvi;
 import ru.jamsys.core.handler.promise.Tank01Request;
 import ru.jamsys.core.jt.JTGameDiff;
+import ru.jamsys.core.jt.JTLogRequest;
 import ru.jamsys.core.jt.JTScheduler;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
@@ -54,26 +55,76 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
     @Setter
     @Getter
     public static class Context {
-        private List<String> activeGame = new ArrayList<>();
+        private ActiveRepository activeRepository = new ActiveRepository();
         private Map<String, String> currentData = new HashMap<>(); //key - idGame; value Api Response
         private Map<String, String> lastData = new HashMap<>();
         private Map<String, List<GameEventData>> playerEvent = new LinkedHashMap<>(); // key - idPlayer; value - template
-        private Map<String, List<Long>> playerSubscriber = new HashMap<>(); // key - idPlayer;
         private List<String> endGames = new ArrayList<>();
         private List<PromiseGenerator> notificationList = new ArrayList<>();
-        private Map<String, Set<String>> activeGamePlayer = new HashMap<>(); // key idGame; value: list idPlayer
+    }
 
+    @Getter
+    @Setter
+    public static class ActiveRepository {
+
+        private List<ActiveObject> list = new ArrayList<>();
+
+        @JsonIgnore
+        public ActiveRepository add(ActiveObject activeObject) {
+            list.add(activeObject);
+            return this;
+        }
+
+        @JsonIgnore
+        public List<String> getListIdGame() {
+            Set<String> result = new HashSet<>();
+            list.forEach(activeObject -> result.add(activeObject.getIdGame()));
+            return result.stream().toList();
+        }
+
+        @JsonIgnore
         public String getIdGame(String idPlayer) {
-            System.out.println();
-            for (String idGame : activeGamePlayer.keySet()) {
-                for (String curIdPlayer : activeGamePlayer.get(idGame)) {
-                    if (curIdPlayer.equals(idPlayer)) {
-                        return idGame;
-                    }
+            for (ActiveObject activeObject : list) {
+                if (activeObject.getIdPlayer().equals(idPlayer)) {
+                    return activeObject.getIdGame();
                 }
             }
             throw new RuntimeException("undefined idGame by idPlayer = " + idPlayer);
         }
+
+        @JsonIgnore
+        public Map<String, Set<Long>> getPlayerListIdChatByPlayer() {
+            Map<String, Set<Long>> result = new HashMap<>();
+            list.forEach(activeObject -> result
+                    .computeIfAbsent(activeObject.getIdPlayer(), s -> new HashSet<>())
+                    .add(activeObject.getIdChat()));
+            return result;
+        }
+
+        @JsonIgnore
+        public Set<String> getListIdPlayer() {
+            Set<String> result = new HashSet<>();
+            list.forEach(activeObject -> result.add(activeObject.getIdPlayer()));
+            return result;
+        }
+
+    }
+
+    @Getter
+    public static class ActiveObject {
+
+        private final Long idChat;
+
+        private final String idPlayer;
+
+        private final String idGame;
+
+        public ActiveObject(Long idChat, String idPlayer, String idGame) {
+            this.idChat = idChat;
+            this.idPlayer = idPlayer;
+            this.idGame = idGame;
+        }
+
     }
 
     public Promise generate() {
@@ -91,27 +142,27 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                 })
                 .thenWithResource("getActiveGame", JdbcResource.class, (_, _, promise, jdbcResource) -> {
                     Context context = promise.getRepositoryMapClass(Context.class);
-                    jdbcResource.execute(
-                            new JdbcRequest(JTScheduler.SELECT_ACTIVE_GAME).setDebug(false)
-                    ).forEach(map -> context.getActiveGame().add(map.get("id_game").toString()));
+                    jdbcResource
+                            .execute(new JdbcRequest(JTScheduler.SELECT_ACTIVE_GAME).setDebug(false))
+                            .forEach(map -> context.getActiveRepository().getList().add(new ActiveObject(
+                                    Long.parseLong(map.getOrDefault("id_chat", "0").toString()),
+                                    map.getOrDefault("id_player", "0").toString(),
+                                    map.getOrDefault("id_game", "--").toString()
+                            )));
                     // Если нет активных игр, нечего тут делать
-                    if (context.getActiveGame().isEmpty()) {
+                    if (context.getActiveRepository().getList().isEmpty()) {
                         promise.skipAllStep("active game is empty");
-                        return;
                     }
                     jdbcResource.execute(
-                            new JdbcRequest(JTScheduler.SELECT_ACTIVE_GAME_PLAYER).setDebug(false)
-                    ).forEach(map -> context
-                            .getActiveGamePlayer()
-                            .computeIfAbsent(
-                                    map.getOrDefault("id_game", "--").toString(),
-                                    _ -> new HashSet<>()
-                            )
-                            .add(map.getOrDefault("id_player", "0").toString()));
+                            new JdbcRequest(JTLogRequest.INSERT)
+                                    .addArg("url", ActiveRepository.class.getSimpleName())
+                                    .addArg("data", UtilJson.toStringPretty(context.getActiveRepository(), "{}"))
+                                    .setDebug(false)
+                    );
                 })
                 .then("getBoxScoreByActiveGame", (run, promiseTask, promise) -> {
                     Context context = promise.getRepositoryMapClass(Context.class);
-                    for (String idGame : context.getActiveGame()) {
+                    for (String idGame : context.getActiveRepository().getListIdGame()) {
                         if (!run.get()) {
                             return;
                         }
@@ -122,7 +173,7 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                             throw req.getExceptionSource();
                         }
                         String data = tank01Request.getResponseData();
-                        // Если что-то не спрасилось - другие игры не должны страдать
+                        // Если что-то не спарсилось - другие игры не должны страдать
                         try {
                             @SuppressWarnings("unchecked")
                             Map<String, Object> parsed = UtilJson.toObject(data, Map.class);
@@ -162,67 +213,70 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                 })
                 .then("getEvent", (atomicBoolean, _, promise) -> {
                     Context context = promise.getRepositoryMapClass(Context.class);
-                    String curData = UtilDate.timestampFormatUTC(UtilDate.getTimestamp() + 3 * 60 * 60, "dd.MM.yyyy HH:mm");
                     UtilRisc.forEach(atomicBoolean, context.getCurrentData(), (idGame, data) -> {
                         try {
+                            if (context.getLastData().get(idGame) != null) {
+                                NHLBoxScore
+                                        .getEvent(context.getLastData().get(idGame), data)
+                                        .forEach((idPlayer, gameEventData) -> context
+                                                .getPlayerEvent()
+                                                .computeIfAbsent(idPlayer, _ -> new ArrayList<>())
+                                                .addAll(gameEventData));
+                            }
                             NHLBoxScore.Instance currentBoxScore = new NHLBoxScore.Instance(data);
-                            Map<String, List<GameEventData>> curGamePlayerEvent = context.getLastData().get(idGame) == null
-                                    ? new HashMap<>()
-                                    : NHLBoxScore.getEvent(context.getLastData().get(idGame), data);
-                            // Мержим idPlayer из BoxScore с idPlayer из подписок, так как первый json приходит без статистики по игрокам
-                            List<String> listIdPlayer = currentBoxScore.getListIdPlayer(context.getActiveGamePlayer().get(idGame));
                             if (context.getLastData().get(idGame) == null) {
-                                listIdPlayer.forEach((idPlayer) -> {
-                                    context
-                                            .getActiveGamePlayer()
-                                            .computeIfAbsent(idGame, _ -> new HashSet<>())
-                                            .add(idPlayer);
-                                    NHLBoxScore.Player player = currentBoxScore.getPlayer(idPlayer);
-                                    boolean inPlay = true;
-                                    if (player == null) {
-                                        player = NHLBoxScore.Player.getEmpty(idPlayer);
-                                        inPlay = false;
-                                    }
-                                    curGamePlayerEvent
-                                            .computeIfAbsent(idPlayer, _ -> new ArrayList<>())
-                                            .add(new GameEventData(
-                                                            inPlay
-                                                                    ? GameEventData.Action.START_GAME
-                                                                    : GameEventData.Action.START_GAME_NOT_PLAY,
-                                                            currentBoxScore.getAboutGame(),
-                                                            currentBoxScore.getScoreGame(),
-                                                            player.getLongName(),
-                                                            curData
-                                                    )
-                                            );
+                                currentBoxScore
+                                        .getListIdPlayer(context.getActiveRepository().getListIdPlayer())
+                                        .forEach((idPlayer) -> {
+                                            NHLBoxScore.Player player = currentBoxScore.getPlayer(idPlayer);
+                                            boolean inPlay = true;
+                                            if (player == null) {
+                                                player = NHLBoxScore.Player.getPlayerOrEmpty(idPlayer);
+                                                inPlay = false;
+                                            }
+                                            context
+                                                    .getPlayerEvent()
+                                                    .computeIfAbsent(idPlayer, _ -> new ArrayList<>())
+                                                    .add(new GameEventData(
+                                                                    inPlay
+                                                                            ? GameEventData.Action.START_GAME
+                                                                            : GameEventData.Action.START_GAME_NOT_PLAY,
+                                                                    currentBoxScore.getAboutGame(),
+                                                                    currentBoxScore.getScoreGame(),
+                                                                    player.getLongName(),
+                                                                    "now"
+                                                            )
+                                                    );
                                         }
                                 );
                             }
-                            if (NHLBoxScore.isFinish(data)) {
-                                listIdPlayer.forEach((idPlayer) -> {
-                                    NHLBoxScore.Player player = currentBoxScore.getPlayer(idPlayer);
-                                    if (player != null) {
-                                        curGamePlayerEvent.computeIfAbsent(idPlayer, _ -> new ArrayList<>())
-                                                .add(new GameEventData(
-                                                                GameEventData.Action.FINISH_GAME,
-                                                                currentBoxScore.getAboutGame(),
-                                                                currentBoxScore.getScoreGame(),
-                                                                player.getLongName(),
-                                                                player.getFinishTimeScore()
-                                                        )
-                                                                .setScoredGoal(player.getGoals())
-                                                                .setScoredAssists(player.getAssists())
-                                                                .setScoredShots(player.getShots())
-                                                                .setScoredHits(player.getHits())
-                                                                .setScoredPenaltiesInMinutes(player.getPenaltiesInMinutes())
-                                                                .setScoredTimeOnIce(player.getTimeOnIce())
-                                                );
-                                    }
-
+                            if (currentBoxScore.isFinish()) {
+                                currentBoxScore
+                                        .getListIdPlayer(context.getActiveRepository().getListIdPlayer())
+                                        .forEach((idPlayer) -> {
+                                            NHLBoxScore.Player player = currentBoxScore.getPlayer(idPlayer);
+                                            if (player != null) {
+                                                context
+                                                        .getPlayerEvent()
+                                                        .computeIfAbsent(idPlayer, _ -> new ArrayList<>())
+                                                        .add(new GameEventData(
+                                                                        GameEventData.Action.FINISH_GAME,
+                                                                        currentBoxScore.getAboutGame(),
+                                                                        currentBoxScore.getScoreGame(),
+                                                                        player.getLongName(),
+                                                                        player.getFinishTimeScore()
+                                                                )
+                                                                        .setScoredGoal(player.getGoals())
+                                                                        .setScoredAssists(player.getAssists())
+                                                                        .setScoredShots(player.getShots())
+                                                                        .setScoredHits(player.getHits())
+                                                                        .setScoredPenaltiesInMinutes(player.getPenaltiesInMinutes())
+                                                                        .setScoredTimeOnIce(player.getTimeOnIce())
+                                                        );
+                                            }
                                 });
                                 context.getEndGames().add(idGame);
                             }
-                            context.getPlayerEvent().putAll(curGamePlayerEvent);
                             //logToTelegram(idGame + ":" + UtilJson.toStringPretty(context.getEvent(), "{}"));
                         } catch (Throwable e) {
                             throw new ForwardException(e);
@@ -233,19 +287,6 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                         promise.goTo("saveData");
                     }
                 })
-                .thenWithResource("selectSubscribers", JdbcResource.class, (_, _, promise, jdbcResource) -> {
-                    Context context = promise.getRepositoryMapClass(Context.class);
-                    List<Map<String, Object>> execute = jdbcResource.execute(
-                            new JdbcRequest(JTScheduler.SELECT_SUBSCRIBER_BY_PLAYER)
-                                    .addArg("id_players", context.getPlayerEvent().keySet().stream().toList())
-                                    .setDebug(false)
-                    );
-                    execute.forEach(map -> context.getPlayerSubscriber().computeIfAbsent(
-                                    map.get("id_player").toString(),
-                                    _ -> new ArrayList<>()
-                            ).add(Long.parseLong(map.get("id_chat").toString()))
-                    );
-                })
                 .then("getPlayerList", new Tank01Request(NHLPlayerList::getUri).generate())
                 .then("createNotification", (atomicBoolean, _, promise) -> {
                     Context context = promise.getRepositoryMapClass(Context.class);
@@ -253,9 +294,9 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                             .getRepositoryMapClass(Promise.class, "getPlayerList")
                             .getRepositoryMapClass(Tank01Request.class);
 
-                    Map<String, List<Long>> startGameNotify = new HashMap<>(); // key - idGame
+                    Map<String, Set<Long>> startGameNotify = new HashMap<>(); // key - idGame
 
-                    UtilRisc.forEach(atomicBoolean, context.getPlayerSubscriber(), (idPlayer, listIdChat) -> {
+                    UtilRisc.forEach(atomicBoolean, context.getActiveRepository().getPlayerListIdChatByPlayer(), (idPlayer, listIdChat) -> {
                         try {
                             if (listIdChat.isEmpty()) {
                                 return;
@@ -268,13 +309,14 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                             gameEventDataList.forEach(gameEventData -> {
                                 if (UtilNHL.isOvi(idPlayer)) {
                                     context.getNotificationList().add(new SendNotificationGameEventOvi(
-                                            context.getIdGame(idPlayer),
+                                            context.getActiveRepository().getIdGame(idPlayer),
                                             gameEventData
                                     ));
                                 }
-                                List<Long> to = new ArrayList<>(listIdChat);
+                                Set<Long> to = new HashSet<>(listIdChat);
                                 if (gameEventData.getAction().equals(GameEventData.Action.START_GAME)) {
-                                    List<Long> alreadySend = startGameNotify.computeIfAbsent(gameEventData.getGameAbout(), _ -> new ArrayList<>());
+                                    Set<Long> alreadySend = startGameNotify
+                                            .computeIfAbsent(gameEventData.getGameAbout(), _ -> new HashSet<>());
                                     to.removeAll(alreadySend);
                                     if (to.isEmpty()) {
                                         return;
@@ -283,10 +325,10 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                                 }
 
                                 context.getNotificationList().add(new SendNotificationGameEvent(
-                                        context.getIdGame(idPlayer),
+                                        context.getActiveRepository().getIdGame(idPlayer),
                                         NHLPlayerList.Player.fromMap(player),
                                         gameEventData,
-                                        to
+                                        to.stream().toList()
                                 ));
                             });
                         } catch (Throwable e) {

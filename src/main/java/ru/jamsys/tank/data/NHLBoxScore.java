@@ -28,12 +28,12 @@ public class NHLBoxScore {
         return UtilFileResource.getAsString("example/getNHLBoxScore.json");
     }
 
-    public static String getExampleTorWSH_nullTotal() throws IOException {
-        return UtilFileResource.getAsString("example/boxTOR_WSH_nullTotal.json");
-    }
-
     public static String getExampleTorWSH() throws IOException {
         return UtilFileResource.getAsString("example/boxTOR_WSH.json");
+    }
+
+    public static String getExampleTorWSH_withoutOviStat() throws IOException {
+        return UtilFileResource.getAsString("example/boxTOR_WSH_withoutOviStat.json");
     }
 
     public static String getExampleTorWSH_live() throws IOException {
@@ -77,6 +77,7 @@ public class NHLBoxScore {
         return UtilFileResource.getAsString("example/20250104_BOS_TOR_2.json");
     }
 
+    // Получить события по игрокам на разности снимков статистики
     public static Map<String, List<GameEventData>> getEvent(String lastJson, String currentJson) throws Throwable {
         Map<String, List<GameEventData>> result = new HashMap<>(); //key: idPlayer; value: list GameEventData
         Instance lastInstance = new Instance(lastJson);
@@ -110,19 +111,6 @@ public class NHLBoxScore {
             }
         });
         return result;
-    }
-
-    public static boolean isFinish(String json) throws Throwable {
-        if (json == null || json.isEmpty()) { //Так как в БД может быть ничего
-            return false;
-        }
-        @SuppressWarnings("unchecked")
-        Map<String, Object> parsed = UtilJson.toObject(json, Map.class);
-        if (parsed.containsKey("error")) {
-            throw new RuntimeException(parsed.get("error").toString());
-        }
-        String gameStatusCode = (String) UtilJson.selector(parsed, "body.gameStatusCode");
-        return Integer.parseInt(gameStatusCode) == 2;
     }
 
     public static String periodExpandRu(String period) {
@@ -167,6 +155,8 @@ public class NHLBoxScore {
 
         final private Map<String, Integer> scoreMap = new HashMap<>();
 
+        final private int gameStatusCode;
+
         final String scoreGame;
         final String aboutGame;
 
@@ -176,7 +166,13 @@ public class NHLBoxScore {
             }
 
             @SuppressWarnings("unchecked")
-            Map<String, Object> body = (Map<String, Object>) UtilJson.toObject(json, Map.class).get("body");
+            Map<String, Object> object = UtilJson.toObject(json, Map.class);
+            if (object.containsKey("error")) {
+                throw new RuntimeException(object.get("error").toString());
+            }
+
+            @SuppressWarnings("unchecked")
+            Map<String, Object> body = (Map<String, Object>) object.get("body");
             @SuppressWarnings("unchecked")
             List<Map<String, Object>> scoringPlays = (List<Map<String, Object>>) body.get("scoringPlays");
             this.scoringPlays = scoringPlays != null ? scoringPlays : new ArrayList<>();
@@ -194,6 +190,11 @@ public class NHLBoxScore {
             scoreGame = getScoreGame(teamHome.getAbv());
             aboutGame = getAboutGame(teamHome.getAbv());
 
+            gameStatusCode = Integer.parseInt(body.getOrDefault("gameStatusCode", "-1").toString());
+        }
+
+        public boolean isFinish() {
+            return gameStatusCode == 2;
         }
 
         public List<String> getListIdPlayer(Set<String> listIdPlayer) {
@@ -317,7 +318,7 @@ public class NHLBoxScore {
             return "";
         }
 
-        public static Player getEmpty(String idPlayer) {
+        public static Player getPlayerOrEmpty(String idPlayer) {
             //TODO переделать по человечески через кеш
             Map<String, Object> about = new HashMap<>();
             try {
