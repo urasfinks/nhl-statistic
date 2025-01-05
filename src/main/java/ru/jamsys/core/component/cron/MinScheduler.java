@@ -358,6 +358,12 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                             App.error(e);
                         }
                     });
+                    jdbcResource.execute(
+                            new JdbcRequest(JTLogRequest.INSERT)
+                                    .addArg("url", "getPlayerEvent")
+                                    .addArg("data", UtilJson.toStringPretty(context.getPlayerEvent(), "{}"))
+                                    .setDebug(false)
+                    );
                 })
                 .thenWithResource("removeFinish", JdbcResource.class, (_, _, promise, jdbcResource) -> {
                     Context context = promise.getRepositoryMapClass(Context.class);
