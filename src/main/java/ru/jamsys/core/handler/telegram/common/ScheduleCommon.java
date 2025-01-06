@@ -8,7 +8,6 @@ import ru.jamsys.core.App;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.extension.builder.HashMapBuilder;
 import ru.jamsys.core.extension.http.ServletResponseWriter;
-import ru.jamsys.core.flat.util.Util;
 import ru.jamsys.core.flat.util.UtilJson;
 import ru.jamsys.core.flat.util.UtilTelegram;
 import ru.jamsys.core.flat.util.telegram.Button;
@@ -68,11 +67,7 @@ public class ScheduleCommon implements PromiseGenerator, NhlStatisticsBotCommand
                     AtomicInteger activeGame = new AtomicInteger();
                     execute.forEach(map -> {
                         buttons.add(new Button(
-                                String.format(
-                                        "%s, game: %s",
-                                        map.get("player_about").toString(),
-                                        map.get("count").toString()
-                                ),
+                                map.get("player_about").toString(),
                                 ServletResponseWriter.buildUrlQuery(
                                         "/ms/",
                                         new HashMapBuilder<>(context.getUriParameters())
@@ -82,11 +77,11 @@ public class ScheduleCommon implements PromiseGenerator, NhlStatisticsBotCommand
                         ));
                         activeGame.addAndGet(Integer.parseInt(map.get("count").toString()));
                     });
-                    context.getTelegramBot().send(context.getIdChat(), String.format(
-                            "Подписка на %d %s. Выбери игрока для отображения детальной информации",
-                            activeGame.get(),
-                            Util.digitTranslate(activeGame.get(), "матч", "матча", "матчей")
-                    ), buttons);
+                    context.getTelegramBot().send(
+                            context.getIdChat(),
+                            "Выбери игрока для отображения расписания",
+                            buttons
+                    );
                     promise.skipAllStep("wait read id_player for more information");
                 })
                 .then("getSubscriptionsMarker", (_, _, promise) -> {

@@ -64,11 +64,7 @@ public class Remove implements PromiseGenerator, NhlStatisticsBotCommandHandler 
                     AtomicInteger activeGame = new AtomicInteger();
                     execute.forEach(map -> {
                         buttons.add(new Button(
-                                String.format(
-                                        "%s, game: %s",
-                                        map.get("player_about").toString(),
-                                        map.get("count").toString()
-                                ),
+                                map.get("player_about").toString(),
                                 ServletResponseWriter.buildUrlQuery(
                                         "/rs/",
                                         new HashMapBuilder<>(context.getUriParameters())
