@@ -83,6 +83,9 @@ public abstract class AbstractBot extends TelegramLongPollingBot {
                 ));
                 return;
             }
+            if (data.startsWith("/start ")) {
+                data = "/start/?playload=" + data.substring(7);
+            }
             PromiseGenerator match = routerRepository.match(data);
             if (match == null) {
                 send(UtilTelegram.message(
@@ -136,6 +139,7 @@ public abstract class AbstractBot extends TelegramLongPollingBot {
         return null;
     }
 
+    @SuppressWarnings("unused")
     public static List<String> splitMessageSmart(String message, int maxLength) {
         List<String> parts = new ArrayList<>();
 

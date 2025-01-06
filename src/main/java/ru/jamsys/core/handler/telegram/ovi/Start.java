@@ -28,7 +28,7 @@ import java.util.Map;
 @Setter
 @Getter
 @Component
-@RequestMapping({"/start"})
+@RequestMapping({"/start/**"})
 public class Start implements PromiseGenerator, OviGoalsBotCommandHandler {
 
     private final ServicePromise servicePromise;
@@ -53,6 +53,7 @@ public class Start implements PromiseGenerator, OviGoalsBotCommandHandler {
                         jdbcResource.execute(new JdbcRequest(JTOviSubscriber.INSERT)
                                 .addArg("id_chat", context.getIdChat())
                                 .addArg("user_info", context.getUserInfo())
+                                .addArg("playload", context.getUriParameters().getOrDefault("playload", ""))
                         );
                     }
                 })
