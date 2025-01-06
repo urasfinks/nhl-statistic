@@ -11,7 +11,7 @@ public class GameEventData {
 
     public enum Action {
         START_GAME,
-        START_GAME_NOT_PLAY,
+        NOT_PLAY,
         GOAL,
         CANCEL,
         FINISH_GAME

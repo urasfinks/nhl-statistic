@@ -81,9 +81,9 @@ class MinSchedulerTest {
 
         promise.then("saveData", (_, _, _) -> {});
         promise.setDebug(false).run().await(50_000L);
-        System.out.println(UtilJson.toStringPretty(promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent(), "{}"));
-        Assertions.assertEquals(1, promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("3101").size());
-        Assertions.assertEquals(GameEventData.Action.START_GAME_NOT_PLAY, promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("3101").getFirst().getAction());
+        System.out.println(UtilJson.toStringPretty(promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("3101"), "{}"));
+        Assertions.assertEquals(2, promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("3101").size());
+        Assertions.assertEquals(GameEventData.Action.NOT_PLAY, promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("3101").getFirst().getAction());
         Assertions.assertEquals("Александр Овечкин", promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("3101").getFirst().getPlayerName());
         //Assertions.assertEquals(GameEventData.Action.FINISH_GAME_NOT_PLAY, promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("3101").getLast().getAction());
         Assertions.assertEquals("[20241228_WSH@TOR]", promise.getRepositoryMapClass(MinScheduler.Context.class).getEndGames().toString());
@@ -522,7 +522,7 @@ class MinSchedulerTest {
         promise.setDebug(false).run().await(50_000L);
 
         //System.out.println(UtilJson.toStringPretty(promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("3114"), "{}"));
-        Assertions.assertNotEquals(promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("3114").getFirst().getAction(), GameEventData.Action.START_GAME_NOT_PLAY);
+        Assertions.assertNotEquals(promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("3114").getFirst().getAction(), GameEventData.Action.NOT_PLAY);
         //System.out.println(UtilJson.toStringPretty(promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("3899937"), "{}"));
         //Assertions.assertEquals(GameEventData.Action.GOAL, promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("3899937").getFirst().getAction());
 

@@ -233,18 +233,25 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                                         .getListIdPlayer(context.getActiveRepository().getListIdPlayer(idGame))
                                         .forEach((idPlayer) -> {
                                             NHLBoxScore.Player player = currentBoxScore.getPlayer(idPlayer);
-                                            boolean inPlay = true;
                                             if (player == null) {
                                                 player = NHLBoxScore.Player.getPlayerOrEmpty(idPlayer);
-                                                inPlay = false;
+                                                context
+                                                        .getPlayerEvent()
+                                                        .computeIfAbsent(idPlayer, _ -> new ArrayList<>())
+                                                        .add(new GameEventData(
+                                                                        GameEventData.Action.NOT_PLAY,
+                                                                        currentBoxScore.getAboutGame(),
+                                                                        currentBoxScore.getScoreGame(),
+                                                                        player.getLongName(),
+                                                                        "now"
+                                                                )
+                                                        );
                                             }
                                             context
                                                     .getPlayerEvent()
                                                     .computeIfAbsent(idPlayer, _ -> new ArrayList<>())
                                                     .add(new GameEventData(
-                                                                    inPlay
-                                                                            ? GameEventData.Action.START_GAME
-                                                                            : GameEventData.Action.START_GAME_NOT_PLAY,
+                                                            GameEventData.Action.START_GAME,
                                                                     currentBoxScore.getAboutGame(),
                                                                     currentBoxScore.getScoreGame(),
                                                                     player.getLongName(),

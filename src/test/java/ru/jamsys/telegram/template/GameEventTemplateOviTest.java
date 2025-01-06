@@ -51,9 +51,8 @@ class GameEventTemplateOviTest {
         );
 
         Assertions.assertEquals("""
-                        Начало игры Washington Capitals (WSH) 🆚 Detroit Red Wings (DET)
                         ❌ Александр Овечкин не принимает участие""",
-                new GameEventTemplateOvi(gameEventData.setAction(GameEventData.Action.START_GAME_NOT_PLAY)).toString()
+                new GameEventTemplateOvi(gameEventData.setAction(GameEventData.Action.NOT_PLAY)).toString()
         );
 
     }
