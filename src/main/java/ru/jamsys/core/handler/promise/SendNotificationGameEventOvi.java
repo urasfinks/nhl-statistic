@@ -7,6 +7,7 @@ import ru.jamsys.core.component.DelaySenderComponent;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.component.TelegramBotComponent;
 import ru.jamsys.core.flat.util.Util;
+import ru.jamsys.core.flat.util.UtilFileResource;
 import ru.jamsys.core.flat.util.UtilNHL;
 import ru.jamsys.core.flat.util.UtilRisc;
 import ru.jamsys.core.jt.JTOviSubscriber;
@@ -91,10 +92,27 @@ public class SendNotificationGameEventOvi implements PromiseGenerator {
                                                 .setIdChat(idChat),
                                         message,
                                         null,
+                                        null,
                                         10_000L
                                 );
-                    });
 
+                        String pathImage = "image/" + ovi.getTotalGoals() + ".png";
+                        if (
+                                gameEventData.getScoredGoal() > 0
+                                        && UtilFileResource.isFile(pathImage, UtilFileResource.Direction.PROJECT)
+                        ) {
+                            App.get(DelaySenderComponent.class)
+                                    .add(
+                                            new TelegramCommandContext()
+                                                    .setTelegramBot(telegramBotComponent.getOviGoalsBot())
+                                                    .setIdChat(idChat),
+                                            null,
+                                            null,
+                                            pathImage,
+                                            15_000L
+                                    );
+                        }
+                    });
                 })
                 .setDebug(false)
                 ;

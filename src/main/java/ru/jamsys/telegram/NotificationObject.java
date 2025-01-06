@@ -14,10 +14,13 @@ public class NotificationObject {
 
     final List<Button> buttons;
 
-    public NotificationObject(TelegramCommandContext context, String message, List<Button> buttons) {
+    final String pathImage;
+
+    public NotificationObject(TelegramCommandContext context, String message, List<Button> buttons, String pathImage) {
         this.context = context;
         this.message = message;
         this.buttons = buttons;
+        this.pathImage = pathImage;
     }
 
 }

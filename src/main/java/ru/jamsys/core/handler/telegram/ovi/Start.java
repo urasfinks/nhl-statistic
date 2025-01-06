@@ -104,6 +104,7 @@ public class Start implements PromiseGenerator, OviGoalsBotCommandHandler {
                                     /schedule — Ближайшие игры Александра Овечкина и команды Washington Capitals
                                     /stop — Отключить уведомления""",
                             null,
+                            null,
                             10_000L);
 
                     App.get(DelaySenderComponent.class).add(
@@ -129,6 +130,7 @@ public class Start implements PromiseGenerator, OviGoalsBotCommandHandler {
                                             )
                                     ))
                             ,
+                            null,
                             20_000L);
                 })
                 ;

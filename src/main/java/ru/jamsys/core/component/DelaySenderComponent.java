@@ -27,8 +27,13 @@ public class DelaySenderComponent {
         broker = managerBroker.get(NotificationObject.class.getSimpleName(), NotificationObject.class);
     }
 
-    public void add(TelegramCommandContext context, String message, List<Button> buttons, long delayMs) {
-        broker.add(new ExpirationMsImmutableEnvelope<>(new NotificationObject(context, message, buttons), delayMs));
+    public void add(TelegramCommandContext context, String message, List<Button> buttons, String pathImage, long delayMs) {
+        broker.add(new ExpirationMsImmutableEnvelope<>(new NotificationObject(
+                context,
+                message,
+                buttons,
+                pathImage
+        ), delayMs));
     }
 
 }

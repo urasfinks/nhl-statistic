@@ -59,6 +59,11 @@ public class PlayerStatistic implements PromiseGenerator {
         this.scoreLastSeason = scoreLastSeason;
     }
 
+    public int getTotalGoals() {
+        int seasonGoals = Integer.parseInt(scoreTotal.getOrDefault("goals", "0").toString());
+        return scoreLastSeason + seasonGoals;
+    }
+
     public String getMessage() {
         int seasonGoals = Integer.parseInt(scoreTotal.getOrDefault("goals", "0").toString());
         int countGame = Integer.parseInt(scoreTotal.getOrDefault("countGame", "").toString());
