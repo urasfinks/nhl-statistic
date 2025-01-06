@@ -3,6 +3,8 @@ package ru.jamsys.telegram;
 import lombok.Getter;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
+import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
+import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.jamsys.core.App;
 import ru.jamsys.core.component.manager.item.RouteGeneratorRepository;
@@ -14,6 +16,7 @@ import ru.jamsys.core.flat.util.telegram.Button;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
 
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -122,6 +125,20 @@ public abstract class AbstractBot extends TelegramLongPollingBot {
                     .setTelegramBot(this)
             );
             promise.run();
+        }
+    }
+
+    public void sendImage(long idChat, InputStream is, String fileName, String description) {
+        SendPhoto sendPhoto = new SendPhoto();
+        sendPhoto.setChatId(idChat);
+        sendPhoto.setPhoto(new InputFile(is, fileName));
+        if (description != null) {
+            sendPhoto.setCaption(description);
+        }
+        try {
+            execute(sendPhoto);
+        } catch (Throwable th) {
+            App.error(th);
         }
     }
 

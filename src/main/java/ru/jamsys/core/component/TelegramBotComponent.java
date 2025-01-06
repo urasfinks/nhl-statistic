@@ -7,8 +7,10 @@ import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 import ru.jamsys.NhlStatisticApplication;
+import ru.jamsys.core.App;
 import ru.jamsys.core.component.manager.ManagerExpiration;
 import ru.jamsys.core.extension.LifeCycleComponent;
+import ru.jamsys.core.flat.util.Util;
 import ru.jamsys.telegram.bot.NhlStatisticsBot;
 import ru.jamsys.telegram.bot.OviGoalsBot;
 import ru.jamsys.telegram.handler.NhlStatisticsBotCommandHandler;
@@ -49,10 +51,21 @@ public class TelegramBotComponent implements LifeCycleComponent {
     @Override
     public void run() {
         if (NhlStatisticApplication.startTelegramListener) {
+            ServiceProperty serviceProperty = App.get(ServiceProperty.class);
+            String commonSecurityAlias = serviceProperty.get("telegram.bot.common.security.alias");
+            String commonName = serviceProperty.get("telegram.bot.common.name");
+            String oviSecurityAlias = serviceProperty.get("telegram.bot.ovi.security.alias");
+            String oviName = serviceProperty.get("telegram.bot.ovi.name");
+
+            Util.logConsole("commonName: "+commonName);
+            Util.logConsole("commonSecurityAlias: "+commonSecurityAlias);
+
+            Util.logConsole("oviName: "+oviName);
+            Util.logConsole("oviSecurityAlias: "+oviSecurityAlias);
             try {
                 nhlStatisticsBot = new NhlStatisticsBot(
-                        "nhl_statistics_bot",
-                        new String(securityComponent.get("telegram.api.token.nhl_statistics_bot")),
+                        commonName,
+                        new String(securityComponent.get(commonSecurityAlias)),
                         routeGenerator.getRouterRepository(NhlStatisticsBotCommandHandler.class)
                 );
                 api.registerBot(nhlStatisticsBot);
@@ -62,8 +75,8 @@ public class TelegramBotComponent implements LifeCycleComponent {
 
             try {
                 oviGoalsBot = new OviGoalsBot(
-                        "ovi_goals_bot",
-                        new String(securityComponent.get("telegram.api.token.ovi_goals_bot")),
+                        oviName,
+                        new String(securityComponent.get(oviSecurityAlias)),
                         routeGenerator.getRouterRepository(OviGoalsBotCommandHandler.class)
                 );
                 api.registerBot(oviGoalsBot);
