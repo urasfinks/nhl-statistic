@@ -102,9 +102,13 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
         }
 
         @JsonIgnore
-        public Set<String> getListIdPlayer() {
+        public Set<String> getListIdPlayer(String idGame) {
             Set<String> result = new HashSet<>();
-            list.forEach(activeObject -> result.add(activeObject.getIdPlayer()));
+            list.forEach(activeObject -> {
+                if (activeObject.getIdGame().equals(idGame)) {
+                    result.add(activeObject.getIdPlayer());
+                }
+            });
             return result;
         }
 
@@ -226,7 +230,7 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                             NHLBoxScore.Instance currentBoxScore = new NHLBoxScore.Instance(data);
                             if (context.getLastData().get(idGame) == null) {
                                 currentBoxScore
-                                        .getListIdPlayer(context.getActiveRepository().getListIdPlayer())
+                                        .getListIdPlayer(context.getActiveRepository().getListIdPlayer(idGame))
                                         .forEach((idPlayer) -> {
                                             NHLBoxScore.Player player = currentBoxScore.getPlayer(idPlayer);
                                             boolean inPlay = true;
@@ -252,7 +256,7 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                             }
                             if (currentBoxScore.isFinish()) {
                                 currentBoxScore
-                                        .getListIdPlayer(context.getActiveRepository().getListIdPlayer())
+                                        .getListIdPlayer(context.getActiveRepository().getListIdPlayer(idGame))
                                         .forEach((idPlayer) -> {
                                             NHLBoxScore.Player player = currentBoxScore.getPlayer(idPlayer);
                                             if (player != null) {
