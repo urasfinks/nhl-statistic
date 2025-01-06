@@ -38,14 +38,22 @@ public class Stop implements PromiseGenerator, OviGoalsBotCommandHandler {
                     List<Map<String, Object>> result = jdbcResource.execute(new JdbcRequest(JTOviSubscriber.SELECT)
                             .addArg("id_chat", context.getIdChat())
                     );
+                    // Если нет записей вообще
                     if (result.isEmpty()) {
                         promise.setRepositoryMapClass(Boolean.class, false);
-                    } else {
-                        promise.setRepositoryMapClass(Boolean.class, true);
-                        jdbcResource.execute(new JdbcRequest(JTOviSubscriber.DELETE)
-                                .addArg("id_chat", context.getIdChat())
-                        );
+                        return;
                     }
+                    // Если remove не 0
+                    if (!"0".equals(result.getFirst().get("remove").toString())) {
+                        promise.setRepositoryMapClass(Boolean.class, false);
+                        return;
+                    }
+                    // Штатная ситуация, подписка существует и remove = 0
+                    promise.setRepositoryMapClass(Boolean.class, true);
+                    jdbcResource.execute(new JdbcRequest(JTOviSubscriber.UPDATE_REMOVE)
+                            .addArg("id_chat", context.getIdChat())
+                            .addArg("remove", 1)
+                    );
                 })
                 .then("check", (_, _, promise) -> {
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);

@@ -50,7 +50,7 @@ public class PollResults implements PromiseGenerator, OviGoalsBotCommandHandler 
                 .thenWithResource("vote", JdbcResource.class, (_, _, promise, jdbcResource) -> {
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
                     boolean win = context.getUriParameters().getOrDefault("value", "true").equals("true");
-                    jdbcResource.execute(new JdbcRequest(JTOviSubscriber.UPDATE)
+                    jdbcResource.execute(new JdbcRequest(JTOviSubscriber.UPDATE_VOTE)
                             .addArg("vote", win ? "true" : "false")
                             .addArg("id_chat", context.getIdChat())
                     );

@@ -46,16 +46,24 @@ public class Start implements PromiseGenerator, OviGoalsBotCommandHandler {
                     List<Map<String, Object>> result = jdbcResource.execute(new JdbcRequest(JTOviSubscriber.SELECT)
                             .addArg("id_chat", context.getIdChat())
                     );
-                    if (!result.isEmpty()) {
-                        promise.setRepositoryMapClass(Boolean.class, false);
-                    } else {
+                    if (result.isEmpty()) {
                         promise.setRepositoryMapClass(Boolean.class, true);
                         jdbcResource.execute(new JdbcRequest(JTOviSubscriber.INSERT)
                                 .addArg("id_chat", context.getIdChat())
                                 .addArg("user_info", context.getUserInfo())
                                 .addArg("playload", context.getUriParameters().getOrDefault("playload", ""))
                         );
+                        return;
                     }
+                    if (!"0".equals(result.getFirst().get("remove").toString())) {
+                        promise.setRepositoryMapClass(Boolean.class, true);
+                        jdbcResource.execute(new JdbcRequest(JTOviSubscriber.UPDATE_REMOVE)
+                                .addArg("id_chat", context.getIdChat())
+                                .addArg("remove", 0)
+                        );
+                        return;
+                    }
+                    promise.setRepositoryMapClass(Boolean.class, false);
                 })
                 .then("check", (_, _, promise) -> {
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);

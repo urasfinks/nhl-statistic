@@ -28,14 +28,16 @@ public enum JTOviSubscriber implements JdbcRequestRepository {
             FROM ovi_subscriber
             """, StatementType.SELECT_WITH_AUTO_COMMIT),
 
-    DELETE("""
-            DELETE
-            FROM ovi_subscriber
+    UPDATE_REMOVE("""
+            UPDATE
+                ovi_subscriber
+            SET
+                remove = ${IN.remove::NUMBER}
             WHERE
                 id_chat = ${IN.id_chat::NUMBER}
             """, StatementType.SELECT_WITH_AUTO_COMMIT),
 
-    UPDATE("""
+    UPDATE_VOTE("""
             UPDATE
                 ovi_subscriber
             SET
@@ -48,12 +50,14 @@ public enum JTOviSubscriber implements JdbcRequestRepository {
             INSERT INTO ovi_subscriber (
                 id_chat,
                 user_info,
-                playload
+                playload,
+                remove
             )
             VALUES (
                 ${IN.id_chat::NUMBER},
                 ${IN.user_info::VARCHAR},
-                ${IN.playload::VARCHAR}
+                ${IN.playload::VARCHAR},
+                0
             )
             ON CONFLICT DO NOTHING
             """, StatementType.SELECT_WITH_AUTO_COMMIT);
