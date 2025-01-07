@@ -225,6 +225,21 @@
         "scoreTime": "16:37",
         "team": "WSH",
         "teamAbv": "WSH"
+      },
+      {
+        "period": "SO",
+        "goal": {
+          "longName": "Pierre-Luc Dubois",
+          "playerID": "3101"
+        },
+        "shortHanded": "False",
+        "shootout": "True",
+        "assists": [],
+        "powerPlay": "False",
+        "teamID": "31",
+        "scoreTime": "",
+        "team": "WSH",
+        "teamAbv": "WSH"
       }
     ],
     "homePoints": "0",

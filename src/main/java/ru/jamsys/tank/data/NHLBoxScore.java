@@ -241,7 +241,14 @@ public class NHLBoxScore {
                     if (map.containsKey("goal")) {
                         @SuppressWarnings("unchecked")
                         Map<String, Object> goal = (Map<String, Object>) map.get("goal");
-                        if (goal.containsKey("playerID") && goal.get("playerID").equals(idPlayer)) {
+                        // Мы должны сразу откинуть SO потому что время гола берётся из listGoal
+                        // Если предположим БОТ протупит и выполнит генерацию событий, после буллита
+                        // Будут голы у игрока и мы возьмём с конца scoringPlays и нарвёися на SO
+                        // А это не корректно, SO вообще за голы не считаются и scoreTime у них нет
+                        if (
+                                goal.containsKey("playerID") && goal.get("playerID").equals(idPlayer)
+                                        && !"SO".equals(map.get("period"))
+                        ) {
                             player.getListGoal().add(map);
                         }
                     }
@@ -307,11 +314,20 @@ public class NHLBoxScore {
 
         public String getFinishTimeScore() {
             List<String> result = new ArrayList<>();
-            listGoal.forEach(map -> result.add(
-                    map.getOrDefault("scoreTime", "--")
-                            + ", "
-                            + periodExpandRu(map.getOrDefault("period", "").toString()))
-            );
+            listGoal.forEach(map -> {
+                String period = map.getOrDefault("period", "").toString();
+                if (period != null
+                        && !period.isEmpty()
+                        && !period.equals("SO")
+                ) {
+                    result.add(
+                            map.getOrDefault("scoreTime", "--")
+                                    + ", "
+                                    + periodExpandRu(period)
+                    );
+                }
+
+            });
             if (!result.isEmpty()) {
                 return "(" + String.join(" | ", result) + ")";
             }
