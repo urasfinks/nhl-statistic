@@ -277,12 +277,14 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                                                                         player.getLongName(),
                                                                         player.getFinishTimeScore()
                                                                 )
-                                                                        .setScoredGoal(player.getGoals())
-                                                                        .setScoredAssists(player.getAssists())
-                                                                        .setScoredShots(player.getShots())
-                                                                        .setScoredHits(player.getHits())
-                                                                        .setScoredPenaltiesInMinutes(player.getPenaltiesInMinutes())
-                                                                        .setScoredTimeOnIce(player.getTimeOnIce())
+                                                                .setScoredGoal(player.getGoals())
+                                                                .setScoredAssists(player.getAssists())
+                                                                .setScoredShots(player.getShots())
+                                                                .setScoredHits(player.getHits())
+                                                                .setScoredPenaltiesInMinutes(player.getPenaltiesInMinutes())
+                                                                .setScoredTimeOnIce(player.getTimeOnIce())
+                                                                .setPenaltyShot(currentBoxScore.isPenaltyShot())
+                                                                .setOverTime(currentBoxScore.isOverTime())
                                                         );
                                             }
                                 });

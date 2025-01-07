@@ -2,7 +2,9 @@ package ru.jamsys.telegram.template;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import ru.jamsys.core.flat.util.UtilFileResource;
 import ru.jamsys.core.flat.util.UtilNHL;
+import ru.jamsys.tank.data.NHLBoxScore;
 import ru.jamsys.tank.data.NHLPlayerList;
 import ru.jamsys.telegram.GameEventData;
 
@@ -95,5 +97,55 @@ class GameEventTemplateOviTest {
                         ⏰ Время на льду: 15:00""",
                 new GameEventTemplateOvi(gameEventData.setAction(GameEventData.Action.FINISH_GAME)).toString()
         );
+    }
+
+    @Test
+    void getEvent() throws Throwable {
+        NHLBoxScore.Instance currentBoxScore = new NHLBoxScore.Instance(UtilFileResource.getAsString("example/PenaltyShot.json"));
+        NHLPlayerList.Player ovi = UtilNHL.getOvi();
+        NHLBoxScore.Player player = currentBoxScore.getPlayer(ovi.getPlayerID());
+        GameEventData gameEventData = new GameEventData(
+                GameEventData.Action.FINISH_GAME,
+                currentBoxScore.getAboutGame(),
+                currentBoxScore.getScoreGame(),
+                player.getLongName(),
+                player.getFinishTimeScore()
+        )
+                .setScoredGoal(player.getGoals())
+                .setScoredAssists(player.getAssists())
+                .setScoredShots(player.getShots())
+                .setScoredHits(player.getHits())
+                .setScoredPenaltiesInMinutes(player.getPenaltiesInMinutes())
+                .setScoredTimeOnIce(player.getTimeOnIce())
+                .setPenaltyShot(currentBoxScore.isPenaltyShot())
+                .setOverTime(currentBoxScore.isOverTime());
+        //System.out.println(UtilJson.toStringPretty(gameEventData, "{}"));
+        Assertions.assertEquals("""
+                Матч завершен. Победа по буллитам.
+                Buffalo Sabres (BUF) 3 - 3 Washington Capitals (WSH).
+                
+                Статистика Александра Овечкина в матче:
+                🎯 Голы: 0\s
+                🥅 Броски по воротам: 5
+                🏒 Передачи: 0
+                🌟 Очки: 0
+                🥷 Силовые приемы: 0
+                🥊 Штрафные минуты: 0
+                ⏰ Время на льду: 16:43""", new GameEventTemplateOvi(gameEventData).toString());
+
+        gameEventData.setPenaltyShot(false);
+        Assertions.assertEquals("""
+                Матч завершен. Победа в дополнительное время.
+                Buffalo Sabres (BUF) 3 - 3 Washington Capitals (WSH).
+                
+                Статистика Александра Овечкина в матче:
+                🎯 Голы: 0\s
+                🥅 Броски по воротам: 5
+                🏒 Передачи: 0
+                🌟 Очки: 0
+                🥷 Силовые приемы: 0
+                🥊 Штрафные минуты: 0
+                ⏰ Время на льду: 16:43""", new GameEventTemplateOvi(gameEventData).toString());
+
     }
 }

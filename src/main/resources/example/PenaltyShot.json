@@ -189,6 +189,30 @@
         "teamAbv": "WSH"
       },
       {
+        "period": "OT",
+        "goal": {
+          "longName": "Aliaksei Protas",
+          "playerID": "4587943"
+        },
+        "shortHanded": "False",
+        "shootout": "False",
+        "assists": [
+          {
+            "longName": "John Carlson",
+            "playerID": "5118"
+          },
+          {
+            "longName": "Pierre-Luc Dubois",
+            "playerID": "4024833"
+          }
+        ],
+        "powerPlay": "False",
+        "teamID": "31",
+        "scoreTime": "15:47",
+        "team": "WSH",
+        "teamAbv": "WSH"
+      },
+      {
         "period": "SO",
         "goal": {
           "longName": "Pierre-Luc Dubois",

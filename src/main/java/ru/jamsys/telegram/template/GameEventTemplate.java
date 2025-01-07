@@ -69,6 +69,13 @@ public class GameEventTemplate {
         gretzkyOffsetPostfix = Util.digitTranslate(gretzkyOffset, "гол", "гола", "голов");
         score = gameEventData.getScoredGoal() + gameEventData.getScoredAssists();
 
+        if (gameEventData.isOverTime()) {
+            finishDetail = " Победа в дополнительное время.";
+        }
+        if (gameEventData.isPenaltyShot()) {
+            finishDetail = " Победа по буллитам.";
+        }
+
         Map<String, String> arg = new LinkedHashMap<>();
         extend(arg, gameEventData);
         extend(arg, this);

@@ -21,9 +21,18 @@ class NHLBoxScoreTest {
         NHLBoxScore.Instance instance1 = new NHLBoxScore.Instance(NHLBoxScore.getExample4());
         NHLBoxScore.Instance instance2 = new NHLBoxScore.Instance(UtilFileResource.getAsString("example/getNHLBoxScore6.json"));
         NHLBoxScore.Instance instance3 = new NHLBoxScore.Instance(UtilFileResource.getAsString("example/PenaltyShot.json"));
+
         Assertions.assertFalse(instance1.isFinish());
         Assertions.assertTrue(instance2.isFinish());
         Assertions.assertFalse(instance3.isFinish());
+
+        Assertions.assertFalse(instance1.isPenaltyShot());
+        Assertions.assertFalse(instance2.isPenaltyShot());
+        Assertions.assertTrue(instance3.isPenaltyShot());
+
+        Assertions.assertFalse(instance1.isOverTime());
+        Assertions.assertFalse(instance2.isOverTime());
+        Assertions.assertTrue(instance3.isOverTime());
     }
 
     @Test

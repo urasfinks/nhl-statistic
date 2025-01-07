@@ -45,4 +45,7 @@ public class GameEventData {
     private int scoredPenaltiesInMinutes;  //🥊 Штрафные минуты – penaltiesInMinutes
     private String scoredTimeOnIce;  //⏰ Время на льду – timeOnIce
 
+    private boolean penaltyShot = false;
+    private boolean overTime = false;
+
 }

@@ -257,6 +257,25 @@ public class NHLBoxScore {
             }
             return null;
         }
+
+        public boolean isPenaltyShot() {
+            for (Map<String, Object> map : scoringPlays) {
+                if ("SO".equals(map.get("period"))) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public boolean isOverTime() {
+            for (Map<String, Object> map : scoringPlays) {
+                if ("OT".equals(map.get("period"))) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
     }
 
     @Getter
