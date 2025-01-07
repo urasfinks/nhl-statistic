@@ -20,7 +20,7 @@ class NHLBoxScoreTest {
     void isFinish() throws Throwable {
         NHLBoxScore.Instance instance1 = new NHLBoxScore.Instance(NHLBoxScore.getExample4());
         NHLBoxScore.Instance instance2 = new NHLBoxScore.Instance(UtilFileResource.getAsString("example/getNHLBoxScore6.json"));
-        NHLBoxScore.Instance instance3 = new NHLBoxScore.Instance(UtilFileResource.getAsString("example/Bullit.json"));
+        NHLBoxScore.Instance instance3 = new NHLBoxScore.Instance(UtilFileResource.getAsString("example/PenaltyShot.json"));
         Assertions.assertFalse(instance1.isFinish());
         Assertions.assertTrue(instance2.isFinish());
         Assertions.assertFalse(instance3.isFinish());
