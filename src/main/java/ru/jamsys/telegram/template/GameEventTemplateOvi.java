@@ -18,7 +18,7 @@ import java.util.Map;
 @Setter
 public class GameEventTemplateOvi {
 
-    final GameEventData data;
+    final GameEventData gameEventData;
 
     private int goalsInSeason;
 
@@ -29,6 +29,8 @@ public class GameEventTemplateOvi {
     private int gretzkyOffset;
 
     private String gretzkyOffsetPostfix;
+
+    private String finishDetail = "";
 
     Map<GameEventData.Action, String> template = new HashMapBuilder<GameEventData.Action, String>()
             .append(GameEventData.Action.START_GAME, """
@@ -42,7 +44,7 @@ public class GameEventTemplateOvi {
                     ❌ Гол отменён! До рекорда Гретцки осталось ${gretzkyOffset} ${gretzkyOffsetPostfix}.
                     ${gameScore}""")
             .append(GameEventData.Action.FINISH_GAME, """
-                    Матч завершен.
+                    Матч завершен.${finishDetail}
                     ${gameScore}.
                     
                     Статистика Александра Овечкина в матче:
@@ -54,22 +56,22 @@ public class GameEventTemplateOvi {
                     🥊 Штрафные минуты: ${scoredPenaltiesInMinutes}
                     ⏰ Время на льду: ${scoredTimeOnIce}""");
 
-    public GameEventTemplateOvi(GameEventData data) {
-        this.data = data;
+    public GameEventTemplateOvi(GameEventData gameEventData) {
+        this.gameEventData = gameEventData;
     }
 
     @Override
     public String toString() {
-        goalsInSeason = data.getScoredPrevGoal() + data.getScoredGoal();
-        goalsInCareer = goalsInSeason + data.getScoredLastSeason();
+        goalsInSeason = gameEventData.getScoredPrevGoal() + gameEventData.getScoredGoal();
+        goalsInCareer = goalsInSeason + gameEventData.getScoredLastSeason();
         gretzkyOffset = UtilNHL.getScoreGretzky() - (goalsInCareer);
         gretzkyOffsetPostfix = Util.digitTranslate(gretzkyOffset, "гол", "гола", "голов");
-        score = data.getScoredGoal() + data.getScoredAssists();
+        score = gameEventData.getScoredGoal() + gameEventData.getScoredAssists();
 
         Map<String, String> arg = new LinkedHashMap<>();
-        extend(arg, data);
+        extend(arg, gameEventData);
         extend(arg, this);
-        return TemplateTwix.template(template.get(data.getAction()), arg, true);
+        return TemplateTwix.template(template.get(gameEventData.getAction()), arg, true);
     }
 
     private void extend(Map<String, String> arg, Object object) {
