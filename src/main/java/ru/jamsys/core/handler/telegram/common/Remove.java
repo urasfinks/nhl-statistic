@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.extension.builder.HashMapBuilder;
 import ru.jamsys.core.extension.http.ServletResponseWriter;
-import ru.jamsys.core.flat.util.Util;
 import ru.jamsys.core.flat.util.UtilTelegram;
 import ru.jamsys.core.flat.util.telegram.Button;
 import ru.jamsys.core.jt.JTScheduler;
@@ -74,11 +73,11 @@ public class Remove implements PromiseGenerator, NhlStatisticsBotCommandHandler 
                         ));
                         activeGame.addAndGet(Integer.parseInt(map.get("count").toString()));
                     });
-                    context.getTelegramBot().send(context.getIdChat(), String.format(
-                            "Подписка на %d %s. Выбери игрока для удаления подписки",
-                            activeGame.get(),
-                            Util.digitTranslate(activeGame.get(), "матч", "матча", "матчей")
-                    ), buttons);
+                    context.getTelegramBot().send(
+                            context.getIdChat(),
+                            "Выбери игрока для удаления подписки",
+                            buttons
+                    );
                     promise.skipAllStep("wait read id_player for unsubscribe");
                 })
                 .then("getSubscriptionsMarker", (_, _, promise) -> {
