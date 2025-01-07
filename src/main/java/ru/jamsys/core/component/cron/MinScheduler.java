@@ -317,31 +317,35 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                                 return;
                             }
                             List<GameEventData> gameEventDataList = context.getPlayerEvent().get(idPlayer);
-                            gameEventDataList.forEach(gameEventData -> {
-                                if (UtilNHL.isOvi(idPlayer)) {
-                                    context.getNotificationList().add(new SendNotificationGameEventOvi(
-                                            context.getActiveRepository().getIdGame(idPlayer),
-                                            gameEventData
-                                    ));
-                                }
-                                Set<Long> to = new HashSet<>(listIdChat);
-                                if (gameEventData.getAction().equals(GameEventData.Action.START_GAME)) {
-                                    Set<Long> alreadySend = startGameNotify
-                                            .computeIfAbsent(gameEventData.getGameAbout(), _ -> new HashSet<>());
-                                    to.removeAll(alreadySend);
-                                    if (to.isEmpty()) {
-                                        return;
+                            // Может быть такое, что по одному игроку будут события, а по другому нет
+                            // Но context.getActiveRepository().getPlayerListIdChatByPlayer() всё равно будем пробегаться по каждому
+                            if (gameEventDataList != null && !gameEventDataList.isEmpty()) {
+                                gameEventDataList.forEach(gameEventData -> {
+                                    if (UtilNHL.isOvi(idPlayer)) {
+                                        context.getNotificationList().add(new SendNotificationGameEventOvi(
+                                                context.getActiveRepository().getIdGame(idPlayer),
+                                                gameEventData
+                                        ));
                                     }
-                                    alreadySend.addAll(to);
-                                }
+                                    Set<Long> to = new HashSet<>(listIdChat);
+                                    if (gameEventData.getAction().equals(GameEventData.Action.START_GAME)) {
+                                        Set<Long> alreadySend = startGameNotify
+                                                .computeIfAbsent(gameEventData.getGameAbout(), _ -> new HashSet<>());
+                                        to.removeAll(alreadySend);
+                                        if (to.isEmpty()) {
+                                            return;
+                                        }
+                                        alreadySend.addAll(to);
+                                    }
 
-                                context.getNotificationList().add(new SendNotificationGameEvent(
-                                        context.getActiveRepository().getIdGame(idPlayer),
-                                        NHLPlayerList.Player.fromMap(player),
-                                        gameEventData,
-                                        to.stream().toList()
-                                ));
-                            });
+                                    context.getNotificationList().add(new SendNotificationGameEvent(
+                                            context.getActiveRepository().getIdGame(idPlayer),
+                                            NHLPlayerList.Player.fromMap(player),
+                                            gameEventData,
+                                            to.stream().toList()
+                                    ));
+                                });
+                            }
                         } catch (Throwable e) {
                             App.error(e);
                         }
