@@ -2,6 +2,7 @@ package ru.jamsys;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import ru.jamsys.core.flat.util.UtilFileResource;
 import ru.jamsys.core.flat.util.UtilJson;
 import ru.jamsys.tank.data.NHLBoxScore;
 import ru.jamsys.tank.data.NHLPlayerList;
@@ -18,9 +19,11 @@ class NHLBoxScoreTest {
     @Test
     void isFinish() throws Throwable {
         NHLBoxScore.Instance instance1 = new NHLBoxScore.Instance(NHLBoxScore.getExample4());
-        NHLBoxScore.Instance instance2 = new NHLBoxScore.Instance(NHLBoxScore.getExample6());
+        NHLBoxScore.Instance instance2 = new NHLBoxScore.Instance(UtilFileResource.getAsString("example/getNHLBoxScore6.json"));
+        NHLBoxScore.Instance instance3 = new NHLBoxScore.Instance(UtilFileResource.getAsString("example/Bullit.json"));
         Assertions.assertFalse(instance1.isFinish());
         Assertions.assertTrue(instance2.isFinish());
+        Assertions.assertFalse(instance3.isFinish());
     }
 
     @Test

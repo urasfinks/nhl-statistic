@@ -61,10 +61,6 @@ public class NHLBoxScore {
         return UtilFileResource.getAsString("example/getNHLBoxScore5.json");
     }
 
-    public static String getExample6() throws IOException {
-        return UtilFileResource.getAsString("example/getNHLBoxScore6.json");
-    }
-
     public static String getExampleError() throws IOException {
         return UtilFileResource.getAsString("example/getNHLBoxScore_error.json");
     }
@@ -194,6 +190,10 @@ public class NHLBoxScore {
         }
 
         public boolean isFinish() {
+            List<String> listAbv = scoreMap.keySet().stream().toList();
+            if (scoreMap.get(listAbv.getFirst()).equals(scoreMap.get(listAbv.getLast()))) {
+                return false;
+            }
             return gameStatusCode == 2;
         }
 
