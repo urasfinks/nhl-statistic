@@ -220,6 +220,26 @@
       {
         "period": "3P",
         "goal": {
+          "longName": "Auston Matthews",
+          "playerID": "4024123"
+        },
+        "shortHanded": "False",
+        "shootout": "False",
+        "assists": [
+          {
+            "longName": "Jake McCabe",
+            "playerID": "3020803"
+          }
+        ],
+        "powerPlay": "False",
+        "teamID": "28",
+        "scoreTime": "5:29",
+        "team": "TOR",
+        "teamAbv": "TOR"
+      },
+      {
+        "period": "3P",
+        "goal": {
           "longName": "Mitch Marner",
           "playerID": "3899937"
         },

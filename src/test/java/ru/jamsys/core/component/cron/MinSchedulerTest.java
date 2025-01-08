@@ -496,6 +496,14 @@ class MinSchedulerTest {
                                     .getRepositoryMapClass(MinScheduler.Context.class)
                                     .getLastData()
                                     .put("20250105_PIT@CAR", null);
+                            promise1
+                                    .getRepositoryMapClass(MinScheduler.Context.class)
+                                    .getLastData()
+                                    .put("20250107_NSH@WPG", UtilFileResource.getAsString("example/block1/not_valid_last.json"));
+                            promise1
+                                    .getRepositoryMapClass(MinScheduler.Context.class)
+                                    .getLastData()
+                                    .put("20241210_COL@PIT", null);
                         }
                 )
         );
@@ -512,17 +520,25 @@ class MinSchedulerTest {
                                     .getRepositoryMapClass(MinScheduler.Context.class)
                                     .getCurrentData()
                                     .put("20250105_PIT@CAR", UtilFileResource.getAsString("example/block1/20250105_PIT_CAR.json"));
+                            promise1
+                                    .getRepositoryMapClass(MinScheduler.Context.class)
+                                    .getCurrentData()
+                                    .put("20250107_NSH@WPG", UtilFileResource.getAsString("example/block1/not_valid.json"));
+                            promise1
+                                    .getRepositoryMapClass(MinScheduler.Context.class)
+                                    .getCurrentData()
+                                    .put("20241210_COL@PIT", NHLBoxScore.getExampleEmptyScore());
                         }
                 )
         );
         promiseTest.removeAfter("getEvent");
-
 
         promise.then("saveData", (_, _, _) -> {
         });
         promise.setDebug(false).run().await(50_000L);
 
         //System.out.println(UtilJson.toStringPretty(promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent(), "{}"));
+        Assertions.assertEquals("[20250105_PHI@TOR, 20250105_PIT@CAR]", promise.getRepositoryMapClass(MinScheduler.Context.class).getCurrentData().keySet().toString());
         Assertions.assertNotEquals(promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("3114").getFirst().getAction(), GameEventData.Action.NOT_PLAY);
         //System.out.println(UtilJson.toStringPretty(promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("3899937"), "{}"));
         //Assertions.assertEquals(GameEventData.Action.GOAL, promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("3899937").getFirst().getAction());

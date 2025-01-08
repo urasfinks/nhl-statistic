@@ -225,6 +225,30 @@
         "scoreTime": "16:37",
         "team": "WSH",
         "teamAbv": "WSH"
+      },
+      {
+        "period": "3P",
+        "goal": {
+          "longName": "Alex Ovechkin",
+          "playerID": "3101"
+        },
+        "shortHanded": "False",
+        "shootout": "False",
+        "assists": [
+          {
+            "longName": "Aliaksei Protas",
+            "playerID": "4587943"
+          },
+          {
+            "longName": "Pierre-Luc Dubois",
+            "playerID": "4024833"
+          }
+        ],
+        "powerPlay": "False",
+        "teamID": "31",
+        "scoreTime": "16:38",
+        "team": "WSH",
+        "teamAbv": "WSH"
       }
     ],
     "homePoints": "0",

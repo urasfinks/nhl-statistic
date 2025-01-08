@@ -11,6 +11,7 @@ import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.component.ServiceProperty;
 import ru.jamsys.core.component.TelegramBotComponent;
 import ru.jamsys.core.extension.UniqueClassName;
+import ru.jamsys.core.extension.builder.HashMapBuilder;
 import ru.jamsys.core.extension.exception.ForwardException;
 import ru.jamsys.core.flat.template.cron.release.Cron1m;
 import ru.jamsys.core.flat.util.UtilJson;
@@ -186,9 +187,15 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                                 // Получилось, что при старте был пустой список статистики и мы выслали уведомление, что
                                 // Овечкин не участвует в игре
                                 // Нет статистики нет начала игры
-                                if (!instance.getPlayerStats().isEmpty()) {
-                                    context.getCurrentData().put(idGame, data);
+                                if (instance.getPlayerStats().isEmpty()) { // Блок статистики не пустой
+                                    App.error(new RuntimeException("idGame: " + idGame + " continue; cause: getPlayerStats().isEmpty()"));
+                                    continue;
                                 }
+                                if (!instance.isValidate()) { // Блок статистики не пустой
+                                    App.error(new RuntimeException("idGame: " + idGame + " continue; cause: !instance.isValidate()"));
+                                    continue;
+                                }
+                                context.getCurrentData().put(idGame, data);
                             }
                         } catch (Throwable e) {
                             App.error(e);
@@ -219,7 +226,22 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                     Context context = promise.getRepositoryMapClass(Context.class);
                     UtilRisc.forEach(atomicBoolean, context.getCurrentData(), (idGame, data) -> {
                         try {
-                            if (context.getLastData().get(idGame) != null) {
+                            NHLBoxScore.Instance currentBoxScore = new NHLBoxScore.Instance(data);
+                            // Дополнительный блок зачистки, нужен для юнитов, так как блоки getBoxScoreByActiveGame
+                            // и getLastData в основном переопределяются
+                            if (currentBoxScore.getPlayerStats().isEmpty()) {
+                                context.getCurrentData().remove(idGame);
+                                context.getLastData().remove(idGame);
+                                App.error(new RuntimeException("idGame: " + idGame + " continue; cause: getPlayerStats().isEmpty()"));
+                                return;
+                            }
+                            if (!currentBoxScore.isValidate()) {
+                                context.getCurrentData().remove(idGame);
+                                context.getLastData().remove(idGame);
+                                App.error(new RuntimeException("idGame: " + idGame + " continue; cause: !instance.isValidate()"));
+                                return;
+                            }
+                            if (context.getLastData().get(idGame) != null) { // События генерируются только при наличии двух снимков
                                 NHLBoxScore
                                         .getEvent(context.getLastData().get(idGame), data)
                                         .forEach((idPlayer, gameEventData) -> context
@@ -227,7 +249,7 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                                                 .computeIfAbsent(idPlayer, _ -> new ArrayList<>())
                                                 .addAll(gameEventData));
                             }
-                            NHLBoxScore.Instance currentBoxScore = new NHLBoxScore.Instance(data);
+
                             if (context.getLastData().get(idGame) == null) {
                                 currentBoxScore
                                         .getListIdPlayer(context.getActiveRepository().getListIdPlayer(idGame))
@@ -379,6 +401,16 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                             new JdbcRequest(JTLogRequest.INSERT)
                                     .addArg("url", "getPlayerEvent")
                                     .addArg("data", UtilJson.toStringPretty(context.getPlayerEvent(), "{}"))
+                                    .setDebug(false)
+                    );
+                    jdbcResource.execute(
+                            new JdbcRequest(JTLogRequest.INSERT)
+                                    .addArg("url", "meta")
+                                    .addArg("data", UtilJson.toStringPretty(new HashMapBuilder<String, Object>()
+                                                    .append("getPlayerEvent", context.getPlayerEvent())
+                                                    .append("getCurrentDataKeySet", context.getCurrentData().keySet())
+                                                    .append("getLastDataKeySet", context.getLastData().keySet()),
+                                            "{}"))
                                     .setDebug(false)
                     );
                 })

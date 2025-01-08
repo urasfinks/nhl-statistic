@@ -143,9 +143,9 @@ class NHLBoxScoreTest {
 
     @Test
     void validate() throws Throwable {
-        Assertions.assertFalse(new NHLBoxScore.Instance(UtilFileResource.getAsString("example/block3/Test1.json")).validate());
-        Assertions.assertFalse(new NHLBoxScore.Instance(UtilFileResource.getAsString("example/block2/Test3.json")).validate());
-        Assertions.assertTrue(new NHLBoxScore.Instance(NHLBoxScore.getExampleChange()).validate());
+        Assertions.assertFalse(new NHLBoxScore.Instance(UtilFileResource.getAsString("example/block3/Test1.json")).isValidate());
+        Assertions.assertFalse(new NHLBoxScore.Instance(UtilFileResource.getAsString("example/block2/Test3.json")).isValidate());
+        Assertions.assertTrue(new NHLBoxScore.Instance(NHLBoxScore.getExampleChange()).isValidate());
     }
 
     //@Test
@@ -157,7 +157,7 @@ class NHLBoxScoreTest {
             }
             try {
                 NHLBoxScore.Instance instance = new NHLBoxScore.Instance(new String(UtilFile.readBytes(path)));
-                if (!instance.validate()) {
+                if (!instance.isValidate()) {
                     System.out.println(instance.getAboutGame() + " " + path);
                     //System.out.println(instance.getAboutGame());
                 }
