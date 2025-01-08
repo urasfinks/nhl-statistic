@@ -183,8 +183,8 @@ public class NHLBoxScore {
             scoreMap.put(teamHome.getAbv(), Integer.parseInt(body.getOrDefault("homeTotal", "0").toString()));
             scoreMap.put(teamAway.getAbv(), Integer.parseInt(body.getOrDefault("awayTotal", "0").toString()));
 
-            scoreGame = getScoreGame(teamHome.getAbv());
-            aboutGame = getAboutGame(teamHome.getAbv());
+            scoreGame = getScoreGame(teamAway.getAbv());
+            aboutGame = getAboutGame(teamAway.getAbv());
 
             gameStatusCode = Integer.parseInt(body.getOrDefault("gameStatusCode", "-1").toString());
         }

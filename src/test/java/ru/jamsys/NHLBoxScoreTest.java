@@ -99,7 +99,7 @@ class NHLBoxScoreTest {
         Assertions.assertEquals("(4:24, 1-й период)", player.getFinishTimeScore());
         Assertions.assertEquals("1", player.getStat().get("goals"));
         Assertions.assertEquals("Philadelphia Flyers (PHI) 2 - 0 New York Rangers (NYR)", instance.getScoreGame("PHI"));
-        Assertions.assertEquals("Philadelphia Flyers (PHI) 2 - 0 New York Rangers (NYR)", instance.getScoreGame());
+        Assertions.assertEquals("New York Rangers (NYR) 0 - 2 Philadelphia Flyers (PHI)", instance.getScoreGame());
         Assertions.assertEquals("New York Rangers (NYR) 0 - 2 Philadelphia Flyers (PHI)", instance.getScoreGame("NYR"));
         System.out.println(UtilJson.toStringPretty(instance, "{}"));
 
@@ -118,10 +118,10 @@ class NHLBoxScoreTest {
         Assertions.assertEquals("19:18, 3-й период", event.get("4874723").getFirst().getTime());
         Assertions.assertEquals("""
                 🚨 ГОООЛ! 19:18, 3-й период. Dylan Guenther забивает свой 2-й гол в сезоне!
-                Utah Hockey Club (UTA) 5 - 2 Chicago Blackhawks (CHI)""", new GameEventTemplate(event.get("4874723").getFirst()).toString());
+                Chicago Blackhawks (CHI) 2 - 5 Utah Hockey Club (UTA)""", new GameEventTemplate(event.get("4874723").getFirst()).toString());
         Assertions.assertEquals("""
-                🚨 ГОООЛ! 19:18, 3-й период. Александр Овечкин забивает свой 2-й гол в карьере! До рекорда Гретцки осталось 892 гола.
-                Utah Hockey Club (UTA) 5 - 2 Chicago Blackhawks (CHI)""", new GameEventTemplateOvi(event.get("4874723").getFirst()).toString());
+               🚨 ГОООЛ! 19:18, 3-й период. Александр Овечкин забивает свой 2-й гол в карьере! До рекорда Гретцки осталось 892 гола.
+               Chicago Blackhawks (CHI) 2 - 5 Utah Hockey Club (UTA)""", new GameEventTemplateOvi(event.get("4874723").getFirst()).toString());
 
     }
 
