@@ -66,12 +66,13 @@ class NHLGamesForPlayerTest {
 
     @Test
     public void checkSec() {
-        Assertions.assertEquals(60, NHLGamesForPlayer.getSec("00:01"));
-        Assertions.assertEquals(3600, NHLGamesForPlayer.getSec("01:00"));
-        Assertions.assertEquals(3660, NHLGamesForPlayer.getSec("01:01"));
-        Assertions.assertEquals(3660, NHLGamesForPlayer.getSec("1:1"));
-        Assertions.assertEquals("00:00", NHLGamesForPlayer.getSecFormat(1));
-        Assertions.assertEquals("01:01", NHLGamesForPlayer.getSecFormat(3660));
+        Assertions.assertEquals(1, NHLGamesForPlayer.getSec("00:01"));
+        Assertions.assertEquals(60, NHLGamesForPlayer.getSec("01:00"));
+        Assertions.assertEquals(61, NHLGamesForPlayer.getSec("01:01"));
+        Assertions.assertEquals(61, NHLGamesForPlayer.getSec("1:1"));
+        Assertions.assertEquals("00:01", NHLGamesForPlayer.getSecFormat(1));
+        Assertions.assertEquals("01:01", NHLGamesForPlayer.getSecFormat(61));
+        Assertions.assertEquals("02:02", NHLGamesForPlayer.getSecFormat(122));
     }
 
 }

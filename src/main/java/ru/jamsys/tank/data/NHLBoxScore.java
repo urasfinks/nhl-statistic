@@ -9,6 +9,8 @@ import ru.jamsys.telegram.GameEventData;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class NHLBoxScore {
 
@@ -232,6 +234,23 @@ public class NHLBoxScore {
             return sb.toString();
         }
 
+        public static Integer getFirstNumber(String input) {
+            if (input == null || input.isEmpty()) {
+                return null;
+            }
+            // Регулярное выражение для поиска первых подряд идущих цифр
+            Pattern pattern = Pattern.compile("^\\d+");
+            Matcher matcher = pattern.matcher(input);
+            if (matcher.find()) {
+                try {
+                    return Integer.parseInt(matcher.group());
+                } catch (Exception e) {
+                    App.error(e);
+                }
+            }
+            return null;
+        }
+
         public Player getPlayer(String idPlayer) {
             if (playerStats.containsKey(idPlayer)) {
                 Player player = new Player(playerStats.get(idPlayer));
@@ -370,8 +389,13 @@ public class NHLBoxScore {
         public List<Map<String, Object>> getSortByTimeListGoal(UtilListSort.Type type) {
             return UtilListSort.sort(listGoal, type, map -> {
                 try {
+                    Object period = map.getOrDefault("period", "");
+                    Integer firstNumber = Instance.getFirstNumber(period == null ? null : period.toString());
                     Object time = map.getOrDefault("scoreTime", "00:00");
-                    return UtilDate.getTimestamp(time != null ? time.toString() : "00:00", "HH:mm");
+                    //20 * 60 * 10 :: 20 минут матч 60 секунд увеличиваем просто в 10 раз, а то хз сколько может быть overTime
+                    return (NHLGamesForPlayer.getSec(time != null ? time.toString() : "00:00") / 60)
+                            + (firstNumber == null ? (Long.MAX_VALUE - 20 * 60 * 10) : (10000000000L * firstNumber));
+
                 } catch (Throwable th) {
                     App.error(th);
                 }

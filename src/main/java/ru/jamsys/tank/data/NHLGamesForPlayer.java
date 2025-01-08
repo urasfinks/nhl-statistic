@@ -93,15 +93,18 @@ public class NHLGamesForPlayer {
     }
 
     public static int getSec(String time) {
-        String hour = time.substring(0, time.indexOf(":"));
-        String min = time.substring(time.indexOf(":") + 1);
-        return Integer.parseInt(hour) * 60 * 60 + Integer.parseInt(min) * 60;
+        if (time == null || time.isEmpty()) {
+            return 0;
+        }
+        String min = time.substring(0, time.indexOf(":"));
+        String sec = time.substring(time.indexOf(":") + 1);
+        return Integer.parseInt(min) * 60 + Integer.parseInt(sec);
     }
 
     public static String getSecFormat(int totalSeconds) {
-        int hours = totalSeconds / 3600;
-        int minutes = (totalSeconds % 3600) / 60;
-        return String.format("%02d:%02d", hours, minutes);
+        int min = totalSeconds / 60;
+        int sec = totalSeconds % 60;
+        return String.format("%02d:%02d", min, sec);
     }
 
 }
