@@ -2,13 +2,9 @@ package ru.jamsys.tank.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
-import lombok.Setter;
 import ru.jamsys.core.App;
 import ru.jamsys.core.extension.exception.ForwardException;
-import ru.jamsys.core.flat.util.Util;
-import ru.jamsys.core.flat.util.UtilFileResource;
-import ru.jamsys.core.flat.util.UtilJson;
-import ru.jamsys.core.flat.util.UtilNHL;
+import ru.jamsys.core.flat.util.*;
 import ru.jamsys.telegram.GameEventData;
 
 import java.io.IOException;
@@ -86,7 +82,9 @@ public class NHLBoxScore {
                 int lastGoals = Integer.parseInt(lastStat.get("goals").toString());
                 int currentGoals = Integer.parseInt(currentStat.get("goals").toString());
                 int diff = currentGoals - lastGoals;
-                List<Map<String, Object>> listGoal = (diff > 0 ? currentInstance : lastInstance).getPlayer(idPlayer).getListGoal();
+                List<Map<String, Object>> listGoal = (diff > 0 ? currentInstance : lastInstance)
+                        .getPlayer(idPlayer)
+                        .getSortByTimeListGoal(UtilListSort.Type.ASC);
                 getLastNElements(listGoal, Math.abs(diff)).forEach(map -> result
                         .computeIfAbsent(idPlayer, _ -> new ArrayList<>())
                         .add(new GameEventData(
@@ -249,7 +247,7 @@ public class NHLBoxScore {
                                 goal.containsKey("playerID") && goal.get("playerID").equals(idPlayer)
                                         && !"SO".equals(map.get("period"))
                         ) {
-                            player.getListGoal().add(map);
+                            player.addGoal(map);
                         }
                     }
                 });
@@ -278,12 +276,11 @@ public class NHLBoxScore {
 
     }
 
-    @Getter
-    @Setter
     public static class Player {
 
         final private List<Map<String, Object>> listGoal = new ArrayList<>();
 
+        @Getter
         final private Map<String, Object> stat;
 
         public Player(Map<String, Object> stat) {
@@ -331,9 +328,13 @@ public class NHLBoxScore {
             }
         }
 
+        public void addGoal(Map<String, Object> goal) {
+            listGoal.add(goal);
+        }
+
         public String getFinishTimeScore() {
             List<String> result = new ArrayList<>();
-            listGoal.forEach(map -> {
+            getSortByTimeListGoal(UtilListSort.Type.ASC).forEach(map -> {
                 String period = map.getOrDefault("period", "").toString();
                 if (period != null
                         && !period.isEmpty()
@@ -345,7 +346,6 @@ public class NHLBoxScore {
                                     + periodExpandRu(period)
                     );
                 }
-
             });
             if (!result.isEmpty()) {
                 return "(" + String.join(" | ", result) + ")";
@@ -367,6 +367,17 @@ public class NHLBoxScore {
             return new Player(about);
         }
 
+        public List<Map<String, Object>> getSortByTimeListGoal(UtilListSort.Type type) {
+            return UtilListSort.sort(listGoal, type, map -> {
+                try {
+                    Object time = map.getOrDefault("scoreTime", "00:00");
+                    return UtilDate.getTimestamp(time != null ? time.toString() : "00:00", "HH:mm");
+                } catch (Throwable th) {
+                    App.error(th);
+                }
+                return 0L;
+            });
+        }
     }
 
     public static <T> List<T> getLastNElements(List<T> list, int n) {

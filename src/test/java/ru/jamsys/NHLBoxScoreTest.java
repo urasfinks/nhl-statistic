@@ -112,6 +112,13 @@ class NHLBoxScoreTest {
     }
 
     @Test
+    void parse2() throws Throwable {
+        NHLBoxScore.Instance instance = new NHLBoxScore.Instance(NHLBoxScore.getExampleChange());
+        NHLBoxScore.Player player = instance.getPlayer("4874723");
+        Assertions.assertEquals("(4:56, 1-й период | 19:18, 3-й период)", player.getFinishTimeScore());
+    }
+
+    @Test
     void getEvent() throws Throwable {
         Map<String, List<GameEventData>> event = NHLBoxScore.getEvent(NHLBoxScore.getExample(), NHLBoxScore.getExampleChange());
         System.out.println(UtilJson.toStringPretty(event, "{}"));
