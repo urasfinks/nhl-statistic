@@ -22,10 +22,12 @@ public enum JTOviSubscriber implements JdbcRequestRepository {
             GROUP BY vote
             """, StatementType.SELECT_WITH_AUTO_COMMIT),
 
-    SELECT_ALL("""
+    SELECT_NOT_REMOVE("""
             SELECT
                 *
             FROM ovi_subscriber
+            WHERE
+            remove = 0
             """, StatementType.SELECT_WITH_AUTO_COMMIT),
 
     UPDATE_REMOVE("""

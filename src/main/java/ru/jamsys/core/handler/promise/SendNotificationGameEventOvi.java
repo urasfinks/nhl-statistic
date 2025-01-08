@@ -51,7 +51,7 @@ public class SendNotificationGameEventOvi implements PromiseGenerator {
     public Promise generate() {
         return App.get(ServicePromise.class).get(getClass().getSimpleName(), 60_000L)
                 .thenWithResource("select", JdbcResource.class, (_, _, _, jdbcResource) -> {
-                    List<Map<String, Object>> execute = jdbcResource.execute(new JdbcRequest(JTOviSubscriber.SELECT_ALL));
+                    List<Map<String, Object>> execute = jdbcResource.execute(new JdbcRequest(JTOviSubscriber.SELECT_NOT_REMOVE));
                     execute.forEach(map -> listIdChat.add(Long.parseLong(map.get("id_chat").toString())));
                 })
                 .then("lastGoals", new ScorePlayerCurrentSeasonBeforeGame(player, idGame).generate())
