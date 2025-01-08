@@ -189,6 +189,20 @@ public class NHLBoxScore {
             gameStatusCode = Integer.parseInt(body.getOrDefault("gameStatusCode", "-1").toString());
         }
 
+        public boolean validate() {
+            String[] array = playerStats.keySet().toArray(new String[0]);
+            for (String idPlayer : array) {
+                Player player = getPlayer(idPlayer);
+                if (player.getGoals() > 0) {
+                    if (player.getGoals() != player.getSortByTimeListGoal(UtilListSort.Type.ASC).size()) {
+                        //System.out.println(player.getPlayerID() + " " + player.getGoals() + " " + player.getSortByTimeListGoal(UtilListSort.Type.ASC).size());
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
         public boolean isFinish() {
             List<String> listAbv = scoreMap.keySet().stream().toList();
             if (scoreMap.get(listAbv.getFirst()).equals(scoreMap.get(listAbv.getLast()))) {

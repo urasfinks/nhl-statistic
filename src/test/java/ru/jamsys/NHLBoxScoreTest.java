@@ -2,6 +2,8 @@ package ru.jamsys;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import ru.jamsys.core.App;
+import ru.jamsys.core.flat.util.UtilFile;
 import ru.jamsys.core.flat.util.UtilFileResource;
 import ru.jamsys.core.flat.util.UtilJson;
 import ru.jamsys.tank.data.NHLBoxScore;
@@ -137,6 +139,33 @@ class NHLBoxScoreTest {
         NHLBoxScore.Instance instance = new NHLBoxScore.Instance(UtilFileResource.getAsString("example/block2/Test3.json"));
         NHLBoxScore.Player player = instance.getPlayer("4915856");
         Assertions.assertEquals("(3:20, 1-й период | 00:02, 2-й период | 03:15, 3-й период | 99:60, 3-й период | 00:01, !P | 00:02, доп. время)", player.getFinishTimeScore());
+    }
+
+    @Test
+    void validate() throws Throwable {
+        Assertions.assertFalse(new NHLBoxScore.Instance(UtilFileResource.getAsString("example/block3/Test1.json")).validate());
+        Assertions.assertFalse(new NHLBoxScore.Instance(UtilFileResource.getAsString("example/block2/Test3.json")).validate());
+        Assertions.assertTrue(new NHLBoxScore.Instance(NHLBoxScore.getExampleChange()).validate());
+    }
+
+    //@Test
+    void validate2() {
+        List<String> filesRecursive = UtilFile.getFilesRecursive("block4/");
+        filesRecursive.forEach(path -> {
+            if (path.endsWith("/.DS_Store")) {
+                return;
+            }
+            try {
+                NHLBoxScore.Instance instance = new NHLBoxScore.Instance(new String(UtilFile.readBytes(path)));
+                if (!instance.validate()) {
+                    System.out.println(instance.getAboutGame() + " " + path);
+                    //System.out.println(instance.getAboutGame());
+                }
+            } catch (Throwable e) {
+                System.out.println("Error path: " + path);
+                App.error(e);
+            }
+        });
     }
 
     @Test

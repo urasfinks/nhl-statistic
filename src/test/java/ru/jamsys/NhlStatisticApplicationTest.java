@@ -5,9 +5,7 @@ import org.junit.jupiter.api.BeforeAll;
 import ru.jamsys.core.App;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.extension.builder.ArrayListBuilder;
-import ru.jamsys.core.flat.util.UtilDate;
-import ru.jamsys.core.flat.util.UtilJson;
-import ru.jamsys.core.flat.util.UtilNHL;
+import ru.jamsys.core.flat.util.*;
 import ru.jamsys.core.handler.promise.*;
 import ru.jamsys.core.jt.JTLogRequest;
 import ru.jamsys.core.promise.Promise;
@@ -17,6 +15,8 @@ import ru.jamsys.tank.data.NHLBoxScore;
 import ru.jamsys.tank.data.NHLGamesForPlayer;
 import ru.jamsys.tank.data.NHLPlayerList;
 import ru.jamsys.telegram.GameEventData;
+
+import java.util.Map;
 
 class NhlStatisticApplicationTest {
 
@@ -179,6 +179,28 @@ class NhlStatisticApplicationTest {
                 idGame,
                 gameEventData
         ).generate().run().await(50_000L);
+    }
+
+    //@Test
+    void save() {
+        Promise promise = servicePromise.get("testPromise", 600_000L);
+        promise
+                .thenWithResource("insert", JdbcResource.class, (_, _, _, jdbcResource) -> {
+                    jdbcResource.execute(new JdbcRequest(JTLogRequest.SELECT_NHL_BOX_SCORE)).forEach(map -> {
+                        try {
+                            Map<String, Object> mapOrThrow = UtilJson.getMapOrThrow(map.get("data").toString());
+                            UtilFile.writeBytes(
+                                    "block4/" + map.get("id") + ".json",
+                                    UtilJson.toStringPretty(mapOrThrow, "{}").getBytes(),
+                                    FileWriteOptions.CREATE_OR_REPLACE);
+                        } catch (Throwable e) {
+                            App.error(e);
+                        }
+                    });
+                })
+                .run()
+                .await(20_000L);
+        System.out.println(promise.getLogString());
     }
 
 }

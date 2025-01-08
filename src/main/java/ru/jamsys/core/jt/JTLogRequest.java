@@ -6,6 +6,12 @@ import ru.jamsys.core.flat.template.jdbc.StatementType;
 
 public enum JTLogRequest implements JdbcRequestRepository {
 
+    SELECT_NHL_BOX_SCORE("""
+            SELECT * FROM log_request
+            WHERE url LIKE '%getNHLBoxScore%'
+            ORDER BY id
+            """, StatementType.SELECT_WITH_AUTO_COMMIT),
+
     INSERT("""
             INSERT INTO log_request (
                 url,
