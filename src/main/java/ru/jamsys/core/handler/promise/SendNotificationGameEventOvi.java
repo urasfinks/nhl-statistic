@@ -68,7 +68,20 @@ public class SendNotificationGameEventOvi implements PromiseGenerator {
 
                     UtilRisc.forEach(atomicBoolean, listIdChat, idChat -> {
                         if (telegramBotComponent.getOviGoalsBot() != null) {
-                            telegramBotComponent.getOviGoalsBot().send(idChat, message, null);
+                            if (gameEventData.getAction().equals(GameEventData.Action.NOT_PLAY)) {
+                                App.get(DelaySenderComponent.class)
+                                        .add(
+                                                new TelegramCommandContext()
+                                                        .setTelegramBot(telegramBotComponent.getOviGoalsBot())
+                                                        .setIdChat(idChat),
+                                                message,
+                                                null,
+                                                null,
+                                                10_000L
+                                        );
+                            } else {
+                                telegramBotComponent.getOviGoalsBot().send(idChat, message, null);
+                            }
                         }
                     });
                     if (gameEventData.getAction().equals(GameEventData.Action.FINISH_GAME)) {

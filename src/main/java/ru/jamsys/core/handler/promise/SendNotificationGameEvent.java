@@ -3,6 +3,7 @@ package ru.jamsys.core.handler.promise;
 import lombok.Getter;
 import lombok.Setter;
 import ru.jamsys.core.App;
+import ru.jamsys.core.component.DelaySenderComponent;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.component.TelegramBotComponent;
 import ru.jamsys.core.flat.util.Util;
@@ -11,6 +12,7 @@ import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
 import ru.jamsys.tank.data.NHLPlayerList;
 import ru.jamsys.telegram.GameEventData;
+import ru.jamsys.telegram.TelegramCommandContext;
 import ru.jamsys.telegram.template.GameEventTemplate;
 
 import java.util.List;
@@ -59,7 +61,20 @@ public class SendNotificationGameEvent implements PromiseGenerator {
 
                     UtilRisc.forEach(atomicBoolean, listIdChat, idChat -> {
                         if (telegramBotComponent.getNhlStatisticsBot() != null) {
-                            telegramBotComponent.getNhlStatisticsBot().send(idChat, message, null);
+                            if (gameEventData.getAction().equals(GameEventData.Action.NOT_PLAY)) {
+                                App.get(DelaySenderComponent.class)
+                                        .add(
+                                                new TelegramCommandContext()
+                                                        .setTelegramBot(telegramBotComponent.getNhlStatisticsBot())
+                                                        .setIdChat(idChat),
+                                                message,
+                                                null,
+                                                null,
+                                                10_000L
+                                        );
+                            } else {
+                                telegramBotComponent.getNhlStatisticsBot().send(idChat, message, null);
+                            }
                         }
                     });
                 })
