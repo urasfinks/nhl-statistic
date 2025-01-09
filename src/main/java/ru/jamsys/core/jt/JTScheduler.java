@@ -75,6 +75,11 @@ public enum JTScheduler implements JdbcRequestRepository {
             	time_game_start < now()::timestamp
             ORDER BY 2 DESC
             """, StatementType.SELECT_WITH_AUTO_COMMIT),
+
+    REMOVE_IF_POSTPONED("""
+            DELETE FROM scheduler
+            WHERE id_game = ${IN.id_game::VARCHAR}
+            """, StatementType.SELECT_WITH_AUTO_COMMIT),
     ;
 
     private final JdbcTemplate jdbcTemplate;

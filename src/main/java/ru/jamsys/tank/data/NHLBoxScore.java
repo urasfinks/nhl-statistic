@@ -5,6 +5,7 @@ import lombok.Getter;
 import ru.jamsys.core.App;
 import ru.jamsys.core.extension.exception.ForwardException;
 import ru.jamsys.core.flat.util.*;
+import ru.jamsys.core.handler.promise.RemoveScheduler;
 import ru.jamsys.telegram.GameEventData;
 
 import java.io.IOException;
@@ -170,6 +171,17 @@ public class NHLBoxScore {
             @SuppressWarnings("unchecked")
             Map<String, Object> body = (Map<String, Object>) object.get("body");
 
+            gameStatusCode = Integer.parseInt(body.getOrDefault("gameStatusCode", "-1").toString());
+
+            if (gameStatusCode == 3) {
+                new RemoveScheduler(body.get("gameID").toString()).generate().run();
+                this.scoringPlays = new ArrayList<>();
+                this.playerStats = new HashMap<>();
+                this.scoreGame = "Game has been postponed";
+                this.aboutGame = "Game has been postponed";
+                return;
+            }
+
             List<Map<String, Object>> tmpScoringPlays = new ArrayList<>();
             try {
                 @SuppressWarnings("unchecked")
@@ -197,7 +209,6 @@ public class NHLBoxScore {
             scoreGame = getScoreGame(teamAway.getAbv());
             aboutGame = getAboutGame(teamAway.getAbv());
 
-            gameStatusCode = Integer.parseInt(body.getOrDefault("gameStatusCode", "-1").toString());
         }
 
         public boolean isValidate() {
