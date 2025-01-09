@@ -110,7 +110,10 @@ public class Subscribe implements PromiseGenerator, NhlStatisticsBotCommandHandl
                             .setDebug(false)
                     );
                     if (!execute.isEmpty()) {
-                        context.getTelegramBot().send(UtilTelegram.editMessage(context.getMsg(), "Подписка уже существует"));
+                        context.getTelegramBot().send(
+                                UtilTelegram.editMessage(context.getMsg(), "Подписка уже существует"),
+                                context.getIdChat()
+                        );
                         promise.skipAllStep("The subscription already exists");
                     }
                 })
@@ -125,12 +128,18 @@ public class Subscribe implements PromiseGenerator, NhlStatisticsBotCommandHandl
                             response.getResponseData()
                     );
                     if (player == null || player.isEmpty()) {
-                        context.getTelegramBot().send(UtilTelegram.editMessage(context.getMsg(), "Игрок не найден"));
+                        context.getTelegramBot().send(
+                                UtilTelegram.editMessage(context.getMsg(), "Игрок не найден"),
+                                context.getIdChat()
+                        );
                         promise.skipAllStep("Not found player");
                         return;
                     }
                     String playerInfo = NHLPlayerList.getPlayerName(player);
-                    context.getTelegramBot().send(UtilTelegram.editMessage(context.getMsg(), playerInfo));
+                    context.getTelegramBot().send(
+                            UtilTelegram.editMessage(context.getMsg(), playerInfo),
+                            context.getIdChat()
+                    );
                     context.getUriParameters().put("infoPlayer", playerInfo);
                     context.getUriParameters().put("idTeam", player.get("teamID").toString());
                 })
@@ -152,7 +161,10 @@ public class Subscribe implements PromiseGenerator, NhlStatisticsBotCommandHandl
                             .sort(UtilListSort.Type.ASC)
                             .getListGame();
                     if (sortGameByTime.isEmpty()) {
-                        context.getTelegramBot().send(UtilTelegram.editMessage(context.getMsg(), "Игры не найдены"));
+                        context.getTelegramBot().send(
+                                UtilTelegram.editMessage(context.getMsg(), "Игры не найдены"),
+                                context.getIdChat()
+                        );
                         return;
                     }
                     JdbcRequest jdbcRequest = new JdbcRequest(JTScheduler.INSERT);
@@ -183,7 +195,7 @@ public class Subscribe implements PromiseGenerator, NhlStatisticsBotCommandHandl
                             context.getUriParameters().get("infoPlayer"),
                             new NHLTeamSchedule.Game(sortGameByTime.getFirst()).getMoscowDate(),
                             new NHLTeamSchedule.Game(sortGameByTime.getLast()).getMoscowDate()
-                    )));
+                    )), context.getIdChat());
                 })
                 .onError((atomicBoolean, promiseTask, promise) -> {
                     System.out.println(promise.getLogString());

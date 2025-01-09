@@ -203,4 +203,10 @@ class NhlStatisticApplicationTest {
         System.out.println(promise.getLogString());
     }
 
+    @SuppressWarnings("unused")
+    //@Test
+    void unsubscribe() {
+        new RemoveSubscriberOvi(290029195L).generate().run().await(5_000L);
+    }
+
 }

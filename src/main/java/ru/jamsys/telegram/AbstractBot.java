@@ -6,6 +6,7 @@ import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.jamsys.core.App;
 import ru.jamsys.core.component.manager.item.RouteGeneratorRepository;
 import ru.jamsys.core.component.manager.item.Session;
@@ -13,6 +14,7 @@ import ru.jamsys.core.extension.http.ServletRequestReader;
 import ru.jamsys.core.flat.util.Util;
 import ru.jamsys.core.flat.util.UtilTelegram;
 import ru.jamsys.core.flat.util.telegram.Button;
+import ru.jamsys.core.handler.promise.RemoveSubscriberOvi;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
 
@@ -43,7 +45,10 @@ public abstract class AbstractBot extends TelegramLongPollingBot {
             return;
         }
         if (msg.hasCallbackQuery()) {
-            send(UtilTelegram.answerCallbackQuery(msg, ""));
+            send(
+                    UtilTelegram.answerCallbackQuery(msg, ""),
+                    UtilTelegram.getIdChat(msg)
+            );
         }
         Long idChat = UtilTelegram.getIdChat(msg);
         if (idChat == null) {
@@ -75,7 +80,7 @@ public abstract class AbstractBot extends TelegramLongPollingBot {
                         idChat,
                         "Группы не поддерживаются",
                         null
-                ));
+                ), idChat);
                 return;
             }
             if (UtilTelegram.isBot(msg)) {
@@ -83,7 +88,7 @@ public abstract class AbstractBot extends TelegramLongPollingBot {
                         idChat,
                         "Боты не поддерживаются",
                         null
-                ));
+                ), idChat);
                 return;
             }
             if (data.startsWith("/start ")) {
@@ -95,7 +100,7 @@ public abstract class AbstractBot extends TelegramLongPollingBot {
                         idChat,
                         "Команда " + UtilTelegram.getData(msg) + " не поддерживается",
                         null
-                ));
+                ), idChat);
                 return;
             }
             Promise promise = match.generate();
@@ -143,13 +148,23 @@ public abstract class AbstractBot extends TelegramLongPollingBot {
     }
 
     public void send(long idChat, String data, List<Button> buttons) {
-        send(UtilTelegram.message(idChat, data, buttons));
+        send(UtilTelegram.message(idChat, data, buttons), idChat);
     }
 
     @SuppressWarnings("all")
-    public <T extends Serializable, Method extends BotApiMethod<T>> T send(Method method) {
+    public <T extends Serializable, Method extends BotApiMethod<T>> T send(Method method, Long idChat) {
+        if (idChat == null) {
+            return null;
+        }
         try {
             execute(method);
+        } catch (TelegramApiException e) {
+            if (e.getMessage().contains("Forbidden: bot was blocked by the user")) {
+                Util.logConsole("User blocked bot. id_chat = " + idChat);
+                new RemoveSubscriberOvi(idChat).generate().run();
+            } else {
+                App.error(e);
+            }
         } catch (Throwable th) {
             App.error(th);
         }

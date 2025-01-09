@@ -90,7 +90,7 @@ public class ScheduleCommon implements PromiseGenerator, NhlStatisticsBotCommand
                         context.getTelegramBot().send(UtilTelegram.editMessage(
                                 context.getMsg(),
                                 context.getUriParameters().get("a")
-                        ));
+                        ), context.getIdChat());
                     }
                 })
                 .thenWithResource("getSubscriptionsPlayerGames", JdbcResource.class, (_, _, promise, jdbcResource) -> {

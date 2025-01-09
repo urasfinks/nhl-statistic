@@ -85,7 +85,7 @@ public class Remove implements PromiseGenerator, NhlStatisticsBotCommandHandler 
                     context.getTelegramBot().send(UtilTelegram.editMessage(
                             context.getMsg(),
                             context.getUriParameters().get("a")
-                    ));
+                    ), context.getIdChat());
                 })
                 .thenWithResource("removeSubscription", JdbcResource.class, (_, _, promise, jdbcResource) -> {
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
