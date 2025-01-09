@@ -169,13 +169,24 @@ public class NHLBoxScore {
 
             @SuppressWarnings("unchecked")
             Map<String, Object> body = (Map<String, Object>) object.get("body");
-            @SuppressWarnings("unchecked")
-            List<Map<String, Object>> scoringPlays = (List<Map<String, Object>>) body.get("scoringPlays");
-            this.scoringPlays = scoringPlays != null ? scoringPlays : new ArrayList<>();
 
-            @SuppressWarnings("unchecked")
-            Map<String, Map<String, Object>> playerStats = (Map<String, Map<String, Object>>) body.get("playerStats");
-            this.playerStats = playerStats != null ? playerStats : new HashMap<>();
+            List<Map<String, Object>> tmpScoringPlays = new ArrayList<>();
+            try {
+                @SuppressWarnings("unchecked")
+                List<Map<String, Object>> tmp = (List<Map<String, Object>>) body.get("scoringPlays");
+                tmpScoringPlays = tmp;
+            } catch (Throwable _) {
+            }
+            this.scoringPlays = tmpScoringPlays;
+
+            Map<String, Map<String, Object>> tmpPlayerStats = new HashMap<>();
+            try {
+                @SuppressWarnings("unchecked")
+                Map<String, Map<String, Object>> playerStats = (Map<String, Map<String, Object>>) body.get("playerStats");
+                tmpPlayerStats = playerStats;
+            } catch (Throwable _) {
+            }
+            this.playerStats = tmpPlayerStats;
 
             NHLTeams.Team teamHome = NHLTeams.teams.getById(body.get("teamIDHome").toString());
             NHLTeams.Team teamAway = NHLTeams.teams.getById(body.get("teamIDAway").toString());
