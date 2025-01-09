@@ -17,6 +17,7 @@ import ru.jamsys.tank.data.NHLPlayerList;
 import ru.jamsys.telegram.GameEventData;
 
 import java.util.Map;
+import java.util.Objects;
 
 class NhlStatisticApplicationTest {
 
@@ -108,7 +109,7 @@ class NhlStatisticApplicationTest {
     }
 
     @SuppressWarnings("unused")
-        //@Test
+    //@Test
     void testScoreCache() {
         NHLPlayerList.Player player = new NHLPlayerList.Player()
                 .setPlayerID("4565257")
@@ -116,7 +117,7 @@ class NhlStatisticApplicationTest {
                 .setLongName("Bobby Brink")
                 .setTeam("PHI")
                 .setTeamID("22");
-        ScoreBoxCache scoreBoxCache = new ScoreBoxCache(player, "20241129_NYR@PHI");
+        ScoreBoxCache scoreBoxCache = new ScoreBoxCache(player, "20241129_NYR@PHI2");
 
         scoreBoxCache.generate()
                 .run()
@@ -181,23 +182,22 @@ class NhlStatisticApplicationTest {
         ).generate().run().await(50_000L);
     }
 
+    @SuppressWarnings("unused")
     //@Test
     void save() {
         Promise promise = servicePromise.get("testPromise", 600_000L);
         promise
-                .thenWithResource("insert", JdbcResource.class, (_, _, _, jdbcResource) -> {
-                    jdbcResource.execute(new JdbcRequest(JTLogRequest.SELECT_NHL_BOX_SCORE)).forEach(map -> {
-                        try {
-                            Map<String, Object> mapOrThrow = UtilJson.getMapOrThrow(map.get("data").toString());
-                            UtilFile.writeBytes(
-                                    "block4/" + map.get("id") + ".json",
-                                    UtilJson.toStringPretty(mapOrThrow, "{}").getBytes(),
-                                    FileWriteOptions.CREATE_OR_REPLACE);
-                        } catch (Throwable e) {
-                            App.error(e);
-                        }
-                    });
-                })
+                .thenWithResource("insert", JdbcResource.class, (_, _, _, jdbcResource) -> jdbcResource.execute(new JdbcRequest(JTLogRequest.SELECT_NHL_BOX_SCORE)).forEach(map -> {
+                    try {
+                        Map<String, Object> mapOrThrow = UtilJson.getMapOrThrow(map.get("data").toString());
+                        UtilFile.writeBytes(
+                                "block4/" + map.get("id") + ".json",
+                                Objects.requireNonNull(UtilJson.toStringPretty(mapOrThrow, "{}")).getBytes(),
+                                FileWriteOptions.CREATE_OR_REPLACE);
+                    } catch (Throwable e) {
+                        App.error(e);
+                    }
+                }))
                 .run()
                 .await(20_000L);
         System.out.println(promise.getLogString());

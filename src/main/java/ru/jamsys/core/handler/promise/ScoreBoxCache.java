@@ -6,6 +6,7 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 import ru.jamsys.core.App;
 import ru.jamsys.core.component.ServicePromise;
+import ru.jamsys.core.extension.exception.ForwardException;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
 import ru.jamsys.tank.data.NHLBoxScore;
@@ -25,7 +26,7 @@ public class ScoreBoxCache implements PromiseGenerator {
 
     private int goals = 0;
 
-    private Map<String, Object> allStatistic;
+    private Map<String, Object> allStatistic = null;
 
     public ScoreBoxCache(NHLPlayerList.Player player, String idGame) {
         this.player = player;
@@ -46,10 +47,14 @@ public class ScoreBoxCache implements PromiseGenerator {
                             .getRepositoryMapClass(Promise.class, "getScoreBox")
                             .getRepositoryMapClass(Tank01Request.class);
                     if (response.getResponseData() != null && !response.getResponseData().isEmpty()) {
-                        Map<String, Object> playerStat = NHLBoxScore.getPlayerStat(response.getResponseData(), getPlayer().getPlayerID());
-                        setAllStatistic(playerStat);
-                        if (playerStat.containsKey("goals")) {
-                            setGoals(Integer.parseInt(playerStat.get("goals").toString()));
+                        try {
+                            Map<String, Object> playerStat = NHLBoxScore.getPlayerStat(response.getResponseData(), getPlayer().getPlayerID());
+                            setAllStatistic(playerStat);
+                            if (playerStat.containsKey("goals")) {
+                                setGoals(Integer.parseInt(playerStat.get("goals").toString()));
+                            }
+                        } catch (Throwable th) {
+                            App.error(new ForwardException(th));
                         }
                     }
                 })
