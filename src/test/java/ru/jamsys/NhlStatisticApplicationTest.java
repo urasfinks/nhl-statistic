@@ -64,7 +64,7 @@ class NhlStatisticApplicationTest {
                 GameEventData.Action.GOAL,
                 "Washington Capitals (WSH) 🆚 Detroit Red Wings (DET)",
                 "Washington Capitals (WSH) 1 - 1 Detroit Red Wings (DET)",
-                NHLPlayerList.getPlayerName(player),
+                player,
                 UtilDate.get("dd.MM.yyyy HH:mm:ss")
         )
                 .setScoredGoal(1)
@@ -171,7 +171,7 @@ class NhlStatisticApplicationTest {
                 GameEventData.Action.START_GAME,
                 "Washington Capitals (WSH) 🆚 Detroit Red Wings (DET)",
                 "Washington Capitals (WSH) 1 - 1 Detroit Red Wings (DET)",
-                NHLPlayerList.getPlayerName(player),
+                player,
                 UtilDate.get("dd.MM.yyyy HH:mm:ss")
         )
                 .setScoredGoal(1)

@@ -77,6 +77,9 @@ public class GameEventTemplateOvi {
 
         Map<String, String> arg = new LinkedHashMap<>();
         extend(arg, gameEventData);
+        extend(arg, gameEventData.getPlayer());
+        arg.put("playerName", gameEventData.getPlayer().getLongName());
+        arg.put("playerNameWithTeamAbv", gameEventData.getPlayer().getLongNameWithTeamAbv());
         extend(arg, this);
         return TemplateTwix.template(template.get(gameEventData.getAction()), arg, true);
     }

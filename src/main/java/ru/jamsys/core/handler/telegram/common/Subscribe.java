@@ -123,11 +123,11 @@ public class Subscribe implements PromiseGenerator, NhlStatisticsBotCommandHandl
                             .getRepositoryMapClass(Promise.class, "getPlayerList2")
                             .getRepositoryMapClass(Tank01Request.class);
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
-                    Map<String, Object> player = NHLPlayerList.findById(
+                    NHLPlayerList.Player player = NHLPlayerList.findById(
                             context.getUriParameters().get("idPlayer"),
                             response.getResponseData()
                     );
-                    if (player == null || player.isEmpty()) {
+                    if (player == null) {
                         context.getTelegramBot().send(
                                 UtilTelegram.editMessage(context.getMsg(), "Игрок не найден"),
                                 context.getIdChat()
@@ -135,13 +135,13 @@ public class Subscribe implements PromiseGenerator, NhlStatisticsBotCommandHandl
                         promise.skipAllStep("Not found player");
                         return;
                     }
-                    String playerInfo = NHLPlayerList.getPlayerName(player);
+                    String playerInfo = player.getLongNameWithTeamAbv();
                     context.getTelegramBot().send(
                             UtilTelegram.editMessage(context.getMsg(), playerInfo),
                             context.getIdChat()
                     );
                     context.getUriParameters().put("infoPlayer", playerInfo);
-                    context.getUriParameters().put("idTeam", player.get("teamID").toString());
+                    context.getUriParameters().put("idTeam", player.getTeamID());
                 })
                 .then("getGameInSeason", new Tank01Request(() -> {
                     TelegramCommandContext context = gen.getRepositoryMapClass(TelegramCommandContext.class);

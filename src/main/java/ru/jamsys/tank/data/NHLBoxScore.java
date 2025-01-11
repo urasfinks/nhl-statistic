@@ -86,7 +86,7 @@ public class NHLBoxScore {
                 int currentGoals = Integer.parseInt(currentStat.get("goals").toString());
                 int diff = currentGoals - lastGoals;
                 List<Map<String, Object>> listGoal = (diff > 0 ? currentInstance : lastInstance)
-                        .getPlayer(idPlayer)
+                        .getPlayerStat(idPlayer)
                         .getSortByTimeListGoal(UtilListSort.Type.ASC);
                 getLastNElements(listGoal, Math.abs(diff)).forEach(map -> result
                         .computeIfAbsent(idPlayer, _ -> new ArrayList<>())
@@ -94,7 +94,7 @@ public class NHLBoxScore {
                                         diff > 0 ? GameEventData.Action.GOAL : GameEventData.Action.CANCEL,
                                         currentInstance.getAboutGame(),
                                         currentInstance.getScoreGame(),
-                                        currentInstance.getPlayer(idPlayer).getLongName(),
+                                currentInstance.getPlayerStat(idPlayer).getPlayerOrEmpty(),
                                         map.get("scoreTime") + ", " + periodExpandRu(map.get("period").toString())
                                 )
                                         .setAction(diff > 0 ? GameEventData.Action.GOAL : GameEventData.Action.CANCEL)
@@ -214,7 +214,7 @@ public class NHLBoxScore {
         public boolean isValidate() {
             String[] array = playerStats.keySet().toArray(new String[0]);
             for (String idPlayer : array) {
-                PlayerStat playerStat = getPlayer(idPlayer);
+                PlayerStat playerStat = getPlayerStat(idPlayer);
                 if (playerStat.getGoals() > 0) {
                     if (playerStat.getGoals() != playerStat.getSortByTimeListGoal(UtilListSort.Type.ASC).size()) {
                         System.out.println("idPlayer: " + playerStat.getPlayerID() + "; statGoals: " + playerStat.getGoals() + "; sizeListGoals: " + playerStat.getSortByTimeListGoal(UtilListSort.Type.ASC).size());
@@ -287,7 +287,15 @@ public class NHLBoxScore {
             return null;
         }
 
-        public PlayerStat getPlayer(String idPlayer) {
+        public NHLPlayerList.Player getPlayer(String idPlayer) {
+            PlayerStat playerStat = getPlayerStat(idPlayer);
+            if (playerStat != null) {
+                return playerStat.getPlayerOrEmpty();
+            }
+            return null;
+        }
+
+        public PlayerStat getPlayerStat(String idPlayer) {
             if (playerStats.containsKey(idPlayer)) {
                 PlayerStat playerStat = new PlayerStat(playerStats.get(idPlayer));
                 scoringPlays.forEach(map -> {
@@ -375,16 +383,12 @@ public class NHLBoxScore {
             return stat.getOrDefault("playerID", "0").toString();
         }
 
-        public String getLongName() {
-            if (UtilNHL.isOvi(getPlayerID())) {
-                return "Александр Овечкин";
-            } else {
-                return stat.getOrDefault("longName", "--").toString();
-            }
-        }
-
         public void addGoal(Map<String, Object> goal) {
             listGoal.add(goal);
+        }
+
+        public NHLPlayerList.Player getPlayerOrEmpty() {
+            return NHLPlayerList.findByIdStaticOrEmpty(getPlayerID());
         }
 
         public String getFinishTimeScore() {
@@ -406,20 +410,6 @@ public class NHLBoxScore {
                 return "(" + String.join(" | ", result) + ")";
             }
             return "";
-        }
-
-        public static PlayerStat getPlayerOrEmpty(String idPlayer) {
-            //TODO переделать по человечески через кеш
-            Map<String, Object> about = new HashMap<>();
-            try {
-                Map<String, Object> map = NHLPlayerList.findById(idPlayer, NHLPlayerList.getExample());
-                if (map != null) {
-                    about.putAll(map);
-                }
-            } catch (Throwable e) {
-                App.error(e);
-            }
-            return new PlayerStat(about);
         }
 
         public List<Map<String, Object>> getSortByTimeListGoal(UtilListSort.Type type) {

@@ -3,6 +3,7 @@ package ru.jamsys.telegram;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import ru.jamsys.tank.data.NHLPlayerList;
 
 @Getter
 @Setter
@@ -22,14 +23,14 @@ public class GameEventData {
 
     final private String gameAbout; // Описание игры X (ABV) vs Y (ABV)
     final private String gameScore; // Состояние игры с X 1 - 1 Y
-    final private String playerName;
+    final private NHLPlayerList.Player player;
     final private String time; // Время события
 
-    public GameEventData(Action action, String gameAbout, String gameScore, String playerName, String time) {
+    public GameEventData(Action action, String gameAbout, String gameScore, NHLPlayerList.Player player, String time) {
         this.action = action;
         this.gameAbout = gameAbout;
         this.gameScore = gameScore;
-        this.playerName = playerName;
+        this.player = player;
         this.time = time;
     }
 

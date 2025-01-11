@@ -36,18 +36,18 @@ public class GameEventTemplate {
             .append(GameEventData.Action.START_GAME, """
                     Начало игры ${gameAbout}""")
             .append(GameEventData.Action.NOT_PLAY, """
-                    ❌ ${playerName} не принимает участие""")
+                    ❌ ${playerNameWithTeamAbv} не принимает участие""")
             .append(GameEventData.Action.GOAL, """
-                    🚨 ГОООЛ! ${time}. ${playerName} забивает свой ${goalsInSeason}-й гол в сезоне!
+                    🚨 ГОООЛ! ${time}. ${playerNameWithTeamAbv} забивает свой ${goalsInSeason}-й гол в сезоне!
                     ${gameScore}""")
             .append(GameEventData.Action.CANCEL, """
-                    ❌ Гол отменён!.
+                    ❌ Гол отменён!. ${playerNameWithTeamAbv}
                     ${gameScore}""")
             .append(GameEventData.Action.FINISH_GAME, """
                     Матч завершен.${finishDetail}
                     ${gameScore}.
                     
-                    Статистика в матче по игроку ${playerName}:
+                    Статистика в матче по игроку ${playerNameWithTeamAbv}:
                     🎯 Голы: ${scoredGoal} ${time}
                     🥅 Броски по воротам: ${scoredShots}
                     🏒 Передачи: ${scoredAssists}
@@ -78,6 +78,9 @@ public class GameEventTemplate {
 
         Map<String, String> arg = new LinkedHashMap<>();
         extend(arg, gameEventData);
+        extend(arg, gameEventData.getPlayer());
+        arg.put("playerName", gameEventData.getPlayer().getLongName());
+        arg.put("playerNameWithTeamAbv", gameEventData.getPlayer().getLongNameWithTeamAbv());
         extend(arg, this);
         return TemplateTwix.template(template.get(gameEventData.getAction()), arg, true);
     }

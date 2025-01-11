@@ -60,7 +60,7 @@ class NHLBoxScoreTest {
                 GameEventData.Action.GOAL,
                 "Washington Capitals (WSH) 🆚 Detroit Red Wings (DET)",
                 "Washington Capitals (WSH) 1 - 1 Detroit Red Wings (DET)",
-                NHLPlayerList.getPlayerName(player),
+                player,
                 "31.12.2024 16:43:53"
         );
         gameEventData
@@ -95,7 +95,7 @@ class NHLBoxScoreTest {
     @Test
     void parse() throws Throwable {
         NHLBoxScore.Instance instance = new NHLBoxScore.Instance(NHLBoxScore.getExample4());
-        NHLBoxScore.PlayerStat playerStat = instance.getPlayer("3900169");
+        NHLBoxScore.PlayerStat playerStat = instance.getPlayerStat("3900169");
 
 
         Assertions.assertEquals("(4:24, 1-й период)", playerStat.getFinishTimeScore());
@@ -130,14 +130,14 @@ class NHLBoxScoreTest {
     @Test
     void parse2() throws Throwable {
         NHLBoxScore.Instance instance = new NHLBoxScore.Instance(NHLBoxScore.getExampleChange());
-        NHLBoxScore.PlayerStat playerStat = instance.getPlayer("4874723");
+        NHLBoxScore.PlayerStat playerStat = instance.getPlayerStat("4874723");
         Assertions.assertEquals("(4:56, 1-й период | 19:18, 3-й период)", playerStat.getFinishTimeScore());
     }
 
     @Test
     void parse3() throws Throwable {
         NHLBoxScore.Instance instance = new NHLBoxScore.Instance(UtilFileResource.getAsString("example/block2/Test3.json"));
-        NHLBoxScore.PlayerStat playerStat = instance.getPlayer("4915856");
+        NHLBoxScore.PlayerStat playerStat = instance.getPlayerStat("4915856");
         Assertions.assertEquals("(3:20, 1-й период | 00:02, 2-й период | 03:15, 3-й период | 99:60, 3-й период | 00:01, !P | 00:02, доп. время)", playerStat.getFinishTimeScore());
     }
 
@@ -174,7 +174,7 @@ class NHLBoxScoreTest {
         System.out.println(UtilJson.toStringPretty(event, "{}"));
         Assertions.assertEquals("19:18, 3-й период", event.get("4874723").getFirst().getTime());
         Assertions.assertEquals("""
-                🚨 ГОООЛ! 19:18, 3-й период. Dylan Guenther забивает свой 2-й гол в сезоне!
+                🚨 ГОООЛ! 19:18, 3-й период. Dylan Guenther (UTA) забивает свой 2-й гол в сезоне!
                 Chicago Blackhawks (CHI) 2 - 5 Utah Hockey Club (UTA)""", new GameEventTemplate(event.get("4874723").getFirst()).toString());
         Assertions.assertEquals("""
                🚨 ГОООЛ! 19:18, 3-й период. Александр Овечкин забивает свой 2-й гол в карьере! До рекорда Гретцки осталось 892 гола.

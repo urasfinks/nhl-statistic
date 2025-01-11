@@ -8,7 +8,7 @@ import ru.jamsys.tank.data.NHLBoxScore;
 import ru.jamsys.tank.data.NHLPlayerList;
 import ru.jamsys.telegram.GameEventData;
 
-class GameEventTemplateOviTest {
+class GameEventTemplateTest {
 
     @Test
     void testToString() {
@@ -37,24 +37,24 @@ class GameEventTemplateOviTest {
 
         Assertions.assertEquals(
                 "Начало игры Washington Capitals (WSH) 🆚 Detroit Red Wings (DET)",
-                new GameEventTemplateOvi(gameEventData.setAction(GameEventData.Action.START_GAME)).toString()
+                new GameEventTemplate(gameEventData.setAction(GameEventData.Action.START_GAME)).toString()
         );
 
         Assertions.assertEquals("""
-                        🚨 ГОООЛ! 14:14, 2-й период. Александр Овечкин забивает свой 871-й гол в карьере! До рекорда Гретцки осталось 23 гола.
+                        🚨 ГОООЛ! 14:14, 2-й период. Александр Овечкин (WSH) забивает свой 18-й гол в сезоне!
                         Washington Capitals (WSH) 1 - 0 Detroit Red Wings (DET)""",
-                new GameEventTemplateOvi(gameEventData.setAction(GameEventData.Action.GOAL)).toString()
+                new GameEventTemplate(gameEventData.setAction(GameEventData.Action.GOAL)).toString()
         );
 
         Assertions.assertEquals("""
-                        ❌ Гол отменён! До рекорда Гретцки осталось 23 гола.
+                        ❌ Гол отменён!. Александр Овечкин (WSH)
                         Washington Capitals (WSH) 1 - 0 Detroit Red Wings (DET)""",
-                new GameEventTemplateOvi(gameEventData.setAction(GameEventData.Action.CANCEL)).toString()
+                new GameEventTemplate(gameEventData.setAction(GameEventData.Action.CANCEL)).toString()
         );
 
         Assertions.assertEquals("""
-                        ❌ Александр Овечкин не принимает участие""",
-                new GameEventTemplateOvi(gameEventData.setAction(GameEventData.Action.NOT_PLAY)).toString()
+                        ❌ Александр Овечкин (WSH) не принимает участие""",
+                new GameEventTemplate(gameEventData.setAction(GameEventData.Action.NOT_PLAY)).toString()
         );
 
     }

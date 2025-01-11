@@ -17,10 +17,8 @@ class NHLPlayerStatListTest {
 
     @Test
     void findById() throws Throwable {
-        Map<String, Object> map = NHLPlayerList.findById("5188611", NHLPlayerList.getExample());
-        assert map != null;
-        Assertions.assertEquals("{pos=D, playerID=5188611, team=SEA, longName=Caden Price, teamID=25}", map.toString());
-        NHLPlayerList.Player player = NHLPlayerList.Player.fromMap(map);
+        NHLPlayerList.Player player = NHLPlayerList.findById("5188611", NHLPlayerList.getExample());
+        assert player != null;
         Assertions.assertEquals("NHLPlayerList.Player(pos=D, playerID=5188611, team=SEA, longName=Caden Price, teamID=25)", player.toString());
     }
 

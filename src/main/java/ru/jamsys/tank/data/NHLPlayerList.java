@@ -4,8 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
+import ru.jamsys.core.App;
 import ru.jamsys.core.flat.util.UtilFileResource;
 import ru.jamsys.core.flat.util.UtilJson;
+import ru.jamsys.core.flat.util.UtilNHL;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,14 +18,6 @@ public class NHLPlayerList {
 
     public static String getUri() {
         return "/getNHLPlayerList";
-    }
-
-    public static String getPlayerName(Map<String, Object> player) {
-        return String.format("%s (%s)", player.getOrDefault("longName", "--"), player.getOrDefault("team", "--"));
-    }
-
-    public static String getPlayerName(Player player) {
-        return String.format("%s (%s)", player.getLongName(), player.getTeam());
     }
 
     public static String getExample() throws IOException {
@@ -45,14 +39,32 @@ public class NHLPlayerList {
         return result;
     }
 
-    public static Map<String, Object> findById(String userId, String json) throws Throwable {
+    public static Player findByIdStatic(String userId) {
+        //TODO переделать по человечески через кеш
+        try {
+            return findById(userId, getExample());
+        } catch (Throwable th) {
+            App.error(th);
+        }
+        return null;
+    }
+
+    public static NHLPlayerList.Player findByIdStaticOrEmpty(String userId) {
+        Player player = findByIdStatic(userId);
+        if (player == null) {
+            player = new Player();
+        }
+        return player;
+    }
+
+    public static Player findById(String userId, String json) throws Throwable {
         @SuppressWarnings("unchecked")
         Map<String, Object> parsed = UtilJson.toObject(json, Map.class);
         @SuppressWarnings("unchecked")
         List<Map<String, Object>> selector = (List<Map<String, Object>>) UtilJson.selector(parsed, "body");
         for (Map<String, Object> stringObjectMap : selector) {
             if (stringObjectMap.getOrDefault("playerID", "0").toString().equals(userId)) {
-                return stringObjectMap;
+                return Player.fromMap(stringObjectMap);
             }
         }
         return null;
@@ -81,10 +93,6 @@ public class NHLPlayerList {
             return requireNonNullEmptyElse(team, "--");
         }
 
-        public String getLongName() {
-            return requireNonNullEmptyElse(longName, "--");
-        }
-
         public String getTeamID() {
             return requireNonNullEmptyElse(teamID, "0");
         }
@@ -99,6 +107,18 @@ public class NHLPlayerList {
                 return def;
             }
             return data;
+        }
+
+        public String getLongNameWithTeamAbv() {
+            return getLongName() + " (" + getTeam() + ")";
+        }
+
+        public String getLongName() {
+            if (UtilNHL.isOvi(getPlayerID())) {
+                return "Александр Овечкин";
+            } else {
+                return requireNonNullEmptyElse(longName, "--");
+            }
         }
 
     }
