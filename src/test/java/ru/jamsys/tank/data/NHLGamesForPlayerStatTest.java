@@ -9,7 +9,7 @@ import ru.jamsys.core.flat.util.UtilJson;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-class NHLGamesForPlayerTest {
+class NHLGamesForPlayerStatTest {
 
     @Test
     void goals() throws Throwable {

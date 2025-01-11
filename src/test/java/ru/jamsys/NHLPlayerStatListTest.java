@@ -7,7 +7,7 @@ import ru.jamsys.tank.data.NHLPlayerList;
 import java.util.List;
 import java.util.Map;
 
-class NHLPlayerListTest {
+class NHLPlayerStatListTest {
 
     @Test
     void findByName() throws Throwable {

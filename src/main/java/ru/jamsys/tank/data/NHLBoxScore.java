@@ -214,10 +214,10 @@ public class NHLBoxScore {
         public boolean isValidate() {
             String[] array = playerStats.keySet().toArray(new String[0]);
             for (String idPlayer : array) {
-                Player player = getPlayer(idPlayer);
-                if (player.getGoals() > 0) {
-                    if (player.getGoals() != player.getSortByTimeListGoal(UtilListSort.Type.ASC).size()) {
-                        System.out.println("idPlayer: " + player.getPlayerID() + "; statGoals: " + player.getGoals() + "; sizeListGoals: " + player.getSortByTimeListGoal(UtilListSort.Type.ASC).size());
+                PlayerStat playerStat = getPlayer(idPlayer);
+                if (playerStat.getGoals() > 0) {
+                    if (playerStat.getGoals() != playerStat.getSortByTimeListGoal(UtilListSort.Type.ASC).size()) {
+                        System.out.println("idPlayer: " + playerStat.getPlayerID() + "; statGoals: " + playerStat.getGoals() + "; sizeListGoals: " + playerStat.getSortByTimeListGoal(UtilListSort.Type.ASC).size());
                         return false;
                     }
                 }
@@ -287,9 +287,9 @@ public class NHLBoxScore {
             return null;
         }
 
-        public Player getPlayer(String idPlayer) {
+        public PlayerStat getPlayer(String idPlayer) {
             if (playerStats.containsKey(idPlayer)) {
-                Player player = new Player(playerStats.get(idPlayer));
+                PlayerStat playerStat = new PlayerStat(playerStats.get(idPlayer));
                 scoringPlays.forEach(map -> {
                     if (map.containsKey("goal")) {
                         @SuppressWarnings("unchecked")
@@ -302,11 +302,11 @@ public class NHLBoxScore {
                                 goal.containsKey("playerID") && goal.get("playerID").equals(idPlayer)
                                         && !"SO".equals(map.get("period"))
                         ) {
-                            player.addGoal(map);
+                            playerStat.addGoal(map);
                         }
                     }
                 });
-                return player;
+                return playerStat;
             }
             return null;
         }
@@ -331,14 +331,14 @@ public class NHLBoxScore {
 
     }
 
-    public static class Player {
+    public static class PlayerStat {
 
         final private List<Map<String, Object>> listGoal = new ArrayList<>();
 
         @Getter
         final private Map<String, Object> stat;
 
-        public Player(Map<String, Object> stat) {
+        public PlayerStat(Map<String, Object> stat) {
             this.stat = stat;
         }
 
@@ -408,7 +408,7 @@ public class NHLBoxScore {
             return "";
         }
 
-        public static Player getPlayerOrEmpty(String idPlayer) {
+        public static PlayerStat getPlayerOrEmpty(String idPlayer) {
             //TODO переделать по человечески через кеш
             Map<String, Object> about = new HashMap<>();
             try {
@@ -419,7 +419,7 @@ public class NHLBoxScore {
             } catch (Throwable e) {
                 App.error(e);
             }
-            return new Player(about);
+            return new PlayerStat(about);
         }
 
         public List<Map<String, Object>> getSortByTimeListGoal(UtilListSort.Type type) {

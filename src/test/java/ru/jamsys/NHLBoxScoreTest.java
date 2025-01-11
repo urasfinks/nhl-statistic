@@ -95,22 +95,22 @@ class NHLBoxScoreTest {
     @Test
     void parse() throws Throwable {
         NHLBoxScore.Instance instance = new NHLBoxScore.Instance(NHLBoxScore.getExample4());
-        NHLBoxScore.Player player = instance.getPlayer("3900169");
+        NHLBoxScore.PlayerStat playerStat = instance.getPlayer("3900169");
 
 
-        Assertions.assertEquals("(4:24, 1-й период)", player.getFinishTimeScore());
-        Assertions.assertEquals("1", player.getStat().get("goals"));
+        Assertions.assertEquals("(4:24, 1-й период)", playerStat.getFinishTimeScore());
+        Assertions.assertEquals("1", playerStat.getStat().get("goals"));
         Assertions.assertEquals("Philadelphia Flyers (PHI) 2 - 0 New York Rangers (NYR)", instance.getScoreGame("PHI"));
         Assertions.assertEquals("New York Rangers (NYR) 0 - 2 Philadelphia Flyers (PHI)", instance.getScoreGame());
         Assertions.assertEquals("New York Rangers (NYR) 0 - 2 Philadelphia Flyers (PHI)", instance.getScoreGame("NYR"));
         System.out.println(UtilJson.toStringPretty(instance, "{}"));
 
-        Assertions.assertEquals(1, player.getGoals());
-        Assertions.assertEquals(1, player.getShots());
-        Assertions.assertEquals(0, player.getAssists());
-        Assertions.assertEquals(0, player.getHits());
-        Assertions.assertEquals(0, player.getPenaltiesInMinutes());
-        Assertions.assertEquals("1:49", player.getTimeOnIce());
+        Assertions.assertEquals(1, playerStat.getGoals());
+        Assertions.assertEquals(1, playerStat.getShots());
+        Assertions.assertEquals(0, playerStat.getAssists());
+        Assertions.assertEquals(0, playerStat.getHits());
+        Assertions.assertEquals(0, playerStat.getPenaltiesInMinutes());
+        Assertions.assertEquals("1:49", playerStat.getTimeOnIce());
     }
 
     @Test
@@ -130,15 +130,15 @@ class NHLBoxScoreTest {
     @Test
     void parse2() throws Throwable {
         NHLBoxScore.Instance instance = new NHLBoxScore.Instance(NHLBoxScore.getExampleChange());
-        NHLBoxScore.Player player = instance.getPlayer("4874723");
-        Assertions.assertEquals("(4:56, 1-й период | 19:18, 3-й период)", player.getFinishTimeScore());
+        NHLBoxScore.PlayerStat playerStat = instance.getPlayer("4874723");
+        Assertions.assertEquals("(4:56, 1-й период | 19:18, 3-й период)", playerStat.getFinishTimeScore());
     }
 
     @Test
     void parse3() throws Throwable {
         NHLBoxScore.Instance instance = new NHLBoxScore.Instance(UtilFileResource.getAsString("example/block2/Test3.json"));
-        NHLBoxScore.Player player = instance.getPlayer("4915856");
-        Assertions.assertEquals("(3:20, 1-й период | 00:02, 2-й период | 03:15, 3-й период | 99:60, 3-й период | 00:01, !P | 00:02, доп. время)", player.getFinishTimeScore());
+        NHLBoxScore.PlayerStat playerStat = instance.getPlayer("4915856");
+        Assertions.assertEquals("(3:20, 1-й период | 00:02, 2-й период | 03:15, 3-й период | 99:60, 3-й период | 00:01, !P | 00:02, доп. время)", playerStat.getFinishTimeScore());
     }
 
     @Test

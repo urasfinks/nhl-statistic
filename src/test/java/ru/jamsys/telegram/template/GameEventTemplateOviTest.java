@@ -103,20 +103,20 @@ class GameEventTemplateOviTest {
     void getEvent() throws Throwable {
         NHLBoxScore.Instance currentBoxScore = new NHLBoxScore.Instance(UtilFileResource.getAsString("example/PenaltyShot.json"));
         NHLPlayerList.Player ovi = UtilNHL.getOvi();
-        NHLBoxScore.Player player = currentBoxScore.getPlayer(ovi.getPlayerID());
+        NHLBoxScore.PlayerStat playerStat = currentBoxScore.getPlayer(ovi.getPlayerID());
         GameEventData gameEventData = new GameEventData(
                 GameEventData.Action.FINISH_GAME,
                 currentBoxScore.getAboutGame(),
                 currentBoxScore.getScoreGame(),
-                player.getLongName(),
-                player.getFinishTimeScore()
+                playerStat.getLongName(),
+                playerStat.getFinishTimeScore()
         )
-                .setScoredGoal(player.getGoals())
-                .setScoredAssists(player.getAssists())
-                .setScoredShots(player.getShots())
-                .setScoredHits(player.getHits())
-                .setScoredPenaltiesInMinutes(player.getPenaltiesInMinutes())
-                .setScoredTimeOnIce(player.getTimeOnIce())
+                .setScoredGoal(playerStat.getGoals())
+                .setScoredAssists(playerStat.getAssists())
+                .setScoredShots(playerStat.getShots())
+                .setScoredHits(playerStat.getHits())
+                .setScoredPenaltiesInMinutes(playerStat.getPenaltiesInMinutes())
+                .setScoredTimeOnIce(playerStat.getTimeOnIce())
                 .setPenaltyShot(currentBoxScore.isPenaltyShot())
                 .setOverTime(currentBoxScore.isOverTime());
         //System.out.println(UtilJson.toStringPretty(gameEventData, "{}"));
