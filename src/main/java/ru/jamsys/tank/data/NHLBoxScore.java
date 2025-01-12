@@ -73,10 +73,8 @@ public class NHLBoxScore {
     }
 
     // Получить события по игрокам на разности снимков статистики
-    public static Map<String, List<GameEventData>> getEvent(String lastJson, String currentJson) throws Throwable {
+    public static Map<String, List<GameEventData>> getEvent(Instance lastInstance, Instance currentInstance) {
         Map<String, List<GameEventData>> result = new HashMap<>(); //key: idPlayer; value: list GameEventData
-        Instance lastInstance = new Instance(lastJson);
-        Instance currentInstance = new Instance(currentJson);
         lastInstance.getPlayerStats().forEach((idPlayer, lastStat) -> {
             Map<String, Object> currentStat = currentInstance.getPlayerStats().get(idPlayer);
             // Бывает такое что тупо нет goal
@@ -94,7 +92,7 @@ public class NHLBoxScore {
                                         diff > 0 ? GameEventData.Action.GOAL : GameEventData.Action.CANCEL,
                                         currentInstance.getAboutGame(),
                                         currentInstance.getScoreGame(),
-                                currentInstance.getPlayerStat(idPlayer).getPlayerOrEmpty(),
+                                        currentInstance.getPlayerStat(idPlayer).getPlayerOrEmpty(),
                                         map.get("scoreTime") + ", " + periodExpandRu(map.get("period").toString())
                                 )
                                         .setAction(diff > 0 ? GameEventData.Action.GOAL : GameEventData.Action.CANCEL)
@@ -108,6 +106,11 @@ public class NHLBoxScore {
             }
         });
         return result;
+    }
+
+    // Получить события по игрокам на разности снимков статистики
+    public static Map<String, List<GameEventData>> getEvent(String lastJson, String currentJson) throws Throwable {
+        return getEvent(new Instance(lastJson), new Instance(currentJson));
     }
 
     public static String periodExpandRu(String period) {
@@ -155,7 +158,10 @@ public class NHLBoxScore {
         final private int gameStatusCode;
 
         final String scoreGame;
+
         final String aboutGame;
+
+        final Map<String, Object> parsedJson;
 
         public Instance(String json) throws Throwable {
             if (json == null || json.isEmpty()) { //Так как в БД может быть ничего
@@ -164,9 +170,12 @@ public class NHLBoxScore {
 
             @SuppressWarnings("unchecked")
             Map<String, Object> object = UtilJson.toObject(json, Map.class);
+
             if (object.containsKey("error")) {
                 throw new RuntimeException(object.get("error").toString());
             }
+
+            this.parsedJson = object;
 
             @SuppressWarnings("unchecked")
             Map<String, Object> body = (Map<String, Object>) object.get("body");
@@ -211,18 +220,19 @@ public class NHLBoxScore {
 
         }
 
-        public boolean isValidate() {
+        public List<String> isValidate() { // Возвращает список idPlayer у которых есть различия в статистики и расшифровке
+            List<String> listIdPlayer = new ArrayList<>();
             String[] array = playerStats.keySet().toArray(new String[0]);
             for (String idPlayer : array) {
                 PlayerStat playerStat = getPlayerStat(idPlayer);
                 if (playerStat.getGoals() > 0) {
                     if (playerStat.getGoals() != playerStat.getSortByTimeListGoal(UtilListSort.Type.ASC).size()) {
-                        System.out.println("idPlayer: " + playerStat.getPlayerID() + "; statGoals: " + playerStat.getGoals() + "; sizeListGoals: " + playerStat.getSortByTimeListGoal(UtilListSort.Type.ASC).size());
-                        return false;
+                        Util.logConsole("idPlayer: " + playerStat.getPlayerID() + "; statGoals: " + playerStat.getGoals() + "; sizeListGoals: " + playerStat.getSortByTimeListGoal(UtilListSort.Type.ASC).size());
+                        listIdPlayer.add(playerStat.getPlayerID());
                     }
                 }
             }
-            return true;
+            return listIdPlayer;
         }
 
         public boolean isFinish() {

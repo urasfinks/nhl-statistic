@@ -2,8 +2,6 @@ package ru.jamsys;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import ru.jamsys.core.App;
-import ru.jamsys.core.flat.util.UtilFile;
 import ru.jamsys.core.flat.util.UtilFileResource;
 import ru.jamsys.core.flat.util.UtilJson;
 import ru.jamsys.tank.data.NHLBoxScore;
@@ -143,29 +141,9 @@ class NHLBoxScoreTest {
 
     @Test
     void validate() throws Throwable {
-        Assertions.assertFalse(new NHLBoxScore.Instance(UtilFileResource.getAsString("example/block3/Test1.json")).isValidate());
-        Assertions.assertFalse(new NHLBoxScore.Instance(UtilFileResource.getAsString("example/block2/Test3.json")).isValidate());
-        Assertions.assertTrue(new NHLBoxScore.Instance(NHLBoxScore.getExampleChange()).isValidate());
-    }
-
-    //@Test
-    void validate2() {
-        List<String> filesRecursive = UtilFile.getFilesRecursive("block4/");
-        filesRecursive.forEach(path -> {
-            if (path.endsWith("/.DS_Store")) {
-                return;
-            }
-            try {
-                NHLBoxScore.Instance instance = new NHLBoxScore.Instance(new String(UtilFile.readBytes(path)));
-                if (!instance.isValidate()) {
-                    System.out.println(instance.getAboutGame() + " " + path);
-                    //System.out.println(instance.getAboutGame());
-                }
-            } catch (Throwable e) {
-                System.out.println("Error path: " + path);
-                App.error(e);
-            }
-        });
+        Assertions.assertEquals("[3900169]", new NHLBoxScore.Instance(UtilFileResource.getAsString("example/block3/Test1.json")).isValidate().toString());
+        Assertions.assertEquals("[4915856]", new NHLBoxScore.Instance(UtilFileResource.getAsString("example/block2/Test3.json")).isValidate().toString());
+        Assertions.assertEquals("[]", new NHLBoxScore.Instance(NHLBoxScore.getExampleChange()).isValidate().toString());
     }
 
     @Test
