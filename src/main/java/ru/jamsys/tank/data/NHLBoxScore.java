@@ -220,7 +220,7 @@ public class NHLBoxScore {
 
         }
 
-        public List<String> isValidate() { // Возвращает список idPlayer у которых есть различия в статистики и расшифровке
+        public List<String> getPlayerProblemStatistic() { // Возвращает список idPlayer у которых есть различия в статистики и расшифровке
             List<String> listIdPlayer = new ArrayList<>();
             String[] array = playerStats.keySet().toArray(new String[0]);
             for (String idPlayer : array) {
@@ -347,6 +347,9 @@ public class NHLBoxScore {
             return false;
         }
 
+        public void modify(NHLBoxScore.Instance last) {
+
+        }
     }
 
     public static class PlayerStat {

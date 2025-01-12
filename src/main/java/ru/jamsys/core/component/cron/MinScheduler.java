@@ -14,6 +14,7 @@ import ru.jamsys.core.extension.UniqueClassName;
 import ru.jamsys.core.extension.builder.HashMapBuilder;
 import ru.jamsys.core.extension.exception.ForwardException;
 import ru.jamsys.core.flat.template.cron.release.Cron1m;
+import ru.jamsys.core.flat.util.Util;
 import ru.jamsys.core.flat.util.UtilJson;
 import ru.jamsys.core.flat.util.UtilNHL;
 import ru.jamsys.core.flat.util.UtilRisc;
@@ -247,10 +248,20 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                     // Если это начало игры - ничего менять не надо
                     Context context = promise.getRepositoryMapClass(Context.class);
                     UtilRisc.forEach(run, context.getCurrentData(), (idGame, currentData) -> {
-                        String lastData = context.getLastData().get(idGame);
-                        if (lastData != null) {
-                            NHLBoxScore.Instance current = context.getCurrentNHLBoxScoreInstance(idGame);
-                            NHLBoxScore.Instance last = context.getLastNHLBoxScoreInstance(idGame);
+                        List<String> playerProblemStatistic = context
+                                .getCurrentNHLBoxScoreInstance(idGame)
+                                .getPlayerProblemStatistic();
+                        if (!playerProblemStatistic.isEmpty()) {
+                            if (context.getLastData().get(idGame) == null) {
+                                App.error(new RuntimeException("idGame: " + idGame + " continue; cause: lastData == null and playerProblemStatistic: " + playerProblemStatistic + "; "));
+                                context.getCurrentData().remove(idGame);
+                                context.getLastData().remove(idGame);
+                            } else {
+                                Util.logConsole("idGame: " + idGame + " modify; cause: lastData != null and playerProblemStatistic: " + playerProblemStatistic + "; ");
+                                context
+                                        .getCurrentNHLBoxScoreInstance(idGame)
+                                        .modify(context.getLastNHLBoxScoreInstance(idGame));
+                            }
                         }
                     });
                 })

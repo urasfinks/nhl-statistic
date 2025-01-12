@@ -141,9 +141,9 @@ class NHLBoxScoreTest {
 
     @Test
     void validate() throws Throwable {
-        Assertions.assertEquals("[3900169]", new NHLBoxScore.Instance(UtilFileResource.getAsString("example/block3/Test1.json")).isValidate().toString());
-        Assertions.assertEquals("[4915856]", new NHLBoxScore.Instance(UtilFileResource.getAsString("example/block2/Test3.json")).isValidate().toString());
-        Assertions.assertEquals("[]", new NHLBoxScore.Instance(NHLBoxScore.getExampleChange()).isValidate().toString());
+        Assertions.assertEquals("[3900169]", new NHLBoxScore.Instance(UtilFileResource.getAsString("example/block3/Test1.json")).getPlayerProblemStatistic().toString());
+        Assertions.assertEquals("[4915856]", new NHLBoxScore.Instance(UtilFileResource.getAsString("example/block2/Test3.json")).getPlayerProblemStatistic().toString());
+        Assertions.assertEquals("[]", new NHLBoxScore.Instance(NHLBoxScore.getExampleChange()).getPlayerProblemStatistic().toString());
     }
 
     @Test
