@@ -86,7 +86,7 @@ public class PlayerStatistic implements PromiseGenerator {
         return TemplateTwix.template("""
                 Статистика Александра Овечкина на ${currentDate}:
                 🎯 Забито голов: ${totalGoals}
-                🏆 До рекорда Гретцки ${gretzkyOffsetPrefix} ${gretzkyOffset} ${gretzkyOffsetPostfix}
+                🏆 До рекорда Гретцки: ${gretzkyOffset} ${gretzkyOffsetPostfix}
                 📅 Сезон ${seasonTitle}: ${countGame} ${countGamePostfix}, ${seasonGoals} ${seasonGoalsPostfix}, ${assists} ${assistsPostfix}, ${score} ${scorePostfix}, ${countTailGamePrefix} ${countTailGame} ${countTailGamePostfix} в регулярном чемпионате
                 📈 Темп: В среднем ${avgGoalsInGame} гола за игру в этом сезоне
                 
@@ -102,7 +102,6 @@ public class PlayerStatistic implements PromiseGenerator {
                 .append("seasonGoals", String.valueOf(seasonGoals))
                 .append("seasonGoalsPostfix", Util.digitTranslate(seasonGoals, "гол", "гола", "голов"))
 
-                .append("gretzkyOffsetPrefix",  Util.digitTranslate(gretzkyOffset, "остался", "осталось", "осталось"))
                 .append("gretzkyOffset", String.valueOf(gretzkyOffset))
                 .append("gretzkyOffsetPostfix", Util.digitTranslate(gretzkyOffset, "гол", "гола", "голов"))
 
