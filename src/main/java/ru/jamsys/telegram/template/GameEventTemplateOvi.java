@@ -30,6 +30,8 @@ public class GameEventTemplateOvi {
 
     private String gretzkyOffsetPostfix;
 
+    private String gretzkyOffsetPrefix;
+
     private String finishDetail = "";
 
     Map<GameEventData.Action, String> template = new HashMapBuilder<GameEventData.Action, String>()
@@ -38,10 +40,10 @@ public class GameEventTemplateOvi {
             .append(GameEventData.Action.NOT_PLAY, """
                     ❌ Александр Овечкин не принимает участие""")
             .append(GameEventData.Action.GOAL, """
-                    🚨 ГОООЛ! ${time}. Александр Овечкин забивает свой ${goalsInCareer}-й гол в карьере! До рекорда Гретцки осталось ${gretzkyOffset} ${gretzkyOffsetPostfix}.
+                    🚨 ГОООЛ! ${time}. Александр Овечкин забивает свой ${goalsInCareer}-й гол в карьере! До рекорда Гретцки ${gretzkyOffsetPrefix} ${gretzkyOffset} ${gretzkyOffsetPostfix}.
                     ${gameScore}""")
             .append(GameEventData.Action.CANCEL, """
-                    ❌ Гол отменён! До рекорда Гретцки осталось ${gretzkyOffset} ${gretzkyOffsetPostfix}.
+                    ❌ Гол отменён! До рекорда Гретцки ${gretzkyOffsetPrefix} ${gretzkyOffset} ${gretzkyOffsetPostfix}.
                     ${gameScore}""")
             .append(GameEventData.Action.FINISH_GAME, """
                     Матч завершен.${finishDetail}
@@ -66,6 +68,7 @@ public class GameEventTemplateOvi {
         goalsInCareer = goalsInSeason + gameEventData.getScoredLastSeason();
         gretzkyOffset = UtilNHL.getScoreGretzky() - (goalsInCareer);
         gretzkyOffsetPostfix = Util.digitTranslate(gretzkyOffset, "гол", "гола", "голов");
+        gretzkyOffsetPrefix = Util.digitTranslate(gretzkyOffset, "остался", "осталось", "осталось");
         score = gameEventData.getScoredGoal() + gameEventData.getScoredAssists();
 
         if (gameEventData.isOverTime()) {

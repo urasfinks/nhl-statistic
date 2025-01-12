@@ -57,6 +57,12 @@ class GameEventTemplateOviTest {
                 new GameEventTemplateOvi(gameEventData.setAction(GameEventData.Action.NOT_PLAY)).toString()
         );
 
+        Assertions.assertEquals("""
+                        ❌ Гол отменён! До рекорда Гретцки остался 21 гол.
+                        Washington Capitals (WSH) 1 - 0 Detroit Red Wings (DET)""",
+                new GameEventTemplateOvi(gameEventData.setAction(GameEventData.Action.CANCEL).setScoredGoal(4)).toString()
+        );
+
     }
 
     @Test
