@@ -147,6 +147,33 @@ class NHLBoxScoreTest {
     }
 
     @Test
+    void modify() throws Throwable {
+        NHLBoxScore.Instance last = new NHLBoxScore.Instance(UtilFileResource.getAsString("example/block1/not_valid_last.json"));
+        NHLBoxScore.Instance current = new NHLBoxScore.Instance(UtilFileResource.getAsString("example/block1/not_valid.json"));
+        String beforeModifyJson = UtilJson.toStringPretty(current.getParsedJson(),"{}");
+        Assertions.assertEquals("[]", last.getPlayerProblemStatistic().toString());
+        Assertions.assertEquals("[5436]", current.getPlayerProblemStatistic().toString());
+
+        Assertions.assertEquals("{gameID=20250107_NSH@WPG, penalties=0, shootoutGoals=0, blockedShots=0, shotsMissedNet=2, shortHandedTimeOnIce=0:00, assists=1, timeOnIce=22:16, teamID=17, shifts=18, powerPlayPoints=1, powerPlayTimeOnIce=5:16, goals=0, faceoffsWon=0, plusMinus=0, faceoffs=0, powerPlayGoals=0, takeaways=0, team=NSH, teamAbv=NSH, penaltiesInMinutes=0, hits=0, powerPlayAssists=1, shots=2, faceoffsLost=0, playerID=5436, giveaways=1, longName=Roman Josi}", last.getPlayerStats().get("5436").toString());
+        Assertions.assertEquals("{gameID=20250107_NSH@WPG, penalties=0, shootoutGoals=0, blockedShots=0, shotsMissedNet=2, shortHandedTimeOnIce=0:00, assists=1, timeOnIce=22:43, teamID=17, shifts=18, powerPlayPoints=1, powerPlayTimeOnIce=5:16, goals=1, faceoffsWon=0, plusMinus=0, faceoffs=0, powerPlayGoals=0, takeaways=0, team=NSH, teamAbv=NSH, penaltiesInMinutes=0, hits=0, powerPlayAssists=1, shots=3, faceoffsLost=0, playerID=5436, giveaways=1, longName=Roman Josi}", current.getPlayerStats().get("5436").toString());
+
+        Assertions.assertEquals("{gameID=20250107_NSH@WPG, penalties=0, shootoutGoals=0, blockedShots=0, shotsMissedNet=2, shortHandedTimeOnIce=0:00, assists=1, timeOnIce=22:16, teamID=17, shifts=18, powerPlayPoints=1, powerPlayTimeOnIce=5:16, goals=0, faceoffsWon=0, plusMinus=0, faceoffs=0, powerPlayGoals=0, takeaways=0, team=NSH, teamAbv=NSH, penaltiesInMinutes=0, hits=0, powerPlayAssists=1, shots=2, faceoffsLost=0, playerID=5436, giveaways=1, longName=Roman Josi}", last.getParsedJsonPlayerStats().get("5436").toString());
+        Assertions.assertEquals("{gameID=20250107_NSH@WPG, penalties=0, shootoutGoals=0, blockedShots=0, shotsMissedNet=2, shortHandedTimeOnIce=0:00, assists=1, timeOnIce=22:43, teamID=17, shifts=18, powerPlayPoints=1, powerPlayTimeOnIce=5:16, goals=1, faceoffsWon=0, plusMinus=0, faceoffs=0, powerPlayGoals=0, takeaways=0, team=NSH, teamAbv=NSH, penaltiesInMinutes=0, hits=0, powerPlayAssists=1, shots=3, faceoffsLost=0, playerID=5436, giveaways=1, longName=Roman Josi}", current.getParsedJsonPlayerStats().get("5436").toString());
+
+        current.modify(last);
+        Assertions.assertEquals("[]", current.getPlayerProblemStatistic().toString());
+        Assertions.assertEquals("{gameID=20250107_NSH@WPG, penalties=0, shootoutGoals=0, blockedShots=0, shotsMissedNet=2, shortHandedTimeOnIce=0:00, assists=1, timeOnIce=22:16, teamID=17, shifts=18, powerPlayPoints=1, powerPlayTimeOnIce=5:16, goals=0, faceoffsWon=0, plusMinus=0, faceoffs=0, powerPlayGoals=0, takeaways=0, team=NSH, teamAbv=NSH, penaltiesInMinutes=0, hits=0, powerPlayAssists=1, shots=2, faceoffsLost=0, playerID=5436, giveaways=1, longName=Roman Josi}", current.getPlayerStats().get("5436").toString());
+        Assertions.assertEquals("{gameID=20250107_NSH@WPG, penalties=0, shootoutGoals=0, blockedShots=0, shotsMissedNet=2, shortHandedTimeOnIce=0:00, assists=1, timeOnIce=22:16, teamID=17, shifts=18, powerPlayPoints=1, powerPlayTimeOnIce=5:16, goals=0, faceoffsWon=0, plusMinus=0, faceoffs=0, powerPlayGoals=0, takeaways=0, team=NSH, teamAbv=NSH, penaltiesInMinutes=0, hits=0, powerPlayAssists=1, shots=2, faceoffsLost=0, playerID=5436, giveaways=1, longName=Roman Josi}", current.getParsedJsonPlayerStats().get("5436").toString());
+
+        current.modify(last);
+        Assertions.assertEquals("[]", current.getPlayerProblemStatistic().toString());
+        Assertions.assertEquals("{gameID=20250107_NSH@WPG, penalties=0, shootoutGoals=0, blockedShots=0, shotsMissedNet=2, shortHandedTimeOnIce=0:00, assists=1, timeOnIce=22:16, teamID=17, shifts=18, powerPlayPoints=1, powerPlayTimeOnIce=5:16, goals=0, faceoffsWon=0, plusMinus=0, faceoffs=0, powerPlayGoals=0, takeaways=0, team=NSH, teamAbv=NSH, penaltiesInMinutes=0, hits=0, powerPlayAssists=1, shots=2, faceoffsLost=0, playerID=5436, giveaways=1, longName=Roman Josi}", current.getPlayerStats().get("5436").toString());
+        Assertions.assertEquals("{gameID=20250107_NSH@WPG, penalties=0, shootoutGoals=0, blockedShots=0, shotsMissedNet=2, shortHandedTimeOnIce=0:00, assists=1, timeOnIce=22:16, teamID=17, shifts=18, powerPlayPoints=1, powerPlayTimeOnIce=5:16, goals=0, faceoffsWon=0, plusMinus=0, faceoffs=0, powerPlayGoals=0, takeaways=0, team=NSH, teamAbv=NSH, penaltiesInMinutes=0, hits=0, powerPlayAssists=1, shots=2, faceoffsLost=0, playerID=5436, giveaways=1, longName=Roman Josi}", current.getParsedJsonPlayerStats().get("5436").toString());
+
+        Assertions.assertNotEquals(UtilJson.toStringPretty(current.getParsedJson(), "{}"), beforeModifyJson);
+    }
+
+    @Test
     void getEvent() throws Throwable {
         Map<String, List<GameEventData>> event = NHLBoxScore.getEvent(NHLBoxScore.getExample(), NHLBoxScore.getExampleChange());
         System.out.println(UtilJson.toStringPretty(event, "{}"));

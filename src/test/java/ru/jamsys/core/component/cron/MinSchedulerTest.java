@@ -537,9 +537,10 @@ class MinSchedulerTest {
         });
         promise.setDebug(false).run().await(50_000L);
 
-        //System.out.println(UtilJson.toStringPretty(promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent(), "{}"));
-        // TODO: тут надо сделать проверку где игнорируются не валидные данные
-        //Assertions.assertEquals("[20250105_PHI@TOR, 20250105_PIT@CAR]", promise.getRepositoryMapClass(MinScheduler.Context.class).getCurrentData().keySet().toString());
+        Assertions.assertEquals("[20250107_NSH@WPG, 20250105_PHI@TOR, 20250105_PIT@CAR]", promise.getRepositoryMapClass(MinScheduler.Context.class).getCurrentData().keySet().toString());
+        Assertions.assertEquals(1, promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("4233583").size());
+        Assertions.assertNull(promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("5436"));
+        Assertions.assertEquals(GameEventData.Action.GOAL, promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("4233583").getFirst().getAction());
         Assertions.assertNotEquals(promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("3114").getFirst().getAction(), GameEventData.Action.NOT_PLAY);
     }
 

@@ -348,6 +348,9 @@ public class NHLBoxScore {
         }
 
         public void modify(NHLBoxScore.Instance last) {
+            if (last == null) {
+                return;
+            }
             // Надо получить расхождения статы
             // взять блок статы из last.playerStats.get(idPlayer) -> this.playerStats.get(idPlayer)
             // взять блок parsedJson из last.parsedJson.get(idPlayer) -> this.parsedJson.get(idPlayer)
