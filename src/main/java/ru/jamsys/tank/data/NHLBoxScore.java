@@ -153,7 +153,7 @@ public class NHLBoxScore {
         @JsonIgnore
         final private Map<String, Map<String, Object>> playerStats;
 
-        final private Map<String, Integer> scoreMap = new HashMap<>();
+        final private Map<String, Integer> scoreTeam = new HashMap<>(); //key TeamAbv; value score
 
         final private int gameStatusCode;
 
@@ -212,8 +212,8 @@ public class NHLBoxScore {
             NHLTeams.Team teamHome = NHLTeams.teams.getById(body.get("teamIDHome").toString());
             NHLTeams.Team teamAway = NHLTeams.teams.getById(body.get("teamIDAway").toString());
 
-            scoreMap.put(teamHome.getAbv(), Integer.parseInt(body.getOrDefault("homeTotal", "0").toString()));
-            scoreMap.put(teamAway.getAbv(), Integer.parseInt(body.getOrDefault("awayTotal", "0").toString()));
+            scoreTeam.put(teamHome.getAbv(), Integer.parseInt(body.getOrDefault("homeTotal", "0").toString()));
+            scoreTeam.put(teamAway.getAbv(), Integer.parseInt(body.getOrDefault("awayTotal", "0").toString()));
 
             scoreGame = getScoreGame(teamAway.getAbv());
             aboutGame = getAboutGame(teamAway.getAbv());
@@ -236,8 +236,8 @@ public class NHLBoxScore {
         }
 
         public boolean isFinish() {
-            List<String> listAbv = scoreMap.keySet().stream().toList();
-            if (scoreMap.get(listAbv.getFirst()).equals(scoreMap.get(listAbv.getLast()))) {
+            List<String> listAbv = scoreTeam.keySet().stream().toList();
+            if (scoreTeam.get(listAbv.getFirst()).equals(scoreTeam.get(listAbv.getLast()))) {
                 return false;
             }
             return gameStatusCode == 2;
@@ -254,7 +254,7 @@ public class NHLBoxScore {
 
         public String getAboutGame(String firstTeamAbv) {
             StringBuilder sb = new StringBuilder();
-            ArrayList<String> strings = new ArrayList<>(scoreMap.keySet());
+            ArrayList<String> strings = new ArrayList<>(scoreTeam.keySet());
             strings.remove(firstTeamAbv);
             String lastTeamAbv = strings.getLast();
             sb.append(NHLTeams.teams.getByAbv(firstTeamAbv).getAbout())
@@ -266,14 +266,14 @@ public class NHLBoxScore {
 
         public String getScoreGame(String firstTeamAbv) {
             StringBuilder sb = new StringBuilder();
-            ArrayList<String> strings = new ArrayList<>(scoreMap.keySet());
+            ArrayList<String> strings = new ArrayList<>(scoreTeam.keySet());
             strings.remove(firstTeamAbv);
             String lastTeamAbv = strings.getLast();
             sb.append(NHLTeams.teams.getByAbv(firstTeamAbv).getAbout())
                     .append(" ")
-                    .append(scoreMap.get(firstTeamAbv))
+                    .append(scoreTeam.get(firstTeamAbv))
                     .append(" - ")
-                    .append(scoreMap.get(lastTeamAbv))
+                    .append(scoreTeam.get(lastTeamAbv))
                     .append(" ")
                     .append(NHLTeams.teams.getByAbv(lastTeamAbv).getAbout())
             ;
@@ -348,7 +348,8 @@ public class NHLBoxScore {
         }
 
         public void modify(NHLBoxScore.Instance last) {
-
+            // Надо получить расхождения статы
+            // взять блок статы из last.
         }
     }
 
