@@ -349,8 +349,32 @@ public class NHLBoxScore {
 
         public void modify(NHLBoxScore.Instance last) {
             // Надо получить расхождения статы
-            // взять блок статы из last.
+            // взять блок статы из last.playerStats.get(idPlayer) -> this.playerStats.get(idPlayer)
+            // взять блок parsedJson из last.parsedJson.get(idPlayer) -> this.parsedJson.get(idPlayer)
+            getPlayerProblemStatistic().forEach(idPlayer -> {
+                Map<String, Object> lastPlayerStat = last.getPlayerStats().get(idPlayer);
+                if (lastPlayerStat != null) {
+                    getPlayerStats().put(idPlayer, lastPlayerStat);
+                } else {
+                    App.error(new RuntimeException("last.getPlayerStats().get(" + idPlayer + ") is null"));
+                }
+                Map<String, Object> lastParsedJsonPlayerStat = last.getParsedJsonPlayerStats().get(idPlayer);
+                if (lastParsedJsonPlayerStat != null) {
+                    getParsedJsonPlayerStats().put(idPlayer, lastParsedJsonPlayerStat);
+                } else {
+                    App.error(new RuntimeException("last.getParsedJsonPlayerStats().get(" + idPlayer + ") is null"));
+                }
+            });
         }
+
+        public Map<String, Map<String, Object>> getParsedJsonPlayerStats() {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> body = (Map<String, Object>) getParsedJson().get("body");
+            @SuppressWarnings("unchecked")
+            Map<String, Map<String, Object>> playerStats = (Map<String, Map<String, Object>>) body.get("playerStats");
+            return playerStats;
+        }
+
     }
 
     public static class PlayerStat {
