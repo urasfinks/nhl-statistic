@@ -41,7 +41,7 @@ public class GameEventTemplate {
                     🚨 ГОООЛ! ${time}. ${playerNameWithTeamAbv} забивает свой ${goalsInSeason}-й гол в сезоне!
                     ${gameScore}""")
             .append(GameEventData.Action.CANCEL, """
-                    ❌ Гол отменён!. ${playerNameWithTeamAbv}
+                    ❌ Гол отменён! ${playerNameWithTeamAbv}
                     ${gameScore}""")
             .append(GameEventData.Action.FINISH_GAME, """
                     Матч завершен.${finishDetail}

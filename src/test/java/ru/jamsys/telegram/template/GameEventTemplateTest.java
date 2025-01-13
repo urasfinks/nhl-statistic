@@ -47,7 +47,7 @@ class GameEventTemplateTest {
         );
 
         Assertions.assertEquals("""
-                        ❌ Гол отменён!. Александр Овечкин (WSH)
+                        ❌ Гол отменён! Александр Овечкин (WSH)
                         Washington Capitals (WSH) 1 - 0 Detroit Red Wings (DET)""",
                 new GameEventTemplate(gameEventData.setAction(GameEventData.Action.CANCEL)).toString()
         );
