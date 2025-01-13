@@ -53,7 +53,7 @@ public class Schedule implements PromiseGenerator, OviGoalsBotCommandHandler {
                             .sort(UtilListSort.Type.ASC);
 
                     int page = Integer.parseInt(context.getUriParameters().getOrDefault("page", "1"));
-                    paging(instance.getListGameObject(), page, context, """
+                    paging(instance.getListGameInstance(), page, context, """
                             📅 Расписание ближайших игр Александра Овечкина и Washington Capitals (WSH)
                             
                             %s

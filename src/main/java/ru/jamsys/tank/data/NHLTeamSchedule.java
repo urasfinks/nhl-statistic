@@ -101,7 +101,7 @@ public class NHLTeamSchedule {
 
         @SuppressWarnings("unused")
         public Game getById(String idGame) {
-            for (Game game : getListGameObject()) {
+            for (Game game : getListGameInstance()) {
                 if (game.getId().equals(idGame)) {
                     return game;
                 }
@@ -109,7 +109,7 @@ public class NHLTeamSchedule {
             return null;
         }
 
-        public List<Game> getListGameObject() {
+        public List<Game> getListGameInstance() {
             List<Game> result = new ArrayList<>();
             listGame.forEach(map -> result.add(new Game(map)));
             return result;

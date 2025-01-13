@@ -2,6 +2,7 @@ package ru.jamsys;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import ru.jamsys.core.App;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.extension.builder.ArrayListBuilder;
@@ -187,16 +188,22 @@ class NhlStatisticApplicationTest {
     void save() {
         Promise promise = servicePromise.get("testPromise", 600_000L);
         promise
-                .thenWithResource("insert", JdbcResource.class, (_, _, _, jdbcResource) -> jdbcResource.execute(new JdbcRequest(JTLogRequest.SELECT_NHL_BOX_SCORE)).forEach(map -> {
-                    try {
-                        Map<String, Object> mapOrThrow = UtilJson.getMapOrThrow(map.get("data").toString());
-                        UtilFile.writeBytes(
-                                "block4/" + map.get("id") + ".json",
-                                Objects.requireNonNull(UtilJson.toStringPretty(mapOrThrow, "{}")).getBytes(),
-                                FileWriteOptions.CREATE_OR_REPLACE);
-                    } catch (Throwable e) {
-                        App.error(e);
-                    }
+                .thenWithResource(
+                        "insert",
+                        JdbcResource.class,
+                        (_, _, _, jdbcResource) -> jdbcResource
+                                .execute(new JdbcRequest(JTLogRequest.SELECT_NHL_BOX_SCORE)).forEach(map -> {
+                                    try {
+                                        Map<String, Object> mapOrThrow = UtilJson
+                                                .getMapOrThrow(map.get("data").toString());
+                                        UtilFile.writeBytes(
+                                                "block4/" + map.get("id") + ".json",
+                                                Objects.requireNonNull(UtilJson.toStringPretty(mapOrThrow, "{}"))
+                                                        .getBytes(),
+                                                FileWriteOptions.CREATE_OR_REPLACE);
+                                    } catch (Throwable e) {
+                                        App.error(e);
+                                    }
                 }))
                 .run()
                 .await(20_000L);
@@ -207,6 +214,12 @@ class NhlStatisticApplicationTest {
     //@Test
     void unsubscribe() {
         new RemoveSubscriberOvi(290029195L).generate().run().await(5_000L);
+    }
+
+    @SuppressWarnings("unused")
+    @Test
+    void updateScheduler() {
+        new UpdateScheduler().generate().run().await(50_000L);
     }
 
 }

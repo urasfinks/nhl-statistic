@@ -60,7 +60,7 @@ public class UpdateScheduler implements PromiseGenerator {
     @Setter
     public static class Context {
         PlayerSubscribers playerSubscribers = new PlayerSubscribers();
-        Map<String, List<NHLTeamSchedule.Game>> scheduler = new HashMap<>(); // key - idTeam; value - list game
+        Map<String, List<NHLTeamSchedule.Game>> teamsScheduledGame = new HashMap<>(); // key - idTeam; value - list game
     }
 
     @Override
@@ -96,16 +96,18 @@ public class UpdateScheduler implements PromiseGenerator {
                         if (req.isException()) {
                             throw req.getExceptionSource();
                         }
-                        NHLTeamSchedule.Instance instance = new NHLTeamSchedule.Instance(tank01Request.getResponseData())
+                        new NHLTeamSchedule.Instance(tank01Request.getResponseData())
                                 .initAlreadyGame()
                                 .getFutureGame()
-                                .sort(UtilListSort.Type.ASC);
-                        instance.getListGameObject().forEach(game -> context
-                                .getScheduler()
-                                .computeIfAbsent(idTeam, _ -> new ArrayList<>())
-                                .add(game));
+                                .sort(UtilListSort.Type.ASC)
+                                .getListGameInstance()
+                                .forEach(gameInstance -> context
+                                        .getTeamsScheduledGame()
+                                        .computeIfAbsent(idTeam, _ -> new ArrayList<>())
+                                        .add(gameInstance)
+                                );
                     }
-                    if (context.getScheduler().isEmpty()) {
+                    if (context.getTeamsScheduledGame().isEmpty()) {
                         promise.skipAllStep("UpdateScheduler scheduler is empty");
                     }
                 })
@@ -119,7 +121,7 @@ public class UpdateScheduler implements PromiseGenerator {
                             execute.forEach(row -> alreadySchedule.add(row.getIdTeam() + row.getIdGame()));
                             JdbcRequest jdbcRequest = new JdbcRequest(JTTeamScheduler.INSERT).setBatchMaybeEmpty(false);
                             context
-                                    .getScheduler()
+                                    .getTeamsScheduledGame()
                                     .forEach((idTeam, games) -> games.forEach(game -> {
                                                 if (!alreadySchedule.contains(idTeam + game.getId())) {
                                                     jdbcRequest
