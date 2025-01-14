@@ -49,11 +49,13 @@ public enum JTPlayerSubscriber implements JdbcRequestRepository {
     INSERT("""
             INSERT INTO player_subscriber (
                 id_chat,
-                id_player
+                id_player,
+                id_team
             )
             VALUES (
                 ${IN.id_chat::NUMBER},
-                ${IN.id_player::NUMBER}
+                ${IN.id_player::NUMBER},
+                ${IN.id_team::NUMBER}
             )
             ON CONFLICT DO NOTHING
             """, StatementType.SELECT_WITH_AUTO_COMMIT);
@@ -65,6 +67,7 @@ public enum JTPlayerSubscriber implements JdbcRequestRepository {
         Timestamp tsAdd;
         BigDecimal idChat;
         BigDecimal idPlayer;
+        BigDecimal idTeam;
 
         public NHLPlayerList.Player getPlayer() {
             return NHLPlayerList.findByIdStatic(getIdPlayer().toString());

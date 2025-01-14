@@ -148,6 +148,7 @@ public class Subscribe implements PromiseGenerator, NhlStatisticsBotCommandHandl
                     jdbcResource.execute(new JdbcRequest(JTPlayerSubscriber.INSERT)
                             .addArg("id_chat", UtilTelegram.getIdChat(context.getMsg()))
                             .addArg("id_player", context.getUriParameters().get("idPlayer"))
+                            .addArg("id_team", context.getUriParameters().get("idTeam"))
                     );
                 })
                 .then("updateScheduler", new UpdateScheduler(false).generate())
@@ -156,17 +157,9 @@ public class Subscribe implements PromiseGenerator, NhlStatisticsBotCommandHandl
                     UpdateScheduler updateScheduler = promise
                             .getRepositoryMapClass(Promise.class, "updateScheduler")
                             .getRepositoryMapClass(UpdateScheduler.class);
-
-                    NHLPlayerList.Player player = NHLPlayerList.findById(
-                            context.getUriParameters().get("idPlayer"),
-                            promise
-                                    .getRepositoryMapClass(Promise.class, "getPlayerList2")
-                                    .getRepositoryMapClass(Tank01Request.class).getResponseData()
-                    );
-                    if (player == null) {
-                        return;
-                    }
-                    List<NHLTeamSchedule.Game> games = updateScheduler.getTeamsGameInstance().get(player.getTeamID());
+                    List<NHLTeamSchedule.Game> games = updateScheduler
+                            .getTeamsGameInstance()
+                            .get(context.getUriParameters().get("idTeam"));
                     if (games.isEmpty()) {
                         context.getTelegramBot().send(
                                 UtilTelegram.editMessage(context.getMsg(), "Игры не найдены"),
