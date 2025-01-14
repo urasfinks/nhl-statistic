@@ -23,7 +23,7 @@ import ru.jamsys.core.handler.promise.SendNotificationGameEventOvi;
 import ru.jamsys.core.handler.promise.Tank01Request;
 import ru.jamsys.core.jt.JTGameDiff;
 import ru.jamsys.core.jt.JTLogRequest;
-import ru.jamsys.core.jt.JTScheduler;
+import ru.jamsys.core.jt.JTTeamScheduler;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
 import ru.jamsys.core.resource.jdbc.JdbcRequest;
@@ -40,6 +40,7 @@ import java.util.*;
 public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
 
     private final ServicePromise servicePromise;
+
     private final ServiceProperty serviceProperty;
 
     private final TelegramBotComponent telegramBotComponent;
@@ -177,7 +178,7 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                 .thenWithResource("getActiveGame", JdbcResource.class, (_, _, promise, jdbcResource) -> {
                     Context context = promise.getRepositoryMapClass(Context.class);
                     jdbcResource
-                            .execute(new JdbcRequest(JTScheduler.SELECT_ACTIVE_GAME).setDebug(false))
+                            .execute(new JdbcRequest(JTTeamScheduler.SELECT_ACTIVE_GAME).setDebug(false))
                             .forEach(map -> context.getActiveRepository().getList().add(new ActiveObject(
                                     Long.parseLong(map.getOrDefault("id_chat", "0").toString()),
                                     map.getOrDefault("id_player", "0").toString(),
@@ -464,7 +465,7 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                     if (!context.getEndGames().isEmpty()) {
                         context.getEndGames().forEach(idGame -> {
                             try {
-                                jdbcResource.execute(new JdbcRequest(JTScheduler.REMOVE_FINISH_GAME)
+                                jdbcResource.execute(new JdbcRequest(JTTeamScheduler.DELETE_FINISH_GAME)
                                         .addArg("id_game", idGame)
                                         .setDebug(false)
                                 );
