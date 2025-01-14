@@ -71,7 +71,6 @@ public class PollResults implements PromiseGenerator, OviGoalsBotCommandHandler 
                     );
                 })
                 .onError((atomicBoolean, promiseTask, promise) -> {
-                    System.out.println(promise.getLogString());
                     try {
                         TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
                         context.getTelegramBot().send(context.getIdChat(), "Бот сломался", null);

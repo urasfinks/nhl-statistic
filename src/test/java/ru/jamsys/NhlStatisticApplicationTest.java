@@ -219,7 +219,7 @@ class NhlStatisticApplicationTest {
     @SuppressWarnings("unused")
     @Test
     void updateScheduler() {
-        new UpdateScheduler().generate().run().await(50_000L);
+        new UpdateScheduler(false).generate().run().await(50_000L);
     }
 
 }

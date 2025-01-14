@@ -8,10 +8,13 @@ import ru.jamsys.core.App;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.extension.builder.HashMapBuilder;
 import ru.jamsys.core.extension.http.ServletResponseWriter;
-import ru.jamsys.core.flat.util.*;
+import ru.jamsys.core.flat.util.Util;
+import ru.jamsys.core.flat.util.UtilNHL;
+import ru.jamsys.core.flat.util.UtilTelegram;
 import ru.jamsys.core.flat.util.telegram.Button;
 import ru.jamsys.core.handler.promise.Tank01Request;
-import ru.jamsys.core.jt.JTScheduler;
+import ru.jamsys.core.handler.promise.UpdateScheduler;
+import ru.jamsys.core.jt.JTPlayerSubscriber;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
 import ru.jamsys.core.resource.jdbc.JdbcRequest;
@@ -21,7 +24,6 @@ import ru.jamsys.tank.data.NHLTeamSchedule;
 import ru.jamsys.telegram.TelegramCommandContext;
 import ru.jamsys.telegram.handler.NhlStatisticsBotCommandHandler;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -69,13 +71,12 @@ public class Subscribe implements PromiseGenerator, NhlStatisticsBotCommandHandl
                 })
                 .then("getPlayerList", new Tank01Request(NHLPlayerList::getUri).generate())
                 .then("findPlayerByName", (_, _, promise) -> {
-                    Tank01Request response = promise
-                            .getRepositoryMapClass(Promise.class, "getPlayerList")
-                            .getRepositoryMapClass(Tank01Request.class);
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
                     List<Map<String, Object>> userList = NHLPlayerList.findByName(
                             context.getUriParameters().get("namePlayer"),
-                            response.getResponseData()
+                            promise
+                                    .getRepositoryMapClass(Promise.class, "getPlayerList")
+                                    .getRepositoryMapClass(Tank01Request.class).getResponseData()
                     );
                     if (userList.isEmpty()) {
                         context.getTelegramBot().send(context.getIdChat(), "Игрок не найден", null);
@@ -104,7 +105,7 @@ public class Subscribe implements PromiseGenerator, NhlStatisticsBotCommandHandl
                 })
                 .thenWithResource("checkAlready", JdbcResource.class, (_, _, promise, jdbcResource) -> {
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
-                    List<Map<String, Object>> execute = jdbcResource.execute(new JdbcRequest(JTScheduler.SELECT_MY_SUBSCRIBED_GAMES)
+                    List<Map<String, Object>> execute = jdbcResource.execute(new JdbcRequest(JTPlayerSubscriber.SELECT_IS_SUBSCRIBE_PLAYER)
                             .addArg("id_chat", context.getIdChat())
                             .addArg("id_player", context.getUriParameters().get("idPlayer"))
                             .setDebug(false)
@@ -119,13 +120,12 @@ public class Subscribe implements PromiseGenerator, NhlStatisticsBotCommandHandl
                 })
                 .then("getPlayerList2", new Tank01Request(NHLPlayerList::getUri).generate())
                 .then("findPlayerById", (_, _, promise) -> {
-                    Tank01Request response = promise
-                            .getRepositoryMapClass(Promise.class, "getPlayerList2")
-                            .getRepositoryMapClass(Tank01Request.class);
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
                     NHLPlayerList.Player player = NHLPlayerList.findById(
                             context.getUriParameters().get("idPlayer"),
-                            response.getResponseData()
+                            promise
+                                    .getRepositoryMapClass(Promise.class, "getPlayerList2")
+                                    .getRepositoryMapClass(Tank01Request.class).getResponseData()
                     );
                     if (player == null) {
                         context.getTelegramBot().send(
@@ -143,46 +143,37 @@ public class Subscribe implements PromiseGenerator, NhlStatisticsBotCommandHandl
                     context.getUriParameters().put("infoPlayer", playerInfo);
                     context.getUriParameters().put("idTeam", player.getTeamID());
                 })
-                .then("getGameInSeason", new Tank01Request(() -> {
-                    TelegramCommandContext context = gen.getRepositoryMapClass(TelegramCommandContext.class);
-                    return NHLTeamSchedule.getUri(
-                            context.getUriParameters().get("idTeam"),
-                            UtilNHL.getActiveSeasonOrNext() + ""
-                    );
-                }).generate())
-                .thenWithResource("insertSchedule", JdbcResource.class, (_, _, promise, jdbcResource) -> {
+                .thenWithResource("insertPlayerSubscriber", JdbcResource.class, (_, _, promise, jdbcResource) -> {
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
-                    Tank01Request response = promise
-                            .getRepositoryMapClass(Promise.class, "getGameInSeason")
-                            .getRepositoryMapClass(Tank01Request.class);
-                    NHLTeamSchedule.Instance schedule = new NHLTeamSchedule.Instance(response.getResponseData());
-                    List<Map<String, Object>> sortGameByTime = schedule
-                            .getFutureGame()
-                            .sort(UtilListSort.Type.ASC)
-                            .getListGame();
-                    if (sortGameByTime.isEmpty()) {
+                    jdbcResource.execute(new JdbcRequest(JTPlayerSubscriber.INSERT)
+                            .addArg("id_chat", UtilTelegram.getIdChat(context.getMsg()))
+                            .addArg("id_player", context.getUriParameters().get("idPlayer"))
+                    );
+                })
+                .then("updateScheduler", new UpdateScheduler(false).generate())
+                .then("notify", (atomicBoolean, promiseTask, promise) -> {
+                    TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
+                    UpdateScheduler updateScheduler = promise
+                            .getRepositoryMapClass(Promise.class, "updateScheduler")
+                            .getRepositoryMapClass(UpdateScheduler.class);
+
+                    NHLPlayerList.Player player = NHLPlayerList.findById(
+                            context.getUriParameters().get("idPlayer"),
+                            promise
+                                    .getRepositoryMapClass(Promise.class, "getPlayerList2")
+                                    .getRepositoryMapClass(Tank01Request.class).getResponseData()
+                    );
+                    if (player == null) {
+                        return;
+                    }
+                    List<NHLTeamSchedule.Game> games = updateScheduler.getTeamsGameInstance().get(player.getTeamID());
+                    if (games.isEmpty()) {
                         context.getTelegramBot().send(
                                 UtilTelegram.editMessage(context.getMsg(), "Игры не найдены"),
                                 context.getIdChat()
                         );
                         return;
                     }
-                    JdbcRequest jdbcRequest = new JdbcRequest(JTScheduler.INSERT);
-                    sortGameByTime.forEach(map -> jdbcRequest
-                            .addArg("id_chat", UtilTelegram.getIdChat(context.getMsg()))
-                            .addArg("id_player", context.getUriParameters().get("idPlayer"))
-                            .addArg("id_team", context.getUriParameters().get("idTeam"))
-                            .addArg("id_game", map.get("gameID"))
-                            .addArg("time_game_start", new BigDecimal(
-                                    map.get("gameTime_epoch").toString()
-                            ).longValue() * 1000)
-                            .addArg("game_about", new NHLTeamSchedule.Game(map).getGameAbout())
-                            .addArg("player_about", context.getUriParameters().get("infoPlayer"))
-                            .addArg("test", UtilJson.toStringPretty(map, "{}"))
-                            .nextBatch());
-
-                    jdbcResource.execute(jdbcRequest);
-
                     context.getTelegramBot().send(UtilTelegram.editMessage(context.getMsg(), String.format("""
                                     Создана подписка на %d %s %s.
                                     Первая игра будет: %s, последняя: %s.
@@ -190,15 +181,14 @@ public class Subscribe implements PromiseGenerator, NhlStatisticsBotCommandHandl
                                     
                                     📍 Время указано по МСК
                                     """,
-                            sortGameByTime.size(),
-                            Util.digitTranslate(sortGameByTime.size(), "игру", "игры", "игр"),
+                            games.size(),
+                            Util.digitTranslate(games.size(), "игру", "игры", "игр"),
                             context.getUriParameters().get("infoPlayer"),
-                            new NHLTeamSchedule.Game(sortGameByTime.getFirst()).getMoscowDate(),
-                            new NHLTeamSchedule.Game(sortGameByTime.getLast()).getMoscowDate()
+                            games.getFirst().getMoscowDate(),
+                            games.getLast().getMoscowDate()
                     )), context.getIdChat());
                 })
                 .onError((atomicBoolean, promiseTask, promise) -> {
-                    System.out.println(promise.getLogString());
                     try {
                         TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
                         context.getTelegramBot().send(context.getIdChat(), "Бот сломался", null);

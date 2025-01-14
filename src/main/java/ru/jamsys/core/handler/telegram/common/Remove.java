@@ -9,24 +9,23 @@ import ru.jamsys.core.extension.builder.HashMapBuilder;
 import ru.jamsys.core.extension.http.ServletResponseWriter;
 import ru.jamsys.core.flat.util.UtilTelegram;
 import ru.jamsys.core.flat.util.telegram.Button;
-import ru.jamsys.core.jt.JTScheduler;
+import ru.jamsys.core.jt.JTPlayerSubscriber;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
 import ru.jamsys.core.resource.jdbc.JdbcRequest;
 import ru.jamsys.core.resource.jdbc.JdbcResource;
+import ru.jamsys.tank.data.NHLPlayerList;
 import ru.jamsys.telegram.TelegramCommandContext;
 import ru.jamsys.telegram.handler.NhlStatisticsBotCommandHandler;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @SuppressWarnings("unused")
 @Setter
 @Getter
 @Component
-@RequestMapping({"/remove/**", "/rs/**"})
+@RequestMapping("/remove/**")
 public class Remove implements PromiseGenerator, NhlStatisticsBotCommandHandler {
 
     private final ServicePromise servicePromise;
@@ -46,9 +45,10 @@ public class Remove implements PromiseGenerator, NhlStatisticsBotCommandHandler 
                 })
                 .thenWithResource("getSubscriptionsPlayer", JdbcResource.class, (_, _, promise, jdbcResource) -> {
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
-                    List<Map<String, Object>> execute = jdbcResource.execute(new JdbcRequest(JTScheduler.SELECT_MY_SUBSCRIBED_PLAYER)
+                    List<JTPlayerSubscriber.Row> execute = jdbcResource.execute(new JdbcRequest(JTPlayerSubscriber.SELECT_MY_PLAYERS)
                             .addArg("id_chat", context.getIdChat())
-                            .setDebug(false)
+                                    .setDebug(false),
+                            JTPlayerSubscriber.Row.class
                     );
                     if (execute.isEmpty()) {
                         context.getTelegramBot().send(
@@ -60,18 +60,16 @@ public class Remove implements PromiseGenerator, NhlStatisticsBotCommandHandler 
                         return;
                     }
                     List<Button> buttons = new ArrayList<>();
-                    AtomicInteger activeGame = new AtomicInteger();
                     execute.forEach(map -> {
+                        NHLPlayerList.Player player = map.getPlayer();
                         buttons.add(new Button(
-                                map.get("player_about").toString(),
+                                player.getLongNameWithTeamAbv(),
                                 ServletResponseWriter.buildUrlQuery(
-                                        "/rs/",
+                                        "/remove/",
                                         new HashMapBuilder<>(context.getUriParameters())
-                                                .append("id", map.get("id_player").toString())
-                                                .append("a", map.get("player_about").toString())
+                                                .append("id", player.getPlayerID())
                                 )
                         ));
-                        activeGame.addAndGet(Integer.parseInt(map.get("count").toString()));
                     });
                     context.getTelegramBot().send(
                             context.getIdChat(),
@@ -82,14 +80,19 @@ public class Remove implements PromiseGenerator, NhlStatisticsBotCommandHandler 
                 })
                 .then("getSubscriptionsMarker", (_, _, promise) -> {
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
+                    NHLPlayerList.Player player = NHLPlayerList.findByIdStatic(context.getUriParameters().get("id"));
+                    if (player == null) {
+                        promise.skipAllStep("player is null");
+                        return;
+                    }
                     context.getTelegramBot().send(UtilTelegram.editMessage(
                             context.getMsg(),
-                            context.getUriParameters().get("a")
+                            player.getLongNameWithTeamAbv()
                     ), context.getIdChat());
                 })
                 .thenWithResource("removeSubscription", JdbcResource.class, (_, _, promise, jdbcResource) -> {
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
-                    jdbcResource.execute(new JdbcRequest(JTScheduler.REMOVE_MY_SUBSCRIBED)
+                    jdbcResource.execute(new JdbcRequest(JTPlayerSubscriber.DELETE_IS_SUBSCRIBE_PLAYER)
                             .addArg("id_chat", context.getIdChat())
                             .addArg("id_player", context.getUriParameters().get("id"))
                             .setDebug(false)

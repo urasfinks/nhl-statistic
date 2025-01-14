@@ -6,6 +6,7 @@ import ru.jamsys.core.flat.template.jdbc.DataMapper;
 import ru.jamsys.core.flat.template.jdbc.JdbcRequestRepository;
 import ru.jamsys.core.flat.template.jdbc.JdbcTemplate;
 import ru.jamsys.core.flat.template.jdbc.StatementType;
+import ru.jamsys.tank.data.NHLPlayerList;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -18,12 +19,31 @@ public enum JTPlayerSubscriber implements JdbcRequestRepository {
             FROM player_subscriber
             """, StatementType.SELECT_WITH_AUTO_COMMIT),
 
-    SELECT_MY("""
+    SELECT_IS_SUBSCRIBE_PLAYER("""
             SELECT
                 *
             FROM player_subscriber
             WHERE
                 id_chat = ${IN.id_chat::NUMBER}
+                AND id_player = ${IN.id_player::NUMBER}
+            ORDER BY id ASC
+            """, StatementType.SELECT_WITH_AUTO_COMMIT),
+
+    SELECT_MY_PLAYERS("""
+            SELECT
+                *
+            FROM player_subscriber
+            WHERE
+                id_chat = ${IN.id_chat::NUMBER}
+            ORDER BY id ASC
+            """, StatementType.SELECT_WITH_AUTO_COMMIT),
+
+    DELETE_IS_SUBSCRIBE_PLAYER("""
+            DELETE
+            FROM player_subscriber
+            WHERE
+                id_chat = ${IN.id_chat::NUMBER}
+                AND id_player = ${IN.id_player::NUMBER}
             """, StatementType.SELECT_WITH_AUTO_COMMIT),
 
     INSERT("""
@@ -33,7 +53,7 @@ public enum JTPlayerSubscriber implements JdbcRequestRepository {
             )
             VALUES (
                 ${IN.id_chat::NUMBER},
-                ${IN.id_chat::NUMBER}
+                ${IN.id_player::NUMBER}
             )
             ON CONFLICT DO NOTHING
             """, StatementType.SELECT_WITH_AUTO_COMMIT);
@@ -45,6 +65,10 @@ public enum JTPlayerSubscriber implements JdbcRequestRepository {
         Timestamp tsAdd;
         BigDecimal idChat;
         BigDecimal idPlayer;
+
+        public NHLPlayerList.Player getPlayer() {
+            return NHLPlayerList.findByIdStatic(getIdPlayer().toString());
+        }
     }
 
     private final JdbcTemplate jdbcTemplate;

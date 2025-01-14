@@ -5,7 +5,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import ru.jamsys.core.App;
 import ru.jamsys.core.component.ServicePromise;
-import ru.jamsys.core.jt.JTScheduler;
+import ru.jamsys.core.jt.JTTeamScheduler;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
 import ru.jamsys.core.resource.jdbc.JdbcRequest;
@@ -28,7 +28,7 @@ public class RemoveScheduler implements PromiseGenerator {
                 .thenWithResource(
                         "unsubscribe",
                         JdbcResource.class,
-                        (_, _, _, jdbcResource) -> jdbcResource.execute(new JdbcRequest(JTScheduler.REMOVE_IF_POSTPONED)
+                        (_, _, _, jdbcResource) -> jdbcResource.execute(new JdbcRequest(JTTeamScheduler.REMOVE_IF_POSTPONED)
                                 .addArg("id_game", idGame)
                         )
                 );

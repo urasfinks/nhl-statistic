@@ -12,11 +12,13 @@ import ru.jamsys.core.flat.util.UtilJson;
 import ru.jamsys.core.flat.util.UtilTelegram;
 import ru.jamsys.core.flat.util.telegram.Button;
 import ru.jamsys.core.handler.telegram.ovi.Schedule;
-import ru.jamsys.core.jt.JTScheduler;
+import ru.jamsys.core.jt.JTPlayerSubscriber;
+import ru.jamsys.core.jt.JTTeamScheduler;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
 import ru.jamsys.core.resource.jdbc.JdbcRequest;
 import ru.jamsys.core.resource.jdbc.JdbcResource;
+import ru.jamsys.tank.data.NHLPlayerList;
 import ru.jamsys.tank.data.NHLTeamSchedule;
 import ru.jamsys.telegram.TelegramCommandContext;
 import ru.jamsys.telegram.handler.NhlStatisticsBotCommandHandler;
@@ -24,7 +26,6 @@ import ru.jamsys.telegram.handler.NhlStatisticsBotCommandHandler;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @SuppressWarnings("unused")
 @Setter
@@ -50,9 +51,10 @@ public class ScheduleCommon implements PromiseGenerator, NhlStatisticsBotCommand
                 })
                 .thenWithResource("getSubscriptionsPlayer", JdbcResource.class, (_, _, promise, jdbcResource) -> {
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
-                    List<Map<String, Object>> execute = jdbcResource.execute(new JdbcRequest(JTScheduler.SELECT_MY_SUBSCRIBED_PLAYER)
+                    List<JTPlayerSubscriber.Row> execute = jdbcResource.execute(new JdbcRequest(JTPlayerSubscriber.SELECT_MY_PLAYERS)
                             .addArg("id_chat", context.getIdChat())
-                            .setDebug(false)
+                                    .setDebug(false),
+                            JTPlayerSubscriber.Row.class
                     );
                     if (execute.isEmpty()) {
                         context.getTelegramBot().send(
@@ -64,18 +66,20 @@ public class ScheduleCommon implements PromiseGenerator, NhlStatisticsBotCommand
                         return;
                     }
                     List<Button> buttons = new ArrayList<>();
-                    AtomicInteger activeGame = new AtomicInteger();
-                    execute.forEach(map -> {
+                    execute.forEach(row -> {
+                        NHLPlayerList.Player player = row.getPlayer();
+                        if (player == null) {
+                            App.error(new RuntimeException("player is null"));
+                            return;
+                        }
                         buttons.add(new Button(
-                                map.get("player_about").toString(),
+                                player.getLongNameWithTeamAbv(),
                                 ServletResponseWriter.buildUrlQuery(
                                         "/ms/",
                                         new HashMapBuilder<>(context.getUriParameters())
-                                                .append("id", map.get("id_player").toString())
-                                                .append("a", map.get("player_about").toString())
+                                                .append("id", player.getPlayerID())
                                 )
                         ));
-                        activeGame.addAndGet(Integer.parseInt(map.get("count").toString()));
                     });
                     context.getTelegramBot().send(
                             context.getIdChat(),
@@ -87,17 +91,26 @@ public class ScheduleCommon implements PromiseGenerator, NhlStatisticsBotCommand
                 .then("getSubscriptionsMarker", (_, _, promise) -> {
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
                     if (!context.getUriParameters().containsKey("page")) {
+                        NHLPlayerList.Player player = NHLPlayerList.findByIdStatic(context.getUriParameters().get("id"));
+                        if (player == null) {
+                            promise.skipAllStep("player is null");
+                            return;
+                        }
                         context.getTelegramBot().send(UtilTelegram.editMessage(
                                 context.getMsg(),
-                                context.getUriParameters().get("a")
+                                player.getLongNameWithTeamAbv()
                         ), context.getIdChat());
                     }
                 })
                 .thenWithResource("getSubscriptionsPlayerGames", JdbcResource.class, (_, _, promise, jdbcResource) -> {
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
-                    List<Map<String, Object>> execute = jdbcResource.execute(new JdbcRequest(JTScheduler.SELECT_MY_SUBSCRIBED_GAMES)
-                            .addArg("id_chat", context.getIdChat())
-                            .addArg("id_player", context.getUriParameters().get("id"))
+                    NHLPlayerList.Player player = NHLPlayerList.findByIdStatic(context.getUriParameters().get("id"));
+                    if (player == null) {
+                        promise.skipAllStep("player is null");
+                        return;
+                    }
+                    List<Map<String, Object>> execute = jdbcResource.execute(new JdbcRequest(JTTeamScheduler.SELECT_TEAM_SCHEDULER)
+                            .addArg("id_team", player.getTeamID())
                             .setDebug(false)
                     );
                     if (execute.isEmpty()) {
@@ -111,7 +124,7 @@ public class ScheduleCommon implements PromiseGenerator, NhlStatisticsBotCommand
                     int page = Integer.parseInt(context.getUriParameters().getOrDefault("page", "1"));
                     Schedule.paging(execute.stream().map(map -> {
                         try {
-                            return new NHLTeamSchedule.Game(UtilJson.getMapOrThrow(map.get("test").toString()));
+                            return new NHLTeamSchedule.Game(UtilJson.getMapOrThrow(map.get("json").toString()));
                         } catch (Throwable e) {
                             App.error(e);
                         }

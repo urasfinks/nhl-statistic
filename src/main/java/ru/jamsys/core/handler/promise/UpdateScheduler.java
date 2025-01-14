@@ -26,6 +26,18 @@ import java.util.*;
 @Accessors(chain = true)
 public class UpdateScheduler implements PromiseGenerator {
 
+    private PlayerSubscribers playerSubscribers = new PlayerSubscribers();
+
+    private Map<String, List<NHLTeamSchedule.Game>> teamsScheduledGame = new HashMap<>(); // key - idTeam; value - list game
+
+    private boolean alwaysRequestApi;
+
+    private Map<String, List<NHLTeamSchedule.Game>> teamsGameInstance = new LinkedHashMap<>(); // key - idTeam
+
+    public UpdateScheduler(boolean alwaysRequestApi) {
+        this.alwaysRequestApi = alwaysRequestApi;
+    }
+
     @Getter
     @Setter
     public static class PlayerSubscribers {
@@ -56,22 +68,15 @@ public class UpdateScheduler implements PromiseGenerator {
 
     }
 
-    @Getter
-    @Setter
-    public static class Context {
-        PlayerSubscribers playerSubscribers = new PlayerSubscribers();
-        Map<String, List<NHLTeamSchedule.Game>> teamsScheduledGame = new HashMap<>(); // key - idTeam; value - list game
-    }
-
     @Override
     public Promise generate() {
         return App.get(ServicePromise.class).get(getClass().getSimpleName(), 600_000L)
-                .extension(promise -> promise.setRepositoryMapClass(Context.class, new Context()))
+                .extension(promise -> promise.setRepositoryMapClass(UpdateScheduler.class, this))
                 .thenWithResource(
                         "select",
                         JdbcResource.class,
                         (_, _, promise, jdbcResource) -> {
-                            Context context = promise.getRepositoryMapClass(Context.class);
+                            UpdateScheduler context = promise.getRepositoryMapClass(UpdateScheduler.class);
                             context
                                     .getPlayerSubscribers()
                                     .getList()
@@ -82,7 +87,7 @@ public class UpdateScheduler implements PromiseGenerator {
                         }
                 )
                 .then("getTeamSchedule", (run, _, promise) -> {
-                    Context context = promise.getRepositoryMapClass(Context.class);
+                    UpdateScheduler context = promise.getRepositoryMapClass(UpdateScheduler.class);
                     for (String idTeam : context.getPlayerSubscribers().getListIdTeam()) {
                         if (!run.get()) {
                             return;
@@ -91,21 +96,25 @@ public class UpdateScheduler implements PromiseGenerator {
                                 idTeam,
                                 UtilNHL.getActiveSeasonOrNext() + "")
                         )
-                                .setAlwaysRequestApi(false);
+                                .setAlwaysRequestApi(alwaysRequestApi);
                         Promise req = tank01Request.generate().run().await(10_000L);
                         if (req.isException()) {
                             throw req.getExceptionSource();
                         }
-                        new NHLTeamSchedule.Instance(tank01Request.getResponseData())
-                                .initAlreadyGame()
-                                .getFutureGame()
-                                .sort(UtilListSort.Type.ASC)
-                                .getListGameInstance()
-                                .forEach(gameInstance -> context
-                                        .getTeamsScheduledGame()
-                                        .computeIfAbsent(idTeam, _ -> new ArrayList<>())
-                                        .add(gameInstance)
+                        List<NHLTeamSchedule.Game> listGameInstance = teamsGameInstance
+                                .computeIfAbsent(idTeam, _ -> new ArrayList<>());
+                        listGameInstance
+                                .addAll(new NHLTeamSchedule.Instance(tank01Request.getResponseData())
+                                        .initAlreadyGame()
+                                        .getFutureGame()
+                                        .sort(UtilListSort.Type.ASC)
+                                        .getListGameInstance()
                                 );
+                        listGameInstance.forEach(gameInstance -> context
+                                .getTeamsScheduledGame()
+                                .computeIfAbsent(idTeam, _ -> new ArrayList<>())
+                                .add(gameInstance)
+                        );
                     }
                     if (context.getTeamsScheduledGame().isEmpty()) {
                         promise.skipAllStep("UpdateScheduler scheduler is empty");
@@ -115,7 +124,7 @@ public class UpdateScheduler implements PromiseGenerator {
                         "insert",
                         JdbcResource.class,
                         (_, _, promise, jdbcResource) -> {
-                            Context context = promise.getRepositoryMapClass(Context.class);
+                            UpdateScheduler context = promise.getRepositoryMapClass(UpdateScheduler.class);
                             List<JTTeamScheduler.Row> execute = jdbcResource.execute(new JdbcRequest(JTTeamScheduler.SELECT), JTTeamScheduler.Row.class);
                             Set<String> alreadySchedule = new HashSet<>();
                             execute.forEach(row -> alreadySchedule.add(row.getIdTeam() + row.getIdGame()));

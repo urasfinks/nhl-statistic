@@ -18,6 +18,19 @@ public enum JTTeamScheduler implements JdbcRequestRepository {
             FROM team_scheduler
             """, StatementType.SELECT_WITH_AUTO_COMMIT),
 
+    SELECT_TEAM_SCHEDULER("""
+            SELECT
+                *
+            FROM team_scheduler
+            WHERE
+                id_team = ${IN.id_team::NUMBER}
+            """, StatementType.SELECT_WITH_AUTO_COMMIT),
+
+    REMOVE_IF_POSTPONED("""
+            DELETE FROM team_scheduler
+            WHERE id_game = ${IN.id_game::VARCHAR}
+            """, StatementType.SELECT_WITH_AUTO_COMMIT),
+
     INSERT("""
             INSERT INTO team_scheduler (
                 id_team,
