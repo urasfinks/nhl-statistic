@@ -92,7 +92,7 @@ public class Remove implements PromiseGenerator, NhlStatisticsBotCommandHandler 
                 })
                 .thenWithResource("removeSubscription", JdbcResource.class, (_, _, promise, jdbcResource) -> {
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
-                    jdbcResource.execute(new JdbcRequest(JTPlayerSubscriber.DELETE_IS_SUBSCRIBE_PLAYER)
+                    jdbcResource.execute(new JdbcRequest(JTPlayerSubscriber.DELETE_SUBSCRIBE_PLAYER)
                             .addArg("id_chat", context.getIdChat())
                             .addArg("id_player", context.getUriParameters().get("id"))
                             .setDebug(false)

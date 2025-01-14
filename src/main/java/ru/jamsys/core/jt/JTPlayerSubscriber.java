@@ -38,7 +38,7 @@ public enum JTPlayerSubscriber implements JdbcRequestRepository {
             ORDER BY id ASC
             """, StatementType.SELECT_WITH_AUTO_COMMIT),
 
-    DELETE_IS_SUBSCRIBE_PLAYER("""
+    DELETE_SUBSCRIBE_PLAYER("""
             DELETE
             FROM player_subscriber
             WHERE

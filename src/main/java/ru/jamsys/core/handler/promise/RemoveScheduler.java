@@ -28,7 +28,7 @@ public class RemoveScheduler implements PromiseGenerator {
                 .thenWithResource(
                         "unsubscribe",
                         JdbcResource.class,
-                        (_, _, _, jdbcResource) -> jdbcResource.execute(new JdbcRequest(JTTeamScheduler.REMOVE_IF_POSTPONED)
+                        (_, _, _, jdbcResource) -> jdbcResource.execute(new JdbcRequest(JTTeamScheduler.DELETE_IS_POSTPONED)
                                 .addArg("id_game", idGame)
                         )
                 );

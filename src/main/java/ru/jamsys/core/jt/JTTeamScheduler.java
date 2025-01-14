@@ -26,7 +26,7 @@ public enum JTTeamScheduler implements JdbcRequestRepository {
                 id_team = ${IN.id_team::NUMBER}
             """, StatementType.SELECT_WITH_AUTO_COMMIT),
 
-    REMOVE_IF_POSTPONED("""
+    DELETE_IS_POSTPONED("""
             DELETE FROM team_scheduler
             WHERE id_game = ${IN.id_game::VARCHAR}
             """, StatementType.SELECT_WITH_AUTO_COMMIT),
