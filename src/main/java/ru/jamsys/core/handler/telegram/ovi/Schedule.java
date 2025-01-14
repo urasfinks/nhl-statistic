@@ -39,7 +39,7 @@ public class Schedule implements PromiseGenerator, OviGoalsBotCommandHandler {
         return servicePromise.get(getClass().getSimpleName(), 12_000L)
                 .extension(promise -> promise.setRepositoryMapClass(Schedule.class, this))
                 .then("requestGameInSeason", new Tank01Request(() -> NHLTeamSchedule.getUri(
-                        "31",
+                        UtilNHL.getOvi().getTeamID(),
                         UtilNHL.getActiveSeasonOrNext() + ""
                 )).generate())
                 .then("parseGameInSeason", (_, _, promise) -> {
