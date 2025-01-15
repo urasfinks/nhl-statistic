@@ -2,6 +2,8 @@ package ru.jamsys.core.component.cron;
 
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import ru.jamsys.core.App;
+import ru.jamsys.core.component.RateLimit;
 import ru.jamsys.core.extension.UniqueClassName;
 import ru.jamsys.core.flat.template.cron.Cron;
 import ru.jamsys.core.flat.template.cron.release.CronConfigurator;
@@ -15,6 +17,7 @@ import ru.jamsys.core.promise.PromiseGenerator;
 public class DayScheduler implements CronConfigurator, PromiseGenerator, UniqueClassName {
 
     public Promise generate() {
+        App.get(RateLimit.class).reset();
         return new UpdateScheduler(true).generate();
     }
 

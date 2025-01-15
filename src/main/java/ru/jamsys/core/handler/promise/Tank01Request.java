@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import ru.jamsys.core.App;
+import ru.jamsys.core.component.RateLimit;
 import ru.jamsys.core.component.SecurityComponent;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.component.ServiceProperty;
@@ -69,6 +70,11 @@ public class Tank01Request implements PromiseGenerator {
                     // Если говорят нужен запрос, это будет противоречить в режиме только кеш
                     if (onlyCache && !alwaysRequestApi) {
                         promise.skipAllStep("onlyCache");
+                    }
+                })
+                .then("checkRateLimit", (_, _, _) -> {
+                    if (!App.get(RateLimit.class).isRateLimit()) {
+                        throw new RuntimeException("RateLimit Finish");
                     }
                 })
                 .thenWithResource("request", HttpResource.class, (_, _, promise, httpResource) -> {
