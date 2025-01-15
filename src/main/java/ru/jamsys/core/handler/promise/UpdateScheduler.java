@@ -96,7 +96,7 @@ public class UpdateScheduler implements PromiseGenerator {
                                 idTeam,
                                 UtilNHL.getActiveSeasonOrNext() + "")
                         )
-                                .setAlwaysRequestApi(alwaysRequestApi);
+                                .setAlwaysRequestApi(updateScheduler.isAlwaysRequestApi());
                         Promise req = tank01Request.generate().run().await(10_000L);
                         if (req.isException()) {
                             throw req.getExceptionSource();
@@ -146,7 +146,8 @@ public class UpdateScheduler implements PromiseGenerator {
                                                 }
                                             })
                                     );
-                            jdbcResource.execute(jdbcRequest);
+                            Util.logConsoleJson(jdbcRequest.getListArgs());
+                            //jdbcResource.execute(jdbcRequest);
                         }
                 )
                 ;

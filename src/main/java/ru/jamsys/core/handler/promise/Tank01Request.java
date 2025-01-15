@@ -73,7 +73,7 @@ public class Tank01Request implements PromiseGenerator {
                 })
                 .thenWithResource("request", HttpResource.class, (_, _, promise, httpResource) -> {
                     promise.getRepositoryMapClass(Tank01Request.class);
-                    Util.logConsole("Request: " + uriSupplier.get());
+                    Util.logConsole("Request: " + uriSupplier.get() + "; isAlwaysRequestApi: " + alwaysRequestApi);
                     HttpResponse execute = httpResource.execute(getHttpClient(uriSupplier.get()));
                     checkResponse(execute);
                     responseData = execute.getBody();

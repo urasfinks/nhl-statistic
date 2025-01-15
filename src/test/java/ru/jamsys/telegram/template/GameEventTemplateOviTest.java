@@ -125,7 +125,6 @@ class GameEventTemplateOviTest {
                 .setScoredTimeOnIce(playerStat.getTimeOnIce())
                 .setPenaltyShot(currentBoxScore.isPenaltyShot())
                 .setOverTime(currentBoxScore.isOverTime());
-        //System.out.println(UtilJson.toStringPretty(gameEventData, "{}"));
         Assertions.assertEquals("""
               Матч завершен. Победа по буллитам.
               Washington Capitals (WSH) 3 - 3 Buffalo Sabres (BUF).

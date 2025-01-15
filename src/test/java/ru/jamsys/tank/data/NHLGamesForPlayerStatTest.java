@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import ru.jamsys.core.extension.builder.ArrayListBuilder;
 import ru.jamsys.core.extension.builder.HashMapBuilder;
+import ru.jamsys.core.flat.util.Util;
 import ru.jamsys.core.flat.util.UtilJson;
 
 import java.util.*;
@@ -59,7 +60,7 @@ class NHLGamesForPlayerStatTest {
                 NHLGamesForPlayer.getExampleOvechkin(),
                 lisIdGameInSeason
         );
-        System.out.println(UtilJson.toStringPretty(aggregateStatistic, "{}"));
+        Util.logConsoleJson(aggregateStatistic);
         Assertions.assertEquals(15, aggregateStatistic.get("plusMinus"));
         Assertions.assertEquals("00:51", aggregateStatistic.get("shortHandedTimeOnIce"));
     }

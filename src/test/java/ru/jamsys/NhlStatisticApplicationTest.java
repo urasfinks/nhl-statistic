@@ -91,11 +91,10 @@ class NhlStatisticApplicationTest {
                 ))
 //                .appendWithResource("http", TelegramNotificationResource.class, (_, _, _, telegramNotificationResource) -> {
 //                    HttpResponse execute = telegramNotificationResource.execute(new TelegramNotificationRequest("Hello", "world"));
-//                    System.out.println(execute);
 //                })
                 .run()
                 .await(20_000L);
-        System.out.println(promise.getLogString());
+        Util.logConsole(promise.getLogString());
     }
 
     @SuppressWarnings("unused")
@@ -106,7 +105,7 @@ class NhlStatisticApplicationTest {
         tank01Request.generate()
                 .run()
                 .await(60_000L, 200);
-        System.out.println(tank01Request.getResponseData());
+        Util.logConsole(tank01Request.getResponseData());
     }
 
     @SuppressWarnings("unused")
@@ -123,8 +122,8 @@ class NhlStatisticApplicationTest {
         scoreBoxCache.generate()
                 .run()
                 .await(60_000L);
-        System.out.println(scoreBoxCache.getGoals());
-        System.out.println(scoreBoxCache.getAllStatistic());
+        Util.logConsoleJson(scoreBoxCache.getGoals());
+        Util.logConsoleJson(scoreBoxCache.getAllStatistic());
     }
 
     @SuppressWarnings("unused")
@@ -142,7 +141,7 @@ class NhlStatisticApplicationTest {
         playerStatistic.generate()
                 .run()
                 .await(60_000L);
-        System.out.println(UtilJson.toStringPretty(playerStatistic, "{}"));
+        Util.logConsoleJson(playerStatistic);
     }
 
     @SuppressWarnings("unused")
@@ -152,8 +151,8 @@ class NhlStatisticApplicationTest {
         playerStatistic.generate()
                 .run()
                 .await(60_000L);
-        System.out.println(UtilJson.toStringPretty(playerStatistic, "{}"));
-        System.out.println(playerStatistic.getMessage());
+        Util.logConsoleJson(playerStatistic);
+        Util.logConsole(playerStatistic.getMessage());
     }
 
     @SuppressWarnings("unused")
@@ -207,7 +206,7 @@ class NhlStatisticApplicationTest {
                 }))
                 .run()
                 .await(20_000L);
-        System.out.println(promise.getLogString());
+        Util.logConsole(promise.getLogString());
     }
 
     @SuppressWarnings("unused")

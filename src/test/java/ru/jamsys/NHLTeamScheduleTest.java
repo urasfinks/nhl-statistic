@@ -2,6 +2,7 @@ package ru.jamsys;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import ru.jamsys.core.flat.util.Util;
 import ru.jamsys.core.flat.util.UtilJson;
 import ru.jamsys.core.flat.util.UtilListSort;
 import ru.jamsys.tank.data.NHLTeamSchedule;
@@ -17,10 +18,10 @@ class NHLTeamScheduleTest {
 
     @Test
     void getYear() {
-        System.out.println(Calendar.getInstance().get(Calendar.YEAR));
+        Util.logConsole(String.valueOf(Calendar.getInstance().get(Calendar.YEAR)));
         long timestampMills = Long.parseLong("1733274000000");
         LocalDateTime timestamp = LocalDateTime.ofInstant(Instant.ofEpochMilli(timestampMills), ZoneId.systemDefault());
-        System.out.println(timestamp);
+        Util.logConsole(String.valueOf(timestamp));
     }
 
     @Test
@@ -95,7 +96,7 @@ class NHLTeamScheduleTest {
                 """;
         Map<String, Object> game = UtilJson.getMapOrThrow(data);
         NHLTeamSchedule.extendGameTimeZone(game);
-        System.out.println(UtilJson.toStringPretty(game, "{}"));
+        Util.logConsoleJson(game);
     }
 
     @Test

@@ -9,6 +9,7 @@ import ru.jamsys.core.App;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.component.ServiceProperty;
 import ru.jamsys.core.component.TelegramBotComponent;
+import ru.jamsys.core.flat.util.Util;
 import ru.jamsys.core.flat.util.UtilFileResource;
 import ru.jamsys.core.flat.util.UtilJson;
 import ru.jamsys.core.promise.Promise;
@@ -81,7 +82,7 @@ class MinSchedulerTest {
 
         promise.then("saveData", (_, _, _) -> {});
         promise.setDebug(false).run().await(50_000L);
-        System.out.println(UtilJson.toStringPretty(promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("3101"), "{}"));
+        Util.logConsoleJson(promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("3101"));
         Assertions.assertEquals(2, promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("3101").size());
         Assertions.assertEquals(GameEventData.Action.NOT_PLAY, promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("3101").getFirst().getAction());
         Assertions.assertEquals("Александр Овечкин", promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("3101").getFirst().getPlayer().getLongName());
@@ -127,7 +128,7 @@ class MinSchedulerTest {
         promise.then("saveData", (_, _, _) -> {
         });
         promise.setDebug(true).run().await(50_000L);
-        System.out.println(UtilJson.toStringPretty(promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("3101"), "{}"));
+        Util.logConsoleJson(promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("3101"));
         Assertions.assertEquals("(16:37, 3-й период)", promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("3101").getLast().getTime());
         Assertions.assertEquals(2, promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("3101").size());
         Assertions.assertEquals(GameEventData.Action.START_GAME, promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("3101").getFirst().getAction());
@@ -453,7 +454,6 @@ class MinSchedulerTest {
         });
         promise.setDebug(false).run().await(50_000L);
 
-        //System.out.println(UtilJson.toStringPretty(promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("3899937"), "{}"));
         Assertions.assertEquals(GameEventData.Action.GOAL, promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("3899937").getFirst().getAction());
 
     }
@@ -592,7 +592,6 @@ class MinSchedulerTest {
         });
         promise.setDebug(false).run().await(50_000L);
 
-        //System.out.println(UtilJson.toStringPretty(promise.getRepositoryMapClass(MinScheduler.Context.class).getNotificationList(), "{}"));
         Assertions.assertFalse(promise.isException());
         Assertions.assertEquals(2, promise.getRepositoryMapClass(MinScheduler.Context.class).getNotificationList().size());
 
@@ -650,7 +649,7 @@ class MinSchedulerTest {
         });
         promise.setDebug(false).run().await(50_000L);
 
-        System.out.println(UtilJson.toStringPretty(promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("4915856"), "{}"));
+        Util.logConsoleJson(promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("4915856"));
 
         Assertions.assertEquals("12:05, 3-й период", promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("4915856").getFirst().getTime());
     }
