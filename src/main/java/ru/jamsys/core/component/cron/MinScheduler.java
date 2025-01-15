@@ -475,7 +475,6 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                         });
                     }
                 })
-                .onError((_, _, promise) -> System.out.println(promise.getLogString()))
                 .setDebug(false);
     }
 
