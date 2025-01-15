@@ -13,7 +13,7 @@ class DaySchedulerTest {
 
         String cronTemplate = new DayScheduler().getCronTemplate();
         Assertions.assertEquals("Template({Second=[0], Minute=[0], HourOfDay=[12], DayOfMonth=[], Month=[], DayOfWeek=[]})", new Cron(cronTemplate).toString());
-        Assertions.assertEquals("2024-03-07T12:00:00.000", UtilDate.msFormat(new Cron(cronTemplate).getNext(curTime)));
+        Assertions.assertEquals("2024-03-07T12:00:00.000", UtilDate.msFormat(new Cron(cronTemplate).compile(curTime).getNextTimestamp()));
     }
 
 }
