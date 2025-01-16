@@ -146,8 +146,8 @@ public class UpdateScheduler implements PromiseGenerator {
                                                 }
                                             })
                                     );
-                            Util.logConsoleJson(jdbcRequest.getListArgs());
-                            //jdbcResource.execute(jdbcRequest);
+                            //Util.logConsoleJson(jdbcRequest.getListArgs());
+                            jdbcResource.execute(jdbcRequest);
                         }
                 )
                 ;
