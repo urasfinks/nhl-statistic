@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
 import ru.jamsys.core.App;
 import ru.jamsys.core.component.ServicePromise;
+import ru.jamsys.core.component.TelegramQueueSender;
 import ru.jamsys.core.extension.builder.HashMapBuilder;
 import ru.jamsys.core.extension.http.ServletResponseWriter;
 import ru.jamsys.core.flat.util.UtilJson;
@@ -57,9 +58,11 @@ public class ScheduleCommon implements PromiseGenerator, NhlStatisticsBotCommand
                             JTPlayerSubscriber.Row.class
                     );
                     if (execute.isEmpty()) {
-                        context.getTelegramBot().send(
+                        App.get(TelegramQueueSender.class).add(
+                                context.getTelegramBot(),
                                 context.getIdChat(),
                                 "В текущий момент подписок нет",
+                                null,
                                 null
                         );
                         promise.skipAllStep("subscriptions empty");
@@ -81,10 +84,12 @@ public class ScheduleCommon implements PromiseGenerator, NhlStatisticsBotCommand
                                 )
                         ));
                     });
-                    context.getTelegramBot().send(
+                    App.get(TelegramQueueSender.class).add(
+                            context.getTelegramBot(),
                             context.getIdChat(),
                             "Выбери игрока для отображения расписания",
-                            buttons
+                            buttons,
+                            null
                     );
                     promise.skipAllStep("wait read id_player for more information");
                 })
@@ -96,7 +101,8 @@ public class ScheduleCommon implements PromiseGenerator, NhlStatisticsBotCommand
                             promise.skipAllStep("player is null");
                             return;
                         }
-                        context.getTelegramBot().send(UtilTelegram.editMessage(
+                        context.getTelegramBot().send(
+                                UtilTelegram.editMessage(
                                 context.getMsg(),
                                 player.getLongNameWithTeamAbv()
                         ), context.getIdChat());
@@ -114,9 +120,11 @@ public class ScheduleCommon implements PromiseGenerator, NhlStatisticsBotCommand
                             .setDebug(false)
                     );
                     if (execute.isEmpty()) {
-                        context.getTelegramBot().send(
+                        App.get(TelegramQueueSender.class).add(
+                                context.getTelegramBot(),
                                 context.getIdChat(),
                                 "В текущий момент запланированных игр нет",
+                                null,
                                 null
                         );
                         return;

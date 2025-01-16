@@ -4,10 +4,13 @@ import lombok.Getter;
 import lombok.Setter;
 import ru.jamsys.core.App;
 import ru.jamsys.core.component.ServicePromise;
+import ru.jamsys.core.component.TelegramQueueSender;
 import ru.jamsys.core.flat.util.UtilFile;
 import ru.jamsys.core.flat.util.UtilFileResource;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
+import ru.jamsys.core.promise.PromiseTask;
+import ru.jamsys.core.promise.PromiseTaskExecuteType;
 import ru.jamsys.telegram.NotificationObject;
 import ru.jamsys.telegram.TelegramCommandContext;
 
@@ -23,17 +26,19 @@ public class SendNotification implements PromiseGenerator {
 
     @Override
     public Promise generate() {
-        return App.get(ServicePromise.class).get(getClass().getSimpleName(), 60_000L)
-                .then("send", (_, _, _) -> {
+        Promise promise = App.get(ServicePromise.class).get(getClass().getSimpleName(), 600_000L);
+        promise.append(new PromiseTask("send", promise, PromiseTaskExecuteType.IO, (_, _, _) -> {
                     TelegramCommandContext context = getNotificationObject().getContext();
                     if (
                             getNotificationObject().getPathImage() == null
                                     || getNotificationObject().getPathImage().isEmpty()
                     ) {
-                        context.getTelegramBot().send(
+                        App.get(TelegramQueueSender.class).add(
+                                context.getTelegramBot(),
                                 context.getIdChat(),
                                 getNotificationObject().getMessage(),
-                                getNotificationObject().getButtons()
+                                getNotificationObject().getButtons(),
+                                null
                         );
                     } else {
                         try {
@@ -50,9 +55,10 @@ public class SendNotification implements PromiseGenerator {
                             App.error(th);
                         }
                     }
-                })
+                }))
                 .setDebug(false)
                 ;
+        return promise;
     }
 
 }

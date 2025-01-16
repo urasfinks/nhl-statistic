@@ -4,7 +4,9 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
+import ru.jamsys.core.App;
 import ru.jamsys.core.component.ServicePromise;
+import ru.jamsys.core.component.TelegramQueueSender;
 import ru.jamsys.core.extension.builder.HashMapBuilder;
 import ru.jamsys.core.extension.http.ServletResponseWriter;
 import ru.jamsys.core.flat.util.UtilTelegram;
@@ -51,9 +53,11 @@ public class Remove implements PromiseGenerator, NhlStatisticsBotCommandHandler 
                             JTPlayerSubscriber.Row.class
                     );
                     if (execute.isEmpty()) {
-                        context.getTelegramBot().send(
+                        App.get(TelegramQueueSender.class).add(
+                                context.getTelegramBot(),
                                 context.getIdChat(),
                                 "В текущей момент подписок нет",
+                                null,
                                 null
                         );
                         promise.skipAllStep("subscribe empty");
@@ -71,10 +75,12 @@ public class Remove implements PromiseGenerator, NhlStatisticsBotCommandHandler 
                                 )
                         ));
                     });
-                    context.getTelegramBot().send(
+                    App.get(TelegramQueueSender.class).add(
+                            context.getTelegramBot(),
                             context.getIdChat(),
                             "Выбери игрока для удаления подписки",
-                            buttons
+                            buttons,
+                            null
                     );
                     promise.skipAllStep("wait read id_player for unsubscribe");
                 })
@@ -85,7 +91,8 @@ public class Remove implements PromiseGenerator, NhlStatisticsBotCommandHandler 
                         promise.skipAllStep("player is null");
                         return;
                     }
-                    context.getTelegramBot().send(UtilTelegram.editMessage(
+                    context.getTelegramBot().send(
+                            UtilTelegram.editMessage(
                             context.getMsg(),
                             player.getLongNameWithTeamAbv()
                     ), context.getIdChat());
@@ -97,7 +104,13 @@ public class Remove implements PromiseGenerator, NhlStatisticsBotCommandHandler 
                             .addArg("id_player", context.getUriParameters().get("id"))
                             .setDebug(false)
                     );
-                    context.getTelegramBot().send(context.getIdChat(), "Подписка удалена", null);
+                    App.get(TelegramQueueSender.class).add(
+                            context.getTelegramBot(),
+                            context.getIdChat(),
+                            "Подписка удалена",
+                            null,
+                            null
+                    );
                 });
     }
 

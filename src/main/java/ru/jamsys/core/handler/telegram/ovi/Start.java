@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import ru.jamsys.core.App;
 import ru.jamsys.core.component.DelaySenderComponent;
 import ru.jamsys.core.component.ServicePromise;
+import ru.jamsys.core.component.TelegramQueueSender;
 import ru.jamsys.core.extension.builder.ArrayListBuilder;
 import ru.jamsys.core.extension.builder.HashMapBuilder;
 import ru.jamsys.core.extension.http.ServletResponseWriter;
@@ -68,9 +69,10 @@ public class Start implements PromiseGenerator, OviGoalsBotCommandHandler {
                 .then("check", (_, _, promise) -> {
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
                     if (!promise.getRepositoryMapClass(Boolean.class)) {
-                        context.getTelegramBot().send(
-                                context.getIdChat(),
+                        App.get(TelegramQueueSender.class).add(
+                                context,
                                 "Уведомления включены",
+                                null,
                                 null
                         );
                         promise.skipAllStep("already notification");
@@ -81,7 +83,8 @@ public class Start implements PromiseGenerator, OviGoalsBotCommandHandler {
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
                     PlayerStatistic ovi = promise.getRepositoryMapClass(Promise.class, "ovi")
                             .getRepositoryMapClass(PlayerStatistic.class);
-                    context.getTelegramBot().send(
+                    App.get(TelegramQueueSender.class).add(
+                            context.getTelegramBot(),
                             context.getIdChat(),
                             String.format("""
                                             Саня снова в деле! Теперь ты будешь одним из первых узнавать о каждом его новом голе в режиме реального времени.
@@ -92,6 +95,7 @@ public class Start implements PromiseGenerator, OviGoalsBotCommandHandler {
                                             """,
                                     ovi.getMessage()
                             ),
+                            null,
                             null
                     );
                     App.get(DelaySenderComponent.class).add(

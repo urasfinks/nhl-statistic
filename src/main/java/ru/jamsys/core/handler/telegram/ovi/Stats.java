@@ -4,7 +4,9 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
+import ru.jamsys.core.App;
 import ru.jamsys.core.component.ServicePromise;
+import ru.jamsys.core.component.TelegramQueueSender;
 import ru.jamsys.core.flat.util.UtilNHL;
 import ru.jamsys.core.handler.promise.PlayerStatistic;
 import ru.jamsys.core.promise.Promise;
@@ -33,9 +35,11 @@ public class Stats implements PromiseGenerator, OviGoalsBotCommandHandler {
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
                     PlayerStatistic ovi = promise.getRepositoryMapClass(Promise.class, "ovi")
                             .getRepositoryMapClass(PlayerStatistic.class);
-                    context.getTelegramBot().send(
+                    App.get(TelegramQueueSender.class).add(
+                            context.getTelegramBot(),
                             context.getIdChat(),
                             ovi.getMessage(),
+                            null,
                             null
                     );
                 })

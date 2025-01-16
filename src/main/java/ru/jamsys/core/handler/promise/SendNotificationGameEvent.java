@@ -6,6 +6,7 @@ import ru.jamsys.core.App;
 import ru.jamsys.core.component.DelaySenderComponent;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.component.TelegramBotComponent;
+import ru.jamsys.core.component.TelegramQueueSender;
 import ru.jamsys.core.flat.util.Util;
 import ru.jamsys.core.flat.util.UtilRisc;
 import ru.jamsys.core.promise.Promise;
@@ -73,7 +74,13 @@ public class SendNotificationGameEvent implements PromiseGenerator {
                                                 10_000L
                                         );
                             } else {
-                                telegramBotComponent.getNhlStatisticsBot().send(idChat, message, null);
+                                App.get(TelegramQueueSender.class).add(
+                                        telegramBotComponent.getNhlStatisticsBot(),
+                                        idChat,
+                                        message,
+                                        null,
+                                        null
+                                );
                             }
                         }
                     });

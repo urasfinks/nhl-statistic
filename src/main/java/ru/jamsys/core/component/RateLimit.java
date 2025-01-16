@@ -24,10 +24,12 @@ public class RateLimit {
             if (rateLimitFinish.compareAndSet(false, true)) {
                 TelegramBotComponent telegramBotComponent = App.get(TelegramBotComponent.class);
                 if (telegramBotComponent.getNhlStatisticsBot() != null) {
-                    telegramBotComponent.getNhlStatisticsBot().send(
+                    App.get(TelegramQueueSender.class).add(
+                            telegramBotComponent.getNhlStatisticsBot(),
                             //290029195, // urasfinks
                             -4739098379L, // NhlCommon
                             "RateLimit 15_000 Finish",
+                            null,
                             null
                     );
                 }
