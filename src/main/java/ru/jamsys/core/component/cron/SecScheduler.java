@@ -7,6 +7,7 @@ import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.component.TelegramQueueSender;
 import ru.jamsys.core.extension.UniqueClassName;
 import ru.jamsys.core.flat.template.cron.release.Cron1s;
+import ru.jamsys.core.flat.util.Util;
 import ru.jamsys.core.handler.promise.SendNotification;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
@@ -40,6 +41,7 @@ public class SecScheduler implements Cron1s, PromiseGenerator, UniqueClassName {
                             break;
                         }
                         NotificationObject poll = queue.poll();
+                        Util.logConsoleJson(poll);
                         if (poll == null) {
                             continue;
                         }

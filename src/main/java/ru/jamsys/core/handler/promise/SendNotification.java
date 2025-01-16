@@ -33,12 +33,10 @@ public class SendNotification implements PromiseGenerator {
                             getNotificationObject().getPathImage() == null
                                     || getNotificationObject().getPathImage().isEmpty()
                     ) {
-                        App.get(TelegramQueueSender.class).add(
-                                context.getTelegramBot(),
+                        context.getTelegramBot().send(
                                 context.getIdChat(),
-                                getNotificationObject().getMessage(),
-                                getNotificationObject().getButtons(),
-                                null
+                                notificationObject.getMessage(),
+                                notificationObject.getButtons()
                         );
                     } else {
                         try {
