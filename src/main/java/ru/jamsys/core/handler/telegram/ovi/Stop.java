@@ -57,16 +57,14 @@ public class Stop implements PromiseGenerator, OviGoalsBotCommandHandler {
                             .addArg("remove", 1)
                     );
                 })
-                .then("send", (_, _, promise) -> {
-                    App.get(TelegramQueueSender.class).add(
-                            promise.getRepositoryMapClass(TelegramCommandContext.class),
-                            promise.getRepositoryMapClass(Boolean.class)
-                                    ? "Уведомления отключены. Буду рад видеть тебя снова!"
-                                    : "Включить уведомления /start",
-                            null,
-                            null
-                    );
-                })
+                .then("send", (_, _, promise) -> App.get(TelegramQueueSender.class).add(
+                        promise.getRepositoryMapClass(TelegramCommandContext.class),
+                        promise.getRepositoryMapClass(Boolean.class)
+                                ? "Уведомления отключены. Буду рад видеть тебя снова!"
+                                : "Включить уведомления /start",
+                        null,
+                        null
+                ))
                 ;
     }
 

@@ -28,14 +28,12 @@ public class StartCommon implements PromiseGenerator, NhlStatisticsBotCommandHan
     @Override
     public Promise generate() {
         return servicePromise.get(getClass().getSimpleName(), 12_000L)
-                .then("start", (_, _, promise) -> {
-                    App.get(TelegramQueueSender.class).add(
-                            promise.getRepositoryMapClass(TelegramCommandContext.class),
-                            "Привет",
-                            null,
-                            null
-                    );
-                });
+                .then("start", (_, _, promise) -> App.get(TelegramQueueSender.class).add(
+                        promise.getRepositoryMapClass(TelegramCommandContext.class),
+                        "Привет",
+                        null,
+                        null
+                ));
     }
 
 }
