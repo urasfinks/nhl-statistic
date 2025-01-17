@@ -14,9 +14,9 @@ import java.util.List;
 
 @Component
 @Lazy
+@Getter
 public class RegisterDelayNotification {
 
-    @Getter
     @SuppressWarnings("all")
     final Broker<List> broker;
 

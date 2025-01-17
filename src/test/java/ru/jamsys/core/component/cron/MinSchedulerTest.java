@@ -41,7 +41,6 @@ class MinSchedulerTest {
     void test0() {
         Promise promise = new MinScheduler(
                 App.get(ServicePromise.class),
-                App.get(TelegramBotComponent.class),
                 App.get(ServiceProperty.class)
         ).generate();
         PromiseTest promiseTest = new PromiseTest(promise);
@@ -94,7 +93,6 @@ class MinSchedulerTest {
     void test1() {
         Promise promise = new MinScheduler(
                 App.get(ServicePromise.class),
-                App.get(TelegramBotComponent.class),
                 App.get(ServiceProperty.class)
         ).generate();
         PromiseTest promiseTest = new PromiseTest(promise);
@@ -140,7 +138,6 @@ class MinSchedulerTest {
     void test2() {
         Promise promise = new MinScheduler(
                 App.get(ServicePromise.class),
-                App.get(TelegramBotComponent.class),
                 App.get(ServiceProperty.class)
         ).generate();
         PromiseTest promiseTest = new PromiseTest(promise);
@@ -184,7 +181,6 @@ class MinSchedulerTest {
     void test3() {
         Promise promise = new MinScheduler(
                 App.get(ServicePromise.class),
-                App.get(TelegramBotComponent.class),
                 App.get(ServiceProperty.class)
         ).generate();
         PromiseTest promiseTest = new PromiseTest(promise);
@@ -226,7 +222,6 @@ class MinSchedulerTest {
     void test4() {
         Promise promise = new MinScheduler(
                 App.get(ServicePromise.class),
-                App.get(TelegramBotComponent.class),
                 App.get(ServiceProperty.class)
         ).generate();
         PromiseTest promiseTest = new PromiseTest(promise);
@@ -270,7 +265,6 @@ class MinSchedulerTest {
     void test5() {
         Promise promise = new MinScheduler(
                 App.get(ServicePromise.class),
-                App.get(TelegramBotComponent.class),
                 App.get(ServiceProperty.class)
         ).generate();
         PromiseTest promiseTest = new PromiseTest(promise);
@@ -314,7 +308,6 @@ class MinSchedulerTest {
     void test6() {
         Promise promise = new MinScheduler(
                 App.get(ServicePromise.class),
-                App.get(TelegramBotComponent.class),
                 App.get(ServiceProperty.class)
         ).generate();
         PromiseTest promiseTest = new PromiseTest(promise);
@@ -368,7 +361,6 @@ class MinSchedulerTest {
     void test7() {
         Promise promise = new MinScheduler(
                 App.get(ServicePromise.class),
-                App.get(TelegramBotComponent.class),
                 App.get(ServiceProperty.class)
         ).generate();
         PromiseTest promiseTest = new PromiseTest(promise);
@@ -420,7 +412,6 @@ class MinSchedulerTest {
     void test8() {
         Promise promise = new MinScheduler(
                 App.get(ServicePromise.class),
-                App.get(TelegramBotComponent.class),
                 App.get(ServiceProperty.class)
         ).generate();
         PromiseTest promiseTest = new PromiseTest(promise);
@@ -462,7 +453,6 @@ class MinSchedulerTest {
     void test9() {
         Promise promise = new MinScheduler(
                 App.get(ServicePromise.class),
-                App.get(TelegramBotComponent.class),
                 App.get(ServiceProperty.class)
         ).generate();
         PromiseTest promiseTest = new PromiseTest(promise);
@@ -548,7 +538,6 @@ class MinSchedulerTest {
     void test10() {
         Promise promise = new MinScheduler(
                 App.get(ServicePromise.class),
-                App.get(TelegramBotComponent.class),
                 App.get(ServiceProperty.class)
         ).generate();
         PromiseTest promiseTest = new PromiseTest(promise);
@@ -601,7 +590,6 @@ class MinSchedulerTest {
     void test11() {
         Promise promise = new MinScheduler(
                 App.get(ServicePromise.class),
-                App.get(TelegramBotComponent.class),
                 App.get(ServiceProperty.class)
         ).generate();
         PromiseTest promiseTest = new PromiseTest(promise);

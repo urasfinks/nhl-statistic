@@ -9,7 +9,6 @@ import ru.jamsys.NhlStatisticApplication;
 import ru.jamsys.core.App;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.component.ServiceProperty;
-import ru.jamsys.core.component.TelegramBotComponent;
 import ru.jamsys.core.extension.UniqueClassName;
 import ru.jamsys.core.extension.builder.HashMapBuilder;
 import ru.jamsys.core.extension.exception.ForwardException;
@@ -43,15 +42,11 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
 
     private final ServiceProperty serviceProperty;
 
-    private final TelegramBotComponent telegramBotComponent;
-
     public MinScheduler(
             ServicePromise servicePromise,
-            TelegramBotComponent telegramBotComponent,
             ServiceProperty serviceProperty
     ) {
         this.servicePromise = servicePromise;
-        this.telegramBotComponent = telegramBotComponent;
         this.serviceProperty = serviceProperty;
     }
 
