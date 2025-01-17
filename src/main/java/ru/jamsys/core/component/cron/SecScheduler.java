@@ -19,7 +19,9 @@ import ru.jamsys.core.resource.jdbc.JdbcResource;
 import ru.jamsys.telegram.AbstractBot;
 import ru.jamsys.telegram.NotificationObject;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @SuppressWarnings("unused")
@@ -88,18 +90,11 @@ public class SecScheduler implements Cron1s, PromiseGenerator, UniqueClassName {
                             }
                             JTTelegramSend.Row first = execute.getFirst();
 
-                            List<Button> listResult = null;
-                            if (first.getButtons() != null) {
-                                @SuppressWarnings("unchecked")
-                                List<Button> list = (List<Button>) Util.mapToObject(UtilJson.getMapOrThrow(first.getButtons()), List.class);
-                                listResult = list;
-                            }
-
                             AbstractBot.TelegramResult send = SendNotification.send(new NotificationObject(
                                     Long.parseLong(first.getIdChat().toString()),
                                     first.getBot(),
                                     first.getMessage(),
-                                    listResult,
+                                    parseButton(first.getButtons()),
                                     first.getPathImage()
                             ));
                             if (send.isRetry()) {
@@ -126,6 +121,24 @@ public class SecScheduler implements Cron1s, PromiseGenerator, UniqueClassName {
                     countThread.decrementAndGet();
                 })
                 .setDebug(false);
+    }
+
+    public static List<Button> parseButton(String data) {
+        if (data == null || data.isEmpty()) {
+            return null;
+        }
+        List<Button> result = new ArrayList<>();
+        try {
+            List<Object> listOrThrow = UtilJson.getListOrThrow(data);
+            listOrThrow.forEach(o -> {
+                @SuppressWarnings("unchecked")
+                Map<String, Object> o1 = (Map<String, Object>) o;
+                result.add(new Button(o1.get("data").toString(), o1.get("callback").toString()));
+            });
+        } catch (Throwable th) {
+            App.error(th);
+        }
+        return result.isEmpty() ? null : result;
     }
 
 }
