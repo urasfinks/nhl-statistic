@@ -70,8 +70,8 @@ public class SecScheduler implements Cron1s, PromiseGenerator, UniqueClassName {
 //                    promise.skipAllStep("a");
 //                })
                 .thenWithResource("select", JdbcResource.class, (isRun, _, _, jdbcResource) -> {
-                    //Util.logConsoleJson(App.get(ServiceProperty.class).getProp());
-                    //Util.logConsole(">>");
+
+
                     if (countThread.get() >= maxThread) {
                         return;
                     }
@@ -102,14 +102,13 @@ public class SecScheduler implements Cron1s, PromiseGenerator, UniqueClassName {
                                     listResult,
                                     first.getPathImage()
                             ));
-                            //Util.logConsoleJson(send);
                             if (send.isRetry()) {
-                                jdbcResource.execute(new JdbcRequest(JTTelegramSend.SEND_ERROR)
+                                jdbcResource.execute(new JdbcRequest(JTTelegramSend.SEND_RETRY)
                                         .addArg("id", first.getId())
                                         .addArg("json", UtilJson.toStringPretty(send, "{}"))
                                 );
                             }else{
-                                jdbcResource.execute(new JdbcRequest(JTTelegramSend.SEND_SUCCESS)
+                                jdbcResource.execute(new JdbcRequest(JTTelegramSend.SEND_FINISH)
                                         .addArg("id", first.getId())
                                         .addArg("json", UtilJson.toStringPretty(send, "{}"))
                                 );
@@ -126,7 +125,6 @@ public class SecScheduler implements Cron1s, PromiseGenerator, UniqueClassName {
                     }
                     countThread.decrementAndGet();
                 })
-
                 .setDebug(false);
     }
 

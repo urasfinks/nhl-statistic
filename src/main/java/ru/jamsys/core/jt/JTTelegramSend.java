@@ -17,7 +17,7 @@ public enum JTTelegramSend implements JdbcRequestRepository {
             SELECT * FROM telegram_send WHERE ts_send IS NULL AND ts_add < now()::timestamp ORDER BY id LIMIT 1 FOR UPDATE OF telegram_send SKIP LOCKED
             """, StatementType.SELECT_WITHOUT_AUTO_COMMIT),
 
-    SEND_SUCCESS("""
+    SEND_FINISH("""
             UPDATE telegram_send SET
                 ts_send = now()::timestamp,
                 json = ${IN.json::VARCHAR}
@@ -25,7 +25,7 @@ public enum JTTelegramSend implements JdbcRequestRepository {
                 id = ${IN.id::NUMBER}
             """, StatementType.SELECT_WITHOUT_AUTO_COMMIT),
 
-    SEND_ERROR("""
+    SEND_RETRY("""
             UPDATE telegram_send SET
                 ts_add = now()::timestamp + interval '1 min',
                 json = ${IN.json::VARCHAR}
