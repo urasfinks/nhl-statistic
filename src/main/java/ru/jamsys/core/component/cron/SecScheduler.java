@@ -33,7 +33,7 @@ public class SecScheduler implements Cron1s, PromiseGenerator, UniqueClassName {
 
     private static final AtomicInteger countThread = new AtomicInteger(0);
 
-    private static final int maxThread = 3;
+    private static final int maxThread = 1; // TelegramApi блокирует бота если в несколько потоков посылать (проверено)
 
     public SecScheduler(
             ServicePromise servicePromise
