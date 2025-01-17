@@ -5,7 +5,7 @@ import lombok.Setter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
 import ru.jamsys.core.component.ServicePromise;
-import ru.jamsys.core.handler.promise.SaveTelegramSend;
+import ru.jamsys.core.handler.promise.RegisterNotification;
 import ru.jamsys.core.jt.JTOviSubscriber;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
@@ -59,7 +59,7 @@ public class Stop implements PromiseGenerator, OviGoalsBotCommandHandler {
                 })
                 .then("send", (_, _, promise) -> {
                             TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
-                            SaveTelegramSend.add(new NotificationObject(
+                            RegisterNotification.add(new NotificationObject(
                                     context.getIdChat(),
                                     context.getTelegramBot().getBotUsername(),
                                     promise.getRepositoryMapClass(Boolean.class)

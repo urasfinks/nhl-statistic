@@ -9,7 +9,7 @@ import ru.jamsys.core.extension.builder.HashMapBuilder;
 import ru.jamsys.core.extension.http.ServletResponseWriter;
 import ru.jamsys.core.flat.util.UtilTelegram;
 import ru.jamsys.core.flat.util.telegram.Button;
-import ru.jamsys.core.handler.promise.SaveTelegramSend;
+import ru.jamsys.core.handler.promise.RegisterNotification;
 import ru.jamsys.core.jt.JTPlayerSubscriber;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
@@ -53,7 +53,7 @@ public class Remove implements PromiseGenerator, NhlStatisticsBotCommandHandler 
                             JTPlayerSubscriber.Row.class
                     );
                     if (execute.isEmpty()) {
-                        SaveTelegramSend.add(new NotificationObject(
+                        RegisterNotification.add(new NotificationObject(
                                 context.getIdChat(),
                                 context.getTelegramBot().getBotUsername(),
                                 "В текущей момент подписок нет",
@@ -75,7 +75,7 @@ public class Remove implements PromiseGenerator, NhlStatisticsBotCommandHandler 
                                 )
                         ));
                     });
-                    SaveTelegramSend.add(new NotificationObject(
+                    RegisterNotification.add(new NotificationObject(
                             context.getIdChat(),
                             context.getTelegramBot().getBotUsername(),
                             "Выбери игрока для удаления подписки",
@@ -104,7 +104,7 @@ public class Remove implements PromiseGenerator, NhlStatisticsBotCommandHandler 
                             .addArg("id_player", context.getUriParameters().get("id"))
                             .setDebug(false)
                     );
-                    SaveTelegramSend.add(new NotificationObject(
+                    RegisterNotification.add(new NotificationObject(
                             context.getIdChat(),
                             context.getTelegramBot().getBotUsername(),
                             "Подписка удалена",

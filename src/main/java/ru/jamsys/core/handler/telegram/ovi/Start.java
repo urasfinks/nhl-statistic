@@ -5,7 +5,7 @@ import lombok.Setter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
 import ru.jamsys.core.App;
-import ru.jamsys.core.component.DelaySenderComponent;
+import ru.jamsys.core.component.RegisterDelayNotification;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.extension.builder.ArrayListBuilder;
 import ru.jamsys.core.extension.builder.HashMapBuilder;
@@ -13,7 +13,7 @@ import ru.jamsys.core.extension.http.ServletResponseWriter;
 import ru.jamsys.core.flat.util.UtilNHL;
 import ru.jamsys.core.flat.util.telegram.Button;
 import ru.jamsys.core.handler.promise.PlayerStatistic;
-import ru.jamsys.core.handler.promise.SaveTelegramSend;
+import ru.jamsys.core.handler.promise.RegisterNotification;
 import ru.jamsys.core.jt.JTOviSubscriber;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
@@ -70,7 +70,7 @@ public class Start implements PromiseGenerator, OviGoalsBotCommandHandler {
                 .then("check", (_, _, promise) -> {
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
                     if (!promise.getRepositoryMapClass(Boolean.class)) {
-                        SaveTelegramSend.add(new NotificationObject(
+                        RegisterNotification.add(new NotificationObject(
                                 context.getIdChat(),
                                 context.getTelegramBot().getBotUsername(),
                                 "Уведомления включены",
@@ -85,7 +85,7 @@ public class Start implements PromiseGenerator, OviGoalsBotCommandHandler {
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
                     PlayerStatistic ovi = promise.getRepositoryMapClass(Promise.class, "ovi")
                             .getRepositoryMapClass(PlayerStatistic.class);
-                    SaveTelegramSend.add(new NotificationObject(
+                    RegisterNotification.add(new NotificationObject(
                             context.getIdChat(),
                             context.getTelegramBot().getBotUsername(),
                             String.format("""
@@ -100,7 +100,7 @@ public class Start implements PromiseGenerator, OviGoalsBotCommandHandler {
                             null,
                             null
                     ));
-                    App.get(DelaySenderComponent.class).add(new ArrayListBuilder<NotificationObject>().append(new NotificationObject(
+                    RegisterDelayNotification.add(new ArrayListBuilder<NotificationObject>().append(new NotificationObject(
                             context.getIdChat(),
                             context.getTelegramBot().getBotUsername(),
                             """
@@ -114,7 +114,7 @@ public class Start implements PromiseGenerator, OviGoalsBotCommandHandler {
                             null
                     )), 10_000L);
 
-                    App.get(DelaySenderComponent.class).add(
+                    RegisterDelayNotification.add(
                             new ArrayListBuilder<NotificationObject>().append(new NotificationObject(
                                     context.getIdChat(),
                                     context.getTelegramBot().getBotUsername(),

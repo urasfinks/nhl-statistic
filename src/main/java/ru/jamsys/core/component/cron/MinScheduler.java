@@ -18,8 +18,8 @@ import ru.jamsys.core.flat.util.Util;
 import ru.jamsys.core.flat.util.UtilJson;
 import ru.jamsys.core.flat.util.UtilNHL;
 import ru.jamsys.core.flat.util.UtilRisc;
-import ru.jamsys.core.handler.promise.SendNotificationGameEvent;
-import ru.jamsys.core.handler.promise.SendNotificationGameEventOvi;
+import ru.jamsys.core.handler.promise.RegisterNotificationGameEvent;
+import ru.jamsys.core.handler.promise.RegisterNotificationGameEventOvi;
 import ru.jamsys.core.handler.promise.Tank01Request;
 import ru.jamsys.core.jt.JTGameDiff;
 import ru.jamsys.core.jt.JTLogRequest;
@@ -387,7 +387,7 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                             if (gameEventDataList != null && !gameEventDataList.isEmpty()) {
                                 gameEventDataList.forEach(gameEventData -> {
                                     if (UtilNHL.isOvi(idPlayer)) {
-                                        context.getNotificationList().add(new SendNotificationGameEventOvi(
+                                        context.getNotificationList().add(new RegisterNotificationGameEventOvi(
                                                 context.getActiveRepository().getIdGame(idPlayer),
                                                 gameEventData
                                         ));
@@ -403,7 +403,7 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                                         alreadySend.addAll(to);
                                     }
 
-                                    context.getNotificationList().add(new SendNotificationGameEvent(
+                                    context.getNotificationList().add(new RegisterNotificationGameEvent(
                                             context.getActiveRepository().getIdGame(idPlayer),
                                             player,
                                             gameEventData,

@@ -3,7 +3,7 @@ package ru.jamsys.core.handler.promise;
 import lombok.Getter;
 import lombok.Setter;
 import ru.jamsys.core.App;
-import ru.jamsys.core.component.DelaySenderComponent;
+import ru.jamsys.core.component.RegisterDelayNotification;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.component.TelegramBotComponent;
 import ru.jamsys.core.flat.util.Util;
@@ -27,9 +27,9 @@ import java.util.Map;
 
 @Getter
 @Setter
-public class SendNotificationGameEventOvi implements PromiseGenerator {
+public class RegisterNotificationGameEventOvi implements PromiseGenerator {
 
-    private final String log = SendNotificationGameEventOvi.class.getSimpleName();
+    private final String log = RegisterNotificationGameEventOvi.class.getSimpleName();
 
     private final String idGame;
 
@@ -39,7 +39,7 @@ public class SendNotificationGameEventOvi implements PromiseGenerator {
 
     private final List<Long> listIdChat = new ArrayList<>();
 
-    public SendNotificationGameEventOvi(
+    public RegisterNotificationGameEventOvi(
             String idGame,
             GameEventData gameEventData
     ) {
@@ -88,8 +88,8 @@ public class SendNotificationGameEventOvi implements PromiseGenerator {
                             }
                         }
                     });
-                    App.get(DelaySenderComponent.class).add(listNotPlay, 10_000L);
-                    SaveTelegramSend.add(listEvent);
+                    RegisterDelayNotification.add(listNotPlay, 10_000L);
+                    RegisterNotification.add(listEvent);
 
                     if (gameEventData.getAction().equals(GameEventData.Action.FINISH_GAME)) {
                         new HttpCacheReset(NHLGamesForPlayer.getUri(player.getPlayerID())).generate().run();
@@ -129,8 +129,8 @@ public class SendNotificationGameEventOvi implements PromiseGenerator {
                             ));
                         }
                     });
-                    App.get(DelaySenderComponent.class).add(listSendStat, 10_000L);
-                    App.get(DelaySenderComponent.class).add(listSendImage, 15_000L);
+                    RegisterDelayNotification.add(listSendStat, 10_000L);
+                    RegisterDelayNotification.add(listSendImage, 15_000L);
                 })
                 .setDebug(false)
                 ;

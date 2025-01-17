@@ -8,7 +8,7 @@ import ru.jamsys.core.App;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.extension.builder.HashMapBuilder;
 import ru.jamsys.core.flat.util.Util;
-import ru.jamsys.core.handler.promise.SaveTelegramSend;
+import ru.jamsys.core.handler.promise.RegisterNotification;
 import ru.jamsys.core.jt.JTOviSubscriber;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
@@ -66,7 +66,7 @@ public class PollResults implements PromiseGenerator, OviGoalsBotCommandHandler 
                 })
                 .then("send", (atomicBoolean, promiseTask, promise) -> {
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
-                    SaveTelegramSend.add(new NotificationObject(
+                    RegisterNotification.add(new NotificationObject(
                             context.getIdChat(),
                             context.getTelegramBot().getBotUsername(),
                             getStat(vote, promise.getRepositoryMapClass(String.class)),
@@ -77,7 +77,7 @@ public class PollResults implements PromiseGenerator, OviGoalsBotCommandHandler 
                 .onError((atomicBoolean, promiseTask, promise) -> {
                     try {
                         TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
-                        SaveTelegramSend.add(new NotificationObject(
+                        RegisterNotification.add(new NotificationObject(
                                 context.getIdChat(),
                                 context.getTelegramBot().getBotUsername(),
                                 "Бот сломался",

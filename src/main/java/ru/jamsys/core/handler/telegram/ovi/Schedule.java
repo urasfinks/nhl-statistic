@@ -12,7 +12,7 @@ import ru.jamsys.core.flat.util.Paginator;
 import ru.jamsys.core.flat.util.UtilListSort;
 import ru.jamsys.core.flat.util.UtilNHL;
 import ru.jamsys.core.flat.util.telegram.Button;
-import ru.jamsys.core.handler.promise.SaveTelegramSend;
+import ru.jamsys.core.handler.promise.RegisterNotification;
 import ru.jamsys.core.handler.promise.Tank01Request;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
@@ -89,7 +89,7 @@ public class Schedule implements PromiseGenerator, OviGoalsBotCommandHandler {
                     )
             ));
         }
-        SaveTelegramSend.add(new NotificationObject(
+        RegisterNotification.add(new NotificationObject(
                 context.getIdChat(),
                 context.getTelegramBot().getBotUsername(),
                 page == 1 ? String.format(titleTemplate, sb) : sb.toString(),

@@ -3,7 +3,7 @@ package ru.jamsys.core.handler.promise;
 import lombok.Getter;
 import lombok.Setter;
 import ru.jamsys.core.App;
-import ru.jamsys.core.component.DelaySenderComponent;
+import ru.jamsys.core.component.RegisterDelayNotification;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.component.TelegramBotComponent;
 import ru.jamsys.core.flat.util.Util;
@@ -20,9 +20,9 @@ import java.util.List;
 
 @Getter
 @Setter
-public class SendNotificationGameEvent implements PromiseGenerator {
+public class RegisterNotificationGameEvent implements PromiseGenerator {
 
-    private final String log = SendNotificationGameEvent.class.getSimpleName();
+    private final String log = RegisterNotificationGameEvent.class.getSimpleName();
 
     private final String idGame;
 
@@ -32,7 +32,7 @@ public class SendNotificationGameEvent implements PromiseGenerator {
 
     private final List<Long> listIdChat;
 
-    public SendNotificationGameEvent(
+    public RegisterNotificationGameEvent(
             String idGame,
             NHLPlayerList.Player player,
             GameEventData gameEventData,
@@ -77,8 +77,8 @@ public class SendNotificationGameEvent implements PromiseGenerator {
                             listEvent.add(notificationObject);
                         }
                     });
-                    App.get(DelaySenderComponent.class).add(listNotPlay, 10_000L);
-                    SaveTelegramSend.add(listEvent);
+                    RegisterDelayNotification.add(listNotPlay, 10_000L);
+                    RegisterNotification.add(listEvent);
                 })
                 .setDebug(false)
                 ;

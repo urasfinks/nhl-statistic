@@ -69,7 +69,7 @@ class NhlStatisticApplicationTest {
         )
                 .setScoredGoal(1)
                 .setScoredLastSeason(300);
-        new SendNotificationGameEvent(
+        new RegisterNotificationGameEvent(
                 idGame,
                 player,
                 gameEventData,
@@ -175,7 +175,7 @@ class NhlStatisticApplicationTest {
         )
                 .setScoredGoal(1)
                 .setScoredLastSeason(300);
-        new SendNotificationGameEventOvi(
+        new RegisterNotificationGameEventOvi(
                 idGame,
                 gameEventData
         ).generate().run().await(50_000L);

@@ -5,7 +5,7 @@ import lombok.Setter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
 import ru.jamsys.core.component.ServicePromise;
-import ru.jamsys.core.handler.promise.SaveTelegramSend;
+import ru.jamsys.core.handler.promise.RegisterNotification;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
 import ru.jamsys.telegram.NotificationObject;
@@ -30,7 +30,7 @@ public class StartCommon implements PromiseGenerator, NhlStatisticsBotCommandHan
         return servicePromise.get(getClass().getSimpleName(), 12_000L)
                 .then("start", (_, _, promise) -> {
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
-                    SaveTelegramSend.add(new NotificationObject(context.getIdChat(),
+                    RegisterNotification.add(new NotificationObject(context.getIdChat(),
                             context.getTelegramBot().getBotUsername(),
                             "Привет",
                             null,

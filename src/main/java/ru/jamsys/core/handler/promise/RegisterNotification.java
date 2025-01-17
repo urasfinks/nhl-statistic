@@ -15,11 +15,11 @@ import ru.jamsys.telegram.NotificationObject;
 import java.util.List;
 
 @Accessors(chain = true)
-public class SaveTelegramSend implements PromiseGenerator {
+public class RegisterNotification implements PromiseGenerator {
 
     private final List<NotificationObject> listNotificationObject;
 
-    public SaveTelegramSend(List<NotificationObject> listNotificationObject) {
+    public RegisterNotification(List<NotificationObject> listNotificationObject) {
         this.listNotificationObject = listNotificationObject;
     }
 
@@ -42,11 +42,11 @@ public class SaveTelegramSend implements PromiseGenerator {
     }
 
     public static void add(NotificationObject notificationObject) {
-        new SaveTelegramSend(new ArrayListBuilder<NotificationObject>().append(notificationObject)).generate().run();
+        new RegisterNotification(new ArrayListBuilder<NotificationObject>().append(notificationObject)).generate().run();
     }
 
     public static void add(List<NotificationObject> listNotificationObject) {
-        new SaveTelegramSend(listNotificationObject).generate().run();
+        new RegisterNotification(listNotificationObject).generate().run();
     }
 
 }

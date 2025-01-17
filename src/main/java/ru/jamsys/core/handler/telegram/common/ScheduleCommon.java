@@ -11,7 +11,7 @@ import ru.jamsys.core.extension.http.ServletResponseWriter;
 import ru.jamsys.core.flat.util.UtilJson;
 import ru.jamsys.core.flat.util.UtilTelegram;
 import ru.jamsys.core.flat.util.telegram.Button;
-import ru.jamsys.core.handler.promise.SaveTelegramSend;
+import ru.jamsys.core.handler.promise.RegisterNotification;
 import ru.jamsys.core.handler.telegram.ovi.Schedule;
 import ru.jamsys.core.jt.JTPlayerSubscriber;
 import ru.jamsys.core.jt.JTTeamScheduler;
@@ -59,7 +59,7 @@ public class ScheduleCommon implements PromiseGenerator, NhlStatisticsBotCommand
                             JTPlayerSubscriber.Row.class
                     );
                     if (execute.isEmpty()) {
-                        SaveTelegramSend.add(new NotificationObject(
+                        RegisterNotification.add(new NotificationObject(
                                 context.getIdChat(),
                                 context.getTelegramBot().getBotUsername(),
                                 "В текущий момент подписок нет",
@@ -85,7 +85,7 @@ public class ScheduleCommon implements PromiseGenerator, NhlStatisticsBotCommand
                                 )
                         ));
                     });
-                    SaveTelegramSend.add(new NotificationObject(
+                    RegisterNotification.add(new NotificationObject(
                             context.getIdChat(),
                             context.getTelegramBot().getBotUsername(),
                             "Выбери игрока для отображения расписания",
@@ -122,7 +122,7 @@ public class ScheduleCommon implements PromiseGenerator, NhlStatisticsBotCommand
                             .setDebug(false)
                     );
                     if (execute.isEmpty()) {
-                        SaveTelegramSend.add(new NotificationObject(
+                        RegisterNotification.add(new NotificationObject(
                                 context.getIdChat(),
                                 context.getTelegramBot().getBotUsername(),
                                 "В текущий момент запланированных игр нет",
