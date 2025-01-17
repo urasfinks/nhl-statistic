@@ -14,7 +14,16 @@ public enum JTTelegramSend implements JdbcRequestRepository {
 
     // При Retry будем откидывтаь ts_add в будущее
     SELECT_ONE("""
-            SELECT * FROM telegram_send WHERE ts_send IS NULL AND ts_add < now()::timestamp ORDER BY id LIMIT 1 FOR UPDATE OF telegram_send SKIP LOCKED
+            SELECT
+                *
+            FROM telegram_send
+            WHERE
+                ts_send IS NULL
+                AND ts_add < now()::timestamp
+                AND bot IN (${IN.bots::IN_ENUM_VARCHAR})
+            ORDER BY id
+            LIMIT 1
+            FOR UPDATE OF telegram_send SKIP LOCKED
             """, StatementType.SELECT_WITHOUT_AUTO_COMMIT),
 
     SEND_FINISH("""

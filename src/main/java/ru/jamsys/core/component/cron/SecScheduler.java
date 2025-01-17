@@ -78,14 +78,16 @@ public class SecScheduler implements Cron1s, PromiseGenerator, UniqueClassName {
                         return;
                     }
                     countThread.incrementAndGet();
-                    //Util.logConsole("SecScheduler thread: " + countThread.get());
                     int countLoop = 0;
+                    List<String> bots = App.get(TelegramBotComponent.class).getBotRepository().keySet().stream().toList();
                     while (isRun.get()) {
                         try {
                             List<JTTelegramSend.Row> execute = jdbcResource
-                                    .execute(new JdbcRequest(JTTelegramSend.SELECT_ONE), JTTelegramSend.Row.class);
+                                    .execute(new JdbcRequest(JTTelegramSend.SELECT_ONE)
+                                                    .addArg("bots", bots)
+                                                    .setDebug(false),
+                                            JTTelegramSend.Row.class);
                             if (execute.isEmpty()) {
-                                //Util.logConsole("SecScheduler.loop break empty");
                                 break;
                             }
                             JTTelegramSend.Row first = execute.getFirst();
