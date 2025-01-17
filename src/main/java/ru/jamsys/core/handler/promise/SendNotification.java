@@ -5,7 +5,6 @@ import lombok.Setter;
 import ru.jamsys.core.App;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.component.TelegramBotComponent;
-import ru.jamsys.core.flat.util.Util;
 import ru.jamsys.core.flat.util.UtilFile;
 import ru.jamsys.core.flat.util.UtilFileResource;
 import ru.jamsys.core.promise.Promise;
@@ -34,24 +33,25 @@ public class SendNotification implements PromiseGenerator {
         return promise;
     }
 
-    public static boolean send(NotificationObject notificationObject) {
-        Util.logConsoleJson(notificationObject);
+    public static AbstractBot.TelegramResult send(NotificationObject notificationObject) {
+        AbstractBot.TelegramResult telegramResult = new AbstractBot.TelegramResult();
+        //Util.logConsoleJson(notificationObject);
         AbstractBot telegramBot = App.get(TelegramBotComponent.class).getBotRepository().get(notificationObject.getBot());
         if(telegramBot == null){
-            return false;
+            return telegramResult.setException(AbstractBot.TelegramResultException.RETRY).setCause("telegramBot is null");
         }
         if (
                 notificationObject.getPathImage() == null
                         || notificationObject.getPathImage().isEmpty()
         ) {
-            telegramBot.send(
+            return telegramBot.send(
                     notificationObject.getIdChat(),
                     notificationObject.getMessage(),
                     notificationObject.getButtons()
             );
         } else {
             try {
-                telegramBot.sendImage(
+                return telegramBot.sendImage(
                         notificationObject.getIdChat(),
                         UtilFileResource.get(
                                 notificationObject.getPathImage(),
@@ -61,10 +61,13 @@ public class SendNotification implements PromiseGenerator {
                         notificationObject.getMessage()
                 );
             } catch (Throwable th) {
+                telegramResult
+                        .setException(AbstractBot.TelegramResultException.OTHER)
+                        .setCause(th.getMessage());
                 App.error(th);
             }
         }
-        return true;
+        return telegramResult;
     }
 
 }

@@ -12,9 +12,34 @@ import java.sql.Timestamp;
 
 public enum JTTelegramSend implements JdbcRequestRepository {
 
-    SELECT("""
-            SELECT * FROM telegram_send WHERE ts_send IS NULL LIMIT 1 FOR UPDATE OF telegram_send SKIP LOCKED
+    // При Retry будем откидывтаь ts_add в будущее
+    SELECT_ONE("""
+            SELECT * FROM telegram_send WHERE ts_send IS NULL AND ts_add < now()::timestamp ORDER BY id LIMIT 1 FOR UPDATE OF telegram_send SKIP LOCKED
             """, StatementType.SELECT_WITHOUT_AUTO_COMMIT),
+
+    SEND_SUCCESS("""
+            UPDATE telegram_send SET
+                ts_send = now()::timestamp,
+                json = ${IN.json::VARCHAR}
+            WHERE
+                id = ${IN.id::NUMBER}
+            """, StatementType.SELECT_WITHOUT_AUTO_COMMIT),
+
+    SEND_ERROR("""
+            UPDATE telegram_send SET
+                ts_add = now()::timestamp + interval '2 min',
+                json = ${IN.json::VARCHAR}
+            WHERE
+                id = ${IN.id::NUMBER}
+            """, StatementType.SELECT_WITHOUT_AUTO_COMMIT),
+
+    COMMIT("""
+            COMMIT;
+            """, StatementType.SELECT_WITHOUT_AUTO_COMMIT),
+
+    SELECT("""
+            SELECT * FROM telegram_send WHERE ts_send IS NULL
+            """, StatementType.SELECT_WITH_AUTO_COMMIT),
 
     INSERT("""
             INSERT INTO telegram_send (
@@ -31,19 +56,13 @@ public enum JTTelegramSend implements JdbcRequestRepository {
                 ${IN.path_image::VARCHAR},
                 ${IN.buttons::VARCHAR}
             )
-            """, StatementType.SELECT_WITH_AUTO_COMMIT),
+            """, StatementType.SELECT_WITH_AUTO_COMMIT);
 
-    SEND("""
-            UPDATE telegram_send SET
-                ts_send = now()::timestamp
-            WHERE
-                id = ${IN.id::VARCHAR}
-            """, StatementType.SELECT_WITH_AUTO_COMMIT),
-    ;
+
 
     @Getter
     @Setter
-    public static class Row extends DataMapper<JTTeamScheduler.Row> {
+    public static class Row extends DataMapper<Row> {
         BigDecimal id;
         Timestamp tsAdd;
         BigDecimal idChat;
@@ -52,6 +71,7 @@ public enum JTTelegramSend implements JdbcRequestRepository {
         String pathImage;
         Timestamp tsSend;
         String buttons;
+        String json;
     }
 
     private final JdbcTemplate jdbcTemplate;

@@ -1,12 +1,13 @@
 package ru.jamsys.telegram;
 
 import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.jamsys.core.App;
 import ru.jamsys.core.component.manager.item.RouteGeneratorRepository;
 import ru.jamsys.core.component.manager.item.Session;
@@ -133,7 +134,61 @@ public abstract class AbstractBot extends TelegramLongPollingBot {
         }
     }
 
-    public void sendImage(long idChat, InputStream is, String fileName, String description) {
+    public TelegramResult send(long idChat, String data, List<Button> buttons) {
+        return send(UtilTelegram.message(idChat, data, buttons), idChat);
+    }
+
+    public enum TelegramResultException {
+        RETRY,
+        FATAL, //Фатальный - это значит всё, нет смысла больше пробовать отправлять
+        OTHER
+    }
+
+    @Getter
+    @Setter
+    @Accessors(chain = true)
+    public static class TelegramResult {
+
+        TelegramResultException exception;
+
+        String cause;
+
+        Object response;
+
+        public boolean isOk() {
+            return exception == null;
+        }
+
+        public boolean isRetry() {
+            if (exception == null) { // Если нет исключения - то незамем повторять
+                return false;
+            }
+            if (exception.equals(TelegramResultException.FATAL)) {
+                return false; // Если фатальная ошибка - повторить не получится, она всё!
+            }
+            return true;
+        }
+
+    }
+
+    @SuppressWarnings("all")
+    public <T extends Serializable, Method extends BotApiMethod<T>> TelegramResult send(Method method, Long idChat) {
+        TelegramResult telegramResult = new TelegramResult();
+        if (idChat == null) {
+            return telegramResult
+                    .setException(TelegramResultException.FATAL)
+                    .setCause("idChat is null");
+        }
+        try {
+            telegramResult.setResponse(execute(method));
+        } catch (Throwable th) {
+            thHandler(telegramResult, th, idChat);
+        }
+        return telegramResult;
+    }
+
+    public TelegramResult sendImage(long idChat, InputStream is, String fileName, String description) {
+        TelegramResult telegramResult = new TelegramResult();
         SendPhoto sendPhoto = new SendPhoto();
         sendPhoto.setChatId(idChat);
         sendPhoto.setPhoto(new InputFile(is, fileName));
@@ -141,34 +196,31 @@ public abstract class AbstractBot extends TelegramLongPollingBot {
             sendPhoto.setCaption(description);
         }
         try {
-            execute(sendPhoto);
+            telegramResult.setResponse(execute(sendPhoto));
         } catch (Throwable th) {
-            App.error(th);
+            thHandler(telegramResult, th, idChat);
         }
+        return telegramResult;
     }
 
-    public void send(long idChat, String data, List<Button> buttons) {
-        send(UtilTelegram.message(idChat, data, buttons), idChat);
-    }
+    private void thHandler(TelegramResult telegramResult, Throwable th, long idChat) {
+        if (th.getMessage().contains("Unable to execute sendmessage method")) {
+            telegramResult
+                    .setException(TelegramResultException.RETRY)
+                    .setCause("Unable to execute sendmessage method");
+        } else if (th.getMessage().contains("Forbidden: bot was blocked by the user")) {
+            telegramResult
+                    .setException(TelegramResultException.FATAL)
+                    .setCause("User blocked bot");
 
-    @SuppressWarnings("all")
-    public <T extends Serializable, Method extends BotApiMethod<T>> T send(Method method, Long idChat) {
-        if (idChat == null) {
-            return null;
-        }
-        try {
-            execute(method);
-        } catch (TelegramApiException e) {
-            if (e.getMessage().contains("Forbidden: bot was blocked by the user")) {
-                Util.logConsole("User blocked bot. id_chat = " + idChat);
-                new RemoveSubscriberOvi(idChat).generate().run();
-            } else {
-                App.error(e);
-            }
-        } catch (Throwable th) {
+            Util.logConsole("User blocked bot.");
+            new RemoveSubscriberOvi(idChat).generate().run();
+        } else {
+            telegramResult
+                    .setException(TelegramResultException.OTHER)
+                    .setCause(th.getMessage());
             App.error(th);
         }
-        return null;
     }
 
     @SuppressWarnings("unused")
