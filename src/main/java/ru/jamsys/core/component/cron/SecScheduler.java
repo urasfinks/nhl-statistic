@@ -76,14 +76,14 @@ public class SecScheduler implements Cron1s, PromiseGenerator, UniqueClassName {
                         return;
                     }
                     countThread.incrementAndGet();
-                    Util.logConsole("SecScheduler thread: " + countThread.get());
+                    //Util.logConsole("SecScheduler thread: " + countThread.get());
                     int countLoop = 0;
                     while (isRun.get()) {
                         try {
                             List<JTTelegramSend.Row> execute = jdbcResource
                                     .execute(new JdbcRequest(JTTelegramSend.SELECT_ONE), JTTelegramSend.Row.class);
                             if (execute.isEmpty()) {
-                                Util.logConsole("SecScheduler.loop break empty");
+                                //Util.logConsole("SecScheduler.loop break empty");
                                 break;
                             }
                             JTTelegramSend.Row first = execute.getFirst();
