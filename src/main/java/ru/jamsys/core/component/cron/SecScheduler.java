@@ -43,7 +43,7 @@ public class SecScheduler implements Cron1s, PromiseGenerator, UniqueClassName {
 
     public Promise generate() {
         //System.out.println("GEN " + getClassName());
-        return servicePromise.get(getClass().getSimpleName(), 600_000L)
+        return servicePromise.get(getClass().getSimpleName(), 6000_000L)
                 .then("bug01", (atomicBoolean, promiseTask, promise) -> {
                     if (App.get(TelegramBotComponent.class).getBotRepository().size() < 2) {
                         promise.skipAllStep("size bot < 2");
