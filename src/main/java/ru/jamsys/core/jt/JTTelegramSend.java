@@ -56,6 +56,25 @@ public enum JTTelegramSend implements JdbcRequestRepository {
                 ${IN.path_image::VARCHAR},
                 ${IN.buttons::VARCHAR}
             )
+            """, StatementType.SELECT_WITH_AUTO_COMMIT),
+
+    INSERT_TS_ADD("""
+            INSERT INTO telegram_send (
+                ts_add,
+                id_chat,
+                bot,
+                message,
+                path_image,
+                buttons
+            )
+            VALUES (
+                now()::timestamp + interval ${IN.interval::VARCHAR},
+                ${IN.id_chat::NUMBER},
+                ${IN.bot::VARCHAR},
+                ${IN.message::VARCHAR},
+                ${IN.path_image::VARCHAR},
+                ${IN.buttons::VARCHAR}
+            )
             """, StatementType.SELECT_WITH_AUTO_COMMIT);
 
 
