@@ -58,8 +58,6 @@ public class RegisterNotificationGameEvent implements PromiseGenerator {
                     String message = new GameEventTemplate(gameEventData).toString();
                     TelegramBotComponent telegramBotComponent = App.get(TelegramBotComponent.class);
 
-                    Util.logConsole("SEND TO CLIENT: " + message);
-
                     List<NotificationObject> listEvent = new ArrayList<>();
                     List<NotificationObject> listNotPlay = new ArrayList<>();
 

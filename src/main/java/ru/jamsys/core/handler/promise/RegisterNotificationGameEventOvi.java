@@ -64,7 +64,6 @@ public class RegisterNotificationGameEventOvi implements PromiseGenerator {
                     String message = new GameEventTemplateOvi(gameEventData).toString();
                     TelegramBotComponent telegramBotComponent = App.get(TelegramBotComponent.class);
 
-                    Util.logConsole("SEND TO CLIENT: " + message);
                     List<NotificationObject> listNotPlay = new ArrayList<>();
                     List<NotificationObject> listEvent = new ArrayList<>();
                     UtilRisc.forEach(atomicBoolean, listIdChat, idChat -> {
@@ -88,8 +87,8 @@ public class RegisterNotificationGameEventOvi implements PromiseGenerator {
                             }
                         }
                     });
-                    RegisterDelayNotification.add(listNotPlay, 10_000L);
                     RegisterNotification.add(listEvent);
+                    RegisterDelayNotification.add(listNotPlay, 10_000L);
 
                     if (gameEventData.getAction().equals(GameEventData.Action.FINISH_GAME)) {
                         new HttpCacheReset(NHLGamesForPlayer.getUri(player.getPlayerID())).generate().run();

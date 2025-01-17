@@ -35,7 +35,9 @@ public class RegisterNotification implements PromiseGenerator {
                             .addArg("path_image", notificationObject.getPathImage())
                             .addArg("buttons", notificationObject.getButtons() == null
                                     ? null
-                                    : UtilJson.toStringPretty(notificationObject.getButtons(), "[]")));
+                                    : UtilJson.toStringPretty(notificationObject.getButtons(), "[]"))
+                            .nextBatch()
+                    );
                     jdbcResource.execute(jdbcRequest);
                 })
                 ;

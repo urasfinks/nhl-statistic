@@ -166,7 +166,7 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                         promise.skipAllStep("mode test");
                         return;
                     }
-                    if (NhlStatisticApplication.startTelegramListener) {
+                    if (!NhlStatisticApplication.startTelegramListener) {
                         promise.skipAllStep("startTelegramListener = false");
                     }
                 })
@@ -179,6 +179,12 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                                     map.getOrDefault("id_player", "0").toString(),
                                     map.getOrDefault("id_game", "--").toString()
                             )));
+
+//                    context.getActiveRepository().getList().add(new ActiveObject(
+//                            -4739098379L,
+//                            UtilNHL.getOvi().getPlayerID(),
+//                            "20250116_WSH@OTT"
+//                    ));
                     // Если нет активных игр, нечего тут делать
                     if (context.getActiveRepository().getList().isEmpty()) {
                         promise.skipAllStep("active game is empty");

@@ -23,7 +23,7 @@ public class RegisterDelayNotification {
     public RegisterDelayNotification(ManagerBroker managerBroker) {
         managerBroker.initAndGet(
                 NotificationObject.class.getSimpleName(),
-                NotificationObject.class,
+                List.class,
                 RegisterNotification::add
         );
         broker = managerBroker.get(NotificationObject.class.getSimpleName(), List.class);
