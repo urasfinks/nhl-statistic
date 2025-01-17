@@ -4,14 +4,14 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
-import ru.jamsys.core.App;
 import ru.jamsys.core.component.ServicePromise;
-import ru.jamsys.core.component.TelegramQueueSender;
+import ru.jamsys.core.handler.promise.SaveTelegramSend;
 import ru.jamsys.core.jt.JTOviSubscriber;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
 import ru.jamsys.core.resource.jdbc.JdbcRequest;
 import ru.jamsys.core.resource.jdbc.JdbcResource;
+import ru.jamsys.telegram.NotificationObject;
 import ru.jamsys.telegram.TelegramCommandContext;
 import ru.jamsys.telegram.handler.OviGoalsBotCommandHandler;
 
@@ -57,14 +57,19 @@ public class Stop implements PromiseGenerator, OviGoalsBotCommandHandler {
                             .addArg("remove", 1)
                     );
                 })
-                .then("send", (_, _, promise) -> App.get(TelegramQueueSender.class).add(
-                        promise.getRepositoryMapClass(TelegramCommandContext.class),
-                        promise.getRepositoryMapClass(Boolean.class)
-                                ? "Уведомления отключены. Буду рад видеть тебя снова!"
-                                : "Включить уведомления /start",
-                        null,
-                        null
-                ))
+                .then("send", (_, _, promise) -> {
+                            TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
+                            SaveTelegramSend.add(new NotificationObject(
+                                    context.getIdChat(),
+                                    context.getTelegramBot().getBotUsername(),
+                                    promise.getRepositoryMapClass(Boolean.class)
+                                            ? "Уведомления отключены. Буду рад видеть тебя снова!"
+                                            : "Включить уведомления /start",
+                                    null,
+                                    null
+                            ));
+                        }
+                )
                 ;
     }
 

@@ -6,14 +6,15 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
 import ru.jamsys.core.App;
 import ru.jamsys.core.component.ServicePromise;
-import ru.jamsys.core.component.TelegramQueueSender;
 import ru.jamsys.core.extension.builder.HashMapBuilder;
 import ru.jamsys.core.flat.util.Util;
+import ru.jamsys.core.handler.promise.SaveTelegramSend;
 import ru.jamsys.core.jt.JTOviSubscriber;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
 import ru.jamsys.core.resource.jdbc.JdbcRequest;
 import ru.jamsys.core.resource.jdbc.JdbcResource;
+import ru.jamsys.telegram.NotificationObject;
 import ru.jamsys.telegram.TelegramCommandContext;
 import ru.jamsys.telegram.handler.OviGoalsBotCommandHandler;
 
@@ -65,24 +66,24 @@ public class PollResults implements PromiseGenerator, OviGoalsBotCommandHandler 
                 })
                 .then("send", (atomicBoolean, promiseTask, promise) -> {
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
-                    App.get(TelegramQueueSender.class).add(
-                            context.getTelegramBot(),
+                    SaveTelegramSend.add(new NotificationObject(
                             context.getIdChat(),
+                            context.getTelegramBot().getBotUsername(),
                             getStat(vote, promise.getRepositoryMapClass(String.class)),
                             null,
                             null
-                    );
+                    ));
                 })
                 .onError((atomicBoolean, promiseTask, promise) -> {
                     try {
                         TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
-                        App.get(TelegramQueueSender.class).add(
-                                context.getTelegramBot(),
+                        SaveTelegramSend.add(new NotificationObject(
                                 context.getIdChat(),
+                                context.getTelegramBot().getBotUsername(),
                                 "Бот сломался",
                                 null,
                                 null
-                        );
+                        ));
                     } catch (Throwable th) {
                         App.error(th);
                     }

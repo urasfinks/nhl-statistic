@@ -8,7 +8,9 @@ import java.util.List;
 @Getter
 public class NotificationObject {
 
-    final TelegramCommandContext context;
+    final long idChat;
+
+    final String bot;
 
     final String message;
 
@@ -16,8 +18,9 @@ public class NotificationObject {
 
     final String pathImage;
 
-    public NotificationObject(TelegramCommandContext context, String message, List<Button> buttons, String pathImage) {
-        this.context = context;
+    public NotificationObject(long idChat, String bot, String message, List<Button> buttons, String pathImage) {
+        this.idChat = idChat;
+        this.bot = bot;
         this.message = message;
         this.buttons = buttons;
         this.pathImage = pathImage;

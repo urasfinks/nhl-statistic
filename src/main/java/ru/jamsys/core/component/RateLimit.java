@@ -3,6 +3,8 @@ package ru.jamsys.core.component;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import ru.jamsys.core.App;
+import ru.jamsys.core.handler.promise.SaveTelegramSend;
+import ru.jamsys.telegram.NotificationObject;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -23,16 +25,14 @@ public class RateLimit {
         if (!result) {
             if (rateLimitFinish.compareAndSet(false, true)) {
                 TelegramBotComponent telegramBotComponent = App.get(TelegramBotComponent.class);
-                if (telegramBotComponent.getNhlStatisticsBot() != null) {
-                    App.get(TelegramQueueSender.class).add(
-                            telegramBotComponent.getNhlStatisticsBot(),
-                            //290029195, // urasfinks
-                            -4739098379L, // NhlCommon
-                            "RateLimit 15_000 Finish",
-                            null,
-                            null
-                    );
-                }
+                SaveTelegramSend.add(new NotificationObject(
+                        //290029195, // urasfinks
+                        -4739098379L, // NhlCommon
+                        telegramBotComponent.getNhlStatisticsBot().getBotUsername(),
+                        "RateLimit 15_000 Finish",
+                        null,
+                        null
+                ));
             }
         }
         return result;

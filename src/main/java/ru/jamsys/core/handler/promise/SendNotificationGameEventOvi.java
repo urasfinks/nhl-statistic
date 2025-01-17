@@ -6,7 +6,6 @@ import ru.jamsys.core.App;
 import ru.jamsys.core.component.DelaySenderComponent;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.component.TelegramBotComponent;
-import ru.jamsys.core.component.TelegramQueueSender;
 import ru.jamsys.core.flat.util.Util;
 import ru.jamsys.core.flat.util.UtilFileResource;
 import ru.jamsys.core.flat.util.UtilNHL;
@@ -19,7 +18,7 @@ import ru.jamsys.core.resource.jdbc.JdbcResource;
 import ru.jamsys.tank.data.NHLGamesForPlayer;
 import ru.jamsys.tank.data.NHLPlayerList;
 import ru.jamsys.telegram.GameEventData;
-import ru.jamsys.telegram.TelegramCommandContext;
+import ru.jamsys.telegram.NotificationObject;
 import ru.jamsys.telegram.template.GameEventTemplateOvi;
 
 import java.util.ArrayList;
@@ -66,31 +65,32 @@ public class SendNotificationGameEventOvi implements PromiseGenerator {
                     TelegramBotComponent telegramBotComponent = App.get(TelegramBotComponent.class);
 
                     Util.logConsole("SEND TO CLIENT: " + message);
-
+                    List<NotificationObject> listNotPlay = new ArrayList<>();
+                    List<NotificationObject> listEvent = new ArrayList<>();
                     UtilRisc.forEach(atomicBoolean, listIdChat, idChat -> {
                         if (telegramBotComponent.getOviGoalsBot() != null) {
                             if (gameEventData.getAction().equals(GameEventData.Action.NOT_PLAY)) {
-                                App.get(DelaySenderComponent.class)
-                                        .add(
-                                                new TelegramCommandContext()
-                                                        .setTelegramBot(telegramBotComponent.getOviGoalsBot())
-                                                        .setIdChat(idChat),
-                                                message,
-                                                null,
-                                                null,
-                                                10_000L
-                                        );
-                            } else {
-                                App.get(TelegramQueueSender.class).add(
-                                        telegramBotComponent.getOviGoalsBot(),
+                                listNotPlay.add(new NotificationObject(
                                         idChat,
+                                        telegramBotComponent.getOviGoalsBot().getBotUsername(),
                                         message,
                                         null,
                                         null
-                                );
+                                ));
+                            } else {
+                                listEvent.add(new NotificationObject(
+                                        idChat,
+                                        telegramBotComponent.getOviGoalsBot().getBotUsername(),
+                                        message,
+                                        null,
+                                        null
+                                ));
                             }
                         }
                     });
+                    App.get(DelaySenderComponent.class).add(listNotPlay, 10_000L);
+                    SaveTelegramSend.add(listEvent);
+
                     if (gameEventData.getAction().equals(GameEventData.Action.FINISH_GAME)) {
                         new HttpCacheReset(NHLGamesForPlayer.getUri(player.getPlayerID())).generate().run();
                     }
@@ -104,35 +104,33 @@ public class SendNotificationGameEventOvi implements PromiseGenerator {
                             .getRepositoryMapClass(PlayerStatistic.class);
                     String message = ovi.getMessage();
                     TelegramBotComponent telegramBotComponent = App.get(TelegramBotComponent.class);
+                    List<NotificationObject> listSendStat = new ArrayList<>();
+                    List<NotificationObject> listSendImage = new ArrayList<>();
                     UtilRisc.forEach(atomicBoolean, listIdChat, idChat -> {
-                        App.get(DelaySenderComponent.class)
-                                .add(
-                                        new TelegramCommandContext()
-                                                .setTelegramBot(telegramBotComponent.getOviGoalsBot())
-                                                .setIdChat(idChat),
-                                        message,
-                                        null,
-                                        null,
-                                        10_000L
-                                );
+                        listSendStat.add(new NotificationObject(
+                                idChat,
+                                telegramBotComponent.getOviGoalsBot().getBotUsername(),
+                                message,
+                                null,
+                                null
+                        ));
 
                         String pathImage = "image/" + ovi.getTotalGoals() + ".png";
                         if (
                                 gameEventData.getScoredGoal() > 0
                                         && UtilFileResource.isFile(pathImage, UtilFileResource.Direction.PROJECT)
                         ) {
-                            App.get(DelaySenderComponent.class)
-                                    .add(
-                                            new TelegramCommandContext()
-                                                    .setTelegramBot(telegramBotComponent.getOviGoalsBot())
-                                                    .setIdChat(idChat),
-                                            null,
-                                            null,
-                                            pathImage,
-                                            15_000L
-                                    );
+                            listSendImage.add(new NotificationObject(
+                                    idChat,
+                                    telegramBotComponent.getOviGoalsBot().getBotUsername(),
+                                    null,
+                                    null,
+                                    pathImage
+                            ));
                         }
                     });
+                    App.get(DelaySenderComponent.class).add(listSendStat, 10_000L);
+                    App.get(DelaySenderComponent.class).add(listSendImage, 15_000L);
                 })
                 .setDebug(false)
                 ;

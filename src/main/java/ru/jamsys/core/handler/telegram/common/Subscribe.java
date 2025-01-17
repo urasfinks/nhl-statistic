@@ -6,13 +6,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
 import ru.jamsys.core.App;
 import ru.jamsys.core.component.ServicePromise;
-import ru.jamsys.core.component.TelegramQueueSender;
 import ru.jamsys.core.extension.builder.HashMapBuilder;
 import ru.jamsys.core.extension.http.ServletResponseWriter;
 import ru.jamsys.core.flat.util.Util;
 import ru.jamsys.core.flat.util.UtilNHL;
 import ru.jamsys.core.flat.util.UtilTelegram;
 import ru.jamsys.core.flat.util.telegram.Button;
+import ru.jamsys.core.handler.promise.SaveTelegramSend;
 import ru.jamsys.core.handler.promise.Tank01Request;
 import ru.jamsys.core.handler.promise.UpdateScheduler;
 import ru.jamsys.core.jt.JTPlayerSubscriber;
@@ -22,6 +22,7 @@ import ru.jamsys.core.resource.jdbc.JdbcRequest;
 import ru.jamsys.core.resource.jdbc.JdbcResource;
 import ru.jamsys.tank.data.NHLPlayerList;
 import ru.jamsys.tank.data.NHLTeamSchedule;
+import ru.jamsys.telegram.NotificationObject;
 import ru.jamsys.telegram.TelegramCommandContext;
 import ru.jamsys.telegram.handler.NhlStatisticsBotCommandHandler;
 
@@ -48,25 +49,25 @@ public class Subscribe implements PromiseGenerator, NhlStatisticsBotCommandHandl
         gen.then("check", (_, _, promise) -> {
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
                     if (UtilNHL.getActiveSeasonOrNext() == null) {
-                        App.get(TelegramQueueSender.class).add(
-                                context.getTelegramBot(),
+                        SaveTelegramSend.add(new NotificationObject(
                                 context.getIdChat(),
+                                context.getTelegramBot().getBotUsername(),
                                 "Регулярный сезон ещё не начался. Подписка доступна с октября по Апрель",
                                 null,
                                 null
-                        );
+                        ));
                         promise.skipAllStep("Not found run season");
                         return;
                     }
                     if (!context.getUriParameters().containsKey("namePlayer")) {
                         context.getStepHandler().put(context.getIdChat(), context.getUriPath() + "/?namePlayer=");
-                        App.get(TelegramQueueSender.class).add(
-                                context.getTelegramBot(),
+                        SaveTelegramSend.add(new NotificationObject(
                                 context.getIdChat(),
+                                context.getTelegramBot().getBotUsername(),
                                 "Введи имя игрока на английском языке:",
                                 null,
                                 null
-                        );
+                        ));
                         promise.skipAllStep("wait player name");
                         return;
                     }
@@ -84,13 +85,13 @@ public class Subscribe implements PromiseGenerator, NhlStatisticsBotCommandHandl
                                     .getRepositoryMapClass(Tank01Request.class).getResponseData()
                     );
                     if (userList.isEmpty()) {
-                        App.get(TelegramQueueSender.class).add(
-                                context.getTelegramBot(),
+                        SaveTelegramSend.add(new NotificationObject(
                                 context.getIdChat(),
+                                context.getTelegramBot().getBotUsername(),
                                 "Игрок не найден",
                                 null,
                                 null
-                        );
+                        ));
                         return;
                     }
                     int counter = 0;
@@ -109,13 +110,13 @@ public class Subscribe implements PromiseGenerator, NhlStatisticsBotCommandHandl
                             break;
                         }
                     }
-                    App.get(TelegramQueueSender.class).add(
-                            context.getTelegramBot(),
+                    SaveTelegramSend.add(new NotificationObject(
                             context.getIdChat(),
+                            context.getTelegramBot().getBotUsername(),
                             "Выбери игрока:",
                             buttons,
                             null
-                    );
+                    ));
                     promise.skipAllStep("wait id_player");
                 })
                 .then("findPlayerByIdMarker", (_, _, _) -> {
@@ -128,13 +129,13 @@ public class Subscribe implements PromiseGenerator, NhlStatisticsBotCommandHandl
                             .setDebug(false)
                     );
                     if (!execute.isEmpty()) {
-                        App.get(TelegramQueueSender.class).add(
-                                context.getTelegramBot(),
+                        SaveTelegramSend.add(new NotificationObject(
                                 context.getIdChat(),
+                                context.getTelegramBot().getBotUsername(),
                                 "Подписка уже существует",
                                 null,
                                 null
-                        );
+                        ));
                         promise.skipAllStep("The subscription already exists");
                     }
                 })
@@ -205,13 +206,13 @@ public class Subscribe implements PromiseGenerator, NhlStatisticsBotCommandHandl
                 .onError((atomicBoolean, promiseTask, promise) -> {
                     try {
                         TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
-                        App.get(TelegramQueueSender.class).add(
-                                context.getTelegramBot(),
+                        SaveTelegramSend.add(new NotificationObject(
                                 context.getIdChat(),
+                                context.getTelegramBot().getBotUsername(),
                                 "Бот сломался",
                                 null,
                                 null
-                        );
+                        ));
                     } catch (Throwable th) {
                         App.error(th);
                     }

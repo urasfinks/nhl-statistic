@@ -4,19 +4,19 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
-import ru.jamsys.core.App;
 import ru.jamsys.core.component.ServicePromise;
-import ru.jamsys.core.component.TelegramQueueSender;
 import ru.jamsys.core.extension.builder.HashMapBuilder;
 import ru.jamsys.core.extension.http.ServletResponseWriter;
 import ru.jamsys.core.flat.util.UtilTelegram;
 import ru.jamsys.core.flat.util.telegram.Button;
+import ru.jamsys.core.handler.promise.SaveTelegramSend;
 import ru.jamsys.core.jt.JTPlayerSubscriber;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
 import ru.jamsys.core.resource.jdbc.JdbcRequest;
 import ru.jamsys.core.resource.jdbc.JdbcResource;
 import ru.jamsys.tank.data.NHLPlayerList;
+import ru.jamsys.telegram.NotificationObject;
 import ru.jamsys.telegram.TelegramCommandContext;
 import ru.jamsys.telegram.handler.NhlStatisticsBotCommandHandler;
 
@@ -53,13 +53,13 @@ public class Remove implements PromiseGenerator, NhlStatisticsBotCommandHandler 
                             JTPlayerSubscriber.Row.class
                     );
                     if (execute.isEmpty()) {
-                        App.get(TelegramQueueSender.class).add(
-                                context.getTelegramBot(),
+                        SaveTelegramSend.add(new NotificationObject(
                                 context.getIdChat(),
+                                context.getTelegramBot().getBotUsername(),
                                 "В текущей момент подписок нет",
                                 null,
                                 null
-                        );
+                        ));
                         promise.skipAllStep("subscribe empty");
                         return;
                     }
@@ -75,13 +75,13 @@ public class Remove implements PromiseGenerator, NhlStatisticsBotCommandHandler 
                                 )
                         ));
                     });
-                    App.get(TelegramQueueSender.class).add(
-                            context.getTelegramBot(),
+                    SaveTelegramSend.add(new NotificationObject(
                             context.getIdChat(),
+                            context.getTelegramBot().getBotUsername(),
                             "Выбери игрока для удаления подписки",
                             buttons,
                             null
-                    );
+                    ));
                     promise.skipAllStep("wait read id_player for unsubscribe");
                 })
                 .then("getSubscriptionsMarker", (_, _, promise) -> {
@@ -104,13 +104,13 @@ public class Remove implements PromiseGenerator, NhlStatisticsBotCommandHandler 
                             .addArg("id_player", context.getUriParameters().get("id"))
                             .setDebug(false)
                     );
-                    App.get(TelegramQueueSender.class).add(
-                            context.getTelegramBot(),
+                    SaveTelegramSend.add(new NotificationObject(
                             context.getIdChat(),
+                            context.getTelegramBot().getBotUsername(),
                             "Подписка удалена",
                             null,
                             null
-                    );
+                    ));
                 });
     }
 

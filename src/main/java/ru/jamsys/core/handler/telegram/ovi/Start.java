@@ -7,18 +7,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import ru.jamsys.core.App;
 import ru.jamsys.core.component.DelaySenderComponent;
 import ru.jamsys.core.component.ServicePromise;
-import ru.jamsys.core.component.TelegramQueueSender;
 import ru.jamsys.core.extension.builder.ArrayListBuilder;
 import ru.jamsys.core.extension.builder.HashMapBuilder;
 import ru.jamsys.core.extension.http.ServletResponseWriter;
 import ru.jamsys.core.flat.util.UtilNHL;
 import ru.jamsys.core.flat.util.telegram.Button;
 import ru.jamsys.core.handler.promise.PlayerStatistic;
+import ru.jamsys.core.handler.promise.SaveTelegramSend;
 import ru.jamsys.core.jt.JTOviSubscriber;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
 import ru.jamsys.core.resource.jdbc.JdbcRequest;
 import ru.jamsys.core.resource.jdbc.JdbcResource;
+import ru.jamsys.telegram.NotificationObject;
 import ru.jamsys.telegram.TelegramCommandContext;
 import ru.jamsys.telegram.handler.OviGoalsBotCommandHandler;
 
@@ -69,12 +70,13 @@ public class Start implements PromiseGenerator, OviGoalsBotCommandHandler {
                 .then("check", (_, _, promise) -> {
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
                     if (!promise.getRepositoryMapClass(Boolean.class)) {
-                        App.get(TelegramQueueSender.class).add(
-                                context,
+                        SaveTelegramSend.add(new NotificationObject(
+                                context.getIdChat(),
+                                context.getTelegramBot().getBotUsername(),
                                 "Уведомления включены",
                                 null,
                                 null
-                        );
+                        ));
                         promise.skipAllStep("already notification");
                     }
                 })
@@ -83,9 +85,9 @@ public class Start implements PromiseGenerator, OviGoalsBotCommandHandler {
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
                     PlayerStatistic ovi = promise.getRepositoryMapClass(Promise.class, "ovi")
                             .getRepositoryMapClass(PlayerStatistic.class);
-                    App.get(TelegramQueueSender.class).add(
-                            context.getTelegramBot(),
+                    SaveTelegramSend.add(new NotificationObject(
                             context.getIdChat(),
+                            context.getTelegramBot().getBotUsername(),
                             String.format("""
                                             Саня снова в деле! Теперь ты будешь одним из первых узнавать о каждом его новом голе в режиме реального времени.
                                             
@@ -97,9 +99,10 @@ public class Start implements PromiseGenerator, OviGoalsBotCommandHandler {
                             ),
                             null,
                             null
-                    );
-                    App.get(DelaySenderComponent.class).add(
-                            context,
+                    ));
+                    App.get(DelaySenderComponent.class).add(new ArrayListBuilder<NotificationObject>().append(new NotificationObject(
+                            context.getIdChat(),
+                            context.getTelegramBot().getBotUsername(),
                             """
                                     Ты также можешь воспользоваться дополнительными командами:
                                     
@@ -108,34 +111,36 @@ public class Start implements PromiseGenerator, OviGoalsBotCommandHandler {
                                     /schedule — Ближайшие игры Александра Овечкина и команды Washington Capitals
                                     /stop — Отключить уведомления""",
                             null,
-                            null,
-                            10_000L);
+                            null
+                    )), 10_000L);
 
                     App.get(DelaySenderComponent.class).add(
-                            context,
-                            "Побьет ли Александр Овечкин рекорд Уэйна Гретцки в этом сезоне?",
-                            new ArrayListBuilder<Button>()
-                                    .append(new Button(
-                                            "Да 🔥",
-                                            ServletResponseWriter.buildUrlQuery(
-                                                    "/poll_results/",
-                                                    new HashMapBuilder<>(context.getUriParameters())
-                                                            .append("value", "true")
+                            new ArrayListBuilder<NotificationObject>().append(new NotificationObject(
+                                    context.getIdChat(),
+                                    context.getTelegramBot().getBotUsername(),
+                                    "Побьет ли Александр Овечкин рекорд Уэйна Гретцки в этом сезоне?",
+                                    new ArrayListBuilder<Button>()
+                                            .append(new Button(
+                                                    "Да 🔥",
+                                                    ServletResponseWriter.buildUrlQuery(
+                                                            "/poll_results/",
+                                                            new HashMapBuilder<>(context.getUriParameters())
+                                                                    .append("value", "true")
 
-                                            )
-                                    ))
-                                    .append(new Button(
-                                            "Нет ⛔",
-                                            ServletResponseWriter.buildUrlQuery(
-                                                    "/poll_results/",
-                                                    new HashMapBuilder<>(context.getUriParameters())
-                                                            .append("value", "false")
+                                                    )
+                                            ))
+                                            .append(new Button(
+                                                    "Нет ⛔",
+                                                    ServletResponseWriter.buildUrlQuery(
+                                                            "/poll_results/",
+                                                            new HashMapBuilder<>(context.getUriParameters())
+                                                                    .append("value", "false")
 
-                                            )
-                                    ))
-                            ,
-                            null,
-                            20_000L);
+                                                    )
+                                            ))
+                                    ,
+                                    null
+                            )), 20_000L);
                 })
                 ;
     }

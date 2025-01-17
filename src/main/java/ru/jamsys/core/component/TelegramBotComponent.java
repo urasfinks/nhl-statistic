@@ -11,10 +11,14 @@ import ru.jamsys.core.App;
 import ru.jamsys.core.component.manager.ManagerExpiration;
 import ru.jamsys.core.extension.LifeCycleComponent;
 import ru.jamsys.core.flat.util.Util;
+import ru.jamsys.telegram.AbstractBot;
 import ru.jamsys.telegram.bot.NhlStatisticsBot;
 import ru.jamsys.telegram.bot.OviGoalsBot;
 import ru.jamsys.telegram.handler.NhlStatisticsBotCommandHandler;
 import ru.jamsys.telegram.handler.OviGoalsBotCommandHandler;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @SuppressWarnings("unused")
 @Component
@@ -29,6 +33,9 @@ public class TelegramBotComponent implements LifeCycleComponent {
 
     @Getter
     private NhlStatisticsBot nhlStatisticsBot;
+
+    @Getter
+    private final Map<String, AbstractBot> botRepository = new HashMap<>();
 
     @Getter
     private OviGoalsBot oviGoalsBot;
@@ -68,6 +75,7 @@ public class TelegramBotComponent implements LifeCycleComponent {
                         new String(securityComponent.get(commonSecurityAlias)),
                         routeGenerator.getRouterRepository(NhlStatisticsBotCommandHandler.class)
                 );
+                botRepository.put(nhlStatisticsBot.getBotUsername(), nhlStatisticsBot);
                 api.registerBot(nhlStatisticsBot);
             } catch (TelegramApiException e) {
                 throw new RuntimeException(e);
@@ -79,6 +87,7 @@ public class TelegramBotComponent implements LifeCycleComponent {
                         new String(securityComponent.get(oviSecurityAlias)),
                         routeGenerator.getRouterRepository(OviGoalsBotCommandHandler.class)
                 );
+                botRepository.put(oviGoalsBot.getBotUsername(), oviGoalsBot);
                 api.registerBot(oviGoalsBot);
             } catch (TelegramApiException e) {
                 throw new RuntimeException(e);

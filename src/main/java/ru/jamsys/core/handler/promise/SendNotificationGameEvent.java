@@ -6,16 +6,16 @@ import ru.jamsys.core.App;
 import ru.jamsys.core.component.DelaySenderComponent;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.component.TelegramBotComponent;
-import ru.jamsys.core.component.TelegramQueueSender;
 import ru.jamsys.core.flat.util.Util;
 import ru.jamsys.core.flat.util.UtilRisc;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
 import ru.jamsys.tank.data.NHLPlayerList;
 import ru.jamsys.telegram.GameEventData;
-import ru.jamsys.telegram.TelegramCommandContext;
+import ru.jamsys.telegram.NotificationObject;
 import ru.jamsys.telegram.template.GameEventTemplate;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -60,30 +60,25 @@ public class SendNotificationGameEvent implements PromiseGenerator {
 
                     Util.logConsole("SEND TO CLIENT: " + message);
 
+                    List<NotificationObject> listEvent = new ArrayList<>();
+                    List<NotificationObject> listNotPlay = new ArrayList<>();
+
                     UtilRisc.forEach(atomicBoolean, listIdChat, idChat -> {
-                        if (telegramBotComponent.getNhlStatisticsBot() != null) {
-                            if (gameEventData.getAction().equals(GameEventData.Action.NOT_PLAY)) {
-                                App.get(DelaySenderComponent.class)
-                                        .add(
-                                                new TelegramCommandContext()
-                                                        .setTelegramBot(telegramBotComponent.getNhlStatisticsBot())
-                                                        .setIdChat(idChat),
-                                                message,
-                                                null,
-                                                null,
-                                                10_000L
-                                        );
-                            } else {
-                                App.get(TelegramQueueSender.class).add(
-                                        telegramBotComponent.getNhlStatisticsBot(),
-                                        idChat,
-                                        message,
-                                        null,
-                                        null
-                                );
-                            }
+                        NotificationObject notificationObject = new NotificationObject(
+                                idChat,
+                                telegramBotComponent.getNhlStatisticsBot().getBotUsername(),
+                                message,
+                                null,
+                                null
+                        );
+                        if (gameEventData.getAction().equals(GameEventData.Action.NOT_PLAY)) {
+                            listNotPlay.add(notificationObject);
+                        } else {
+                            listEvent.add(notificationObject);
                         }
                     });
+                    App.get(DelaySenderComponent.class).add(listNotPlay, 10_000L);
+                    SaveTelegramSend.add(listEvent);
                 })
                 .setDebug(false)
                 ;

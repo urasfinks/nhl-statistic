@@ -171,7 +171,7 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                         promise.skipAllStep("mode test");
                         return;
                     }
-                    if (telegramBotComponent.getNhlStatisticsBot() == null && NhlStatisticApplication.startTelegramListener) {
+                    if (NhlStatisticApplication.startTelegramListener) {
                         promise.skipAllStep("startTelegramListener = false");
                     }
                 })

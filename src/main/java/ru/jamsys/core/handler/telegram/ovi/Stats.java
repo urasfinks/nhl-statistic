@@ -4,13 +4,13 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
-import ru.jamsys.core.App;
 import ru.jamsys.core.component.ServicePromise;
-import ru.jamsys.core.component.TelegramQueueSender;
 import ru.jamsys.core.flat.util.UtilNHL;
 import ru.jamsys.core.handler.promise.PlayerStatistic;
+import ru.jamsys.core.handler.promise.SaveTelegramSend;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
+import ru.jamsys.telegram.NotificationObject;
 import ru.jamsys.telegram.TelegramCommandContext;
 import ru.jamsys.telegram.handler.OviGoalsBotCommandHandler;
 
@@ -35,13 +35,13 @@ public class Stats implements PromiseGenerator, OviGoalsBotCommandHandler {
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
                     PlayerStatistic ovi = promise.getRepositoryMapClass(Promise.class, "ovi")
                             .getRepositoryMapClass(PlayerStatistic.class);
-                    App.get(TelegramQueueSender.class).add(
-                            context.getTelegramBot(),
+                    SaveTelegramSend.add(new NotificationObject(
                             context.getIdChat(),
+                            context.getTelegramBot().getBotUsername(),
                             ovi.getMessage(),
                             null,
                             null
-                    );
+                    ));
                 })
                 ;
     }

@@ -4,9 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
-import ru.jamsys.core.App;
 import ru.jamsys.core.component.ServicePromise;
-import ru.jamsys.core.component.TelegramQueueSender;
 import ru.jamsys.core.extension.builder.ArrayListBuilder;
 import ru.jamsys.core.extension.builder.HashMapBuilder;
 import ru.jamsys.core.extension.http.ServletResponseWriter;
@@ -14,10 +12,12 @@ import ru.jamsys.core.flat.util.Paginator;
 import ru.jamsys.core.flat.util.UtilListSort;
 import ru.jamsys.core.flat.util.UtilNHL;
 import ru.jamsys.core.flat.util.telegram.Button;
+import ru.jamsys.core.handler.promise.SaveTelegramSend;
 import ru.jamsys.core.handler.promise.Tank01Request;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
 import ru.jamsys.tank.data.NHLTeamSchedule;
+import ru.jamsys.telegram.NotificationObject;
 import ru.jamsys.telegram.TelegramCommandContext;
 import ru.jamsys.telegram.handler.OviGoalsBotCommandHandler;
 
@@ -89,13 +89,13 @@ public class Schedule implements PromiseGenerator, OviGoalsBotCommandHandler {
                     )
             ));
         }
-        App.get(TelegramQueueSender.class).add(
-                context.getTelegramBot(),
+        SaveTelegramSend.add(new NotificationObject(
                 context.getIdChat(),
+                context.getTelegramBot().getBotUsername(),
                 page == 1 ? String.format(titleTemplate, sb) : sb.toString(),
                 list,
                 null
-        );
+        ));
     }
 
 }
