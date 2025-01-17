@@ -27,7 +27,7 @@ public enum JTTelegramSend implements JdbcRequestRepository {
 
     SEND_ERROR("""
             UPDATE telegram_send SET
-                ts_add = now()::timestamp + interval '2 min',
+                ts_add = now()::timestamp + interval '1 min',
                 json = ${IN.json::VARCHAR}
             WHERE
                 id = ${IN.id::NUMBER}

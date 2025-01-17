@@ -2,7 +2,9 @@ package ru.jamsys.core.component.cron;
 
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import ru.jamsys.core.App;
 import ru.jamsys.core.component.ServicePromise;
+import ru.jamsys.core.component.TelegramBotComponent;
 import ru.jamsys.core.extension.UniqueClassName;
 import ru.jamsys.core.flat.template.cron.release.Cron1s;
 import ru.jamsys.core.flat.util.Util;
@@ -29,7 +31,7 @@ public class SecScheduler implements Cron1s, PromiseGenerator, UniqueClassName {
 
     private static final AtomicInteger countThread = new AtomicInteger(0);
 
-    private static final int maxThread = 3;
+    private static final int maxThread = 1;
 
     public SecScheduler(
             ServicePromise servicePromise
@@ -37,13 +39,37 @@ public class SecScheduler implements Cron1s, PromiseGenerator, UniqueClassName {
         this.servicePromise = servicePromise;
     }
 
+    //public static int x = 0;
+
     public Promise generate() {
-        System.out.println("GEN " + getClassName());
-        return servicePromise.get(getClass().getSimpleName(), 10_000L)
+        //System.out.println("GEN " + getClassName());
+        return servicePromise.get(getClass().getSimpleName(), 600_000L)
                 .then("test", (atomicBoolean, promiseTask, promise) -> {
+                    if (App.get(TelegramBotComponent.class).getBotRepository().size() < 2) {
+                        promise.skipAllStep("size bot < 2");
+                    }
                     //TODO без этой задачи следующая задача не вызывается - надо разобраться почему
                 })
-                .thenWithResource("select", JdbcResource.class, (_, _, _, jdbcResource) -> {
+//                .thenWithResource("select", JdbcResource.class, (_, _, promise, jdbcResource) -> {
+//                    if (x > 0) {
+//                        promise.skipAllStep("a");
+//                        return;
+//                    }
+//                    x++;
+//                    JdbcRequest jdbcRequest = new JdbcRequest(JTTelegramSend.INSERT);
+//                    for (int i = 0; i < 100; i++) {
+//                        jdbcRequest
+//                                .addArg("id_chat", 290029195)
+//                                .addArg("bot", "test_ovi_goals_bot")
+//                                .addArg("message", i + "")
+//                                .addArg("path_image", null)
+//                                .addArg("buttons", null)
+//                                .nextBatch();
+//                    }
+//                    jdbcResource.execute(jdbcRequest);
+//                    promise.skipAllStep("a");
+//                })
+                .thenWithResource("select", JdbcResource.class, (isRun, _, _, jdbcResource) -> {
                     //Util.logConsoleJson(App.get(ServiceProperty.class).getProp());
                     //Util.logConsole(">>");
                     if (countThread.get() >= maxThread) {
@@ -52,7 +78,7 @@ public class SecScheduler implements Cron1s, PromiseGenerator, UniqueClassName {
                     countThread.incrementAndGet();
                     Util.logConsole("SecScheduler thread: " + countThread.get());
                     int countLoop = 0;
-                    while (true) {
+                    while (isRun.get()) {
                         try {
                             List<JTTelegramSend.Row> execute = jdbcResource
                                     .execute(new JdbcRequest(JTTelegramSend.SELECT_ONE), JTTelegramSend.Row.class);
@@ -76,7 +102,7 @@ public class SecScheduler implements Cron1s, PromiseGenerator, UniqueClassName {
                                     listResult,
                                     first.getPathImage()
                             ));
-                            Util.logConsoleJson(send);
+                            //Util.logConsoleJson(send);
                             if (send.isRetry()) {
                                 jdbcResource.execute(new JdbcRequest(JTTelegramSend.SEND_ERROR)
                                         .addArg("id", first.getId())

@@ -149,6 +149,12 @@ public abstract class AbstractBot extends TelegramLongPollingBot {
     @Accessors(chain = true)
     public static class TelegramResult {
 
+        long timeAdd = System.currentTimeMillis();
+
+        public long getTiming() {
+            return System.currentTimeMillis() - timeAdd;
+        }
+
         TelegramResultException exception;
 
         String cause;
