@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
 import ru.jamsys.core.App;
 import ru.jamsys.core.component.ServicePromise;
-import ru.jamsys.core.component.TelegramBotComponent;
 import ru.jamsys.core.extension.builder.ArrayListBuilder;
 import ru.jamsys.core.extension.builder.HashMapBuilder;
 import ru.jamsys.core.extension.http.ServletResponseWriter;
@@ -52,9 +51,9 @@ public class Other implements PromiseGenerator, NhlStatisticsBotCommandHandler {
         gen
                 .extension(promise -> promise.setRepositoryMapClass(Context.class, new Context()))
                 .then("prep", (_, _, promise) -> {
-                    // Данный функционал пока работает только в тестовом режиме
-                    if(!App.get(TelegramBotComponent.class).getOviGoalsBot().getBotUsername().equals("test_ovi_goals_bot")){
-                        promise.skipAllStep("only test");
+                    TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
+                    if (context.getIdChat() != 290029195L && context.getIdChat() != 241022301L) {
+                        promise.skipAllStep("not admin test");
                     }
                 })
                 .thenWithResource("select", JdbcResource.class, (_, _, promise, jdbcResource) -> {
@@ -77,7 +76,8 @@ public class Other implements PromiseGenerator, NhlStatisticsBotCommandHandler {
                             """
                             Матч Pittsburgh Penguins (PIT) 🆚 Washington Capitals (WSH) начнется уже через 12 часов — 19 января в 03:00 (МСК).
                             
-                            Как думаешь, сможет ли Александр Овечкин забить сегодня?\n
+                            Как думаешь, сможет ли Александр Овечкин забить сегодня?
+                            
                             """,
                             new ArrayListBuilder<Button>()
                                     .append(new Button(
