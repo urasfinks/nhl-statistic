@@ -45,10 +45,16 @@ public class RegisterNotification implements PromiseGenerator {
     }
 
     public static void add(NotificationObject notificationObject) {
+        if (notificationObject == null) {
+            return;
+        }
         new RegisterNotification(new ArrayListBuilder<NotificationObject>().append(notificationObject)).generate().run();
     }
 
     public static void add(List<NotificationObject> listNotificationObject) {
+        if (listNotificationObject == null || listNotificationObject.isEmpty()) {
+            return;
+        }
         new RegisterNotification(listNotificationObject).generate().run();
     }
 
