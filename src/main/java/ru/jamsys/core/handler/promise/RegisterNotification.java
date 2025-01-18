@@ -26,6 +26,7 @@ public class RegisterNotification implements PromiseGenerator {
     @Override
     public Promise generate() {
         return App.get(ServicePromise.class).get(getClass().getSimpleName(), 60_000L)
+                .then("bug01", (_, _, _) -> {})
                 .thenWithResource("insert", JdbcResource.class, (_, _, _, jdbcResource) -> {
                     JdbcRequest jdbcRequest = new JdbcRequest(JTTelegramSend.INSERT);
                     listNotificationObject.forEach(notificationObject -> jdbcRequest
