@@ -77,7 +77,7 @@ public enum JTTelegramSend implements JdbcRequestRepository {
                 buttons
             )
             VALUES (
-                now()::timestamp + interval ${IN.interval::VARCHAR},
+                ${IN.ts_add::TIMESTAMP},
                 ${IN.id_chat::NUMBER},
                 ${IN.bot::VARCHAR},
                 ${IN.message::VARCHAR},

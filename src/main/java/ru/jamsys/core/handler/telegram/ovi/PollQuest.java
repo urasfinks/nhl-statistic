@@ -18,6 +18,7 @@ import ru.jamsys.telegram.NotificationObject;
 import ru.jamsys.telegram.TelegramCommandContext;
 import ru.jamsys.telegram.handler.OviGoalsBotCommandHandler;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -27,49 +28,54 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Setter
 @Getter
 @Component
-@RequestMapping({"/poll_results/**"})
-public class PollResults implements PromiseGenerator, OviGoalsBotCommandHandler {
+@RequestMapping({"/poll_quest/**"})
+public class PollQuest implements PromiseGenerator, OviGoalsBotCommandHandler {
 
     private final ServicePromise servicePromise;
 
-    private List<Map<String, Object>> vote;
-
-    public PollResults(ServicePromise servicePromise) {
+    public PollQuest(ServicePromise servicePromise) {
         this.servicePromise = servicePromise;
+    }
+
+    @Getter
+    @Setter
+    public static class Context{
+        private List<Map<String, Object>> agg = new ArrayList<>();
     }
 
     @Override
     public Promise generate() {
         Promise gen = servicePromise.get(getClass().getSimpleName(), 12_000L);
         gen
+                .extension(promise -> promise.setRepositoryMapClass(Context.class, new Context()))
                 .then("check", (atomicBoolean, promiseTask, promise) -> {
-                    promise.setRepositoryMapClass(String.class, "Побьет ли Александр Овечкин рекорд Уэйна Гретцки в этом сезоне?\n\n");
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
                     if (context.getUriParameters().isEmpty()) {
-                        promise.goTo("agg");
+                        promise.goTo("selectAgg");
                     }
                 })
-                .thenWithResource("vote", JdbcResource.class, (_, _, promise, jdbcResource) -> {
+                .thenWithResource("updateQuest", JdbcResource.class, (_, _, promise, jdbcResource) -> {
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
                     boolean win = context.getUriParameters().getOrDefault("value", "true").equals("true");
-                    jdbcResource.execute(new JdbcRequest(JTOviSubscriber.UPDATE_VOTE)
-                            .addArg("vote", win ? "true" : "false")
+                    jdbcResource.execute(new JdbcRequest(JTOviSubscriber.UPDATE_QUEST_1)
+                            .addArg("quest", win ? "true" : "false")
                             .addArg("id_chat", context.getIdChat())
                     );
-                    promise.setRepositoryMapClass(String.class, "");
                 })
-                .thenWithResource("agg", JdbcResource.class, (_, _, promise, jdbcResource) -> {
-                    vote = jdbcResource.execute(new JdbcRequest(JTOviSubscriber.SELECT_VOTE_AGG));
-                    if (vote.isEmpty()) {
-                        promise.skipAllStep("vote empty");
+                .thenWithResource("selectAgg", JdbcResource.class, (_, _, promise, jdbcResource) -> {
+                    Context context = promise.getRepositoryMapClass(Context.class);
+                    context.getAgg().addAll(jdbcResource.execute(new JdbcRequest(JTOviSubscriber.SELECT_QUEST_AGG)));
+                    if (context.getAgg().isEmpty()) {
+                        promise.skipAllStep("agg is empty");
                     }
                 })
                 .then("send", (atomicBoolean, promiseTask, promise) -> {
-                    TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
+                    TelegramCommandContext commandContext = promise.getRepositoryMapClass(TelegramCommandContext.class);
+                    Context context = promise.getRepositoryMapClass(Context.class);
                     RegisterNotification.add(new NotificationObject(
-                            context.getIdChat(),
-                            context.getTelegramBot().getBotUsername(),
-                            getStat(vote, promise.getRepositoryMapClass(String.class)),
+                            commandContext.getIdChat(),
+                            commandContext.getTelegramBot().getBotUsername(),
+                            getStat(context.getAgg(), ""),
                             null,
                             null
                     ));
@@ -91,31 +97,31 @@ public class PollResults implements PromiseGenerator, OviGoalsBotCommandHandler 
         return gen;
     }
 
-    public static String getStat(List<Map<String, Object>> vote, String extra) {
+    public static String getStat(List<Map<String, Object>> agg, String extra) {
         Map<String, AtomicInteger> stat = new HashMapBuilder<String, AtomicInteger>()
                 .append("true", new AtomicInteger(0))
                 .append("false", new AtomicInteger(0));
 
-        vote.forEach(map -> {
+        agg.forEach(map -> {
                     String count = map.getOrDefault("count", "0").toString();
                     if (!Util.isNumeric(count)) {
                         return;
                     }
                     stat.computeIfAbsent(
-                            Objects.toString(map.getOrDefault("vote", "none"), "none"),
+                            Objects.toString(map.getOrDefault("unit", "none"), "none"),
                             _ -> new AtomicInteger(0)
                     ).addAndGet(Integer.parseInt(count));
                 }
         );
 
-        int aTrue = stat.get("true").get();
-        int aFalse = stat.get("false").get();
+        int countTrue = stat.get("true").get();
+        int countFalse = stat.get("false").get();
 
-        int totalVotes = aTrue + aFalse;
+        int total = countTrue + countFalse;
 
         // Подсчитаем проценты и форматируем вывод
-        double percentTrue = totalVotes == 0 ? 0 : ((aTrue * 100.0) / totalVotes);
-        double percentFalse = totalVotes == 0 ? 0 : ((aFalse * 100.0) / totalVotes);
+        double percentTrue = total == 0 ? 0 : ((countTrue * 100.0) / total);
+        double percentFalse = total == 0 ? 0 : ((countFalse * 100.0) / total);
 
         return String.format("""
                         %sСтатистика голосования:
