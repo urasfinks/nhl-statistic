@@ -26,7 +26,8 @@ public enum JTOviSubscriber implements JdbcRequestRepository {
             UPDATE
                 ovi_subscriber
             SET
-                remove = ${IN.remove::NUMBER}
+                remove = ${IN.remove::NUMBER},
+                ts_update = now()::timestamp
             WHERE
                 id_chat = ${IN.id_chat::NUMBER}
             """, StatementType.SELECT_WITH_AUTO_COMMIT),
