@@ -41,10 +41,7 @@ public class SecScheduler implements Cron1s, PromiseGenerator, UniqueClassName {
         this.servicePromise = servicePromise;
     }
 
-    //public static int x = 0;
-
     public Promise generate() {
-        //System.out.println("GEN " + getClassName());
         return servicePromise.get(getClass().getSimpleName(), 6000_000L)
                 .then("bug01", (atomicBoolean, promiseTask, promise) -> {
                     if (App.get(TelegramBotComponent.class).getBotRepository().size() < 2) {
@@ -52,28 +49,7 @@ public class SecScheduler implements Cron1s, PromiseGenerator, UniqueClassName {
                     }
                     //TODO без этой задачи следующая задача не вызывается - надо разобраться почему
                 })
-//                .thenWithResource("select", JdbcResource.class, (_, _, promise, jdbcResource) -> {
-//                    if (x > 0) {
-//                        promise.skipAllStep("a");
-//                        return;
-//                    }
-//                    x++;
-//                    JdbcRequest jdbcRequest = new JdbcRequest(JTTelegramSend.INSERT);
-//                    for (int i = 0; i < 100; i++) {
-//                        jdbcRequest
-//                                .addArg("id_chat", 290029195)
-//                                .addArg("bot", "test_ovi_goals_bot")
-//                                .addArg("message", i + "")
-//                                .addArg("path_image", null)
-//                                .addArg("buttons", null)
-//                                .nextBatch();
-//                    }
-//                    jdbcResource.execute(jdbcRequest);
-//                    promise.skipAllStep("a");
-//                })
                 .thenWithResource("select", JdbcResource.class, (isRun, _, _, jdbcResource) -> {
-
-
                     if (countThread.get() >= maxThread) {
                         return;
                     }
