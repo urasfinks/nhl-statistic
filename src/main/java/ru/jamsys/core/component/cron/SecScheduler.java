@@ -80,12 +80,14 @@ public class SecScheduler implements Cron1s, PromiseGenerator, UniqueClassName {
                                         .addArg("id", first.getId())
                                         .addArg("json", UtilJson.toStringPretty(send, "{}"))
                                 );
-                            }else{
+                            } else {
                                 jdbcResource.execute(new JdbcRequest(JTTelegramSend.SEND_FINISH)
                                         .addArg("id", first.getId())
                                         .addArg("json", UtilJson.toStringPretty(send, "{}"))
                                 );
                             }
+                        } catch (Throwable th){
+                            App.error(th);
                         } finally {
                             // В любом случае надо отпустить блокировку, даже если сломались
                             jdbcResource.execute(new JdbcRequest(JTTelegramSend.COMMIT));

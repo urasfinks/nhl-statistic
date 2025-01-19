@@ -214,6 +214,10 @@ public abstract class AbstractBot extends TelegramLongPollingBot {
             telegramResult
                     .setException(TelegramResultException.RETRY)
                     .setCause("Unable to execute sendmessage method");
+        } else if (th.getMessage().contains("Forbidden: bot can't initiate conversation with a user")) {
+            telegramResult
+                    .setException(TelegramResultException.FATAL)
+                    .setCause("idChat: " + idChat + " not start command");
         } else if (th.getMessage().contains("Forbidden: bot was blocked by the user")) {
             telegramResult
                     .setException(TelegramResultException.FATAL)
