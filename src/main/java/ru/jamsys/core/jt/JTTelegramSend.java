@@ -21,7 +21,7 @@ public enum JTTelegramSend implements JdbcRequestRepository {
                 ts_send IS NULL
                 AND ts_add < now()::timestamp
                 AND bot IN (${IN.bots::IN_ENUM_VARCHAR})
-            ORDER BY id
+            ORDER BY id DESC
             LIMIT 1
             FOR UPDATE OF telegram_send SKIP LOCKED
             """, StatementType.SELECT_WITHOUT_AUTO_COMMIT),
