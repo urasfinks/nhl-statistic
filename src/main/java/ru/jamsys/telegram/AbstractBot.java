@@ -210,7 +210,11 @@ public abstract class AbstractBot extends TelegramLongPollingBot {
     }
 
     private void thHandler(TelegramResult telegramResult, Throwable th, long idChat) {
-        if (th.getMessage().contains("Unable to execute sendmessage method")) {
+        if (th.getMessage() == null || th.getMessage().isEmpty()) {
+            telegramResult
+                    .setException(TelegramResultException.RETRY)
+                    .setCause("th.getMessage() is null");
+        } else if (th.getMessage().contains("Unable to execute sendmessage method")) {
             telegramResult
                     .setException(TelegramResultException.RETRY)
                     .setCause("Unable to execute sendmessage method");

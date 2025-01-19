@@ -38,7 +38,9 @@ public class SendNotification implements PromiseGenerator {
         //Util.logConsoleJson(notificationObject);
         AbstractBot telegramBot = App.get(TelegramBotComponent.class).getBotRepository().get(notificationObject.getBot());
         if(telegramBot == null){
-            return telegramResult.setException(AbstractBot.TelegramResultException.RETRY).setCause("telegramBot is null");
+            return telegramResult
+                    .setException(AbstractBot.TelegramResultException.RETRY)
+                    .setCause("telegramBot is null");
         }
         if (
                 notificationObject.getPathImage() == null
@@ -50,7 +52,7 @@ public class SendNotification implements PromiseGenerator {
                     notificationObject.getButtons()
             );
         } else {
-            try {
+            try { // Потому что UtilFileResource.get throw exception
                 return telegramBot.sendImage(
                         notificationObject.getIdChat(),
                         UtilFileResource.get(
