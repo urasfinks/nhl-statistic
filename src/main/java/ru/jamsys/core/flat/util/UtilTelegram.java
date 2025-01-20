@@ -13,9 +13,15 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import ru.jamsys.core.App;
 import ru.jamsys.core.extension.functional.ConsumerThrowing;
 import ru.jamsys.core.flat.util.telegram.Button;
+import ru.jamsys.core.handler.promise.RemoveSubscriberOvi;
+import ru.jamsys.core.resource.http.client.HttpClientImpl;
+import ru.jamsys.core.resource.http.client.HttpResponse;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class UtilTelegram {
@@ -228,6 +234,32 @@ public class UtilTelegram {
 
         // Если ничего не найдено, разрезаем по maxLength
         return maxLength;
+    }
+
+    public static UtilTelegram.Result webhookSendMessage(String token, long idChat, String data) {
+        HttpClientImpl httpClient = new HttpClientImpl();
+        httpClient.setUrl(String.format(
+                        "https://api.telegram.org/bot%s/sendMessage?parse_mode=markdown&chat_id=%s&text=%s",
+                        token,
+                        idChat,
+                        URLEncoder.encode(data, StandardCharsets.UTF_8))
+                )
+                .setTimeoutMs(10_000);
+        httpClient.exec();
+        UtilTelegram.Result sandbox = UtilTelegram.sandbox(result -> {
+            HttpResponse httpResponse = httpClient.getHttpResponse();
+            if (httpResponse.getStatusCode() == 200) {
+                result.setResponse(UtilJson.getMapOrThrow(httpResponse.getBody()));
+            } else {
+                Map<String, Object> mapOrThrow = UtilJson.getMapOrThrow(httpResponse.getBody());
+                result.setResponse(mapOrThrow);
+                throw new RuntimeException(mapOrThrow.get("description").toString());
+            }
+        });
+        if (UtilTelegram.ResultException.BLOCK.equals(sandbox.getException())) {
+            new RemoveSubscriberOvi(idChat).generate().run();
+        }
+        return sandbox;
     }
 
 }
