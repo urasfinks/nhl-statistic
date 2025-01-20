@@ -19,7 +19,6 @@ import ru.jamsys.core.promise.PromiseGenerator;
 
 import java.io.InputStream;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -132,37 +131,37 @@ public abstract class AbstractBot extends TelegramLongPollingBot {
         }
     }
 
-    public UtilTelegram.TelegramResult send(long idChat, String data, List<Button> buttons) {
+    public UtilTelegram.Result send(long idChat, String data, List<Button> buttons) {
         return send(UtilTelegram.message(idChat, data, buttons), idChat);
     }
 
     @SuppressWarnings("all")
-    public <T extends Serializable, Method extends BotApiMethod<T>> UtilTelegram.TelegramResult send(Method method, Long idChat) {
+    public <T extends Serializable, Method extends BotApiMethod<T>> UtilTelegram.Result send(Method method, Long idChat) {
         if (idChat == null) {
-            return new UtilTelegram.TelegramResult()
-                    .setException(UtilTelegram.TelegramResultException.ID_CHAT_EMPTY)
+            return new UtilTelegram.Result()
+                    .setException(UtilTelegram.ResultException.ID_CHAT_EMPTY)
                     .setCause("idChat is null");
         }
-        UtilTelegram.TelegramResult sandbox = UtilTelegram.sandbox(telegramResult -> {
-            telegramResult.setResponse(execute(method));
+        UtilTelegram.Result sandbox = UtilTelegram.sandbox(result -> {
+            result.setResponse(execute(method));
         });
-        if (UtilTelegram.TelegramResultException.BLOCK.equals(sandbox.getException())) {
+        if (UtilTelegram.ResultException.BLOCK.equals(sandbox.getException())) {
             new RemoveSubscriberOvi(idChat).generate().run();
         }
         return sandbox;
     }
 
-    public UtilTelegram.TelegramResult sendImage(long idChat, InputStream is, String fileName, String description) {
-        UtilTelegram.TelegramResult sandbox = UtilTelegram.sandbox(telegramResult -> {
+    public UtilTelegram.Result sendImage(long idChat, InputStream is, String fileName, String description) {
+        UtilTelegram.Result sandbox = UtilTelegram.sandbox(result -> {
             SendPhoto sendPhoto = new SendPhoto();
             sendPhoto.setChatId(idChat);
             sendPhoto.setPhoto(new InputFile(is, fileName));
             if (description != null) {
                 sendPhoto.setCaption(description);
             }
-            telegramResult.setResponse(execute(sendPhoto));
+            result.setResponse(execute(sendPhoto));
         });
-        if (UtilTelegram.TelegramResultException.BLOCK.equals(sandbox.getException())) {
+        if (UtilTelegram.ResultException.BLOCK.equals(sandbox.getException())) {
             new RemoveSubscriberOvi(idChat).generate().run();
         }
         return sandbox;

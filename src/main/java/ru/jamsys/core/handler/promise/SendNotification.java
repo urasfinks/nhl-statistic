@@ -7,6 +7,7 @@ import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.component.TelegramBotComponent;
 import ru.jamsys.core.flat.util.UtilFile;
 import ru.jamsys.core.flat.util.UtilFileResource;
+import ru.jamsys.core.flat.util.UtilTelegram;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
 import ru.jamsys.core.promise.PromiseTask;
@@ -33,13 +34,13 @@ public class SendNotification implements PromiseGenerator {
         return promise;
     }
 
-    public static AbstractBot.TelegramResult send(NotificationObject notificationObject) {
-        AbstractBot.TelegramResult telegramResult = new AbstractBot.TelegramResult();
+    public static UtilTelegram.Result send(NotificationObject notificationObject) {
+        UtilTelegram.Result telegramResult = new UtilTelegram.Result();
         //Util.logConsoleJson(notificationObject);
         AbstractBot telegramBot = App.get(TelegramBotComponent.class).getBotRepository().get(notificationObject.getBot());
         if(telegramBot == null){
             return telegramResult
-                    .setException(AbstractBot.TelegramResultException.RETRY)
+                    .setException(UtilTelegram.ResultException.RETRY)
                     .setCause("telegramBot is null");
         }
         if (
@@ -64,7 +65,7 @@ public class SendNotification implements PromiseGenerator {
                 );
             } catch (Throwable th) {
                 telegramResult
-                        .setException(AbstractBot.TelegramResultException.OTHER)
+                        .setException(UtilTelegram.ResultException.OTHER)
                         .setCause(th.getMessage());
                 App.error(th);
             }

@@ -113,8 +113,8 @@ public class UtilTelegram {
         return message;
     }
 
-    public enum TelegramResultException {
-        RETRY,
+    public enum ResultException {
+        RETRY, // Стоит повторить
         NOT_INIT, // Пользователь не инициализировал бота командой /start
         BLOCK, // Пользователь заблокировал бота
         OTHER,
@@ -124,20 +124,22 @@ public class UtilTelegram {
     @Getter
     @Setter
     @Accessors(chain = true)
-    public static class TelegramResult {
+    public static class Result {
 
         long timeAdd = System.currentTimeMillis();
 
+        @SuppressWarnings("unused")
         public long getTiming() {
             return System.currentTimeMillis() - timeAdd;
         }
 
-        TelegramResultException exception;
+        ResultException exception;
 
         String cause;
 
         Object response;
 
+        @SuppressWarnings("unused")
         public boolean isOk() {
             return exception == null;
         }
@@ -146,38 +148,38 @@ public class UtilTelegram {
             if (exception == null) { // Если нет исключения - то незамем повторять
                 return false;
             }
-            return exception.equals(TelegramResultException.RETRY);
+            return exception.equals(ResultException.RETRY);
         }
 
     }
 
-    public static TelegramResult sandbox(ConsumerThrowing<TelegramResult> procedureThrowing) {
-        TelegramResult telegramResult = new TelegramResult();
+    public static Result sandbox(ConsumerThrowing<Result> procedureThrowing) {
+        Result telegramResult = new Result();
         try {
             procedureThrowing.accept(telegramResult);
         } catch (Throwable th) {
             if (th.getMessage() == null || th.getMessage().isEmpty()) {
                 telegramResult
-                        .setException(TelegramResultException.RETRY)
+                        .setException(ResultException.RETRY)
                         .setCause("th.getMessage() is null");
             } else if (th.getMessage().contains("Unable to execute sendmessage method")) {
                 telegramResult
-                        .setException(TelegramResultException.RETRY)
+                        .setException(ResultException.RETRY)
                         .setCause("Unable to execute sendmessage method");
             } else if (th.getMessage().contains("Forbidden: bot can't initiate conversation with a user")) {
                 telegramResult
-                        .setException(TelegramResultException.NOT_INIT)
+                        .setException(ResultException.NOT_INIT)
                         .setCause("idChat: not start command");
             } else if (th.getMessage().contains("Forbidden: bot was blocked by the user")) {
                 telegramResult
-                        .setException(TelegramResultException.BLOCK)
+                        .setException(ResultException.BLOCK)
                         .setCause("User blocked bot");
 
                 Util.logConsole("User blocked bot.");
                 //new RemoveSubscriberOvi(idChat).generate().run();
             } else {
                 telegramResult
-                        .setException(TelegramResultException.OTHER)
+                        .setException(ResultException.OTHER)
                         .setCause(th.getMessage());
                 App.error(th);
             }
