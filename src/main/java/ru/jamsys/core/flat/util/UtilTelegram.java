@@ -1,5 +1,8 @@
 package ru.jamsys.core.flat.util;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
@@ -7,6 +10,8 @@ import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageTe
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+import ru.jamsys.core.App;
+import ru.jamsys.core.extension.functional.ConsumerThrowing;
 import ru.jamsys.core.flat.util.telegram.Button;
 
 import java.util.ArrayList;
@@ -106,6 +111,120 @@ public class UtilTelegram {
             addMessageButton(message, listButtons);
         }
         return message;
+    }
+
+    public enum TelegramResultException {
+        RETRY,
+        NOT_INIT, // Пользователь не инициализировал бота командой /start
+        BLOCK, // Пользователь заблокировал бота
+        OTHER,
+        ID_CHAT_EMPTY
+    }
+
+    @Getter
+    @Setter
+    @Accessors(chain = true)
+    public static class TelegramResult {
+
+        long timeAdd = System.currentTimeMillis();
+
+        public long getTiming() {
+            return System.currentTimeMillis() - timeAdd;
+        }
+
+        TelegramResultException exception;
+
+        String cause;
+
+        Object response;
+
+        public boolean isOk() {
+            return exception == null;
+        }
+
+        public boolean isRetry() {
+            if (exception == null) { // Если нет исключения - то незамем повторять
+                return false;
+            }
+            return exception.equals(TelegramResultException.RETRY);
+        }
+
+    }
+
+    public static TelegramResult sandbox(ConsumerThrowing<TelegramResult> procedureThrowing) {
+        TelegramResult telegramResult = new TelegramResult();
+        try {
+            procedureThrowing.accept(telegramResult);
+        } catch (Throwable th) {
+            if (th.getMessage() == null || th.getMessage().isEmpty()) {
+                telegramResult
+                        .setException(TelegramResultException.RETRY)
+                        .setCause("th.getMessage() is null");
+            } else if (th.getMessage().contains("Unable to execute sendmessage method")) {
+                telegramResult
+                        .setException(TelegramResultException.RETRY)
+                        .setCause("Unable to execute sendmessage method");
+            } else if (th.getMessage().contains("Forbidden: bot can't initiate conversation with a user")) {
+                telegramResult
+                        .setException(TelegramResultException.NOT_INIT)
+                        .setCause("idChat: not start command");
+            } else if (th.getMessage().contains("Forbidden: bot was blocked by the user")) {
+                telegramResult
+                        .setException(TelegramResultException.BLOCK)
+                        .setCause("User blocked bot");
+
+                Util.logConsole("User blocked bot.");
+                //new RemoveSubscriberOvi(idChat).generate().run();
+            } else {
+                telegramResult
+                        .setException(TelegramResultException.OTHER)
+                        .setCause(th.getMessage());
+                App.error(th);
+            }
+        }
+        return telegramResult;
+    }
+
+    @SuppressWarnings("unused")
+    public static List<String> splitMessageSmart(String message, int maxLength) {
+        List<String> parts = new ArrayList<>();
+
+        while (message.length() > maxLength) {
+            // Попробуем найти перенос строки или конец предложения
+            int splitIndex = findSplitIndex(message, maxLength);
+
+            // Добавляем часть текста в список
+            parts.add(message.substring(0, splitIndex).trim());
+            // Обрезаем обработанную часть
+            message = message.substring(splitIndex).trim();
+        }
+
+        // Добавляем оставшийся текст
+        if (!message.isEmpty()) {
+            parts.add(message);
+        }
+
+        return parts;
+    }
+
+    public static int findSplitIndex(String message, int maxLength) {
+        // Ищем последний перенос строки до maxLength
+        int newlineIndex = message.lastIndexOf('\n', maxLength);
+        if (newlineIndex != -1) {
+            return newlineIndex + 1; // Включаем перенос строки
+        }
+
+        // Ищем конец предложения (точка, восклицательный знак, вопросительный знак)
+        int sentenceEndIndex = Math.max(
+                Math.max(message.lastIndexOf('.', maxLength), message.lastIndexOf('!', maxLength)),
+                message.lastIndexOf('?', maxLength)
+        );
+        if (sentenceEndIndex != -1) {
+            return sentenceEndIndex + 1; // Включаем знак конца предложения
+        }
+
+        // Если ничего не найдено, разрезаем по maxLength
+        return maxLength;
     }
 
 }
