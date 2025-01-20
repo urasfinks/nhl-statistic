@@ -107,13 +107,13 @@ public class Tank01Request implements PromiseGenerator {
         SecurityComponent securityComponent = App.get(SecurityComponent.class);
         return new HttpClientImpl()
                 .setUrl(serviceProperty.get("rapidapi.host") + uri)
-                .setRequestHeader("x-rapidapi-key", new String(securityComponent.get("rapidapi.tank01.key")))
-                .setRequestHeader("x-rapidapi-host", serviceProperty.get("rapidapi.tank01.host"));
+                .putRequestHeader("x-rapidapi-key", new String(securityComponent.get("rapidapi.tank01.key")))
+                .putRequestHeader("x-rapidapi-host", serviceProperty.get("rapidapi.tank01.host"));
     }
 
     public static void checkResponse(HttpResponse execute) throws Throwable {
-        if (!execute.isStatus()) {
-            throw execute.getException().getFirst().getValueRaw();
+        if (execute.getException() != null) {
+            throw execute.getException();
         }
         if (execute.getBody() == null || execute.getBody().isEmpty()) {
             throw new RuntimeException("empty response");

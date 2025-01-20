@@ -5,12 +5,15 @@ import lombok.Setter;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import ru.jamsys.core.App;
 import ru.jamsys.core.flat.util.Util;
+import ru.jamsys.core.flat.util.UtilJson;
+import ru.jamsys.core.flat.util.UtilTelegram;
 import ru.jamsys.core.resource.http.client.HttpClientImpl;
 import ru.jamsys.core.resource.http.client.HttpResponse;
 import ru.jamsys.core.statistic.AvgMetric;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -54,7 +57,7 @@ public class NhlStatisticApplication {
                 while (isRun.get()) {
                     MSG poll = queue.poll();
                     if (poll != null) {
-                        HttpResponse send = send(poll.getIdChat(), poll.getData());
+                        UtilTelegram.Result send = send(poll.getIdChat(), poll.getData());
                         avg.add(send.getTiming());
                         //Util.logConsoleJson(send);
                     }else{
@@ -70,18 +73,28 @@ public class NhlStatisticApplication {
         }
     }
 
-    public static HttpResponse send(long idChat, String data) {
+
+    public static UtilTelegram.Result send(long idChat, String data) {
         HttpClientImpl httpClient = new HttpClientImpl();
         httpClient.setUrl(String.format(
-                "https://api.telegram.org/bot%s/sendMessage?parse_mode=markdown&chat_id=%s&text=%s",
-                //"http://176.124.217.254:8081/bot%s/sendMessage?parse_mode=markdown&chat_id=%s&text=%s",
-                "",
-                idChat,
-                URLEncoder.encode(data, StandardCharsets.UTF_8))
-        );
-        httpClient.setTimeoutMs(10_000);
+                        "https://api.telegram.org/bot%s/sendMessage?parse_mode=markdown&chat_id=%s&text=%s",
+                        "7770107380:AAHzMVP3jCuEE0TUIhdZYly46phcm3wUuis",
+                        idChat,
+                        URLEncoder.encode(data, StandardCharsets.UTF_8))
+                )
+                .setTimeoutMs(10_000);
         httpClient.exec();
-        return httpClient.getHttpResponseEnvelope();
+        UtilTelegram.Result sandbox = UtilTelegram.sandbox(result -> {
+            HttpResponse httpResponse = httpClient.getHttpResponse();
+            if (httpResponse.getStatusCode() == 200) {
+                result.setResponse(UtilJson.getMapOrThrow(httpResponse.getBody()));
+            } else {
+                Map<String, Object> mapOrThrow = UtilJson.getMapOrThrow(httpResponse.getBody());
+                result.setResponse(mapOrThrow);
+                throw new RuntimeException(mapOrThrow.get("description").toString());
+            }
+        });
+        return sandbox;
     }
 
 }

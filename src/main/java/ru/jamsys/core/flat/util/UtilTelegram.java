@@ -162,21 +162,22 @@ public class UtilTelegram {
                 telegramResult
                         .setException(ResultException.RETRY)
                         .setCause("th.getMessage() is null");
-            } else if (th.getMessage().contains("Unable to execute sendmessage method")) {
-                telegramResult
-                        .setException(ResultException.RETRY)
-                        .setCause("Unable to execute sendmessage method");
-            } else if (th.getMessage().contains("Forbidden: bot can't initiate conversation with a user")) {
+            } else if (th.getMessage().contains("bot can't initiate conversation with a user")) {
                 telegramResult
                         .setException(ResultException.NOT_INIT)
-                        .setCause("idChat: not start command");
-            } else if (th.getMessage().contains("Forbidden: bot was blocked by the user")) {
+                        .setCause(th.getMessage());
+            } else if (
+                    th.getMessage().contains("Too Many Requests")
+                    || th.getMessage().contains("Unable to execute sendmessage method")
+                    || th.getMessage().contains("Check your bot token")
+            ) {
+                telegramResult
+                        .setException(ResultException.RETRY)
+                        .setCause(th.getMessage());
+            } else if (th.getMessage().contains("bot was blocked by the user")) {
                 telegramResult
                         .setException(ResultException.BLOCK)
-                        .setCause("User blocked bot");
-
-                Util.logConsole("User blocked bot.");
-                //new RemoveSubscriberOvi(idChat).generate().run();
+                        .setCause(th.getMessage());
             } else {
                 telegramResult
                         .setException(ResultException.OTHER)
