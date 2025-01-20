@@ -7,6 +7,7 @@ import ru.jamsys.core.App;
 import ru.jamsys.core.flat.util.Util;
 import ru.jamsys.core.flat.util.UtilJson;
 import ru.jamsys.core.flat.util.UtilTelegram;
+import ru.jamsys.core.handler.promise.RemoveSubscriberOvi;
 import ru.jamsys.core.resource.http.client.HttpClientImpl;
 import ru.jamsys.core.resource.http.client.HttpResponse;
 import ru.jamsys.core.statistic.AvgMetric;
@@ -78,7 +79,7 @@ public class NhlStatisticApplication {
         HttpClientImpl httpClient = new HttpClientImpl();
         httpClient.setUrl(String.format(
                         "https://api.telegram.org/bot%s/sendMessage?parse_mode=markdown&chat_id=%s&text=%s",
-                        "7770107380:AAHzMVP3jCuEE0TUIhdZYly46phcm3wUuis",
+                        "",
                         idChat,
                         URLEncoder.encode(data, StandardCharsets.UTF_8))
                 )
@@ -94,6 +95,9 @@ public class NhlStatisticApplication {
                 throw new RuntimeException(mapOrThrow.get("description").toString());
             }
         });
+        if (UtilTelegram.ResultException.BLOCK.equals(sandbox.getException())) {
+            new RemoveSubscriberOvi(idChat).generate().run();
+        }
         return sandbox;
     }
 
