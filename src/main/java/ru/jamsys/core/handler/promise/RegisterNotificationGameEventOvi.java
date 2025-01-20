@@ -49,7 +49,6 @@ public class RegisterNotificationGameEventOvi implements PromiseGenerator {
     @Override
     public Promise generate() {
         return App.get(ServicePromise.class).get(getClass().getSimpleName(), 600_000L)
-                .then("bug01", (_, _, _) -> {})
                 .thenWithResource("select", JdbcResource.class, (_, _, _, jdbcResource) -> {
                     List<Map<String, Object>> execute = jdbcResource.execute(new JdbcRequest(JTOviSubscriber.SELECT_NOT_REMOVE));
                     execute.forEach(map -> listIdChat.add(Long.parseLong(map.get("id_chat").toString())));

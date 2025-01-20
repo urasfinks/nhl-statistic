@@ -72,7 +72,6 @@ public class UpdateScheduler implements PromiseGenerator {
     public Promise generate() {
         return App.get(ServicePromise.class).get(getClass().getSimpleName(), 600_000L)
                 .extension(promise -> promise.setRepositoryMapClass(UpdateScheduler.class, this))
-                .then("bug01", (_, _, _) -> {})
                 .thenWithResource(
                         "select",
                         JdbcResource.class,

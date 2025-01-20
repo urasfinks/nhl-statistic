@@ -42,7 +42,6 @@ public class ScorePlayerCurrentSeasonBeforeGame implements PromiseGenerator {
     public Promise generate() {
         return App.get(ServicePromise.class).get(getClass().getSimpleName(), 60_000L)
                 .extension(promise -> promise.setRepositoryMapClass(ScorePlayerCurrentSeasonBeforeGame.class, this))
-                .then("bug01", (_, _, _) -> {})
                 .thenWithResource("select", JdbcResource.class, (_, _, promise, jdbcResource) -> {
                     List<Map<String, Object>> execute = jdbcResource.execute(new JdbcRequest(JTPrevGoal.SELECT)
                             .addArg("id_game", getIdGame())

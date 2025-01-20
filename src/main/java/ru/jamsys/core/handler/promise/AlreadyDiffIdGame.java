@@ -31,7 +31,6 @@ public class AlreadyDiffIdGame implements PromiseGenerator {
     @Override
     public Promise generate() {
         return App.get(ServicePromise.class).get(getClass().getSimpleName(), 60_000L)
-                .then("bug01", (_, _, _) -> {})
                 .thenWithResource(
                         "select",
                         JdbcResource.class,

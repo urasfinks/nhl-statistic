@@ -21,7 +21,6 @@ public class HttpCacheReset implements PromiseGenerator {
     @Override
     public Promise generate() {
         return App.get(ServicePromise.class).get(getClass().getSimpleName(), 60_000L)
-                .then("bug01", (_, _, _) -> {})
                 .thenWithResource(
                         "cacheReset",
                         JdbcResource.class,

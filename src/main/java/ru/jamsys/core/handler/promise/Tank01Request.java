@@ -51,7 +51,6 @@ public class Tank01Request implements PromiseGenerator {
     public Promise generate() {
         return App.get(ServicePromise.class).get(getClass().getSimpleName(), 60_000L)
                 .extension(promise -> promise.setRepositoryMapClass(Tank01Request.class, this))
-                .then("bug01", (_, _, _) -> {})
                 .thenWithResource("select", JdbcResource.class, (_, _, promise, jdbcResource) -> {
                     promise.getRepositoryMapClass(Tank01Request.class);
                     responseData = null; // Обнуляем данные, если последовательные цепочки

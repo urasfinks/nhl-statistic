@@ -42,7 +42,6 @@ public class Start implements PromiseGenerator, OviGoalsBotCommandHandler {
     public Promise generate() {
         return servicePromise.get(getClass().getSimpleName(), 12_000L)
                 .extension(promise -> promise.setRepositoryMapClass(Start.class, this))
-                .then("bug01", (_, _, _) -> {})
                 .thenWithResource("subscribe", JdbcResource.class, (_, _, promise, jdbcResource) -> {
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
                     List<Map<String, Object>> result = jdbcResource.execute(new JdbcRequest(JTOviSubscriber.SELECT)

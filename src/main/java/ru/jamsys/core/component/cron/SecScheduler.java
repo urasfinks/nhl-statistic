@@ -43,11 +43,10 @@ public class SecScheduler implements Cron1s, PromiseGenerator, UniqueClassName {
 
     public Promise generate() {
         return servicePromise.get(getClass().getSimpleName(), 6000_000L)
-                .then("bug01", (atomicBoolean, promiseTask, promise) -> {
+                .then("check", (atomicBoolean, promiseTask, promise) -> {
                     if (App.get(TelegramBotComponent.class).getBotRepository().size() < 2) {
                         promise.skipAllStep("size bot < 2");
                     }
-                    //TODO без этой задачи следующая задача не вызывается - надо разобраться почему
                 })
                 .thenWithResource("select", JdbcResource.class, (isRun, _, _, jdbcResource) -> {
                     if (countThread.get() >= maxThread) {
