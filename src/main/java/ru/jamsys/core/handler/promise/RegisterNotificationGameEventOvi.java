@@ -5,7 +5,7 @@ import lombok.Setter;
 import ru.jamsys.core.App;
 import ru.jamsys.core.component.RegisterDelayNotification;
 import ru.jamsys.core.component.ServicePromise;
-import ru.jamsys.core.component.TelegramBotComponent;
+import ru.jamsys.core.component.TelegramBotManager;
 import ru.jamsys.core.flat.util.UtilFileResource;
 import ru.jamsys.core.flat.util.UtilNHL;
 import ru.jamsys.core.flat.util.UtilRisc;
@@ -61,16 +61,16 @@ public class RegisterNotificationGameEventOvi implements PromiseGenerator {
                     gameEventData
                             .setScoredPrevGoal(stat.getCountGoal().get());
                     String message = new GameEventTemplateOvi(gameEventData).toString();
-                    TelegramBotComponent telegramBotComponent = App.get(TelegramBotComponent.class);
+                    TelegramBotManager telegramBotManager = App.get(TelegramBotManager.class);
 
                     List<NotificationObject> listNotPlay = new ArrayList<>();
                     List<NotificationObject> listEvent = new ArrayList<>();
                     UtilRisc.forEach(atomicBoolean, listIdChat, idChat -> {
-                        if (telegramBotComponent.getOviGoalsBot() != null) {
+
                             if (gameEventData.getAction().equals(GameEventData.Action.NOT_PLAY)) {
                                 listNotPlay.add(new NotificationObject(
                                         idChat,
-                                        telegramBotComponent.getOviGoalsBot().getBotUsername(),
+                                        telegramBotManager.getOviBotProperty().getName(),
                                         message,
                                         null,
                                         null
@@ -78,13 +78,13 @@ public class RegisterNotificationGameEventOvi implements PromiseGenerator {
                             } else {
                                 listEvent.add(new NotificationObject(
                                         idChat,
-                                        telegramBotComponent.getOviGoalsBot().getBotUsername(),
+                                        telegramBotManager.getOviBotProperty().getName(),
                                         message,
                                         null,
                                         null
                                 ));
                             }
-                        }
+
                     });
                     RegisterNotification.add(listEvent);
                     RegisterDelayNotification.add(listNotPlay, 10_000L);
@@ -101,13 +101,13 @@ public class RegisterNotificationGameEventOvi implements PromiseGenerator {
                     PlayerStatistic ovi = promise.getRepositoryMapClass(Promise.class, "ovi")
                             .getRepositoryMapClass(PlayerStatistic.class);
                     String message = ovi.getMessage();
-                    TelegramBotComponent telegramBotComponent = App.get(TelegramBotComponent.class);
+                    TelegramBotManager telegramBotComponent = App.get(TelegramBotManager.class);
                     List<NotificationObject> listSendStat = new ArrayList<>();
                     List<NotificationObject> listSendImage = new ArrayList<>();
                     UtilRisc.forEach(atomicBoolean, listIdChat, idChat -> {
                         listSendStat.add(new NotificationObject(
                                 idChat,
-                                telegramBotComponent.getOviGoalsBot().getBotUsername(),
+                                telegramBotComponent.getOviBotProperty().getName(),
                                 message,
                                 null,
                                 null
@@ -120,7 +120,7 @@ public class RegisterNotificationGameEventOvi implements PromiseGenerator {
                         ) {
                             listSendImage.add(new NotificationObject(
                                     idChat,
-                                    telegramBotComponent.getOviGoalsBot().getBotUsername(),
+                                    telegramBotComponent.getOviBotProperty().getName(),
                                     null,
                                     null,
                                     pathImage

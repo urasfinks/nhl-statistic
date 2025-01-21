@@ -24,11 +24,11 @@ public class RateLimit {
         boolean result = c <= maxCountRequest;
         if (!result) {
             if (rateLimitFinish.compareAndSet(false, true)) {
-                TelegramBotComponent telegramBotComponent = App.get(TelegramBotComponent.class);
+                TelegramBotManager telegramBotManager = App.get(TelegramBotManager.class);
                 RegisterNotification.add(new NotificationObject(
                         //290029195, // urasfinks
                         -4739098379L, // NhlCommon
-                        telegramBotComponent.getNhlStatisticsBot().getBotUsername(),
+                        telegramBotManager.getCommonBotProperty().getName(),
                         "RateLimit 15_000 Finish",
                         null,
                         null

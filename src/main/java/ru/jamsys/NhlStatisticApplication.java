@@ -5,7 +5,6 @@ import lombok.Setter;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import ru.jamsys.core.App;
 import ru.jamsys.core.flat.util.Util;
-import ru.jamsys.core.flat.util.UtilTelegram;
 import ru.jamsys.core.statistic.AvgMetric;
 
 import java.util.Queue;
@@ -20,6 +19,38 @@ public class NhlStatisticApplication {
     public static void main(String[] args) {
         App.springSource = NhlStatisticApplication.class;
         App.main(args);
+//        new TelegramSenderWebHook("telegram.bot.common")
+//                .send(new NotificationObject(
+//                        290029195L,
+//                        "ovi_goals_bot",
+//                        """
+//                                Матч Pittsburgh Penguins (PIT) 🆚 Washington Capitals (WSH) начнется уже через 12 часов — 19 января в 03:00 (МСК).
+//
+//                                Как думаешь, сможет ли Александр Овечкин забить сегодня?
+//
+//                                """,
+//                        new ArrayListBuilder<Button>()
+//                                .append(new Button(
+//                                        "Да 🔥",
+//                                        ServletResponseWriter.buildUrlQuery(
+//                                                "/poll_quest/",
+//                                                new HashMapBuilder<String, String>()
+//                                                        .append("value", "true")
+//
+//                                        )
+//                                ))
+//                                .append(new Button(
+//                                        "Нет ⛔",
+//                                        ServletResponseWriter.buildUrlQuery(
+//                                                "/poll_quest/",
+//                                                new HashMapBuilder<String, String>()
+//                                                        .append("value", "false")
+//
+//                                        )
+//                                ))
+//                        ,
+//                        null
+//                ));
     }
 
     @Getter
@@ -51,12 +82,12 @@ public class NhlStatisticApplication {
                 while (isRun.get()) {
                     MSG poll = queue.poll();
                     if (poll != null) {
-                        UtilTelegram.Result send = UtilTelegram.webhookSendMessage(
-                                "",
-                                poll.getIdChat(),
-                                poll.getData()
-                        );
-                        avg.add(send.getTiming());
+//                        UtilTelegram.Result send = UtilTelegram.webhookSendMessage(
+//                                "",
+//                                poll.getIdChat(),
+//                                poll.getData()
+//                        );
+//                        avg.add(send.getTiming());
                     }else{
                         Util.sleepMs(1000);
                     }

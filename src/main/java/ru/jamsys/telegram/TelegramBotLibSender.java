@@ -2,11 +2,16 @@ package ru.jamsys.telegram;
 
 import lombok.Getter;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
+import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 import ru.jamsys.core.App;
+import ru.jamsys.core.component.SecurityComponent;
 import ru.jamsys.core.component.manager.item.RouteGeneratorRepository;
 import ru.jamsys.core.component.manager.item.Session;
 import ru.jamsys.core.extension.http.ServletRequestReader;
@@ -22,19 +27,48 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-public abstract class AbstractBot extends TelegramLongPollingBot {
+public class TelegramBotLibSender extends TelegramLongPollingBot implements TelegramSender {
 
     private final RouteGeneratorRepository routerRepository;
     private final Map<Long, String> stepHandler;
 
+    private static final TelegramBotsApi api;
+
+    static {
+        try {
+            api = new TelegramBotsApi(DefaultBotSession.class);
+        } catch (TelegramApiException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @Getter
     private final String botUsername;
 
-    public AbstractBot(String botUsername, String botToken, RouteGeneratorRepository routerRepository) {
+    public static TelegramBotLibSender getInstance(
+            BotProperty botProperty,
+            RouteGeneratorRepository routerRepository
+    ) throws TelegramApiException {
+        Util.logConsole(
+                TelegramBotLibSender.class,
+                "Init bot: "
+                        + botProperty.getName()
+                        + "; SecurityAlias: "
+                        + botProperty.getSecurityAlias()
+        );
+        return new TelegramBotLibSender(
+                botProperty.getName(),
+                new String(App.get(SecurityComponent.class).get(botProperty.getSecurityAlias())),
+                routerRepository
+        );
+    }
+
+    public TelegramBotLibSender(String botUsername, String botToken, RouteGeneratorRepository routerRepository) throws TelegramApiException {
         super(botToken);
         this.botUsername = botUsername;
         this.routerRepository = routerRepository;
         stepHandler = new Session<>("TelegramContext_" + botUsername, Long.class, 60_000L);
+        api.registerBot(this);
     }
 
     @Override
@@ -166,5 +200,11 @@ public abstract class AbstractBot extends TelegramLongPollingBot {
         }
         return sandbox;
     }
+
+    @Override
+    public void setMyCommands(SetMyCommands setMyCommands) throws TelegramApiException {
+        execute(setMyCommands);
+    }
+
 
 }

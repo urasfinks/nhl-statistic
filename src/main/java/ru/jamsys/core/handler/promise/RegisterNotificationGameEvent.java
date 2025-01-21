@@ -5,7 +5,7 @@ import lombok.Setter;
 import ru.jamsys.core.App;
 import ru.jamsys.core.component.RegisterDelayNotification;
 import ru.jamsys.core.component.ServicePromise;
-import ru.jamsys.core.component.TelegramBotComponent;
+import ru.jamsys.core.component.TelegramBotManager;
 import ru.jamsys.core.flat.util.UtilRisc;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
@@ -55,7 +55,7 @@ public class RegisterNotificationGameEvent implements PromiseGenerator {
                     gameEventData
                             .setScoredPrevGoal(Integer.parseInt(prevGoal));
                     String message = new GameEventTemplate(gameEventData).toString();
-                    TelegramBotComponent telegramBotComponent = App.get(TelegramBotComponent.class);
+                    TelegramBotManager telegramBotManager = App.get(TelegramBotManager.class);
 
                     List<NotificationObject> listEvent = new ArrayList<>();
                     List<NotificationObject> listNotPlay = new ArrayList<>();
@@ -63,7 +63,7 @@ public class RegisterNotificationGameEvent implements PromiseGenerator {
                     UtilRisc.forEach(atomicBoolean, listIdChat, idChat -> {
                         NotificationObject notificationObject = new NotificationObject(
                                 idChat,
-                                telegramBotComponent.getNhlStatisticsBot().getBotUsername(),
+                                telegramBotManager.getCommonBotProperty().getName(),
                                 message,
                                 null,
                                 null

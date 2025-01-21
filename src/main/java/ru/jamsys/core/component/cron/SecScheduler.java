@@ -4,20 +4,18 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import ru.jamsys.core.App;
 import ru.jamsys.core.component.ServicePromise;
-import ru.jamsys.core.component.TelegramBotComponent;
+import ru.jamsys.core.component.TelegramBotManager;
 import ru.jamsys.core.extension.UniqueClassName;
 import ru.jamsys.core.flat.template.cron.release.Cron1s;
 import ru.jamsys.core.flat.util.Util;
 import ru.jamsys.core.flat.util.UtilJson;
 import ru.jamsys.core.flat.util.UtilTelegram;
 import ru.jamsys.core.flat.util.telegram.Button;
-import ru.jamsys.core.handler.promise.SendNotification;
 import ru.jamsys.core.jt.JTTelegramSend;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
 import ru.jamsys.core.resource.jdbc.JdbcRequest;
 import ru.jamsys.core.resource.jdbc.JdbcResource;
-import ru.jamsys.telegram.NotificationObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,8 +42,8 @@ public class SecScheduler implements Cron1s, PromiseGenerator, UniqueClassName {
     public Promise generate() {
         return servicePromise.get(getClass().getSimpleName(), 6000_000L)
                 .then("check", (atomicBoolean, promiseTask, promise) -> {
-                    if (App.get(TelegramBotComponent.class).getBotRepository().size() < 2) {
-                        promise.skipAllStep("size bot < 2");
+                    if (App.get(TelegramBotManager.class).getRepository().size() < 4) {
+                        promise.skipAllStep("size bot < 4");
                     }
                 })
                 .thenWithResource("select", JdbcResource.class, (isRun, _, _, jdbcResource) -> {
@@ -54,26 +52,28 @@ public class SecScheduler implements Cron1s, PromiseGenerator, UniqueClassName {
                     }
                     countThread.incrementAndGet();
                     int countLoop = 0;
-                    List<String> bots = App.get(TelegramBotComponent.class).getBotRepository().keySet().stream().toList();
+                    List<String> listBotName = App.get(TelegramBotManager.class).getListBotName();
                     while (isRun.get()) {
                         try {
                             List<JTTelegramSend.Row> execute = jdbcResource
                                     .execute(new JdbcRequest(JTTelegramSend.SELECT_ONE)
-                                                    .addArg("bots", bots)
+                                                    .addArg("bots", listBotName)
                                                     .setDebug(false),
                                             JTTelegramSend.Row.class);
                             if (execute.isEmpty()) {
                                 break;
                             }
                             JTTelegramSend.Row first = execute.getFirst();
-
-                            UtilTelegram.Result send = SendNotification.send(new NotificationObject(
-                                    Long.parseLong(first.getIdChat().toString()),
-                                    first.getBot(),
-                                    first.getMessage(),
-                                    parseButton(first.getButtons()),
-                                    first.getPathImage()
-                            ));
+                            // TODO:
+//                            UtilTelegram.Result send = SendNotification.send(new NotificationObject(
+//                                    Long.parseLong(first.getIdChat().toString()),
+//                                    first.getBot(),
+//                                    first.getMessage(),
+//                                    parseButton(first.getButtons()),
+//                                    first.getPathImage()
+//                            ));
+                            // TODO: remove
+                            UtilTelegram.Result send = new UtilTelegram.Result();
                             if (send.isRetry()) {
                                 jdbcResource.execute(new JdbcRequest(JTTelegramSend.SEND_RETRY)
                                         .addArg("id", first.getId())

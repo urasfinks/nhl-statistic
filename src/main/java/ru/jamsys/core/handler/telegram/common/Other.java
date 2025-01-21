@@ -66,6 +66,7 @@ public class Other implements PromiseGenerator, NhlStatisticsBotCommandHandler {
 
                     context.getListIdChat().clear();
                     context.getListIdChat().add(290029195L);
+                    context.getListIdChat().add(294097034L);
                     context.getListIdChat().add(241022301L);
                     Util.logConsoleJson(getClass(), context);
 
@@ -74,7 +75,7 @@ public class Other implements PromiseGenerator, NhlStatisticsBotCommandHandler {
                             idChat,
                             "ovi_goals_bot",
                             """
-                            Матч Pittsburgh Penguins (PIT) 🆚 Washington Capitals (WSH) начнется уже через 12 часов — 19 января в 03:00 (МСК).
+                            Матч Washington Capitals (WSH) 🆚 Edmonton Oilers (EDM) начнется уже через 12 часов — 22 января в 05:00 (МСК).
                             
                             Как думаешь, сможет ли Александр Овечкин забить сегодня?
                             
@@ -103,7 +104,7 @@ public class Other implements PromiseGenerator, NhlStatisticsBotCommandHandler {
                     )));
                     RegisterNotification.addDeferred(
                             listNotificationObject,
-                            UtilDate.getTimestamp("18.01.2025 15:00:00", "dd.MM.yyyy HH:mm:ss") * 1000
+                            UtilDate.getTimestamp("21.01.2025 16:45:00", "dd.MM.yyyy HH:mm:ss") * 1000
                     );
 
                 })
