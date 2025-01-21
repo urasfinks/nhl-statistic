@@ -6,11 +6,11 @@ import ru.jamsys.core.flat.util.telegram.Button;
 import java.util.List;
 
 @Getter
-public class NotificationObject {
+public class TelegramNotification {
 
     final long idChat;
 
-    final String bot;
+    final String botName;
 
     final String message;
 
@@ -18,9 +18,9 @@ public class NotificationObject {
 
     final String pathImage;
 
-    public NotificationObject(long idChat, String bot, String message, List<Button> buttons, String pathImage) {
+    public TelegramNotification(long idChat, String botName, String message, List<Button> buttons, String pathImage) {
         this.idChat = idChat;
-        this.bot = bot;
+        this.botName = botName;
         this.message = message;
         this.buttons = buttons;
         this.pathImage = pathImage;

@@ -10,7 +10,7 @@ import ru.jamsys.core.flat.util.Util;
 import ru.jamsys.core.flat.util.UtilTelegram;
 import ru.jamsys.core.flat.util.telegram.Button;
 import ru.jamsys.core.statistic.AvgMetric;
-import ru.jamsys.telegram.NotificationObject;
+import ru.jamsys.telegram.TelegramNotification;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -24,7 +24,7 @@ public class NhlStatisticApplication {
     public static void main(String[] args) {
         App.springSource = NhlStatisticApplication.class;
         App.main(args);
-        NotificationObject notificationObject = new NotificationObject(
+        TelegramNotification telegramNotification = new TelegramNotification(
                 290029195L,
                 App.get(TelegramBotManager.class).getOviBotProperty().getName(),
                 """
@@ -55,30 +55,30 @@ public class NhlStatisticApplication {
                 ,
                 null
         );
-        App.get(TelegramBotManager.class).send(notificationObject, TelegramBotManager.Type.HTTP_SENDER);
+        App.get(TelegramBotManager.class).send(telegramNotification, TelegramBotManager.TypeSender.HTTP);
 
     }
 
     @SuppressWarnings("unused")
     public static void loadTelegram(){
         TelegramBotManager telegramBotManager = App.get(TelegramBotManager.class);
-        Queue<NotificationObject> queue = new ConcurrentLinkedQueue<>();
+        Queue<TelegramNotification> queue = new ConcurrentLinkedQueue<>();
         for (int i = 0; i < 30; i++) {
-            queue.add(new NotificationObject(
+            queue.add(new TelegramNotification(
                     290029195L,
                     telegramBotManager.getOviBotProperty().getName(),
                     i + "",
                     null,
                     null
             ));
-            queue.add(new NotificationObject(
+            queue.add(new TelegramNotification(
                     294097034L,
                     telegramBotManager.getOviBotProperty().getName(),
                     i + "",
                     null,
                     null
             ));
-            queue.add(new NotificationObject(
+            queue.add(new TelegramNotification(
                     241022301L,
                     telegramBotManager.getOviBotProperty().getName(),
                     i + "",
@@ -94,9 +94,9 @@ public class NhlStatisticApplication {
             new Thread(() -> {
 
                 while (isRun.get()) {
-                    NotificationObject poll = queue.poll();
+                    TelegramNotification poll = queue.poll();
                     if (poll != null) {
-                        UtilTelegram.Result send = telegramBotManager.send(poll, TelegramBotManager.Type.HTTP_SENDER);
+                        UtilTelegram.Result send = telegramBotManager.send(poll, TelegramBotManager.TypeSender.HTTP);
                         avg.add(send.getTiming());
                     }else{
                         Util.sleepMs(1000);

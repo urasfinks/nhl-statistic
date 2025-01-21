@@ -42,7 +42,7 @@ public class TelegramBotHttpSender implements TelegramSender {
             );
         }
         Util.logConsoleJson(getClass(), requestBody);
-        return nativeSend(idChat, UtilJson.toStringPretty(requestBody, "{}"));
+        return httpSend(idChat, UtilJson.toStringPretty(requestBody, "{}"));
     }
 
     public UtilTelegram.Result sendImage(long idChat, InputStream is, String fileName, String description) {
@@ -54,7 +54,7 @@ public class TelegramBotHttpSender implements TelegramSender {
         // Как будто для Sender не надо ничего высылать по командам
     }
 
-    private UtilTelegram.Result nativeSend(long idChat, String data) {
+    private UtilTelegram.Result httpSend(long idChat, String data) {
         if (data == null) {
             return new UtilTelegram.Result()
                     .setException(UtilTelegram.ResultException.OTHER)

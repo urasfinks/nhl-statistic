@@ -10,18 +10,18 @@ import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
 import ru.jamsys.core.resource.jdbc.JdbcRequest;
 import ru.jamsys.core.resource.jdbc.JdbcResource;
-import ru.jamsys.telegram.NotificationObject;
+import ru.jamsys.telegram.TelegramNotification;
 
 import java.util.List;
 
 @Accessors(chain = true)
 public class RegisterNotification implements PromiseGenerator {
 
-    private final List<NotificationObject> listNotificationObject;
+    private final List<TelegramNotification> listTelegramNotification;
     private final Long onTimestamp;
 
-    public RegisterNotification(List<NotificationObject> listNotificationObject, Long onTimestamp) {
-        this.listNotificationObject = listNotificationObject;
+    public RegisterNotification(List<TelegramNotification> listTelegramNotification, Long onTimestamp) {
+        this.listTelegramNotification = listTelegramNotification;
         this.onTimestamp = onTimestamp;
     }
 
@@ -33,10 +33,10 @@ public class RegisterNotification implements PromiseGenerator {
                             ? JTTelegramSend.INSERT
                             : JTTelegramSend.INSERT_TS_ADD
                     );
-                    listNotificationObject.forEach(notificationObject -> jdbcRequest
+                    listTelegramNotification.forEach(notificationObject -> jdbcRequest
                             .addArg("ts_add", onTimestamp)
                             .addArg("id_chat", notificationObject.getIdChat())
-                            .addArg("bot", notificationObject.getBot())
+                            .addArg("bot", notificationObject.getBotName())
                             .addArg("message", notificationObject.getMessage())
                             .addArg("path_image", notificationObject.getPathImage())
                             .addArg("buttons", notificationObject.getButtons() == null
@@ -49,29 +49,29 @@ public class RegisterNotification implements PromiseGenerator {
                 ;
     }
 
-    public static void add(NotificationObject notificationObject) {
-        addDeferred(notificationObject, null);
+    public static void add(TelegramNotification telegramNotification) {
+        addDeferred(telegramNotification, null);
     }
 
-    public static void addDeferred(NotificationObject notificationObject, Long onTimestamp) {
-        if (notificationObject == null) {
+    public static void addDeferred(TelegramNotification telegramNotification, Long onTimestamp) {
+        if (telegramNotification == null) {
             return;
         }
         new RegisterNotification(
-                new ArrayListBuilder<NotificationObject>().append(notificationObject),
+                new ArrayListBuilder<TelegramNotification>().append(telegramNotification),
                 onTimestamp
         ).generate().run();
     }
 
-    public static void add(List<NotificationObject> listNotificationObject) {
-        addDeferred(listNotificationObject, null);
+    public static void add(List<TelegramNotification> listTelegramNotification) {
+        addDeferred(listTelegramNotification, null);
     }
 
-    public static void addDeferred(List<NotificationObject> listNotificationObject, Long onTimestamp) {
-        if (listNotificationObject == null || listNotificationObject.isEmpty()) {
+    public static void addDeferred(List<TelegramNotification> listTelegramNotification, Long onTimestamp) {
+        if (listTelegramNotification == null || listTelegramNotification.isEmpty()) {
             return;
         }
-        new RegisterNotification(listNotificationObject, onTimestamp).generate().run();
+        new RegisterNotification(listTelegramNotification, onTimestamp).generate().run();
     }
 
 }

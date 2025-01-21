@@ -16,7 +16,7 @@ import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
 import ru.jamsys.core.resource.jdbc.JdbcRequest;
 import ru.jamsys.core.resource.jdbc.JdbcResource;
-import ru.jamsys.telegram.NotificationObject;
+import ru.jamsys.telegram.TelegramNotification;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,13 +67,13 @@ public class SecScheduler implements Cron1s, PromiseGenerator, UniqueClassName {
                             }
                             JTTelegramSend.Row first = execute.getFirst();
 
-                            UtilTelegram.Result send = telegramBotManager.send(new NotificationObject(
+                            UtilTelegram.Result send = telegramBotManager.send(new TelegramNotification(
                                     Long.parseLong(first.getIdChat().toString()),
                                     first.getBot(),
                                     first.getMessage(),
                                     parseButton(first.getButtons()),
                                     first.getPathImage()
-                            ), TelegramBotManager.Type.HTTP_SENDER);
+                            ), TelegramBotManager.TypeSender.HTTP);
 
                             if (send.isRetry()) {
                                 jdbcResource.execute(new JdbcRequest(JTTelegramSend.SEND_RETRY)

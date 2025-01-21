@@ -11,7 +11,7 @@ import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
 import ru.jamsys.core.resource.jdbc.JdbcRequest;
 import ru.jamsys.core.resource.jdbc.JdbcResource;
-import ru.jamsys.telegram.NotificationObject;
+import ru.jamsys.telegram.TelegramNotification;
 import ru.jamsys.telegram.TelegramCommandContext;
 import ru.jamsys.telegram.handler.OviGoalsBotCommandHandler;
 
@@ -59,7 +59,7 @@ public class Stop implements PromiseGenerator, OviGoalsBotCommandHandler {
                 })
                 .then("send", (_, _, promise) -> {
                             TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
-                            RegisterNotification.add(new NotificationObject(
+                            RegisterNotification.add(new TelegramNotification(
                                     context.getIdChat(),
                                     context.getTelegramBot().getBotUsername(),
                                     promise.getRepositoryMapClass(Boolean.class)

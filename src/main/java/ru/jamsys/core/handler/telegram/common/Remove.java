@@ -16,7 +16,7 @@ import ru.jamsys.core.promise.PromiseGenerator;
 import ru.jamsys.core.resource.jdbc.JdbcRequest;
 import ru.jamsys.core.resource.jdbc.JdbcResource;
 import ru.jamsys.tank.data.NHLPlayerList;
-import ru.jamsys.telegram.NotificationObject;
+import ru.jamsys.telegram.TelegramNotification;
 import ru.jamsys.telegram.TelegramCommandContext;
 import ru.jamsys.telegram.handler.NhlStatisticsBotCommandHandler;
 
@@ -53,7 +53,7 @@ public class Remove implements PromiseGenerator, NhlStatisticsBotCommandHandler 
                             JTPlayerSubscriber.Row.class
                     );
                     if (execute.isEmpty()) {
-                        RegisterNotification.add(new NotificationObject(
+                        RegisterNotification.add(new TelegramNotification(
                                 context.getIdChat(),
                                 context.getTelegramBot().getBotUsername(),
                                 "В текущей момент подписок нет",
@@ -75,7 +75,7 @@ public class Remove implements PromiseGenerator, NhlStatisticsBotCommandHandler 
                                 )
                         ));
                     });
-                    RegisterNotification.add(new NotificationObject(
+                    RegisterNotification.add(new TelegramNotification(
                             context.getIdChat(),
                             context.getTelegramBot().getBotUsername(),
                             "Выбери игрока для удаления подписки",
@@ -104,7 +104,7 @@ public class Remove implements PromiseGenerator, NhlStatisticsBotCommandHandler 
                             .addArg("id_player", context.getUriParameters().get("id"))
                             .setDebug(false)
                     );
-                    RegisterNotification.add(new NotificationObject(
+                    RegisterNotification.add(new TelegramNotification(
                             context.getIdChat(),
                             context.getTelegramBot().getBotUsername(),
                             "Подписка удалена",

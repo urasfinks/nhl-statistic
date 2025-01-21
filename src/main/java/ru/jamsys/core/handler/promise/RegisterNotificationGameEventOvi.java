@@ -17,7 +17,7 @@ import ru.jamsys.core.resource.jdbc.JdbcResource;
 import ru.jamsys.tank.data.NHLGamesForPlayer;
 import ru.jamsys.tank.data.NHLPlayerList;
 import ru.jamsys.telegram.GameEventData;
-import ru.jamsys.telegram.NotificationObject;
+import ru.jamsys.telegram.TelegramNotification;
 import ru.jamsys.telegram.template.GameEventTemplateOvi;
 
 import java.util.ArrayList;
@@ -63,12 +63,12 @@ public class RegisterNotificationGameEventOvi implements PromiseGenerator {
                     String message = new GameEventTemplateOvi(gameEventData).toString();
                     TelegramBotManager telegramBotManager = App.get(TelegramBotManager.class);
 
-                    List<NotificationObject> listNotPlay = new ArrayList<>();
-                    List<NotificationObject> listEvent = new ArrayList<>();
+                    List<TelegramNotification> listNotPlay = new ArrayList<>();
+                    List<TelegramNotification> listEvent = new ArrayList<>();
                     UtilRisc.forEach(atomicBoolean, listIdChat, idChat -> {
 
                             if (gameEventData.getAction().equals(GameEventData.Action.NOT_PLAY)) {
-                                listNotPlay.add(new NotificationObject(
+                                listNotPlay.add(new TelegramNotification(
                                         idChat,
                                         telegramBotManager.getOviBotProperty().getName(),
                                         message,
@@ -76,7 +76,7 @@ public class RegisterNotificationGameEventOvi implements PromiseGenerator {
                                         null
                                 ));
                             } else {
-                                listEvent.add(new NotificationObject(
+                                listEvent.add(new TelegramNotification(
                                         idChat,
                                         telegramBotManager.getOviBotProperty().getName(),
                                         message,
@@ -102,10 +102,10 @@ public class RegisterNotificationGameEventOvi implements PromiseGenerator {
                             .getRepositoryMapClass(PlayerStatistic.class);
                     String message = ovi.getMessage();
                     TelegramBotManager telegramBotComponent = App.get(TelegramBotManager.class);
-                    List<NotificationObject> listSendStat = new ArrayList<>();
-                    List<NotificationObject> listSendImage = new ArrayList<>();
+                    List<TelegramNotification> listSendStat = new ArrayList<>();
+                    List<TelegramNotification> listSendImage = new ArrayList<>();
                     UtilRisc.forEach(atomicBoolean, listIdChat, idChat -> {
-                        listSendStat.add(new NotificationObject(
+                        listSendStat.add(new TelegramNotification(
                                 idChat,
                                 telegramBotComponent.getOviBotProperty().getName(),
                                 message,
@@ -118,7 +118,7 @@ public class RegisterNotificationGameEventOvi implements PromiseGenerator {
                                 gameEventData.getScoredGoal() > 0
                                         && UtilFileResource.isFile(pathImage, UtilFileResource.Direction.PROJECT)
                         ) {
-                            listSendImage.add(new NotificationObject(
+                            listSendImage.add(new TelegramNotification(
                                     idChat,
                                     telegramBotComponent.getOviBotProperty().getName(),
                                     null,

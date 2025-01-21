@@ -18,7 +18,7 @@ import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
 import ru.jamsys.core.resource.jdbc.JdbcRequest;
 import ru.jamsys.core.resource.jdbc.JdbcResource;
-import ru.jamsys.telegram.NotificationObject;
+import ru.jamsys.telegram.TelegramNotification;
 import ru.jamsys.telegram.TelegramCommandContext;
 import ru.jamsys.telegram.handler.OviGoalsBotCommandHandler;
 
@@ -69,7 +69,7 @@ public class Start implements PromiseGenerator, OviGoalsBotCommandHandler {
                 .then("check", (_, _, promise) -> {
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
                     if (!promise.getRepositoryMapClass(Boolean.class)) {
-                        RegisterNotification.add(new NotificationObject(
+                        RegisterNotification.add(new TelegramNotification(
                                 context.getIdChat(),
                                 context.getTelegramBot().getBotUsername(),
                                 "Уведомления включены",
@@ -84,7 +84,7 @@ public class Start implements PromiseGenerator, OviGoalsBotCommandHandler {
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
                     PlayerStatistic ovi = promise.getRepositoryMapClass(Promise.class, "ovi")
                             .getRepositoryMapClass(PlayerStatistic.class);
-                    RegisterNotification.add(new NotificationObject(
+                    RegisterNotification.add(new TelegramNotification(
                             context.getIdChat(),
                             context.getTelegramBot().getBotUsername(),
                             String.format("""
@@ -99,7 +99,7 @@ public class Start implements PromiseGenerator, OviGoalsBotCommandHandler {
                             null,
                             null
                     ));
-                    RegisterDelayNotification.add(new ArrayListBuilder<NotificationObject>().append(new NotificationObject(
+                    RegisterDelayNotification.add(new ArrayListBuilder<TelegramNotification>().append(new TelegramNotification(
                             context.getIdChat(),
                             context.getTelegramBot().getBotUsername(),
                             """
@@ -114,7 +114,7 @@ public class Start implements PromiseGenerator, OviGoalsBotCommandHandler {
                     )), 10_000L);
 
                     RegisterDelayNotification.add(
-                            new ArrayListBuilder<NotificationObject>().append(new NotificationObject(
+                            new ArrayListBuilder<TelegramNotification>().append(new TelegramNotification(
                                     context.getIdChat(),
                                     context.getTelegramBot().getBotUsername(),
                                     "Побьет ли Александр Овечкин рекорд Уэйна Гретцки в этом сезоне?",

@@ -18,7 +18,7 @@ import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
 import ru.jamsys.core.resource.jdbc.JdbcRequest;
 import ru.jamsys.core.resource.jdbc.JdbcResource;
-import ru.jamsys.telegram.NotificationObject;
+import ru.jamsys.telegram.TelegramNotification;
 import ru.jamsys.telegram.TelegramCommandContext;
 import ru.jamsys.telegram.handler.NhlStatisticsBotCommandHandler;
 
@@ -70,8 +70,8 @@ public class Other implements PromiseGenerator, NhlStatisticsBotCommandHandler {
                     context.getListIdChat().add(241022301L);
                     Util.logConsoleJson(getClass(), context);
 
-                    List<NotificationObject> listNotificationObject = new ArrayList<>();
-                    context.getListIdChat().forEach(idChat -> listNotificationObject.add(new NotificationObject(
+                    List<TelegramNotification> listTelegramNotification = new ArrayList<>();
+                    context.getListIdChat().forEach(idChat -> listTelegramNotification.add(new TelegramNotification(
                             idChat,
                             "ovi_goals_bot",
                             """
@@ -103,7 +103,7 @@ public class Other implements PromiseGenerator, NhlStatisticsBotCommandHandler {
                             null
                     )));
                     RegisterNotification.addDeferred(
-                            listNotificationObject,
+                            listTelegramNotification,
                             UtilDate.getTimestamp("21.01.2025 16:45:00", "dd.MM.yyyy HH:mm:ss") * 1000
                     );
 
@@ -111,7 +111,7 @@ public class Other implements PromiseGenerator, NhlStatisticsBotCommandHandler {
                 .onError((atomicBoolean, promiseTask, promise) -> {
                     try {
                         TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
-                        RegisterNotification.add(new NotificationObject(
+                        RegisterNotification.add(new TelegramNotification(
                                 context.getIdChat(),
                                 context.getTelegramBot().getBotUsername(),
                                 "Бот сломался",

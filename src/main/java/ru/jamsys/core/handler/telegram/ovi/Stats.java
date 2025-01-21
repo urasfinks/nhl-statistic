@@ -10,7 +10,7 @@ import ru.jamsys.core.handler.promise.PlayerStatistic;
 import ru.jamsys.core.handler.promise.RegisterNotification;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
-import ru.jamsys.telegram.NotificationObject;
+import ru.jamsys.telegram.TelegramNotification;
 import ru.jamsys.telegram.TelegramCommandContext;
 import ru.jamsys.telegram.handler.OviGoalsBotCommandHandler;
 
@@ -35,7 +35,7 @@ public class Stats implements PromiseGenerator, OviGoalsBotCommandHandler {
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
                     PlayerStatistic ovi = promise.getRepositoryMapClass(Promise.class, "ovi")
                             .getRepositoryMapClass(PlayerStatistic.class);
-                    RegisterNotification.add(new NotificationObject(
+                    RegisterNotification.add(new TelegramNotification(
                             context.getIdChat(),
                             context.getTelegramBot().getBotUsername(),
                             ovi.getMessage(),

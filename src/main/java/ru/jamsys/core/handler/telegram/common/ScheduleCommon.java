@@ -21,7 +21,7 @@ import ru.jamsys.core.resource.jdbc.JdbcRequest;
 import ru.jamsys.core.resource.jdbc.JdbcResource;
 import ru.jamsys.tank.data.NHLPlayerList;
 import ru.jamsys.tank.data.NHLTeamSchedule;
-import ru.jamsys.telegram.NotificationObject;
+import ru.jamsys.telegram.TelegramNotification;
 import ru.jamsys.telegram.TelegramCommandContext;
 import ru.jamsys.telegram.handler.NhlStatisticsBotCommandHandler;
 
@@ -59,7 +59,7 @@ public class ScheduleCommon implements PromiseGenerator, NhlStatisticsBotCommand
                             JTPlayerSubscriber.Row.class
                     );
                     if (execute.isEmpty()) {
-                        RegisterNotification.add(new NotificationObject(
+                        RegisterNotification.add(new TelegramNotification(
                                 context.getIdChat(),
                                 context.getTelegramBot().getBotUsername(),
                                 "В текущий момент подписок нет",
@@ -85,7 +85,7 @@ public class ScheduleCommon implements PromiseGenerator, NhlStatisticsBotCommand
                                 )
                         ));
                     });
-                    RegisterNotification.add(new NotificationObject(
+                    RegisterNotification.add(new TelegramNotification(
                             context.getIdChat(),
                             context.getTelegramBot().getBotUsername(),
                             "Выбери игрока для отображения расписания",
@@ -122,7 +122,7 @@ public class ScheduleCommon implements PromiseGenerator, NhlStatisticsBotCommand
                             .setDebug(false)
                     );
                     if (execute.isEmpty()) {
-                        RegisterNotification.add(new NotificationObject(
+                        RegisterNotification.add(new TelegramNotification(
                                 context.getIdChat(),
                                 context.getTelegramBot().getBotUsername(),
                                 "В текущий момент запланированных игр нет",

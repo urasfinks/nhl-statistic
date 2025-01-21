@@ -22,7 +22,7 @@ import ru.jamsys.core.resource.jdbc.JdbcRequest;
 import ru.jamsys.core.resource.jdbc.JdbcResource;
 import ru.jamsys.tank.data.NHLPlayerList;
 import ru.jamsys.tank.data.NHLTeamSchedule;
-import ru.jamsys.telegram.NotificationObject;
+import ru.jamsys.telegram.TelegramNotification;
 import ru.jamsys.telegram.TelegramCommandContext;
 import ru.jamsys.telegram.handler.NhlStatisticsBotCommandHandler;
 
@@ -49,7 +49,7 @@ public class Subscribe implements PromiseGenerator, NhlStatisticsBotCommandHandl
         gen.then("check", (_, _, promise) -> {
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
                     if (UtilNHL.getActiveSeasonOrNext() == null) {
-                        RegisterNotification.add(new NotificationObject(
+                        RegisterNotification.add(new TelegramNotification(
                                 context.getIdChat(),
                                 context.getTelegramBot().getBotUsername(),
                                 "Регулярный сезон ещё не начался. Подписка доступна с октября по Апрель",
@@ -61,7 +61,7 @@ public class Subscribe implements PromiseGenerator, NhlStatisticsBotCommandHandl
                     }
                     if (!context.getUriParameters().containsKey("namePlayer")) {
                         context.getStepHandler().put(context.getIdChat(), context.getUriPath() + "/?namePlayer=");
-                        RegisterNotification.add(new NotificationObject(
+                        RegisterNotification.add(new TelegramNotification(
                                 context.getIdChat(),
                                 context.getTelegramBot().getBotUsername(),
                                 "Введи имя игрока на английском языке:",
@@ -85,7 +85,7 @@ public class Subscribe implements PromiseGenerator, NhlStatisticsBotCommandHandl
                                     .getRepositoryMapClass(Tank01Request.class).getResponseData()
                     );
                     if (userList.isEmpty()) {
-                        RegisterNotification.add(new NotificationObject(
+                        RegisterNotification.add(new TelegramNotification(
                                 context.getIdChat(),
                                 context.getTelegramBot().getBotUsername(),
                                 "Игрок не найден",
@@ -110,7 +110,7 @@ public class Subscribe implements PromiseGenerator, NhlStatisticsBotCommandHandl
                             break;
                         }
                     }
-                    RegisterNotification.add(new NotificationObject(
+                    RegisterNotification.add(new TelegramNotification(
                             context.getIdChat(),
                             context.getTelegramBot().getBotUsername(),
                             "Выбери игрока:",
@@ -129,7 +129,7 @@ public class Subscribe implements PromiseGenerator, NhlStatisticsBotCommandHandl
                             .setDebug(false)
                     );
                     if (!execute.isEmpty()) {
-                        RegisterNotification.add(new NotificationObject(
+                        RegisterNotification.add(new TelegramNotification(
                                 context.getIdChat(),
                                 context.getTelegramBot().getBotUsername(),
                                 "Подписка уже существует",
@@ -206,7 +206,7 @@ public class Subscribe implements PromiseGenerator, NhlStatisticsBotCommandHandl
                 .onError((atomicBoolean, promiseTask, promise) -> {
                     try {
                         TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
-                        RegisterNotification.add(new NotificationObject(
+                        RegisterNotification.add(new TelegramNotification(
                                 context.getIdChat(),
                                 context.getTelegramBot().getBotUsername(),
                                 "Бот сломался",

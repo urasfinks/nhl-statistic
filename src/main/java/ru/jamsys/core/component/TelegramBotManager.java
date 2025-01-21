@@ -38,9 +38,9 @@ public class TelegramBotManager implements LifeCycleComponent {
 
     private final Map<String, TelegramSender> repository = new HashMap<>(); //key - name bot; value - sender
 
-    public enum Type {
-        HTTP_SENDER,
-        LIB_SENDER
+    public enum TypeSender {
+        HTTP,
+        EMBEDDED
     }
 
     public List<String> getListBotName() {
@@ -54,7 +54,7 @@ public class TelegramBotManager implements LifeCycleComponent {
         if (NhlStatisticApplication.startTelegramListener) {
             try {
                 init(
-                        Type.LIB_SENDER,
+                        TypeSender.EMBEDDED,
                         getCommonBotProperty(),
                         App.get(RouteGenerator.class).getRouterRepository(NhlStatisticsBotCommandHandler.class)
                 )
@@ -65,7 +65,7 @@ public class TelegramBotManager implements LifeCycleComponent {
                                         .append(new BotCommand("/remove", "Удалить подписку")),
                                         new BotCommandScopeDefault(), null));
                 init(
-                        Type.LIB_SENDER,
+                        TypeSender.EMBEDDED,
                         getOviBotProperty(),
                         App.get(RouteGenerator.class).getRouterRepository(OviGoalsBotCommandHandler.class)
                 ).setMyCommands(
@@ -77,8 +77,8 @@ public class TelegramBotManager implements LifeCycleComponent {
                                 .append(new BotCommand("/stop", "Отключить уведомления")),
                                 new BotCommandScopeDefault(), null));
 
-                init(Type.HTTP_SENDER, getCommonBotProperty());
-                init(Type.HTTP_SENDER, getOviBotProperty());
+                init(TypeSender.HTTP, getCommonBotProperty());
+                init(TypeSender.HTTP, getOviBotProperty());
 
             } catch (TelegramApiException e) {
                 throw new RuntimeException(e);
@@ -86,12 +86,12 @@ public class TelegramBotManager implements LifeCycleComponent {
         }
     }
 
-    public TelegramSender get(String botName, Type type) {
-        return repository.get(botName + "." + type.toString());
+    public TelegramSender get(String botName, TypeSender typeSender) {
+        return repository.get(botName + "." + typeSender.toString());
     }
 
-    public TelegramSender init(String botName, Type type, SupplierThrowing<TelegramSender> getter) {
-        String key = botName + "." + type.toString();
+    public TelegramSender init(String botName, TypeSender typeSender, SupplierThrowing<TelegramSender> getter) {
+        String key = botName + "." + typeSender.toString();
         if (!repository.containsKey(key) && getter == null) {
             return null;
         }
@@ -105,49 +105,49 @@ public class TelegramBotManager implements LifeCycleComponent {
     }
 
     @SuppressWarnings("all")
-    public static TelegramSender init(Type type, BotProperty botProperty) {
-        return init(type, botProperty, null);
+    public static TelegramSender init(TypeSender typeSender, BotProperty botProperty) {
+        return init(typeSender, botProperty, null);
     }
 
-    public static TelegramSender init(Type type, BotProperty botProperty, RouteGeneratorRepository routerRepository) {
+    public static TelegramSender init(TypeSender typeSender, BotProperty botProperty, RouteGeneratorRepository routerRepository) {
         return App
                 .get(TelegramBotManager.class)
-                .init(botProperty.getName(), type, () -> switch (type) {
-                    case HTTP_SENDER -> new TelegramBotHttpSender(botProperty);
-                    case LIB_SENDER -> TelegramBotLibSender.getInstance(
+                .init(botProperty.getName(), typeSender, () -> switch (typeSender) {
+                    case HTTP -> new TelegramBotHttpSender(botProperty);
+                    case EMBEDDED -> TelegramBotEmbedded.getInstance(
                             botProperty,
                             routerRepository
                     );
                 });
     }
 
-    public UtilTelegram.Result send(NotificationObject notificationObject, Type type) {
+    public UtilTelegram.Result send(TelegramNotification telegramNotification, TypeSender typeSender) {
         UtilTelegram.Result telegramResult = new UtilTelegram.Result();
-        TelegramSender telegramSender = get(notificationObject.getBot(), type);
+        TelegramSender telegramSender = get(telegramNotification.getBotName(), typeSender);
         if (telegramSender == null) {
             return telegramResult
                     .setException(UtilTelegram.ResultException.SENDER_NULL)
                     .setCause("TelegramSender is null");
         }
         if (
-                notificationObject.getPathImage() == null
-                        || notificationObject.getPathImage().isEmpty()
+                telegramNotification.getPathImage() == null
+                        || telegramNotification.getPathImage().isEmpty()
         ) {
             return telegramSender.send(
-                    notificationObject.getIdChat(),
-                    notificationObject.getMessage(),
-                    notificationObject.getButtons()
+                    telegramNotification.getIdChat(),
+                    telegramNotification.getMessage(),
+                    telegramNotification.getButtons()
             );
         } else {
             try { // Потому что UtilFileResource.get throw exception
                 return telegramSender.sendImage(
-                        notificationObject.getIdChat(),
+                        telegramNotification.getIdChat(),
                         UtilFileResource.get(
-                                notificationObject.getPathImage(),
+                                telegramNotification.getPathImage(),
                                 UtilFileResource.Direction.PROJECT
                         ),
-                        UtilFile.getFileName(notificationObject.getPathImage()),
-                        notificationObject.getMessage()
+                        UtilFile.getFileName(telegramNotification.getPathImage()),
+                        telegramNotification.getMessage()
                 );
             } catch (Throwable th) {
                 telegramResult

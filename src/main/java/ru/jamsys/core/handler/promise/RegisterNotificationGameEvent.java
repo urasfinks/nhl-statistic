@@ -11,7 +11,7 @@ import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
 import ru.jamsys.tank.data.NHLPlayerList;
 import ru.jamsys.telegram.GameEventData;
-import ru.jamsys.telegram.NotificationObject;
+import ru.jamsys.telegram.TelegramNotification;
 import ru.jamsys.telegram.template.GameEventTemplate;
 
 import java.util.ArrayList;
@@ -57,11 +57,11 @@ public class RegisterNotificationGameEvent implements PromiseGenerator {
                     String message = new GameEventTemplate(gameEventData).toString();
                     TelegramBotManager telegramBotManager = App.get(TelegramBotManager.class);
 
-                    List<NotificationObject> listEvent = new ArrayList<>();
-                    List<NotificationObject> listNotPlay = new ArrayList<>();
+                    List<TelegramNotification> listEvent = new ArrayList<>();
+                    List<TelegramNotification> listNotPlay = new ArrayList<>();
 
                     UtilRisc.forEach(atomicBoolean, listIdChat, idChat -> {
-                        NotificationObject notificationObject = new NotificationObject(
+                        TelegramNotification telegramNotification = new TelegramNotification(
                                 idChat,
                                 telegramBotManager.getCommonBotProperty().getName(),
                                 message,
@@ -69,9 +69,9 @@ public class RegisterNotificationGameEvent implements PromiseGenerator {
                                 null
                         );
                         if (gameEventData.getAction().equals(GameEventData.Action.NOT_PLAY)) {
-                            listNotPlay.add(notificationObject);
+                            listNotPlay.add(telegramNotification);
                         } else {
-                            listEvent.add(notificationObject);
+                            listEvent.add(telegramNotification);
                         }
                     });
                     RegisterDelayNotification.add(listNotPlay, 10_000L);

@@ -17,7 +17,7 @@ import ru.jamsys.core.handler.promise.Tank01Request;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
 import ru.jamsys.tank.data.NHLTeamSchedule;
-import ru.jamsys.telegram.NotificationObject;
+import ru.jamsys.telegram.TelegramNotification;
 import ru.jamsys.telegram.TelegramCommandContext;
 import ru.jamsys.telegram.handler.OviGoalsBotCommandHandler;
 
@@ -89,7 +89,7 @@ public class Schedule implements PromiseGenerator, OviGoalsBotCommandHandler {
                     )
             ));
         }
-        RegisterNotification.add(new NotificationObject(
+        RegisterNotification.add(new TelegramNotification(
                 context.getIdChat(),
                 context.getTelegramBot().getBotUsername(),
                 page == 1 ? String.format(titleTemplate, sb) : sb.toString(),

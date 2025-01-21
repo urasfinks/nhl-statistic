@@ -27,7 +27,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-public class TelegramBotLibSender extends TelegramLongPollingBot implements TelegramSender {
+public class TelegramBotEmbedded extends TelegramLongPollingBot implements TelegramSender {
 
     private final RouteGeneratorRepository routerRepository;
     private final Map<Long, String> stepHandler;
@@ -45,25 +45,25 @@ public class TelegramBotLibSender extends TelegramLongPollingBot implements Tele
     @Getter
     private final String botUsername;
 
-    public static TelegramBotLibSender getInstance(
+    public static TelegramBotEmbedded getInstance(
             BotProperty botProperty,
             RouteGeneratorRepository routerRepository
     ) throws TelegramApiException {
         Util.logConsole(
-                TelegramBotLibSender.class,
+                TelegramBotEmbedded.class,
                 "Init bot: "
                         + botProperty.getName()
                         + "; SecurityAlias: "
                         + botProperty.getSecurityAlias()
         );
-        return new TelegramBotLibSender(
+        return new TelegramBotEmbedded(
                 botProperty.getName(),
                 new String(App.get(SecurityComponent.class).get(botProperty.getSecurityAlias())),
                 routerRepository
         );
     }
 
-    public TelegramBotLibSender(String botUsername, String botToken, RouteGeneratorRepository routerRepository) throws TelegramApiException {
+    public TelegramBotEmbedded(String botUsername, String botToken, RouteGeneratorRepository routerRepository) throws TelegramApiException {
         super(botToken);
         this.botUsername = botUsername;
         this.routerRepository = routerRepository;

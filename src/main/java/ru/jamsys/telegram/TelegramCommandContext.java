@@ -37,7 +37,7 @@ public class TelegramCommandContext {
 
     @ToString.Exclude
     @JsonIgnore
-    private TelegramBotLibSender telegramBot;
+    private TelegramBotEmbedded telegramBot;
 
     private String userInfo;
 

@@ -8,7 +8,7 @@ import ru.jamsys.core.component.manager.ManagerBroker;
 import ru.jamsys.core.component.manager.item.Broker;
 import ru.jamsys.core.handler.promise.RegisterNotification;
 import ru.jamsys.core.statistic.expiration.immutable.ExpirationMsImmutableEnvelope;
-import ru.jamsys.telegram.NotificationObject;
+import ru.jamsys.telegram.TelegramNotification;
 
 import java.util.List;
 
@@ -22,20 +22,20 @@ public class RegisterDelayNotification {
 
     public RegisterDelayNotification(ManagerBroker managerBroker) {
         managerBroker.initAndGet(
-                NotificationObject.class.getSimpleName(),
+                TelegramNotification.class.getSimpleName(),
                 List.class,
                 RegisterNotification::add
         );
-        broker = managerBroker.get(NotificationObject.class.getSimpleName(), List.class);
+        broker = managerBroker.get(TelegramNotification.class.getSimpleName(), List.class);
     }
 
-    public static void add(List<NotificationObject> notificationObject, long delayMs) {
-        if (notificationObject == null || notificationObject.isEmpty()) {
+    public static void add(List<TelegramNotification> telegramNotification, long delayMs) {
+        if (telegramNotification == null || telegramNotification.isEmpty()) {
             return;
         }
         App.get(RegisterDelayNotification.class)
                 .getBroker()
-                .add(new ExpirationMsImmutableEnvelope<>(notificationObject, delayMs));
+                .add(new ExpirationMsImmutableEnvelope<>(telegramNotification, delayMs));
     }
 
 }

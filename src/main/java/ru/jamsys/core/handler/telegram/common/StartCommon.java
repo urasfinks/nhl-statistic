@@ -8,7 +8,7 @@ import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.handler.promise.RegisterNotification;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
-import ru.jamsys.telegram.NotificationObject;
+import ru.jamsys.telegram.TelegramNotification;
 import ru.jamsys.telegram.TelegramCommandContext;
 import ru.jamsys.telegram.handler.NhlStatisticsBotCommandHandler;
 
@@ -30,7 +30,7 @@ public class StartCommon implements PromiseGenerator, NhlStatisticsBotCommandHan
         return servicePromise.get(getClass().getSimpleName(), 12_000L)
                 .then("start", (_, _, promise) -> {
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
-                    RegisterNotification.add(new NotificationObject(context.getIdChat(),
+                    RegisterNotification.add(new TelegramNotification(context.getIdChat(),
                             context.getTelegramBot().getBotUsername(),
                             "Привет",
                             null,
