@@ -1,10 +1,8 @@
 package ru.jamsys.telegram;
 
 import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.jamsys.core.App;
 import ru.jamsys.core.component.SecurityComponent;
-import ru.jamsys.core.component.ServiceProperty;
 import ru.jamsys.core.extension.builder.HashMapBuilder;
 import ru.jamsys.core.flat.util.Util;
 import ru.jamsys.core.flat.util.UtilJson;
@@ -81,7 +79,7 @@ public class TelegramBotHttpSender implements TelegramSender {
                 throw new RuntimeException(mapOrThrow.get("description").toString());
             }
         });
-        if (UtilTelegram.ResultException.BLOCK.equals(sandbox.getException())) {
+        if (UtilTelegram.ResultException.REVOKE.equals(sandbox.getException())) {
             new RemoveSubscriberOvi(idChat).generate().run();
         }
         return sandbox;

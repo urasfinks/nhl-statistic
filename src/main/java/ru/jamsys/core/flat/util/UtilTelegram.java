@@ -116,7 +116,7 @@ public class UtilTelegram {
     public enum ResultException {
         RETRY, // Стоит повторить
         NOT_INIT, // Пользователь не инициализировал бота командой /start
-        BLOCK, // Пользователь заблокировал бота
+        REVOKE, // Отозвать подписку
         OTHER,
         ID_CHAT_EMPTY,
         SENDER_NULL
@@ -175,9 +175,15 @@ public class UtilTelegram {
                 telegramResult
                         .setException(ResultException.RETRY)
                         .setCause(th.getMessage());
-            } else if (th.getMessage().contains("bot was blocked by the user")) {
+            } else if (
+                    th.getMessage().contains("bot was blocked by the user")
+                    || th.getMessage().contains("user is deactivated")
+                    || th.getMessage().contains("bot was kicked from the group chat")
+                    || th.getMessage().contains("bot can't send messages to bots")
+                    || th.getMessage().contains("bot is not a member of the channel chat")
+            ) {
                 telegramResult
-                        .setException(ResultException.BLOCK)
+                        .setException(ResultException.REVOKE)
                         .setCause(th.getMessage());
             } else {
                 telegramResult

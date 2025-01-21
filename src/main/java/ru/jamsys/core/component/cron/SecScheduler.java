@@ -16,6 +16,7 @@ import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
 import ru.jamsys.core.resource.jdbc.JdbcRequest;
 import ru.jamsys.core.resource.jdbc.JdbcResource;
+import ru.jamsys.telegram.NotificationObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,6 +54,7 @@ public class SecScheduler implements Cron1s, PromiseGenerator, UniqueClassName {
                     countThread.incrementAndGet();
                     int countLoop = 0;
                     List<String> listBotName = App.get(TelegramBotManager.class).getListBotName();
+                    TelegramBotManager telegramBotManager = App.get(TelegramBotManager.class);
                     while (isRun.get()) {
                         try {
                             List<JTTelegramSend.Row> execute = jdbcResource
@@ -64,16 +66,15 @@ public class SecScheduler implements Cron1s, PromiseGenerator, UniqueClassName {
                                 break;
                             }
                             JTTelegramSend.Row first = execute.getFirst();
-                            // TODO:
-//                            UtilTelegram.Result send = SendNotification.send(new NotificationObject(
-//                                    Long.parseLong(first.getIdChat().toString()),
-//                                    first.getBot(),
-//                                    first.getMessage(),
-//                                    parseButton(first.getButtons()),
-//                                    first.getPathImage()
-//                            ));
-                            // TODO: remove
-                            UtilTelegram.Result send = new UtilTelegram.Result();
+
+                            UtilTelegram.Result send = telegramBotManager.send(new NotificationObject(
+                                    Long.parseLong(first.getIdChat().toString()),
+                                    first.getBot(),
+                                    first.getMessage(),
+                                    parseButton(first.getButtons()),
+                                    first.getPathImage()
+                            ), TelegramBotManager.Type.HTTP_SENDER);
+
                             if (send.isRetry()) {
                                 jdbcResource.execute(new JdbcRequest(JTTelegramSend.SEND_RETRY)
                                         .addArg("id", first.getId())

@@ -179,7 +179,7 @@ public class TelegramBotLibSender extends TelegramLongPollingBot implements Tele
         UtilTelegram.Result sandbox = UtilTelegram.sandbox(result -> {
             result.setResponse(execute(method));
         });
-        if (UtilTelegram.ResultException.BLOCK.equals(sandbox.getException())) {
+        if (UtilTelegram.ResultException.REVOKE.equals(sandbox.getException())) {
             new RemoveSubscriberOvi(idChat).generate().run();
         }
         return sandbox;
@@ -195,7 +195,7 @@ public class TelegramBotLibSender extends TelegramLongPollingBot implements Tele
             }
             result.setResponse(execute(sendPhoto));
         });
-        if (UtilTelegram.ResultException.BLOCK.equals(sandbox.getException())) {
+        if (UtilTelegram.ResultException.REVOKE.equals(sandbox.getException())) {
             new RemoveSubscriberOvi(idChat).generate().run();
         }
         return sandbox;
