@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.extension.builder.HashMapBuilder;
 import ru.jamsys.core.extension.http.ServletResponseWriter;
-import ru.jamsys.core.flat.util.UtilTelegram;
+import ru.jamsys.core.flat.util.UtilTelegramMessage;
 import ru.jamsys.core.flat.util.telegram.Button;
 import ru.jamsys.core.handler.promise.RegisterNotification;
 import ru.jamsys.core.jt.JTPlayerSubscriber;
@@ -92,7 +92,7 @@ public class Remove implements PromiseGenerator, NhlStatisticsBotCommandHandler 
                         return;
                     }
                     context.getTelegramBot().send(
-                            UtilTelegram.editMessage(
+                            UtilTelegramMessage.editMessage(
                             context.getMsg(),
                             player.getLongNameWithTeamAbv()
                     ), context.getIdChat());

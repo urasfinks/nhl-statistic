@@ -16,7 +16,7 @@ import ru.jamsys.core.component.manager.item.RouteGeneratorRepository;
 import ru.jamsys.core.component.manager.item.Session;
 import ru.jamsys.core.extension.http.ServletRequestReader;
 import ru.jamsys.core.flat.util.Util;
-import ru.jamsys.core.flat.util.UtilTelegram;
+import ru.jamsys.core.flat.util.UtilTelegramMessage;
 import ru.jamsys.core.flat.util.UtilTelegramResponse;
 import ru.jamsys.core.flat.util.telegram.Button;
 import ru.jamsys.core.handler.promise.RemoveSubscriberOvi;
@@ -79,15 +79,15 @@ public class TelegramBotEmbedded extends TelegramLongPollingBot implements Teleg
         }
         if (msg.hasCallbackQuery()) {
             send(
-                    UtilTelegram.answerCallbackQuery(msg, ""),
-                    UtilTelegram.getIdChat(msg)
+                    UtilTelegramMessage.answerCallbackQuery(msg, ""),
+                    UtilTelegramMessage.getIdChat(msg)
             );
         }
-        Long idChat = UtilTelegram.getIdChat(msg);
+        Long idChat = UtilTelegramMessage.getIdChat(msg);
         if (idChat == null) {
             return;
         }
-        String data = UtilTelegram.getData(msg);
+        String data = UtilTelegramMessage.getData(msg);
         if (data == null) {
             return;
         }
@@ -109,15 +109,15 @@ public class TelegramBotEmbedded extends TelegramLongPollingBot implements Teleg
         }
         if (data.startsWith("/")) {
             if (idChat < 0) {
-                send(UtilTelegram.message(
+                send(UtilTelegramMessage.message(
                         idChat,
                         "Группы не поддерживаются",
                         null
                 ), idChat);
                 return;
             }
-            if (UtilTelegram.isBot(msg)) {
-                send(UtilTelegram.message(
+            if (UtilTelegramMessage.isBot(msg)) {
+                send(UtilTelegramMessage.message(
                         idChat,
                         "Боты не поддерживаются",
                         null
@@ -129,9 +129,9 @@ public class TelegramBotEmbedded extends TelegramLongPollingBot implements Teleg
             }
             PromiseGenerator match = routerRepository.match(data);
             if (match == null) {
-                send(UtilTelegram.message(
+                send(UtilTelegramMessage.message(
                         idChat,
-                        "Команда " + UtilTelegram.getData(msg) + " не поддерживается",
+                        "Команда " + UtilTelegramMessage.getData(msg) + " не поддерживается",
                         null
                 ), idChat);
                 return;
@@ -146,7 +146,7 @@ public class TelegramBotEmbedded extends TelegramLongPollingBot implements Teleg
             }
 
             promise.setRepositoryMapClass(TelegramCommandContext.class, new TelegramCommandContext()
-                    .setUserInfo(UtilTelegram.getUserInfo(msg))
+                    .setUserInfo(UtilTelegramMessage.getUserInfo(msg))
                     .setIdChat(idChat)
                     .setMsg(msg)
                     .setStepHandler(stepHandler)
@@ -167,7 +167,7 @@ public class TelegramBotEmbedded extends TelegramLongPollingBot implements Teleg
     }
 
     public UtilTelegramResponse.Result send(long idChat, String data, List<Button> buttons) {
-        return send(UtilTelegram.message(idChat, data, buttons), idChat);
+        return send(UtilTelegramMessage.message(idChat, data, buttons), idChat);
     }
 
     @SuppressWarnings("all")

@@ -10,7 +10,7 @@ import ru.jamsys.core.extension.builder.HashMapBuilder;
 import ru.jamsys.core.extension.http.ServletResponseWriter;
 import ru.jamsys.core.flat.util.Util;
 import ru.jamsys.core.flat.util.UtilNHL;
-import ru.jamsys.core.flat.util.UtilTelegram;
+import ru.jamsys.core.flat.util.UtilTelegramMessage;
 import ru.jamsys.core.flat.util.telegram.Button;
 import ru.jamsys.core.handler.promise.RegisterNotification;
 import ru.jamsys.core.handler.promise.Tank01Request;
@@ -150,7 +150,7 @@ public class Subscribe implements PromiseGenerator, NhlStatisticsBotCommandHandl
                     );
                     if (player == null) {
                         context.getTelegramBot().send(
-                                UtilTelegram.editMessage(context.getMsg(), "Игрок не найден"),
+                                UtilTelegramMessage.editMessage(context.getMsg(), "Игрок не найден"),
                                 context.getIdChat()
                         );
                         promise.skipAllStep("Not found player");
@@ -158,7 +158,7 @@ public class Subscribe implements PromiseGenerator, NhlStatisticsBotCommandHandl
                     }
                     String playerInfo = player.getLongNameWithTeamAbv();
                     context.getTelegramBot().send(
-                            UtilTelegram.editMessage(context.getMsg(), playerInfo),
+                            UtilTelegramMessage.editMessage(context.getMsg(), playerInfo),
                             context.getIdChat()
                     );
                     context.getUriParameters().put("infoPlayer", playerInfo);
@@ -167,7 +167,7 @@ public class Subscribe implements PromiseGenerator, NhlStatisticsBotCommandHandl
                 .thenWithResource("insertPlayerSubscriber", JdbcResource.class, (_, _, promise, jdbcResource) -> {
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
                     jdbcResource.execute(new JdbcRequest(JTPlayerSubscriber.INSERT)
-                            .addArg("id_chat", UtilTelegram.getIdChat(context.getMsg()))
+                            .addArg("id_chat", UtilTelegramMessage.getIdChat(context.getMsg()))
                             .addArg("id_player", context.getUriParameters().get("idPlayer"))
                             .addArg("id_team", context.getUriParameters().get("idTeam"))
                     );
@@ -183,13 +183,13 @@ public class Subscribe implements PromiseGenerator, NhlStatisticsBotCommandHandl
                             .get(context.getUriParameters().get("idTeam"));
                     if (games.isEmpty()) {
                         context.getTelegramBot().send(
-                                UtilTelegram.editMessage(context.getMsg(), "Игры не найдены"),
+                                UtilTelegramMessage.editMessage(context.getMsg(), "Игры не найдены"),
                                 context.getIdChat()
                         );
                         return;
                     }
                     context.getTelegramBot().send(
-                            UtilTelegram.editMessage(context.getMsg(), String.format("""
+                            UtilTelegramMessage.editMessage(context.getMsg(), String.format("""
                                     Создана подписка на %d %s %s.
                                     Первая игра будет: %s, последняя: %s.
                                     Для детального отображения запланированных игр используй: /schedule
