@@ -9,7 +9,7 @@ import ru.jamsys.core.extension.UniqueClassName;
 import ru.jamsys.core.flat.template.cron.release.Cron1s;
 import ru.jamsys.core.flat.util.Util;
 import ru.jamsys.core.flat.util.UtilJson;
-import ru.jamsys.core.flat.util.UtilTelegram;
+import ru.jamsys.core.flat.util.UtilTelegramResponse;
 import ru.jamsys.core.flat.util.telegram.Button;
 import ru.jamsys.core.jt.JTTelegramSend;
 import ru.jamsys.core.promise.Promise;
@@ -67,7 +67,7 @@ public class SecScheduler implements Cron1s, PromiseGenerator, UniqueClassName {
                             }
                             JTTelegramSend.Row first = execute.getFirst();
 
-                            UtilTelegram.Result send = telegramBotManager.send(new TelegramNotification(
+                            UtilTelegramResponse.Result send = telegramBotManager.send(new TelegramNotification(
                                     Long.parseLong(first.getIdChat().toString()),
                                     first.getBot(),
                                     first.getMessage(),

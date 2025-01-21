@@ -17,6 +17,7 @@ import ru.jamsys.core.component.manager.item.Session;
 import ru.jamsys.core.extension.http.ServletRequestReader;
 import ru.jamsys.core.flat.util.Util;
 import ru.jamsys.core.flat.util.UtilTelegram;
+import ru.jamsys.core.flat.util.UtilTelegramResponse;
 import ru.jamsys.core.flat.util.telegram.Button;
 import ru.jamsys.core.handler.promise.RemoveSubscriberOvi;
 import ru.jamsys.core.promise.Promise;
@@ -165,28 +166,28 @@ public class TelegramBotEmbedded extends TelegramLongPollingBot implements Teleg
         }
     }
 
-    public UtilTelegram.Result send(long idChat, String data, List<Button> buttons) {
+    public UtilTelegramResponse.Result send(long idChat, String data, List<Button> buttons) {
         return send(UtilTelegram.message(idChat, data, buttons), idChat);
     }
 
     @SuppressWarnings("all")
-    public <T extends Serializable, Method extends BotApiMethod<T>> UtilTelegram.Result send(Method method, Long idChat) {
+    public <T extends Serializable, Method extends BotApiMethod<T>> UtilTelegramResponse.Result send(Method method, Long idChat) {
         if (idChat == null) {
-            return new UtilTelegram.Result()
-                    .setException(UtilTelegram.ResultException.ID_CHAT_EMPTY)
+            return new UtilTelegramResponse.Result()
+                    .setException(UtilTelegramResponse.ResultException.ID_CHAT_EMPTY)
                     .setCause("idChat is null");
         }
-        UtilTelegram.Result sandbox = UtilTelegram.sandbox(result -> {
+        UtilTelegramResponse.Result sandbox = UtilTelegramResponse.sandbox(result -> {
             result.setResponse(execute(method));
         });
-        if (UtilTelegram.ResultException.REVOKE.equals(sandbox.getException())) {
+        if (UtilTelegramResponse.ResultException.REVOKE.equals(sandbox.getException())) {
             new RemoveSubscriberOvi(idChat).generate().run();
         }
         return sandbox;
     }
 
-    public UtilTelegram.Result sendImage(long idChat, InputStream is, String fileName, String description) {
-        UtilTelegram.Result sandbox = UtilTelegram.sandbox(result -> {
+    public UtilTelegramResponse.Result sendImage(long idChat, InputStream is, String fileName, String description) {
+        UtilTelegramResponse.Result sandbox = UtilTelegramResponse.sandbox(result -> {
             SendPhoto sendPhoto = new SendPhoto();
             sendPhoto.setChatId(idChat);
             sendPhoto.setPhoto(new InputFile(is, fileName));
@@ -195,7 +196,7 @@ public class TelegramBotEmbedded extends TelegramLongPollingBot implements Teleg
             }
             result.setResponse(execute(sendPhoto));
         });
-        if (UtilTelegram.ResultException.REVOKE.equals(sandbox.getException())) {
+        if (UtilTelegramResponse.ResultException.REVOKE.equals(sandbox.getException())) {
             new RemoveSubscriberOvi(idChat).generate().run();
         }
         return sandbox;

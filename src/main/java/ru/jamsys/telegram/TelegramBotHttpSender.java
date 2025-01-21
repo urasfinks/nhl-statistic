@@ -6,7 +6,7 @@ import ru.jamsys.core.component.SecurityComponent;
 import ru.jamsys.core.extension.builder.HashMapBuilder;
 import ru.jamsys.core.flat.util.Util;
 import ru.jamsys.core.flat.util.UtilJson;
-import ru.jamsys.core.flat.util.UtilTelegram;
+import ru.jamsys.core.flat.util.UtilTelegramResponse;
 import ru.jamsys.core.flat.util.telegram.Button;
 import ru.jamsys.core.handler.promise.RemoveSubscriberOvi;
 import ru.jamsys.core.resource.http.client.HttpClientImpl;
@@ -27,7 +27,7 @@ public class TelegramBotHttpSender implements TelegramSender {
         this.token = new String(securityComponent.get(botProperty.getSecurityAlias()));
     }
 
-    public UtilTelegram.Result send(long idChat, String data, List<Button> buttons) {
+    public UtilTelegramResponse.Result send(long idChat, String data, List<Button> buttons) {
         Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("chat_id", idChat);
         requestBody.put("text", data);
@@ -45,7 +45,7 @@ public class TelegramBotHttpSender implements TelegramSender {
         return httpSend(idChat, UtilJson.toStringPretty(requestBody, "{}"));
     }
 
-    public UtilTelegram.Result sendImage(long idChat, InputStream is, String fileName, String description) {
+    public UtilTelegramResponse.Result sendImage(long idChat, InputStream is, String fileName, String description) {
         return null;
     }
 
@@ -54,10 +54,10 @@ public class TelegramBotHttpSender implements TelegramSender {
         // Как будто для Sender не надо ничего высылать по командам
     }
 
-    private UtilTelegram.Result httpSend(long idChat, String data) {
+    private UtilTelegramResponse.Result httpSend(long idChat, String data) {
         if (data == null) {
-            return new UtilTelegram.Result()
-                    .setException(UtilTelegram.ResultException.OTHER)
+            return new UtilTelegramResponse.Result()
+                    .setException(UtilTelegramResponse.ResultException.OTHER)
                     .setCause("data is null");
         }
         HttpClientImpl httpClient = new HttpClientImpl();
@@ -69,7 +69,7 @@ public class TelegramBotHttpSender implements TelegramSender {
                 .setPostData(data.getBytes())
                 .setTimeoutMs(10_000);
         httpClient.exec();
-        UtilTelegram.Result sandbox = UtilTelegram.sandbox(result -> {
+        UtilTelegramResponse.Result sandbox = UtilTelegramResponse.sandbox(result -> {
             HttpResponse httpResponse = httpClient.getHttpResponse();
             if (httpResponse.getStatusCode() == 200) {
                 result.setResponse(UtilJson.getMapOrThrow(httpResponse.getBody()));
@@ -79,7 +79,7 @@ public class TelegramBotHttpSender implements TelegramSender {
                 throw new RuntimeException(mapOrThrow.get("description").toString());
             }
         });
-        if (UtilTelegram.ResultException.REVOKE.equals(sandbox.getException())) {
+        if (UtilTelegramResponse.ResultException.REVOKE.equals(sandbox.getException())) {
             new RemoveSubscriberOvi(idChat).generate().run();
         }
         return sandbox;

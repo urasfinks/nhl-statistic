@@ -16,7 +16,7 @@ import ru.jamsys.core.extension.builder.ArrayListBuilder;
 import ru.jamsys.core.extension.functional.SupplierThrowing;
 import ru.jamsys.core.flat.util.UtilFile;
 import ru.jamsys.core.flat.util.UtilFileResource;
-import ru.jamsys.core.flat.util.UtilTelegram;
+import ru.jamsys.core.flat.util.UtilTelegramResponse;
 import ru.jamsys.telegram.*;
 import ru.jamsys.telegram.handler.NhlStatisticsBotCommandHandler;
 import ru.jamsys.telegram.handler.OviGoalsBotCommandHandler;
@@ -121,12 +121,12 @@ public class TelegramBotManager implements LifeCycleComponent {
                 });
     }
 
-    public UtilTelegram.Result send(TelegramNotification telegramNotification, TypeSender typeSender) {
-        UtilTelegram.Result telegramResult = new UtilTelegram.Result();
+    public UtilTelegramResponse.Result send(TelegramNotification telegramNotification, TypeSender typeSender) {
+        UtilTelegramResponse.Result telegramResult = new UtilTelegramResponse.Result();
         TelegramSender telegramSender = get(telegramNotification.getBotName(), typeSender);
         if (telegramSender == null) {
             return telegramResult
-                    .setException(UtilTelegram.ResultException.SENDER_NULL)
+                    .setException(UtilTelegramResponse.ResultException.SENDER_NULL)
                     .setCause("TelegramSender is null");
         }
         if (
@@ -151,7 +151,7 @@ public class TelegramBotManager implements LifeCycleComponent {
                 );
             } catch (Throwable th) {
                 telegramResult
-                        .setException(UtilTelegram.ResultException.OTHER)
+                        .setException(UtilTelegramResponse.ResultException.OTHER)
                         .setCause(th.getMessage());
                 App.error(th);
             }

@@ -7,7 +7,7 @@ import ru.jamsys.core.extension.builder.ArrayListBuilder;
 import ru.jamsys.core.extension.builder.HashMapBuilder;
 import ru.jamsys.core.extension.http.ServletResponseWriter;
 import ru.jamsys.core.flat.util.Util;
-import ru.jamsys.core.flat.util.UtilTelegram;
+import ru.jamsys.core.flat.util.UtilTelegramResponse;
 import ru.jamsys.core.flat.util.telegram.Button;
 import ru.jamsys.core.statistic.AvgMetric;
 import ru.jamsys.telegram.TelegramNotification;
@@ -96,7 +96,7 @@ public class NhlStatisticApplication {
                 while (isRun.get()) {
                     TelegramNotification poll = queue.poll();
                     if (poll != null) {
-                        UtilTelegram.Result send = telegramBotManager.send(poll, TelegramBotManager.TypeSender.HTTP);
+                        UtilTelegramResponse.Result send = telegramBotManager.send(poll, TelegramBotManager.TypeSender.HTTP);
                         avg.add(send.getTiming());
                     }else{
                         Util.sleepMs(1000);
