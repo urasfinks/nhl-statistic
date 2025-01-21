@@ -104,6 +104,7 @@ public class TelegramBotManager implements LifeCycleComponent {
         });
     }
 
+    @SuppressWarnings("all")
     public static TelegramSender init(Type type, BotProperty botProperty) {
         return init(type, botProperty, null);
     }

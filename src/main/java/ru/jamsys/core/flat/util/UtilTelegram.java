@@ -77,6 +77,7 @@ public class UtilTelegram {
         return editMessage;
     }
 
+    @SuppressWarnings("unused")
     public static DeleteMessage removeMessage(Update msg) {
         DeleteMessage editMessage = new DeleteMessage();
         editMessage.setChatId(Objects.requireNonNull(getIdChat(msg)));
