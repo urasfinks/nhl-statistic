@@ -80,7 +80,6 @@ class MinSchedulerTest {
 
         promise.then("saveData", (_, _, _) -> {});
         promise.setDebug(false).run().await(50_000L);
-        Util.logConsoleJson(promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("3101"));
         Assertions.assertEquals(2, promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("3101").size());
         Assertions.assertEquals(GameEventData.Action.NOT_PLAY, promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("3101").getFirst().getAction());
         Assertions.assertEquals("Александр Овечкин", promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("3101").getFirst().getPlayer().getLongName());
@@ -125,7 +124,6 @@ class MinSchedulerTest {
         promise.then("saveData", (_, _, _) -> {
         });
         promise.setDebug(true).run().await(50_000L);
-        Util.logConsoleJson(promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("3101"));
         Assertions.assertEquals("(16:37, 3-й период)", promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("3101").getLast().getTime());
         Assertions.assertEquals(2, promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("3101").size());
         Assertions.assertEquals(GameEventData.Action.START_GAME, promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("3101").getFirst().getAction());
@@ -635,8 +633,6 @@ class MinSchedulerTest {
         promise.then("saveData", (_, _, _) -> {
         });
         promise.setDebug(false).run().await(50_000L);
-
-        Util.logConsoleJson(promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("4915856"));
 
         Assertions.assertEquals("12:05, 3-й период", promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("4915856").getFirst().getTime());
     }

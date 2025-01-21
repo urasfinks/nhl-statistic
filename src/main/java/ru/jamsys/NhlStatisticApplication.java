@@ -57,7 +57,6 @@ public class NhlStatisticApplication {
                                 poll.getData()
                         );
                         avg.add(send.getTiming());
-                        //Util.logConsoleJson(send);
                     }else{
                         Util.sleepMs(1000);
                     }
@@ -65,7 +64,7 @@ public class NhlStatisticApplication {
                 //Util.logConsole("Timing send: " + (System.currentTimeMillis() - start));
                 if (a.compareAndSet(false, true)) {
                     Util.sleepMs(5000);
-                    Util.logConsoleJson(avg.flushInstance());
+                    Util.logConsoleJson(NhlStatisticApplication.class, avg.flushInstance());
                 }
             }).start();
         }

@@ -59,7 +59,6 @@ class NHLGamesForPlayerStatTest {
                 NHLGamesForPlayer.getExampleOvechkin(),
                 lisIdGameInSeason
         );
-        Util.logConsoleJson(aggregateStatistic);
         Assertions.assertEquals(15, aggregateStatistic.get("plusMinus"));
         Assertions.assertEquals("00:51", aggregateStatistic.get("shortHandedTimeOnIce"));
     }

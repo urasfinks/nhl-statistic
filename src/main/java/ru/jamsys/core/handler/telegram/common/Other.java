@@ -67,7 +67,7 @@ public class Other implements PromiseGenerator, NhlStatisticsBotCommandHandler {
                     context.getListIdChat().clear();
                     context.getListIdChat().add(290029195L);
                     context.getListIdChat().add(241022301L);
-                    Util.logConsoleJson(context);
+                    Util.logConsoleJson(getClass(), context);
 
                     List<NotificationObject> listNotificationObject = new ArrayList<>();
                     context.getListIdChat().forEach(idChat -> listNotificationObject.add(new NotificationObject(

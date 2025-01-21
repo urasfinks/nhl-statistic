@@ -227,7 +227,15 @@ public class NHLBoxScore {
                 PlayerStat playerStat = getPlayerStat(idPlayer);
                 if (playerStat.getGoals() > 0) {
                     if (playerStat.getGoals() != playerStat.getSortByTimeListGoal(UtilListSort.Type.ASC).size()) {
-                        Util.logConsole("idPlayer: " + playerStat.getPlayerID() + "; statGoals: " + playerStat.getGoals() + "; sizeListGoals: " + playerStat.getSortByTimeListGoal(UtilListSort.Type.ASC).size());
+                        Util.logConsole(
+                                getClass(),
+                                "idPlayer: "
+                                        + playerStat.getPlayerID()
+                                        + "; statGoals: "
+                                        + playerStat.getGoals()
+                                        + "; sizeListGoals: "
+                                        + playerStat.getSortByTimeListGoal(UtilListSort.Type.ASC).size()
+                        );
                         listIdPlayer.add(playerStat.getPlayerID());
                     }
                 }

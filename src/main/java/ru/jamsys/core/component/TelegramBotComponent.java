@@ -64,11 +64,11 @@ public class TelegramBotComponent implements LifeCycleComponent {
             String oviSecurityAlias = serviceProperty.get("telegram.bot.ovi.security.alias");
             String oviName = serviceProperty.get("telegram.bot.ovi.name");
 
-            Util.logConsole("commonName: "+commonName);
-            Util.logConsole("commonSecurityAlias: "+commonSecurityAlias);
+            Util.logConsole(getClass(), "commonName: " + commonName);
+            Util.logConsole(getClass(), "commonSecurityAlias: " + commonSecurityAlias);
 
-            Util.logConsole("oviName: "+oviName);
-            Util.logConsole("oviSecurityAlias: "+oviSecurityAlias);
+            Util.logConsole(getClass(), "oviName: " + oviName);
+            Util.logConsole(getClass(), "oviSecurityAlias: " + oviSecurityAlias);
             try {
                 nhlStatisticsBot = new NhlStatisticsBot(
                         commonName,

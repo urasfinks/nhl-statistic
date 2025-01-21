@@ -93,7 +93,7 @@ class NhlStatisticApplicationTest {
 //                })
                 .run()
                 .await(20_000L);
-        Util.logConsole(promise.getLogString());
+        Util.logConsole(getClass(), promise.getLogString());
     }
 
     @SuppressWarnings("unused")
@@ -104,7 +104,7 @@ class NhlStatisticApplicationTest {
         tank01Request.generate()
                 .run()
                 .await(60_000L, 200);
-        Util.logConsole(tank01Request.getResponseData());
+        Util.logConsole(getClass(), tank01Request.getResponseData());
     }
 
     @SuppressWarnings("unused")
@@ -121,8 +121,8 @@ class NhlStatisticApplicationTest {
         scoreBoxCache.generate()
                 .run()
                 .await(60_000L);
-        Util.logConsoleJson(scoreBoxCache.getGoals());
-        Util.logConsoleJson(scoreBoxCache.getAllStatistic());
+        Util.logConsoleJson(getClass(), scoreBoxCache.getGoals());
+        Util.logConsoleJson(getClass(), scoreBoxCache.getAllStatistic());
     }
 
     @SuppressWarnings("unused")
@@ -140,7 +140,7 @@ class NhlStatisticApplicationTest {
         playerStatistic.generate()
                 .run()
                 .await(60_000L);
-        Util.logConsoleJson(playerStatistic);
+        Util.logConsoleJson(getClass(), playerStatistic);
     }
 
     @SuppressWarnings("unused")
@@ -150,8 +150,8 @@ class NhlStatisticApplicationTest {
         playerStatistic.generate()
                 .run()
                 .await(60_000L);
-        Util.logConsoleJson(playerStatistic);
-        Util.logConsole(playerStatistic.getMessage());
+        Util.logConsoleJson(getClass(), playerStatistic);
+        Util.logConsole(getClass(), playerStatistic.getMessage());
     }
 
     @SuppressWarnings("unused")
@@ -205,7 +205,7 @@ class NhlStatisticApplicationTest {
                 }))
                 .run()
                 .await(20_000L);
-        Util.logConsole(promise.getLogString());
+        Util.logConsole(getClass(), promise.getLogString());
     }
 
     @SuppressWarnings("unused")

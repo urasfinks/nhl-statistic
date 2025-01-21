@@ -36,7 +36,6 @@ public class SendNotification implements PromiseGenerator {
 
     public static UtilTelegram.Result send(NotificationObject notificationObject) {
         UtilTelegram.Result telegramResult = new UtilTelegram.Result();
-        //Util.logConsoleJson(notificationObject);
         AbstractBot telegramBot = App.get(TelegramBotComponent.class).getBotRepository().get(notificationObject.getBot());
         if(telegramBot == null){
             return telegramResult

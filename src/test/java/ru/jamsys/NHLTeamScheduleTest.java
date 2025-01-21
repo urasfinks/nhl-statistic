@@ -18,10 +18,10 @@ class NHLTeamScheduleTest {
 
     @Test
     void getYear() {
-        Util.logConsole(String.valueOf(Calendar.getInstance().get(Calendar.YEAR)));
+        Util.logConsole(getClass(), String.valueOf(Calendar.getInstance().get(Calendar.YEAR)));
         long timestampMills = Long.parseLong("1733274000000");
         LocalDateTime timestamp = LocalDateTime.ofInstant(Instant.ofEpochMilli(timestampMills), ZoneId.systemDefault());
-        Util.logConsole(String.valueOf(timestamp));
+        Util.logConsole(getClass(), String.valueOf(timestamp));
     }
 
     @Test
@@ -96,7 +96,6 @@ class NHLTeamScheduleTest {
                 """;
         Map<String, Object> game = UtilJson.getMapOrThrow(data);
         NHLTeamSchedule.extendGameTimeZone(game);
-        Util.logConsoleJson(game);
     }
 
     @Test

@@ -102,7 +102,6 @@ class NHLBoxScoreTest {
         Assertions.assertEquals("Philadelphia Flyers (PHI) 2 - 0 New York Rangers (NYR)", instance.getScoreGame("PHI"));
         Assertions.assertEquals("New York Rangers (NYR) 0 - 2 Philadelphia Flyers (PHI)", instance.getScoreGame());
         Assertions.assertEquals("New York Rangers (NYR) 0 - 2 Philadelphia Flyers (PHI)", instance.getScoreGame("NYR"));
-        Util.logConsoleJson(instance);
 
         Assertions.assertEquals(1, playerStat.getGoals());
         Assertions.assertEquals(1, playerStat.getShots());
@@ -177,7 +176,6 @@ class NHLBoxScoreTest {
     @Test
     void getEvent() throws Throwable {
         Map<String, List<GameEventData>> event = NHLBoxScore.getEvent(NHLBoxScore.getExample(), NHLBoxScore.getExampleChange());
-        Util.logConsoleJson(event);
         Assertions.assertEquals("19:18, 3-й период", event.get("4874723").getFirst().getTime());
         Assertions.assertEquals("""
                 🚨 ГОООЛ! 19:18, 3-й период. Dylan Guenther (UTA) забивает свой 2-й гол в сезоне!

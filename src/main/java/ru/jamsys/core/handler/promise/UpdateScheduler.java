@@ -141,12 +141,14 @@ public class UpdateScheduler implements PromiseGenerator {
                                                             ).longValue() * 1000)
                                                             .addArg("game_about", game.getGameAbout())
                                                             .addArg("json", UtilJson.toStringPretty(game.getData(), "{}"));
-                                                    Util.logConsoleJson(jdbcRequest.getListArgs().getLast());
+                                                    Util.logConsoleJson(
+                                                            getClass(),
+                                                            " add new game in scheduler",
+                                                            jdbcRequest.getListArgs().getLast());
                                                     jdbcRequest.nextBatch();
                                                 }
                                             })
                                     );
-                            //Util.logConsoleJson(jdbcRequest.getListArgs());
                             jdbcResource.execute(jdbcRequest);
                         }
                 )

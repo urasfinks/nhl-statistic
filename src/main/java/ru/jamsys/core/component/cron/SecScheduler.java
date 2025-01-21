@@ -93,7 +93,7 @@ public class SecScheduler implements Cron1s, PromiseGenerator, UniqueClassName {
                         }
                         countLoop++;
                         if (countLoop > 300) {
-                            Util.logConsole("SecScheduler.loop break 300");
+                            Util.logConsole(getClass(), "loop break 300");
                             break;
                         }
                     }

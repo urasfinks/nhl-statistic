@@ -259,7 +259,14 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                                 context.getCurrentData().remove(idGame);
                                 context.getLastData().remove(idGame);
                             } else {
-                                Util.logConsole("idGame: " + idGame + " modify; cause: lastData != null and playerProblemStatistic: " + playerProblemStatistic + "; ");
+                                Util.logConsole(
+                                        getClass(),
+                                        "idGame: "
+                                                + idGame
+                                                + " modify; cause: lastData != null and playerProblemStatistic: "
+                                                + playerProblemStatistic
+                                                + "; "
+                                );
                                 context
                                         .getCurrentNHLBoxScoreInstance(idGame)
                                         .modify(context.getLastNHLBoxScoreInstance(idGame));
