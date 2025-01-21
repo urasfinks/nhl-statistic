@@ -110,11 +110,9 @@ public class TelegramBotManager implements LifeCycleComponent {
     }
 
     public static TelegramSender init(Type type, BotProperty botProperty, RouteGeneratorRepository routerRepository) {
-        ServiceProperty serviceProperty = App.get(ServiceProperty.class);
-        String botName = serviceProperty.get(botProperty + ".name");
         return App
                 .get(TelegramBotManager.class)
-                .init(botName, type, () -> switch (type) {
+                .init(botProperty.getName(), type, () -> switch (type) {
                     case HTTP_SENDER -> new TelegramBotHttpSender(botProperty);
                     case LIB_SENDER -> TelegramBotLibSender.getInstance(
                             botProperty,
