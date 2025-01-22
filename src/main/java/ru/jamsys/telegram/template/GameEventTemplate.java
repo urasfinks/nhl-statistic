@@ -40,6 +40,9 @@ public class GameEventTemplate {
             .append(GameEventData.Action.GOAL, """
                     🚨 ГОООЛ! ${time}. ${playerNameWithTeamAbv} забивает свой ${goalsInSeason}-й гол в сезоне!
                     ${gameScore}""")
+            .append(GameEventData.Action.CORRECTION, """
+                   ✍️ Корректировка. Предыдущий гол ${playerNameWithTeamAbv} был записан на другого игрока.
+                   ${gameScore}""")
             .append(GameEventData.Action.CANCEL, """
                     ❌ Гол отменён! ${playerNameWithTeamAbv}
                     ${gameScore}""")

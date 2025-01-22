@@ -57,6 +57,12 @@ class GameEventTemplateTest {
                 new GameEventTemplate(gameEventData.setAction(GameEventData.Action.NOT_PLAY)).toString()
         );
 
+        Assertions.assertEquals("""
+                        ✍️ Корректировка. Предыдущий гол Александр Овечкин (WSH) был записан на другого игрока.
+                        Washington Capitals (WSH) 1 - 0 Detroit Red Wings (DET)""",
+                new GameEventTemplate(gameEventData.setAction(GameEventData.Action.CORRECTION)).toString()
+        );
+
     }
 
     @Test

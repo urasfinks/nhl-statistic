@@ -63,6 +63,12 @@ class GameEventTemplateOviTest {
                 new GameEventTemplateOvi(gameEventData.setAction(GameEventData.Action.CANCEL).setScoredGoal(4)).toString()
         );
 
+        Assertions.assertEquals("""
+                       ✍️ Корректировка. Предыдущий гол был записан на другого игрока.
+                       Washington Capitals (WSH) 1 - 0 Detroit Red Wings (DET)""",
+                new GameEventTemplateOvi(gameEventData.setAction(GameEventData.Action.CORRECTION).setScoredGoal(4)).toString()
+        );
+
     }
 
     @Test

@@ -15,6 +15,7 @@ public class GameEventData {
         NOT_PLAY,
         GOAL,
         CANCEL,
+        CORRECTION,
         FINISH_GAME
     }
 
