@@ -636,4 +636,48 @@ class MinSchedulerTest {
         Assertions.assertEquals("12:05, 3-й период", promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("4915856").getFirst().getTime());
     }
 
+    @Test
+    void test12() {
+        Promise promise = new MinScheduler(
+                App.get(ServicePromise.class),
+                App.get(ServiceProperty.class)
+        ).generate();
+        PromiseTest promiseTest = new PromiseTest(promise);
+        Assertions.assertEquals("[check::COMPUTE, getActiveGame::WAIT, getActiveGame::IO, getBoxScoreByActiveGame::WAIT, getBoxScoreByActiveGame::COMPUTE, getLastData::WAIT, getLastData::IO, validator::WAIT, validator::COMPUTE, getEvent::WAIT, getEvent::COMPUTE, getPlayerList::WAIT, getPlayerList::EXTERNAL_WAIT_COMPUTE, createNotification::WAIT, createNotification::COMPUTE, send::WAIT, send::COMPUTE, saveData::WAIT, saveData::IO, removeFinish::WAIT, removeFinish::IO]", promiseTest.getIndex().toString());
+        promiseTest.remove("check");
+        promiseTest.remove("getActiveGame");
+        promiseTest.replace(
+                "getLastData",
+                promise.createTaskResource(
+                        "getLastData",
+                        JdbcResource.class,
+                        (_, _, promise1, _) -> promise1
+                                .getRepositoryMapClass(MinScheduler.Context.class)
+                                .getLastData()
+                                .put("20241228_WSH@TOR", UtilFileResource.getAsString("example/block4/Test1.json"))
+                )
+        );
+        promiseTest.replace(
+                "getBoxScoreByActiveGame",
+                promise.createTaskCompute(
+                        "getBoxScoreByActiveGame",
+                        (_, _, promise1) -> promise1
+                                .getRepositoryMapClass(MinScheduler.Context.class)
+                                .getCurrentData()
+                                .put("20241228_WSH@TOR", UtilFileResource.getAsString("example/block4/Test2.json"))
+                )
+        );
+        promiseTest.removeAfter("getEvent");
+        Assertions.assertEquals("[getBoxScoreByActiveGame::WAIT, getBoxScoreByActiveGame::COMPUTE, getLastData::WAIT, getLastData::IO, validator::WAIT, validator::COMPUTE, getEvent::WAIT, getEvent::COMPUTE]", promiseTest.getIndex().toString());
+
+        promise.then("saveData", (_, _, _) -> {
+        });
+        promise.setDebug(true).run().await(50_000L);
+
+        //Util.logConsoleJson(getClass(), promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("3101"));
+        //Assertions.assertEquals(1, promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("3101").size());
+        Assertions.assertEquals(GameEventData.Action.CORRECTION, promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("3101").getFirst().getAction());
+        //Assertions.assertEquals("[]", promise.getRepositoryMapClass(MinScheduler.Context.class).getEndGames().toString());
+    }
+
 }

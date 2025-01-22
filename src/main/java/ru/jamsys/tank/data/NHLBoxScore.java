@@ -86,22 +86,37 @@ public class NHLBoxScore {
                 List<Map<String, Object>> listGoal = (diff > 0 ? currentInstance : lastInstance)
                         .getPlayerStat(idPlayer)
                         .getSortByTimeListGoal(UtilListSort.Type.ASC);
-                getLastNElements(listGoal, Math.abs(diff)).forEach(map -> result
-                        .computeIfAbsent(idPlayer, _ -> new ArrayList<>())
-                        .add(new GameEventData(
-                                        diff > 0 ? GameEventData.Action.GOAL : GameEventData.Action.CANCEL,
-                                        currentInstance.getAboutGame(),
-                                        currentInstance.getScoreGame(),
-                                        currentInstance.getPlayerStat(idPlayer).getPlayerOrEmpty(),
-                                        map.get("scoreTime") + ", " + periodExpandRu(map.get("period").toString())
-                                )
-                                        .setScoredGoal(currentGoals)
-                                        .setScoredLastSeason(UtilNHL.isOvi(idPlayer)
-                                                ? UtilNHL.getOviScoreLastSeason()
-                                                : 0
-                                        )
-                        )
-                );
+                getLastNElements(listGoal, Math.abs(diff)).forEach(map -> {
+                    GameEventData.Action action = diff > 0 ? GameEventData.Action.GOAL : GameEventData.Action.CANCEL;
+                    if (action.equals(GameEventData.Action.CANCEL)) {
+                        try {
+                            String teamAbv = currentInstance.getPlayer(idPlayer).getTeam();
+                            if (Objects.equals(
+                                    lastInstance.getScoreTeam().get(teamAbv),
+                                    currentInstance.getScoreTeam().get(teamAbv))
+                            ) {
+                                action = GameEventData.Action.CORRECTION;
+                            }
+                        } catch (Throwable th) {
+                            App.error(th);
+                        }
+                    }
+                    result
+                            .computeIfAbsent(idPlayer, _ -> new ArrayList<>())
+                            .add(new GameEventData(
+                                            action,
+                                            currentInstance.getAboutGame(),
+                                            currentInstance.getScoreGame(),
+                                            currentInstance.getPlayerStat(idPlayer).getPlayerOrEmpty(),
+                                            map.get("scoreTime") + ", " + periodExpandRu(map.get("period").toString())
+                                    )
+                                            .setScoredGoal(currentGoals)
+                                            .setScoredLastSeason(UtilNHL.isOvi(idPlayer)
+                                                    ? UtilNHL.getOviScoreLastSeason()
+                                                    : 0
+                                            )
+                            );
+                });
             }
         });
         return result;
