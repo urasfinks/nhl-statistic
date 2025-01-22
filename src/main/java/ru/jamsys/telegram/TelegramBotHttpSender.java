@@ -6,6 +6,7 @@ import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
 import ru.jamsys.core.App;
 import ru.jamsys.core.component.SecurityComponent;
+import ru.jamsys.core.component.manager.item.Session;
 import ru.jamsys.core.extension.builder.HashMapBuilder;
 import ru.jamsys.core.flat.util.UtilJson;
 import ru.jamsys.core.flat.util.UtilTelegramResponse;
@@ -22,18 +23,23 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class TelegramBotHttpSender implements TelegramSender {
 
     private final String token;
 
-    private final Map<String, String> fileUpload = new ConcurrentHashMap<>(); //key - filePath; value - file_id
+    private final Session<String, String> fileUpload; //key - filePath; value - file_id
 
     public TelegramBotHttpSender(BotProperty botProperty) { //example propertyAlias = telegram.bot.common
         SecurityComponent securityComponent = App.get(SecurityComponent.class);
         this.token = new String(securityComponent.get(botProperty.getSecurityAlias()));
-        fileUpload.put("873.png", "AgACAgIAAxkDAAMjZ3xKa0B2nbPxHBFLcT-bOhNblMIAAvrvMRtnQ-BLLPvtL97-fIUBAAMCAANzAAM2BA");
+        fileUpload = new Session<>(
+                TelegramBotHttpSender.class.getSimpleName() + "_" + botProperty.getName(),
+                String.class,
+                600_000L
+        );
+        //fileUpload.put("873.png", "AgACAgIAAxkDAAMjZ3xKa0B2nbPxHBFLcT-bOhNblMIAAvrvMRtnQ-BLLPvtL97-fIUBAAMCAANzAAM2BA");
+
     }
 
     public UtilTelegramResponse.Result send(long idChat, String data, List<Button> buttons) {
