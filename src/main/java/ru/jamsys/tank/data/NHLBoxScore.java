@@ -95,7 +95,6 @@ public class NHLBoxScore {
                                         currentInstance.getPlayerStat(idPlayer).getPlayerOrEmpty(),
                                         map.get("scoreTime") + ", " + periodExpandRu(map.get("period").toString())
                                 )
-                                        .setAction(diff > 0 ? GameEventData.Action.GOAL : GameEventData.Action.CANCEL)
                                         .setScoredGoal(currentGoals)
                                         .setScoredLastSeason(UtilNHL.isOvi(idPlayer)
                                                 ? UtilNHL.getOviScoreLastSeason()
