@@ -4,6 +4,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import ru.jamsys.core.App;
 import ru.jamsys.core.component.TelegramBotManager;
 import ru.jamsys.core.flat.util.Util;
+import ru.jamsys.core.flat.util.UtilJson;
 import ru.jamsys.core.flat.util.UtilTelegramResponse;
 import ru.jamsys.core.handler.promise.RegisterNotification;
 import ru.jamsys.core.promise.Promise;
@@ -36,6 +37,14 @@ public class NhlStatisticApplication {
                         null,
                         null
                 ));
+                TelegramNotification telegramNotification = new TelegramNotification(
+                        290029195L,
+                        App.get(TelegramBotManager.class).getCommonBotProperty().getName(),
+                        "Сервис временно не работает. " + UtilJson.toStringPretty(context.getMsg(), "{}"),
+                        null,
+                        null
+                );
+                App.get(TelegramBotManager.class).send(telegramNotification, TelegramBotManager.TypeSender.HTTP);
             } catch (Throwable th) {
                 App.error(th);
             }
