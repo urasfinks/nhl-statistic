@@ -3,12 +3,8 @@ package ru.jamsys;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import ru.jamsys.core.App;
 import ru.jamsys.core.component.TelegramBotManager;
-import ru.jamsys.core.extension.builder.ArrayListBuilder;
-import ru.jamsys.core.extension.builder.HashMapBuilder;
-import ru.jamsys.core.extension.http.ServletResponseWriter;
 import ru.jamsys.core.flat.util.Util;
 import ru.jamsys.core.flat.util.UtilTelegramResponse;
-import ru.jamsys.core.flat.util.telegram.Button;
 import ru.jamsys.core.statistic.AvgMetric;
 import ru.jamsys.telegram.TelegramNotification;
 
@@ -24,39 +20,6 @@ public class NhlStatisticApplication {
     public static void main(String[] args) {
         App.springSource = NhlStatisticApplication.class;
         App.main(args);
-        TelegramNotification telegramNotification = new TelegramNotification(
-                290029195L,
-                App.get(TelegramBotManager.class).getOviBotProperty().getName(),
-                """
-                        Матч Pittsburgh Penguins (PIT) 🆚 Washington Capitals (WSH) начнется уже через 12 часов — 19 января в 03:00 (МСК).
-
-                        Как думаешь, сможет ли Александр Овечкин забить сегодня?
-
-                        """,
-                new ArrayListBuilder<Button>()
-                        .append(new Button(
-                                "Да 🔥",
-                                ServletResponseWriter.buildUrlQuery(
-                                        "/poll_quest/",
-                                        new HashMapBuilder<String, String>()
-                                                .append("value", "true")
-
-                                )
-                        ))
-                        .append(new Button(
-                                "Нет ⛔",
-                                ServletResponseWriter.buildUrlQuery(
-                                        "/poll_quest/",
-                                        new HashMapBuilder<String, String>()
-                                                .append("value", "false")
-
-                                )
-                        ))
-                ,
-                null
-        );
-        App.get(TelegramBotManager.class).send(telegramNotification, TelegramBotManager.TypeSender.HTTP);
-
     }
 
     @SuppressWarnings("unused")
@@ -92,7 +55,6 @@ public class NhlStatisticApplication {
         AtomicBoolean isRun = new AtomicBoolean(true);
         for (int i = 0; i < 1; i++) {
             new Thread(() -> {
-
                 while (isRun.get()) {
                     TelegramNotification poll = queue.poll();
                     if (poll != null) {

@@ -1,10 +1,12 @@
 package ru.jamsys.telegram;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
 import ru.jamsys.core.App;
 import ru.jamsys.core.component.SecurityComponent;
 import ru.jamsys.core.extension.builder.HashMapBuilder;
-import ru.jamsys.core.flat.util.Util;
 import ru.jamsys.core.flat.util.UtilJson;
 import ru.jamsys.core.flat.util.UtilTelegramResponse;
 import ru.jamsys.core.flat.util.telegram.Button;
@@ -12,19 +14,26 @@ import ru.jamsys.core.handler.promise.RemoveSubscriberOvi;
 import ru.jamsys.core.resource.http.client.HttpClientImpl;
 import ru.jamsys.core.resource.http.client.HttpResponse;
 
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class TelegramBotHttpSender implements TelegramSender {
 
     private final String token;
 
+    private final Map<String, String> fileUpload = new ConcurrentHashMap<>(); //key - filePath; value - file_id
+
     public TelegramBotHttpSender(BotProperty botProperty) { //example propertyAlias = telegram.bot.common
         SecurityComponent securityComponent = App.get(SecurityComponent.class);
         this.token = new String(securityComponent.get(botProperty.getSecurityAlias()));
+        fileUpload.put("873.png", "AgACAgIAAxkDAAMjZ3xKa0B2nbPxHBFLcT-bOhNblMIAAvrvMRtnQ-BLLPvtL97-fIUBAAMCAANzAAM2BA");
     }
 
     public UtilTelegramResponse.Result send(long idChat, String data, List<Button> buttons) {
@@ -41,12 +50,21 @@ public class TelegramBotHttpSender implements TelegramSender {
                     "reply_markup", new HashMapBuilder<>().append("inline_keyboard", list)
             );
         }
-        Util.logConsoleJson(getClass(), requestBody);
-        return httpSend(idChat, UtilJson.toStringPretty(requestBody, "{}"));
+        return httpSend(idChat, UtilJson.toStringPretty(requestBody, "{}"), "sendMessage");
     }
 
     public UtilTelegramResponse.Result sendImage(long idChat, InputStream is, String fileName, String description) {
-        return null;
+        if (fileUpload.containsKey(fileName)) {
+            return sendImageId(idChat, fileUpload.get(fileName), description);
+        } else {
+            try {
+                return sendImageMultipart(idChat, fileName, is, description);
+            } catch (Throwable th) {
+                return new UtilTelegramResponse.Result()
+                        .setException(UtilTelegramResponse.ResultException.OTHER)
+                        .setCause(th.getMessage());
+            }
+        }
     }
 
     @Override
@@ -54,7 +72,8 @@ public class TelegramBotHttpSender implements TelegramSender {
         // Как будто для Sender не надо ничего высылать по командам
     }
 
-    private UtilTelegramResponse.Result httpSend(long idChat, String data) {
+    private UtilTelegramResponse.Result httpSend(long idChat, String data, String apiMethod) {
+        //Util.logConsole(getClass(), idChat + ">>" + data);
         if (data == null) {
             return new UtilTelegramResponse.Result()
                     .setException(UtilTelegramResponse.ResultException.OTHER)
@@ -62,8 +81,9 @@ public class TelegramBotHttpSender implements TelegramSender {
         }
         HttpClientImpl httpClient = new HttpClientImpl();
         httpClient.setUrl(String.format(
-                        "https://api.telegram.org/bot%s/sendMessage",
-                        token
+                        "https://api.telegram.org/bot%s/%s",
+                        token,
+                        apiMethod
                 ))
                 .putRequestHeader("Content-Type", "application/json")
                 .setPostData(data.getBytes())
@@ -72,6 +92,64 @@ public class TelegramBotHttpSender implements TelegramSender {
         UtilTelegramResponse.Result sandbox = UtilTelegramResponse.sandbox(result -> {
             HttpResponse httpResponse = httpClient.getHttpResponse();
             if (httpResponse.getStatusCode() == 200) {
+                result.setResponse(UtilJson.getMapOrThrow(httpResponse.getBody()));
+            } else {
+                Map<String, Object> mapOrThrow = UtilJson.getMapOrThrow(httpResponse.getBody());
+                result.setResponse(mapOrThrow);
+                throw new RuntimeException(mapOrThrow.get("description").toString());
+            }
+        });
+        if (UtilTelegramResponse.ResultException.REVOKE.equals(sandbox.getException())) {
+            new RemoveSubscriberOvi(idChat).generate().run();
+        }
+        return sandbox;
+    }
+
+    private UtilTelegramResponse.Result sendImageId(long idChat, String idFile, String description) {
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("chat_id", idChat);
+        if (description != null && !description.isEmpty()) {
+            requestBody.put("caption", description);
+        }
+        requestBody.put("photo", idFile);
+        return httpSend(idChat, UtilJson.toStringPretty(requestBody, "{}"), "sendPhoto");
+    }
+
+    private UtilTelegramResponse.Result sendImageMultipart(long idChat, String fileName, InputStream is, String description) throws Exception {
+        MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+        builder.addTextBody("chat_id", String.valueOf(idChat));
+        if (description != null && !description.isEmpty()) {
+            builder.addTextBody("caption", description);
+        }
+        builder.addBinaryBody(
+                "photo",
+                is,
+                ContentType.parse(Files.probeContentType(Path.of(fileName))),
+                fileName
+        );
+        HttpEntity httpEntity = builder.build();
+        byte[] postData;
+        try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+            httpEntity.writeTo(byteArrayOutputStream); // keeps us from calling getContent which will throw Content Length unknown
+            postData = byteArrayOutputStream.toByteArray();
+        }
+
+        HttpClientImpl httpClient = new HttpClientImpl();
+        httpClient.setUrl(String.format(
+                        "https://api.telegram.org/bot%s/sendPhoto",
+                        token
+                ))
+                .putRequestHeader(httpEntity.getContentType().getName(), httpEntity.getContentType().getValue())
+                .setPostData(postData)
+                .setTimeoutMs(10_000);
+        httpClient.exec();
+        UtilTelegramResponse.Result sandbox = UtilTelegramResponse.sandbox(result -> {
+            HttpResponse httpResponse = httpClient.getHttpResponse();
+            if (httpResponse.getStatusCode() == 200) {
+                fileUpload.put(
+                        fileName,
+                        httpResponse.getBody().replaceAll(".*\"file_id\":\"([^\"]+)\".*", "$1")
+                );
                 result.setResponse(UtilJson.getMapOrThrow(httpResponse.getBody()));
             } else {
                 Map<String, Object> mapOrThrow = UtilJson.getMapOrThrow(httpResponse.getBody());

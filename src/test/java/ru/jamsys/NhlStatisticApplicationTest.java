@@ -4,6 +4,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import ru.jamsys.core.App;
 import ru.jamsys.core.component.ServicePromise;
+import ru.jamsys.core.component.TelegramBotManager;
 import ru.jamsys.core.extension.builder.ArrayListBuilder;
 import ru.jamsys.core.flat.util.*;
 import ru.jamsys.core.handler.promise.*;
@@ -15,6 +16,7 @@ import ru.jamsys.tank.data.NHLBoxScore;
 import ru.jamsys.tank.data.NHLGamesForPlayer;
 import ru.jamsys.tank.data.NHLPlayerList;
 import ru.jamsys.telegram.GameEventData;
+import ru.jamsys.telegram.TelegramNotification;
 
 import java.util.Map;
 import java.util.Objects;
@@ -218,6 +220,50 @@ class NhlStatisticApplicationTest {
         //@Test
     void updateScheduler() {
         new UpdateScheduler(false).generate().run().await(50_000L);
+    }
+
+    //@Test
+    void sendTelegram() {
+//        TelegramNotification telegramNotification = new TelegramNotification(
+//                290029195L,
+//                App.get(TelegramBotManager.class).getOviBotProperty().getName(),
+//                """
+//                        Матч Pittsburgh Penguins (PIT) 🆚 Washington Capitals (WSH) начнется уже через 12 часов — 19 января в 03:00 (МСК).
+//
+//                        Как думаешь, сможет ли Александр Овечкин забить сегодня?
+//
+//                        """,
+//                new ArrayListBuilder<Button>()
+//                        .append(new Button(
+//                                "Да 🔥",
+//                                ServletResponseWriter.buildUrlQuery(
+//                                        "/poll_quest/",
+//                                        new HashMapBuilder<String, String>()
+//                                                .append("value", "true")
+//
+//                                )
+//                        ))
+//                        .append(new Button(
+//                                "Нет ⛔",
+//                                ServletResponseWriter.buildUrlQuery(
+//                                        "/poll_quest/",
+//                                        new HashMapBuilder<String, String>()
+//                                                .append("value", "false")
+//
+//                                )
+//                        ))
+//                ,
+//                null
+//        );
+        TelegramNotification telegramNotification = new TelegramNotification(
+                290029195L,
+                App.get(TelegramBotManager.class).getOviBotProperty().getName(),
+                null,
+                null,
+                "image/873.png"
+        );
+        UtilTelegramResponse.Result send = App.get(TelegramBotManager.class).send(telegramNotification, TelegramBotManager.TypeSender.HTTP);
+        Util.logConsoleJson(NhlStatisticApplication.class, send);
     }
 
 }
