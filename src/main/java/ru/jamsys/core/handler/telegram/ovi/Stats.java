@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
+import ru.jamsys.NhlStatisticApplication;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.flat.util.UtilNHL;
 import ru.jamsys.core.handler.promise.PlayerStatistic;
@@ -43,7 +44,7 @@ public class Stats implements PromiseGenerator, OviGoalsBotCommandHandler {
                             null
                     ));
                 })
-                ;
+                .extension(NhlStatisticApplication::addOnError);
     }
 
 }

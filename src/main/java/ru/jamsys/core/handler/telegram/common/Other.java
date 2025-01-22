@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
-import ru.jamsys.core.App;
+import ru.jamsys.NhlStatisticApplication;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.extension.builder.ArrayListBuilder;
 import ru.jamsys.core.extension.builder.HashMapBuilder;
@@ -18,8 +18,8 @@ import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
 import ru.jamsys.core.resource.jdbc.JdbcRequest;
 import ru.jamsys.core.resource.jdbc.JdbcResource;
-import ru.jamsys.telegram.TelegramNotification;
 import ru.jamsys.telegram.TelegramCommandContext;
+import ru.jamsys.telegram.TelegramNotification;
 import ru.jamsys.telegram.handler.NhlStatisticsBotCommandHandler;
 
 import java.util.ArrayList;
@@ -108,20 +108,7 @@ public class Other implements PromiseGenerator, NhlStatisticsBotCommandHandler {
                     );
 
                 })
-                .onError((atomicBoolean, promiseTask, promise) -> {
-                    try {
-                        TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
-                        RegisterNotification.add(new TelegramNotification(
-                                context.getIdChat(),
-                                context.getTelegramBot().getBotUsername(),
-                                "Бот сломался",
-                                null,
-                                null
-                        ));
-                    } catch (Throwable th) {
-                        App.error(th);
-                    }
-                });
+                .extension(NhlStatisticApplication::addOnError);
         return gen;
     }
 

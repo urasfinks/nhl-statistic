@@ -5,7 +5,10 @@ import ru.jamsys.core.App;
 import ru.jamsys.core.component.TelegramBotManager;
 import ru.jamsys.core.flat.util.Util;
 import ru.jamsys.core.flat.util.UtilTelegramResponse;
+import ru.jamsys.core.handler.promise.RegisterNotification;
+import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.statistic.AvgMetric;
+import ru.jamsys.telegram.TelegramCommandContext;
 import ru.jamsys.telegram.TelegramNotification;
 
 import java.util.Queue;
@@ -20,6 +23,23 @@ public class NhlStatisticApplication {
     public static void main(String[] args) {
         App.springSource = NhlStatisticApplication.class;
         App.main(args);
+    }
+
+    public static void addOnError(Promise sourcePromise) {
+        sourcePromise.onError((_, _, promise) -> {
+            try {
+                TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
+                RegisterNotification.add(new TelegramNotification(
+                        context.getIdChat(),
+                        context.getTelegramBot().getBotUsername(),
+                        "Сервис временно не работает. Повторите попытку позже",
+                        null,
+                        null
+                ));
+            } catch (Throwable th) {
+                App.error(th);
+            }
+        });
     }
 
     @SuppressWarnings("unused")

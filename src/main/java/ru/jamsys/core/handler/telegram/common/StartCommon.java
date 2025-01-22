@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
+import ru.jamsys.NhlStatisticApplication;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.handler.promise.RegisterNotification;
 import ru.jamsys.core.promise.Promise;
@@ -36,7 +37,8 @@ public class StartCommon implements PromiseGenerator, NhlStatisticsBotCommandHan
                             null,
                             null
                     ));
-                });
+                })
+                .extension(NhlStatisticApplication::addOnError);
     }
 
 }

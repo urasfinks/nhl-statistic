@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
+import ru.jamsys.NhlStatisticApplication;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.extension.builder.ArrayListBuilder;
 import ru.jamsys.core.extension.builder.HashMapBuilder;
@@ -63,7 +64,7 @@ public class Schedule implements PromiseGenerator, OviGoalsBotCommandHandler {
                             📍 Время начала игр указано по МСК
                             """);
                 })
-                ;
+                .extension(NhlStatisticApplication::addOnError);
     }
 
     public static void paging(List<NHLTeamSchedule.Game> listGame, int page, TelegramCommandContext context, String titleTemplate) {
