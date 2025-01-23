@@ -5,8 +5,8 @@ import ru.jamsys.core.App;
 import ru.jamsys.core.component.TelegramBotManager;
 import ru.jamsys.core.flat.util.Util;
 import ru.jamsys.core.flat.util.UtilJson;
+import ru.jamsys.core.flat.util.UtilTelegramMessage;
 import ru.jamsys.core.flat.util.UtilTelegramResponse;
-import ru.jamsys.core.handler.promise.RegisterNotification;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.statistic.AvgMetric;
 import ru.jamsys.telegram.TelegramCommandContext;
@@ -29,22 +29,22 @@ public class NhlStatisticApplication {
     public static void addOnError(Promise sourcePromise) {
         sourcePromise.onError((_, _, promise) -> {
             try {
+                // Сначала надо себе отправить лог поломки, так как БД может быть не доступно
                 TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
-                RegisterNotification.add(new TelegramNotification(
-                        context.getIdChat(),
-                        context.getTelegramBot().getBotUsername(),
-                        "Сервис временно не работает. Повторите попытку позже",
-                        null,
-                        null
-                ));
-                TelegramNotification telegramNotification = new TelegramNotification(
+                App.get(TelegramBotManager.class).send(new TelegramNotification(
                         290029195L,
                         App.get(TelegramBotManager.class).getCommonBotProperty().getName(),
                         "Сервис временно не работает. " + UtilJson.toStringPretty(context.getMsg(), "{}"),
                         null,
                         null
-                );
-                App.get(TelegramBotManager.class).send(telegramNotification, TelegramBotManager.TypeSender.HTTP);
+                ), TelegramBotManager.TypeSender.HTTP);
+                // Когда что-то ломается, мы не можем стандартным механизмом отправлять сообщения через очередь в БД
+                // возможно БД лежит или другие проблемы с ядром/коннектами/ошибками
+                context.getTelegramBot().send(UtilTelegramMessage.message(
+                        context.getIdChat(),
+                        "Сервис временно не работает. Повторите попытку позже",
+                        null
+                ), context.getIdChat());
             } catch (Throwable th) {
                 App.error(th);
             }
@@ -52,7 +52,7 @@ public class NhlStatisticApplication {
     }
 
     @SuppressWarnings("unused")
-    public static void loadTelegram(){
+    public static void loadTelegram() {
         TelegramBotManager telegramBotManager = App.get(TelegramBotManager.class);
         Queue<TelegramNotification> queue = new ConcurrentLinkedQueue<>();
         for (int i = 0; i < 30; i++) {
@@ -89,7 +89,7 @@ public class NhlStatisticApplication {
                     if (poll != null) {
                         UtilTelegramResponse.Result send = telegramBotManager.send(poll, TelegramBotManager.TypeSender.HTTP);
                         avg.add(send.getTiming());
-                    }else{
+                    } else {
                         Util.sleepMs(1000);
                     }
                 }
