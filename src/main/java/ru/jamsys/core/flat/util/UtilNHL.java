@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.time.Month;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.Locale;
 
 public class UtilNHL {
 
@@ -76,6 +77,13 @@ public class UtilNHL {
             return true;
         }
         return idGame.contains("_" + team + "@");
+    }
+
+    public static String formatDate(long timestampEpoch) throws ParseException {
+        String format = "dd.MM.yyyy HH:mm";
+        String date = UtilDate.timestampFormat(timestampEpoch, format);
+        Date jud = new SimpleDateFormat(format).parse(date);
+        return new SimpleDateFormat("dd MMMM 'в' HH:mm '(МСК)'", Locale.of("ru")).format(jud);
     }
 
 }

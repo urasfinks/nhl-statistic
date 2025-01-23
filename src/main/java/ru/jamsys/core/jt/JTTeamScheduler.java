@@ -50,6 +50,30 @@ public enum JTTeamScheduler implements JdbcRequestRepository {
             ORDER BY 1,2,3 DESC
             """, StatementType.SELECT_WITH_AUTO_COMMIT),
 
+    SELECT_INVITE_GAME("""
+            SELECT
+            	ps1.id_chat,
+                ps1.id_player,
+                ts1.id_game,
+            	ts1.json
+            FROM
+            	public.team_scheduler ts1
+            INNER JOIN player_subscriber ps1 ON ts1.id_team = ps1.id_team
+            WHERE
+                ts1.send_invite = 0
+                AND ts1.time_game_start < (now()::timestamp + interval '12 hour')
+            ORDER BY 1,2,3 DESC
+            """, StatementType.SELECT_WITH_AUTO_COMMIT),
+
+    UPDATE_INVITED_GAME("""
+            UPDATE
+            	public.team_scheduler
+            SET
+                send_invite = 1
+            WHERE
+                id_game = ${IN.id_game::VARCHAR}
+            """, StatementType.SELECT_WITH_AUTO_COMMIT),
+
     INSERT("""
             INSERT INTO team_scheduler (
                 id_team,
@@ -80,6 +104,7 @@ public enum JTTeamScheduler implements JdbcRequestRepository {
         Timestamp timeGameStart;
         String gameAbout;
         String json;
+        BigDecimal sendInvite;
     }
 
     JTTeamScheduler(String sql, StatementType statementType) {

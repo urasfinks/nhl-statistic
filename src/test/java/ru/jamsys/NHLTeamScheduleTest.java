@@ -5,8 +5,11 @@ import org.junit.jupiter.api.Test;
 import ru.jamsys.core.flat.util.Util;
 import ru.jamsys.core.flat.util.UtilJson;
 import ru.jamsys.core.flat.util.UtilListSort;
+import ru.jamsys.core.flat.util.UtilNHL;
 import ru.jamsys.tank.data.NHLTeamSchedule;
 
+import java.math.BigDecimal;
+import java.text.ParseException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -66,7 +69,7 @@ class NHLTeamScheduleTest {
 
     @Test
     void test() throws Throwable {
-         NHLTeamSchedule.Instance game = new NHLTeamSchedule.Instance(NHLTeamSchedule.getExample())
+        NHLTeamSchedule.Instance game = new NHLTeamSchedule.Instance(NHLTeamSchedule.getExample())
                 .getScheduledAndLive()
                 .extend();
         Assertions.assertEquals("-05:00", game.getListGame().getFirst().get("timeZone"));
@@ -102,6 +105,11 @@ class NHLTeamScheduleTest {
     void getGameToday() throws Throwable {
         NHLTeamSchedule.Instance instance = new NHLTeamSchedule.Instance(NHLTeamSchedule.getExample_18_2025());
         Assertions.assertEquals("20241212_LA@NJ", instance.getIdGameToday("20241213"));
+    }
+
+    @Test
+    void testDate() throws ParseException {
+        Assertions.assertEquals("24 января в 03:00 (МСК)", UtilNHL.formatDate(new BigDecimal("1737676800.0").longValue()));
     }
 
 }

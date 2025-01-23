@@ -2,6 +2,7 @@ package ru.jamsys;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import ru.jamsys.core.App;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.component.TelegramBotManager;
@@ -80,7 +81,7 @@ class NhlStatisticApplicationTest {
     }
 
     @SuppressWarnings("unused")
-    //@Test
+        //@Test
     void telegramSend() {
         Promise promise = servicePromise.get("testPromise", 6_000L);
         promise
@@ -110,7 +111,7 @@ class NhlStatisticApplicationTest {
     }
 
     @SuppressWarnings("unused")
-    //@Test
+        //@Test
     void testScoreCache() {
         NHLPlayerList.Player player = new NHLPlayerList.Player()
                 .setPlayerID("4565257")
@@ -184,7 +185,7 @@ class NhlStatisticApplicationTest {
     }
 
     @SuppressWarnings("unused")
-    //@Test
+        //@Test
     void save() {
         Promise promise = servicePromise.get("testPromise", 600_000L);
         promise
@@ -204,14 +205,14 @@ class NhlStatisticApplicationTest {
                                     } catch (Throwable e) {
                                         App.error(e);
                                     }
-                }))
+                                }))
                 .run()
                 .await(20_000L);
         Util.logConsole(getClass(), promise.getLogString());
     }
 
     @SuppressWarnings("unused")
-    //@Test
+        //@Test
     void unsubscribe() {
         new RemoveSubscriberOvi(290029195L).generate().run().await(5_000L);
     }
@@ -264,6 +265,11 @@ class NhlStatisticApplicationTest {
         );
         UtilTelegramResponse.Result send = App.get(TelegramBotManager.class).send(telegramNotification, TelegramBotManager.TypeSender.HTTP);
         Util.logConsoleJson(NhlStatisticApplication.class, send);
+    }
+
+    //@Test
+    void testInviteGame() {
+        new InviteGameCommon().generate().run().await(60_000L);
     }
 
 }
