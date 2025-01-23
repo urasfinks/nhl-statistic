@@ -54,7 +54,7 @@ public class InviteGameCommon implements PromiseGenerator {
                                 promise.skipAllStep("inviteGame is empty");
                             }
                         })
-                .then("handler", (atomicBoolean, promiseTask, promise) -> {
+                .then("handler", (_, _, promise) -> {
                     Context context = promise.getRepositoryMapClass(Context.class);
                     context.getListInviteGame().forEach(row -> {
                         //{
