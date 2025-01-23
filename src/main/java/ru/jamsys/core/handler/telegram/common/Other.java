@@ -75,7 +75,7 @@ public class Other implements PromiseGenerator, NhlStatisticsBotCommandHandler {
                             idChat,
                             "ovi_goals_bot",
                             """
-                            Матч Washington Capitals (WSH) 🆚 Edmonton Oilers (EDM) начнется уже через 12 часов — 22 января в 05:00 (МСК).
+                            Матч Washington Capitals (WSH) 🆚 Seattle Kraken (SEA) начнется уже через 12 часов — 24 января в 06:00 (МСК).
                             
                             Как думаешь, сможет ли Александр Овечкин забить сегодня?
                             
@@ -104,7 +104,7 @@ public class Other implements PromiseGenerator, NhlStatisticsBotCommandHandler {
                     )));
                     RegisterNotification.addDeferred(
                             listTelegramNotification,
-                            UtilDate.getTimestamp("21.01.2025 16:45:00", "dd.MM.yyyy HH:mm:ss") * 1000
+                            UtilDate.getTimestamp("23.01.2025 18:00:00", "dd.MM.yyyy HH:mm:ss") * 1000
                     );
 
                 })
