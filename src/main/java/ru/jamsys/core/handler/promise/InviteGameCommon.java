@@ -8,6 +8,7 @@ import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.component.TelegramBotManager;
 import ru.jamsys.core.flat.template.jdbc.DataMapper;
 import ru.jamsys.core.flat.util.Util;
+import ru.jamsys.core.flat.util.UtilDate;
 import ru.jamsys.core.flat.util.UtilJson;
 import ru.jamsys.core.flat.util.UtilNHL;
 import ru.jamsys.core.jt.JTTeamScheduler;
@@ -22,7 +23,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 @Accessors(chain = true)
 public class InviteGameCommon implements PromiseGenerator {
@@ -47,7 +47,7 @@ public class InviteGameCommon implements PromiseGenerator {
         return App.get(ServicePromise.class).get(getClass().getSimpleName(), 60_000L)
                 .extension(promise -> promise.setRepositoryMapClass(Context.class, new Context()))
                 .thenWithResource(
-                        "insert",
+                        "select",
                         JdbcResource.class,
                         (_, _, promise, jdbcResource) -> {
                             Context context = promise.getRepositoryMapClass(Context.class);
@@ -61,39 +61,24 @@ public class InviteGameCommon implements PromiseGenerator {
                         })
                 .then("handler", (_, _, promise) -> {
                     Context context = promise.getRepositoryMapClass(Context.class);
+                    Row oviInviteGame = null;
                     Set<TelegramNotification> map = new HashSet<>();
-                    AtomicBoolean oviInGame = new AtomicBoolean(false);
-                    context.getListInviteGame().forEach(row -> {
-                        //{
-                        //  "gameID" : "20250123_PHI@NYR",
-                        //  "seasonType" : "Regular Season",
-                        //  "away" : "PHI",
-                        //  "gameTime" : "7:00p",
-                        //  "teamIDHome" : "20",
-                        //  "gameDate" : "20250123",
-                        //  "gameStatus" : "Scheduled",
-                        //  "gameTime_epoch" : "1737676800.0",
-                        //  "teamIDAway" : "22",
-                        //  "home" : "NYR",
-                        //  "gameStatusCode" : "0",
-                        //  "timeZone" : "-05:00",
-                        //  "gameDateEpoch" : "20250124",
-                        //  "gameDateTime" : "2025-01-23T19:00:00",
-                        //  "gameDateTimeEpoch" : "2025-01-24T00:00:00",
-                        //  "homeTeam" : "New York Rangers (NYR)",
-                        //  "awayTeam" : "Philadelphia Flyers (PHI)",
-                        //  "about" : "New York Rangers (NYR) vs Philadelphia Flyers (PHI)"
-                        //}
+                    for (Row row : context.getListInviteGame()) {
                         if (UtilNHL.isOvi(row.idPlayer.toString())) {
-                            oviInGame.set(true);
+                            oviInviteGame = row;
                         }
                         try {
                             Map<String, Object> mapOrThrow = UtilJson.getMapOrThrow(row.getJson());
+                            long timeGame = new BigDecimal(mapOrThrow.get("gameTime_epoch").toString()).longValue();
                             String msg = String.format("""
-                                            Матч %s 🆚 %s начнется уже через 12 часов — %s""",
+                                            Матч %s 🆚 %s начнется уже через %s — %s""",
                                     mapOrThrow.get("awayTeam"),
                                     mapOrThrow.get("homeTeam"),
-                                    UtilNHL.formatDate(new BigDecimal(mapOrThrow.get("gameTime_epoch").toString()).longValue())
+                                    UtilDate.getTimeBetween(System.currentTimeMillis(), timeGame * 1000).getDescription(
+                                            2,
+                                            UtilDate.TimeBetween.StyleDescription.FORMAL
+                                    ),
+                                    UtilNHL.formatDate(timeGame)
                             );
                             map
                                     .add(new TelegramNotification(
@@ -107,11 +92,11 @@ public class InviteGameCommon implements PromiseGenerator {
                         } catch (Throwable th) {
                             App.error(th);
                         }
-
-                    });
-                    Util.logConsole(getClass(), "ovi: " + oviInGame.get());
+                    }
+                    Util.logConsole(getClass(), "ovi: " + oviInviteGame);
                     Util.logConsoleJson(getClass(), map);
                 })
+                .setDebug(false)
                 ;
     }
 
