@@ -3,7 +3,6 @@ package ru.jamsys.core.handler.promise;
 import lombok.Getter;
 import lombok.Setter;
 import ru.jamsys.core.App;
-import ru.jamsys.core.component.RegisterDelayNotification;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.component.TelegramBotManager;
 import ru.jamsys.core.flat.util.UtilFileResource;
@@ -37,6 +36,8 @@ public class RegisterNotificationGameEventOvi implements PromiseGenerator {
     private final GameEventData gameEventData;
 
     private final List<Long> listIdChat = new ArrayList<>();
+
+    private final List<TelegramNotification> mainEvent = new ArrayList<>();
 
     public RegisterNotificationGameEventOvi(
             String idGame,
@@ -86,13 +87,14 @@ public class RegisterNotificationGameEventOvi implements PromiseGenerator {
                             }
 
                     });
-                    RegisterNotification.add(listEvent);
-                    RegisterDelayNotification.add(listNotPlay, 10_000L);
+                    mainEvent.addAll(listNotPlay);
+                    mainEvent.addAll(listEvent);
 
                     if (gameEventData.getAction().equals(GameEventData.Action.FINISH_GAME)) {
                         new HttpCacheReset(NHLGamesForPlayer.getUri(player.getPlayerID())).generate().run();
                     }
                     if (!gameEventData.getAction().equals(GameEventData.Action.FINISH_GAME)) {
+                        RegisterNotification.add(mainEvent);
                         promise.skipAllStep("not finish game");
                     }
                 })
@@ -127,8 +129,9 @@ public class RegisterNotificationGameEventOvi implements PromiseGenerator {
                             ));
                         }
                     });
-                    RegisterDelayNotification.add(listSendStat, 10_000L);
-                    RegisterDelayNotification.add(listSendImage, 15_000L);
+                    mainEvent.addAll(listSendImage);
+                    mainEvent.addAll(listSendStat);
+                    RegisterNotification.add(mainEvent);
                 })
                 .setDebug(false)
                 ;

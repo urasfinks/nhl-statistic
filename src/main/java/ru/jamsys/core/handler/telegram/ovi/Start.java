@@ -5,7 +5,6 @@ import lombok.Setter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
 import ru.jamsys.NhlStatisticApplication;
-import ru.jamsys.core.component.RegisterDelayNotification;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.extension.builder.ArrayListBuilder;
 import ru.jamsys.core.extension.builder.HashMapBuilder;
@@ -19,8 +18,8 @@ import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
 import ru.jamsys.core.resource.jdbc.JdbcRequest;
 import ru.jamsys.core.resource.jdbc.JdbcResource;
-import ru.jamsys.telegram.TelegramNotification;
 import ru.jamsys.telegram.TelegramCommandContext;
+import ru.jamsys.telegram.TelegramNotification;
 import ru.jamsys.telegram.handler.OviGoalsBotCommandHandler;
 
 import java.util.List;
@@ -101,7 +100,7 @@ public class Start implements PromiseGenerator, OviGoalsBotCommandHandler {
                             null,
                             null
                     ));
-                    RegisterDelayNotification.add(new ArrayListBuilder<TelegramNotification>().append(new TelegramNotification(
+                    RegisterNotification.addDeferred(new TelegramNotification(
                             context.getIdChat(),
                             context.getTelegramBot().getBotUsername(),
                             """
@@ -113,10 +112,10 @@ public class Start implements PromiseGenerator, OviGoalsBotCommandHandler {
                                     /stop — Отключить уведомления""",
                             null,
                             null
-                    )), 10_000L);
+                    ), System.currentTimeMillis() + 10_000L);
 
-                    RegisterDelayNotification.add(
-                            new ArrayListBuilder<TelegramNotification>().append(new TelegramNotification(
+                    RegisterNotification.addDeferred(
+                            new TelegramNotification(
                                     context.getIdChat(),
                                     context.getTelegramBot().getBotUsername(),
                                     "Побьет ли Александр Овечкин рекорд Уэйна Гретцки в этом сезоне?",
@@ -141,7 +140,7 @@ public class Start implements PromiseGenerator, OviGoalsBotCommandHandler {
                                             ))
                                     ,
                                     null
-                            )), 20_000L);
+                            ), System.currentTimeMillis() + 20_000L);
                 })
                 .extension(NhlStatisticApplication::addOnError);
     }
