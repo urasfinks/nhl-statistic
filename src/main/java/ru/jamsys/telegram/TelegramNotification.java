@@ -1,11 +1,13 @@
 package ru.jamsys.telegram;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import ru.jamsys.core.flat.util.telegram.Button;
 
 import java.util.List;
 
 @Getter
+@EqualsAndHashCode
 public class TelegramNotification {
 
     final long idChat;

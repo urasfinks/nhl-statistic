@@ -5,6 +5,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import ru.jamsys.core.App;
 import ru.jamsys.core.component.ServicePromise;
+import ru.jamsys.core.component.TelegramBotManager;
 import ru.jamsys.core.flat.template.jdbc.DataMapper;
 import ru.jamsys.core.flat.util.Util;
 import ru.jamsys.core.flat.util.UtilJson;
@@ -14,10 +15,14 @@ import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
 import ru.jamsys.core.resource.jdbc.JdbcRequest;
 import ru.jamsys.core.resource.jdbc.JdbcResource;
+import ru.jamsys.telegram.TelegramNotification;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Accessors(chain = true)
 public class InviteGameCommon implements PromiseGenerator {
@@ -56,6 +61,8 @@ public class InviteGameCommon implements PromiseGenerator {
                         })
                 .then("handler", (_, _, promise) -> {
                     Context context = promise.getRepositoryMapClass(Context.class);
+                    Set<TelegramNotification> map = new HashSet<>();
+                    AtomicBoolean oviInGame = new AtomicBoolean(false);
                     context.getListInviteGame().forEach(row -> {
                         //{
                         //  "gameID" : "20250123_PHI@NYR",
@@ -77,21 +84,33 @@ public class InviteGameCommon implements PromiseGenerator {
                         //  "awayTeam" : "Philadelphia Flyers (PHI)",
                         //  "about" : "New York Rangers (NYR) vs Philadelphia Flyers (PHI)"
                         //}
+                        if (UtilNHL.isOvi(row.idPlayer.toString())) {
+                            oviInGame.set(true);
+                        }
                         try {
                             Map<String, Object> mapOrThrow = UtilJson.getMapOrThrow(row.getJson());
                             String msg = String.format("""
-                                            Матч %s 🆚 %s начнется уже через 12 часов — %s.""",
+                                            Матч %s 🆚 %s начнется уже через 12 часов — %s""",
                                     mapOrThrow.get("awayTeam"),
                                     mapOrThrow.get("homeTeam"),
                                     UtilNHL.formatDate(new BigDecimal(mapOrThrow.get("gameTime_epoch").toString()).longValue())
                             );
-                            Util.logConsole(getClass(), msg);
+                            map
+                                    .add(new TelegramNotification(
+                                            row.getIdChat().longValue(),
+                                            App.get(TelegramBotManager.class).getCommonBotProperty().getName(),
+                                            msg,
+                                            null,
+                                            null
+                                    ));
+
                         } catch (Throwable th) {
                             App.error(th);
                         }
 
                     });
-                    Util.logConsoleJson(getClass(), context.getListInviteGame());
+                    Util.logConsole(getClass(), "ovi: " + oviInGame.get());
+                    Util.logConsoleJson(getClass(), map);
                 })
                 ;
     }

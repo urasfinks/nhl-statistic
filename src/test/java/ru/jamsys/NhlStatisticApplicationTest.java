@@ -2,6 +2,7 @@ package ru.jamsys;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import ru.jamsys.core.App;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.component.TelegramBotManager;
@@ -266,7 +267,7 @@ class NhlStatisticApplicationTest {
         Util.logConsoleJson(NhlStatisticApplication.class, send);
     }
 
-    //@Test
+    @Test
     void testInviteGame() {
         new InviteGameCommon().generate().run().await(60_000L);
     }
