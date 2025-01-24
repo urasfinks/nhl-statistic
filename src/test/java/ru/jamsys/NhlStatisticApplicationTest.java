@@ -2,7 +2,6 @@ package ru.jamsys;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 import ru.jamsys.core.App;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.component.TelegramBotManager;
@@ -270,6 +269,17 @@ class NhlStatisticApplicationTest {
     //@Test
     void testInviteGame() {
         new InviteGameCommon().generate().run().await(60_000L);
+    }
+
+    //@Test
+    void testGoals() {
+        ScorePlayerCurrentSeasonBeforeGame stat = new ScorePlayerCurrentSeasonBeforeGame(NHLPlayerList.findByIdStatic(UtilNHL.getOvi().getPlayerID()), "20250123_WSH@SEA");
+        stat
+                .generate()
+                .run()
+                .await(50_000L);
+        System.out.println(stat.getCountGoal().get());
+
     }
 
 }

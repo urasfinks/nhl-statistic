@@ -49,7 +49,7 @@ public class ScorePlayerCurrentSeasonBeforeGame implements PromiseGenerator {
                             .setDebug(false)
                     );
                     if (!execute.isEmpty()) {
-                        promise.setRepositoryMap("prev_goal", execute.getFirst().get("prev_goal").toString());
+                        countGoal.set(Integer.parseInt(execute.getFirst().get("prev_goal").toString()));
                         promise.skipAllStep("already cache");
                     }
                 })
@@ -78,7 +78,6 @@ public class ScorePlayerCurrentSeasonBeforeGame implements PromiseGenerator {
                             tank01Request.getResponseData(),
                             getLisIdGameInSeason()
                     ).forEach((_, countGoal) -> getCountGoal().addAndGet(countGoal));
-                    promise.setRepositoryMap("prev_goal", String.valueOf(getCountGoal().get()));
                 })
                 .thenWithResource(
                         "insert",

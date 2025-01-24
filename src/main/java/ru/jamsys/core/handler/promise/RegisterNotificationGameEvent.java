@@ -51,9 +51,11 @@ public class RegisterNotificationGameEvent implements PromiseGenerator {
         return App.get(ServicePromise.class).get(getClass().getSimpleName(), 60_000L)
                 .then("lastGoals", new ScorePlayerCurrentSeasonBeforeGame(player, idGame).generate())
                 .then("send", (atomicBoolean, _, promise) -> {
-                    String prevGoal = promise.getRepositoryMapClass(Promise.class, "lastGoals").getRepositoryMap(String.class, "prev_goal", "0");
+                    ScorePlayerCurrentSeasonBeforeGame stat = promise
+                            .getRepositoryMapClass(Promise.class, "lastGoals")
+                            .getRepositoryMapClass(ScorePlayerCurrentSeasonBeforeGame.class);
                     gameEventData
-                            .setScoredPrevGoal(Integer.parseInt(prevGoal));
+                            .setScoredPrevGoal(stat.getCountGoal().get());
                     String message = new GameEventTemplate(gameEventData).toString();
                     TelegramBotManager telegramBotManager = App.get(TelegramBotManager.class);
 
