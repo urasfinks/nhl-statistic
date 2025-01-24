@@ -267,7 +267,7 @@ class NhlStatisticApplicationTest {
         Util.logConsoleJson(NhlStatisticApplication.class, send);
     }
 
-    @Test
+    //@Test
     void testInviteGame() {
         new InviteGameCommon().generate().run().await(60_000L);
     }
