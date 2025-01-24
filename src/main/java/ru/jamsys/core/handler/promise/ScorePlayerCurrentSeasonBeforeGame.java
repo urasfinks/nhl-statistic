@@ -31,7 +31,7 @@ public class ScorePlayerCurrentSeasonBeforeGame implements PromiseGenerator {
 
     private List<String> lisIdGameInSeason = new ArrayList<>();
 
-    private AtomicInteger countGoal = new AtomicInteger(0);
+    private final AtomicInteger countGoal = new AtomicInteger(0);
 
     public ScorePlayerCurrentSeasonBeforeGame(NHLPlayerList.Player player, String idGame) {
         this.idGame = idGame;
