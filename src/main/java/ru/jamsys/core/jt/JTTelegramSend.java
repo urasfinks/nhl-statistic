@@ -46,10 +46,6 @@ public enum JTTelegramSend implements JdbcRequestRepository {
             COMMIT;
             """, StatementType.SELECT_WITHOUT_AUTO_COMMIT),
 
-    SELECT("""
-            SELECT * FROM telegram_send WHERE ts_send IS NULL
-            """, StatementType.SELECT_WITH_AUTO_COMMIT),
-
     INSERT("""
             INSERT INTO telegram_send (
                 id_chat,
