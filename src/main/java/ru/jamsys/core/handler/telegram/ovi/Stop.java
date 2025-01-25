@@ -23,7 +23,7 @@ import java.util.Map;
 @Setter
 @Getter
 @Component
-@RequestMapping({"/stop"})
+@RequestMapping("/stop")
 public class Stop implements PromiseGenerator, OviGoalsBotCommandHandler {
 
     private final ServicePromise servicePromise;

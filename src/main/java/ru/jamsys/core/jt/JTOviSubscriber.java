@@ -32,40 +32,6 @@ public enum JTOviSubscriber implements JdbcRequestRepository {
                 id_chat = ${IN.id_chat::NUMBER}
             """, StatementType.SELECT_WITH_AUTO_COMMIT),
 
-    SELECT_VOTE_AGG("""
-            SELECT
-                vote,
-                count(*)
-            FROM ovi_subscriber
-            GROUP BY vote
-            """, StatementType.SELECT_WITH_AUTO_COMMIT),
-
-    UPDATE_VOTE("""
-            UPDATE
-                ovi_subscriber
-            SET
-                vote = ${IN.vote::VARCHAR}
-            WHERE
-                id_chat = ${IN.id_chat::NUMBER}
-            """, StatementType.SELECT_WITH_AUTO_COMMIT),
-
-    SELECT_QUEST_AGG("""
-            SELECT
-                quest_1 as unit,
-                count(*)
-            FROM ovi_subscriber
-            GROUP BY quest_1
-            """, StatementType.SELECT_WITH_AUTO_COMMIT),
-
-    UPDATE_QUEST_1("""
-            UPDATE
-                ovi_subscriber
-            SET
-                quest_1 = ${IN.quest::VARCHAR}
-            WHERE
-                id_chat = ${IN.id_chat::NUMBER}
-            """, StatementType.SELECT_WITH_AUTO_COMMIT),
-
     INSERT("""
             INSERT INTO ovi_subscriber (
                 id_chat,

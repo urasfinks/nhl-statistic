@@ -19,7 +19,7 @@ import ru.jamsys.telegram.handler.OviGoalsBotCommandHandler;
 @Setter
 @Getter
 @Component
-@RequestMapping({"/stats"})
+@RequestMapping("/stats")
 public class Stats implements PromiseGenerator, OviGoalsBotCommandHandler {
 
     private final ServicePromise servicePromise;

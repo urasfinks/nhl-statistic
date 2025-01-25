@@ -29,7 +29,7 @@ import java.util.Map;
 @Setter
 @Getter
 @Component
-@RequestMapping({"/start/**"})
+@RequestMapping("/start/**")
 public class Start implements PromiseGenerator, OviGoalsBotCommandHandler {
 
     private final ServicePromise servicePromise;
@@ -123,18 +123,23 @@ public class Start implements PromiseGenerator, OviGoalsBotCommandHandler {
                                             .append(new Button(
                                                     "Да 🔥",
                                                     ServletResponseWriter.buildUrlQuery(
-                                                            "/poll_results/",
-                                                            new HashMapBuilder<>(context.getUriParameters())
-                                                                    .append("value", "true")
+                                                            "/vote/",
+                                                            new HashMapBuilder<String, String>()
+                                                                    .append("g", "Ovi")
+                                                                    .append("p", UtilNHL.getOvi().getPlayerID())
+                                                                    .append("v", "true")
+
 
                                                     )
                                             ))
                                             .append(new Button(
                                                     "Нет ⛔",
                                                     ServletResponseWriter.buildUrlQuery(
-                                                            "/poll_results/",
-                                                            new HashMapBuilder<>(context.getUriParameters())
-                                                                    .append("value", "false")
+                                                            "/vote/",
+                                                            new HashMapBuilder<String, String>()
+                                                                    .append("g", "Ovi")
+                                                                    .append("p", UtilNHL.getOvi().getPlayerID())
+                                                                    .append("v", "false")
 
                                                     )
                                             ))

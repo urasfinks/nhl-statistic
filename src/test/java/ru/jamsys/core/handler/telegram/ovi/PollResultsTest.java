@@ -27,8 +27,8 @@ class PollResultsTest {
                         Да 🔥 – 0,00%
                         Нет ⛔ – 0,00%""",
                 PollResults.getStat(new ArrayListBuilder<Map<String, Object>>()
-                                .append(new HashMapBuilder<String, Object>().append("vote", null))
-                                .append(new HashMapBuilder<String, Object>().append("vote", null))
+                                .append(new HashMapBuilder<String, Object>().append("unit", null))
+                                .append(new HashMapBuilder<String, Object>().append("unit", null))
                         , ""));
 
         Assertions.assertEquals("""
@@ -37,8 +37,8 @@ class PollResultsTest {
                         Да 🔥 – 0,00%
                         Нет ⛔ – 0,00%""",
                 PollResults.getStat(new ArrayListBuilder<Map<String, Object>>()
-                                .append(new HashMapBuilder<String, Object>().append("vote", 1))
-                                .append(new HashMapBuilder<String, Object>().append("vote", null))
+                                .append(new HashMapBuilder<String, Object>().append("unit", 1))
+                                .append(new HashMapBuilder<String, Object>().append("unit", null))
                         , ""));
 
         Assertions.assertEquals("""
@@ -47,8 +47,8 @@ class PollResultsTest {
                         Да 🔥 – 0,00%
                         Нет ⛔ – 0,00%""",
                 PollResults.getStat(new ArrayListBuilder<Map<String, Object>>()
-                                .append(new HashMapBuilder<String, Object>().append("vote", "true"))
-                                .append(new HashMapBuilder<String, Object>().append("vote", "false"))
+                                .append(new HashMapBuilder<String, Object>().append("unit", "true"))
+                                .append(new HashMapBuilder<String, Object>().append("unit", "false"))
                         , ""));
 
         Assertions.assertEquals("""
@@ -57,17 +57,7 @@ class PollResultsTest {
                         Да 🔥 – 0,00%
                         Нет ⛔ – 0,00%""",
                 PollResults.getStat(new ArrayListBuilder<Map<String, Object>>()
-                                .append(new HashMapBuilder<String, Object>().append("vote", "true"))
-
-                        , ""));
-
-        Assertions.assertEquals("""
-                        Статистика голосования:
-                        
-                        Да 🔥 – 0,00%
-                        Нет ⛔ – 0,00%""",
-                PollResults.getStat(new ArrayListBuilder<Map<String, Object>>()
-                                .append(new HashMapBuilder<String, Object>().append("vote", "false"))
+                                .append(new HashMapBuilder<String, Object>().append("unit", "true"))
 
                         , ""));
 
@@ -77,8 +67,18 @@ class PollResultsTest {
                         Да 🔥 – 0,00%
                         Нет ⛔ – 0,00%""",
                 PollResults.getStat(new ArrayListBuilder<Map<String, Object>>()
-                                .append(new HashMapBuilder<String, Object>().append("vote", "true").append("count", 0))
-                                .append(new HashMapBuilder<String, Object>().append("vote", "false").append("count", 0))
+                                .append(new HashMapBuilder<String, Object>().append("unit", "false"))
+
+                        , ""));
+
+        Assertions.assertEquals("""
+                        Статистика голосования:
+                        
+                        Да 🔥 – 0,00%
+                        Нет ⛔ – 0,00%""",
+                PollResults.getStat(new ArrayListBuilder<Map<String, Object>>()
+                                .append(new HashMapBuilder<String, Object>().append("unit", "true").append("count", 0))
+                                .append(new HashMapBuilder<String, Object>().append("unit", "false").append("count", 0))
                         , ""));
 
         Assertions.assertEquals("""
@@ -87,8 +87,8 @@ class PollResultsTest {
                         Да 🔥 – 100,00%
                         Нет ⛔ – 0,00%""",
                 PollResults.getStat(new ArrayListBuilder<Map<String, Object>>()
-                                .append(new HashMapBuilder<String, Object>().append("vote", "true").append("count", 1))
-                                .append(new HashMapBuilder<String, Object>().append("vote", "false").append("count", 0))
+                                .append(new HashMapBuilder<String, Object>().append("unit", "true").append("count", 1))
+                                .append(new HashMapBuilder<String, Object>().append("unit", "false").append("count", 0))
                         , ""));
 
         Assertions.assertEquals("""
@@ -97,8 +97,8 @@ class PollResultsTest {
                         Да 🔥 – 50,00%
                         Нет ⛔ – 50,00%""",
                 PollResults.getStat(new ArrayListBuilder<Map<String, Object>>()
-                                .append(new HashMapBuilder<String, Object>().append("vote", "true").append("count", 1))
-                                .append(new HashMapBuilder<String, Object>().append("vote", "false").append("count", 1))
+                                .append(new HashMapBuilder<String, Object>().append("unit", "true").append("count", 1))
+                                .append(new HashMapBuilder<String, Object>().append("unit", "false").append("count", 1))
                         , ""));
 
         Assertions.assertEquals("""
@@ -107,8 +107,8 @@ class PollResultsTest {
                         Да 🔥 – 66,67%
                         Нет ⛔ – 33,33%""",
                 PollResults.getStat(new ArrayListBuilder<Map<String, Object>>()
-                                .append(new HashMapBuilder<String, Object>().append("vote", "true").append("count", 10))
-                                .append(new HashMapBuilder<String, Object>().append("vote", "false").append("count", 5))
+                                .append(new HashMapBuilder<String, Object>().append("unit", "true").append("count", 10))
+                                .append(new HashMapBuilder<String, Object>().append("unit", "false").append("count", 5))
                         , ""));
     }
 }

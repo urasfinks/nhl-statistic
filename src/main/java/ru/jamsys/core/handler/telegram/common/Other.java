@@ -11,6 +11,7 @@ import ru.jamsys.core.extension.builder.HashMapBuilder;
 import ru.jamsys.core.extension.http.ServletResponseWriter;
 import ru.jamsys.core.flat.util.Util;
 import ru.jamsys.core.flat.util.UtilDate;
+import ru.jamsys.core.flat.util.UtilNHL;
 import ru.jamsys.core.flat.util.telegram.Button;
 import ru.jamsys.core.handler.promise.RegisterNotification;
 import ru.jamsys.core.jt.JTOviSubscriber;
@@ -65,15 +66,16 @@ public class Other implements PromiseGenerator, NhlStatisticsBotCommandHandler {
                     Context context = promise.getRepositoryMapClass(Context.class);
 
                     context.getListIdChat().clear();
-                    context.getListIdChat().add(290029195L);
-                    context.getListIdChat().add(294097034L);
-                    context.getListIdChat().add(241022301L);
+                    context.getListIdChat().add(290029195L); // Ura
+                    context.getListIdChat().add(294097034L); // Alex
+                    context.getListIdChat().add(241022301L); // Igor
                     Util.logConsoleJson(getClass(), context);
 
                     List<TelegramNotification> listTelegramNotification = new ArrayList<>();
                     context.getListIdChat().forEach(idChat -> listTelegramNotification.add(new TelegramNotification(
                             idChat,
-                            "ovi_goals_bot",
+                            //"ovi_goals_bot",
+                            "test_ovi_goals_bot",
                             """
                             Матч Washington Capitals (WSH) 🆚 Seattle Kraken (SEA) начнется уже через 12 часов — 24 января в 06:00 (МСК).
                             
@@ -84,18 +86,22 @@ public class Other implements PromiseGenerator, NhlStatisticsBotCommandHandler {
                                     .append(new Button(
                                             "Да 🔥",
                                             ServletResponseWriter.buildUrlQuery(
-                                                    "/poll_quest/",
+                                                    "/vote/",
                                                     new HashMapBuilder<String, String>()
-                                                            .append("value", "true")
+                                                            .append("g", "20241228_WSH@TOR")
+                                                            .append("p", UtilNHL.getOvi().getPlayerID())
+                                                            .append("v", "true")
 
                                             )
                                     ))
                                     .append(new Button(
                                             "Нет ⛔",
                                             ServletResponseWriter.buildUrlQuery(
-                                                    "/poll_quest/",
+                                                    "/vote/",
                                                     new HashMapBuilder<String, String>()
-                                                            .append("value", "false")
+                                                            .append("g", "20241228_WSH@TOR")
+                                                            .append("p", UtilNHL.getOvi().getPlayerID())
+                                                            .append("v", "false")
 
                                             )
                                     ))

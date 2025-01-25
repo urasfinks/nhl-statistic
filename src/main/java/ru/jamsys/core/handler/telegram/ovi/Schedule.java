@@ -28,7 +28,7 @@ import java.util.List;
 @Setter
 @Getter
 @Component
-@RequestMapping({"/schedule/**"})
+@RequestMapping("/schedule/**")
 public class Schedule implements PromiseGenerator, OviGoalsBotCommandHandler {
 
     private final ServicePromise servicePromise;

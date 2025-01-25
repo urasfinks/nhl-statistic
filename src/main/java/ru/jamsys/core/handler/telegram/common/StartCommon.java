@@ -17,7 +17,7 @@ import ru.jamsys.telegram.handler.NhlStatisticsBotCommandHandler;
 @Setter
 @Getter
 @Component
-@RequestMapping({"/start"})
+@RequestMapping("/start")
 public class StartCommon implements PromiseGenerator, NhlStatisticsBotCommandHandler {
 
     private final ServicePromise servicePromise;
