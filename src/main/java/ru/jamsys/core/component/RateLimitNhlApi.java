@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @Component
 @Lazy
-public class RateLimit {
+public class RateLimitNhlApi {
 
     private final AtomicInteger countRequest = new AtomicInteger(0);
 

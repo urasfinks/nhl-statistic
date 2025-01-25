@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import ru.jamsys.core.App;
-import ru.jamsys.core.component.RateLimit;
+import ru.jamsys.core.component.RateLimitNhlApi;
 import ru.jamsys.core.component.SecurityComponent;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.component.ServiceProperty;
@@ -73,7 +73,7 @@ public class Tank01Request implements PromiseGenerator {
                     }
                 })
                 .then("checkRateLimit", (_, _, _) -> {
-                    if (!App.get(RateLimit.class).isRateLimit()) {
+                    if (!App.get(RateLimitNhlApi.class).isRateLimit()) {
                         throw new RuntimeException("RateLimit Finish");
                     }
                 })
