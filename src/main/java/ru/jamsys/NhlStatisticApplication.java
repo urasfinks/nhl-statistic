@@ -26,6 +26,7 @@ public class NhlStatisticApplication {
         App.main(args);
     }
 
+    @SuppressWarnings("unused")
     public static void testSend() {
         TelegramBotManager telegramBotManager = App.get(TelegramBotManager.class);
         TelegramNotification telegramNotification = new TelegramNotification(
