@@ -71,7 +71,7 @@ public enum JTTeamScheduler implements JdbcRequestRepository {
             SET
                 send_invite = 1
             WHERE
-                id_game = ${IN.id_game::VARCHAR}
+                id_game IN (${IN.id_game::IN_ENUM_VARCHAR})
             """, StatementType.SELECT_WITH_AUTO_COMMIT),
 
     INSERT("""

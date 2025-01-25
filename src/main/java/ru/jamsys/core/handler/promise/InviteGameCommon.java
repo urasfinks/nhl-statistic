@@ -6,6 +6,7 @@ import lombok.experimental.Accessors;
 import ru.jamsys.core.App;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.component.TelegramBotManager;
+import ru.jamsys.core.extension.builder.HashMapBuilder;
 import ru.jamsys.core.flat.template.jdbc.DataMapper;
 import ru.jamsys.core.flat.util.Util;
 import ru.jamsys.core.flat.util.UtilDate;
@@ -19,10 +20,7 @@ import ru.jamsys.core.resource.jdbc.JdbcResource;
 import ru.jamsys.telegram.TelegramNotification;
 
 import java.math.BigDecimal;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Accessors(chain = true)
 public class InviteGameCommon implements PromiseGenerator {
@@ -40,6 +38,7 @@ public class InviteGameCommon implements PromiseGenerator {
     @Setter
     public static class Context {
         List<Row> listInviteGame;
+        List<String> listIdGames = new ArrayList<>();
     }
 
     @Override
@@ -58,7 +57,8 @@ public class InviteGameCommon implements PromiseGenerator {
                             if (context.getListInviteGame().isEmpty()) {
                                 promise.skipAllStep("inviteGame is empty");
                             }
-                        })
+                        }
+                )
                 .then("handler", (_, _, promise) -> {
                     Context context = promise.getRepositoryMapClass(Context.class);
                     Row oviInviteGame = null;
@@ -69,7 +69,18 @@ public class InviteGameCommon implements PromiseGenerator {
                         }
                         try {
                             Map<String, Object> mapOrThrow = UtilJson.getMapOrThrow(row.getJson());
+                            if (mapOrThrow.containsKey("gameID")) {
+                                context.getListIdGames().add(mapOrThrow.get("gameID").toString());
+                            }
                             long timeGame = new BigDecimal(mapOrThrow.get("gameTime_epoch").toString()).longValue();
+                            Util.logConsoleJson(getClass(), new HashMapBuilder<String, Object>(mapOrThrow)
+                                    .append("curTimestamp", System.currentTimeMillis())
+                                    .append("gameTimestamp", timeGame * 1000)
+                                    .append("fomal", UtilDate.getTimeBetween(System.currentTimeMillis(), timeGame * 1000).getDescription(
+                                            2,
+                                            UtilDate.TimeBetween.StyleDescription.FORMAL
+                                    ))
+                            );
                             String msg = String.format("""
                                             Матч %s 🆚 %s начнется уже через %s — %s""",
                                     mapOrThrow.get("awayTeam"),
@@ -93,9 +104,22 @@ public class InviteGameCommon implements PromiseGenerator {
                             App.error(th);
                         }
                     }
-                    Util.logConsole(getClass(), "ovi: " + oviInviteGame);
-                    Util.logConsoleJson(getClass(), map);
+                    RegisterNotificationTest.add(map.stream().toList());
+                    if (context.getListIdGames().isEmpty()) {
+                        promise.skipAllStep("listIdGames is empty");
+                    }
                 })
+                .thenWithResource(
+                        "update",
+                        JdbcResource.class,
+                        (_, _, promise, jdbcResource) -> {
+                            Context context = promise.getRepositoryMapClass(Context.class);
+                            jdbcResource.execute(
+                                    new JdbcRequest(JTTeamScheduler.UPDATE_INVITED_GAME)
+                                            .addArg("id_game", context.getListIdGames())
+                            );
+                        }
+                )
                 .setDebug(false)
                 ;
     }
