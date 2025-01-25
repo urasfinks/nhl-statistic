@@ -5,6 +5,7 @@ import lombok.Setter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
 import ru.jamsys.core.component.ServicePromise;
+import ru.jamsys.core.flat.util.UtilNHL;
 import ru.jamsys.core.handler.promise.Vote;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
@@ -26,7 +27,9 @@ public class PollResults extends Vote implements PromiseGenerator, OviGoalsBotCo
         Promise promise = super.generate();
         promise
                 .getRepositoryMapClass(Context.class)
-                .setExtraText("Побьет ли Александр Овечкин рекорд Уэйна Гретцки в этом сезоне?\n\n");
+                .setExtraText("Побьет ли Александр Овечкин рекорд Уэйна Гретцки в этом сезоне?\n\n")
+                .setDefaultIdGame("Ovi")
+                .setDefaultIdPlayer(UtilNHL.getOvi().getPlayerID());
         return promise;
     }
 

@@ -2,6 +2,7 @@ package ru.jamsys.core.handler.promise;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 import ru.jamsys.NhlStatisticApplication;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.extension.builder.HashMapBuilder;
@@ -34,10 +35,13 @@ public class Vote implements PromiseGenerator, NhlStatisticsBotCommandHandler {
 
     @Getter
     @Setter
+    @Accessors(chain = true)
     public static class Context {
         private String extraText = "";
         private List<Map<String, Object>> vote;
         private boolean already = false;
+        private String defaultIdPlayer;
+        private String defaultIdGame;
     }
 
     @Override
@@ -87,8 +91,18 @@ public class Vote implements PromiseGenerator, NhlStatisticsBotCommandHandler {
                     TelegramCommandContext contextTelegram = promise.getRepositoryMapClass(TelegramCommandContext.class);
                     Context context = promise.getRepositoryMapClass(Context.class);
                     context.setVote(jdbcResource.execute(new JdbcRequest(JTVote.SELECT_AGG)
-                            .addArg("id_game", contextTelegram.getUriParameters().get("g"))
-                            .addArg("id_player", contextTelegram.getUriParameters().get("p"))
+                            .addArg(
+                                    "id_game",
+                                    contextTelegram
+                                            .getUriParameters()
+                                            .getOrDefault("g", context.getDefaultIdGame())
+                            )
+                            .addArg(
+                                    "id_player",
+                                    contextTelegram
+                                            .getUriParameters()
+                                            .getOrDefault("p", context.getDefaultIdPlayer())
+                            )
                     ));
                 })
                 .then("send", (atomicBoolean, promiseTask, promise) -> {
