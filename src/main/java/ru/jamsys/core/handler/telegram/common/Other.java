@@ -72,12 +72,16 @@ public class Other implements PromiseGenerator, NhlStatisticsBotCommandHandler {
                     Util.logConsoleJson(getClass(), context);
 
                     List<TelegramNotification> listTelegramNotification = new ArrayList<>();
+
+                    String idGame = "20250125_WSH@VAN";
+                    String dataSend = "25.01.2025 19:00:00";
+
                     context.getListIdChat().forEach(idChat -> listTelegramNotification.add(new TelegramNotification(
                             idChat,
-                            //"ovi_goals_bot",
-                            "test_ovi_goals_bot",
+                            "ovi_goals_bot",
+                            //"test_ovi_goals_bot",
                             """
-                            Матч Washington Capitals (WSH) 🆚 Seattle Kraken (SEA) начнется уже через 12 часов — 24 января в 06:00 (МСК).
+                            Матч Washington Capitals (WSH) 🆚 Vancouver Canucks (VAN) начнется уже через 11 часов — 26 января в 06:00 (МСК).
                             
                             Как думаешь, сможет ли Александр Овечкин забить сегодня?
                             
@@ -88,7 +92,7 @@ public class Other implements PromiseGenerator, NhlStatisticsBotCommandHandler {
                                             ServletResponseWriter.buildUrlQuery(
                                                     "/vote/",
                                                     new HashMapBuilder<String, String>()
-                                                            .append("g", "20241228_WSH@TOR")
+                                                            .append("g", idGame)
                                                             .append("p", UtilNHL.getOvi().getPlayerID())
                                                             .append("v", "true")
 
@@ -99,7 +103,7 @@ public class Other implements PromiseGenerator, NhlStatisticsBotCommandHandler {
                                             ServletResponseWriter.buildUrlQuery(
                                                     "/vote/",
                                                     new HashMapBuilder<String, String>()
-                                                            .append("g", "20241228_WSH@TOR")
+                                                            .append("g", idGame)
                                                             .append("p", UtilNHL.getOvi().getPlayerID())
                                                             .append("v", "false")
 
@@ -110,7 +114,7 @@ public class Other implements PromiseGenerator, NhlStatisticsBotCommandHandler {
                     )));
                     RegisterNotification.addDeferred(
                             listTelegramNotification,
-                            UtilDate.getTimestamp("23.01.2025 18:00:00", "dd.MM.yyyy HH:mm:ss") * 1000
+                            UtilDate.getTimestamp(dataSend, "dd.MM.yyyy HH:mm:ss") * 1000
                     );
 
                 })
