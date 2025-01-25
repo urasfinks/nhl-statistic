@@ -26,6 +26,19 @@ public class NhlStatisticApplication {
         App.main(args);
     }
 
+    public static void testSend() {
+        TelegramBotManager telegramBotManager = App.get(TelegramBotManager.class);
+        TelegramNotification telegramNotification = new TelegramNotification(
+                290029195L,
+                telegramBotManager.getOviBotProperty().getName(),
+                "Привет",
+                null,
+                null
+        );
+        UtilTelegramResponse.Result send = telegramBotManager.send(telegramNotification, TelegramBotManager.TypeSender.HTTP);
+        Util.logConsoleJson(NhlStatisticApplication.class, send);
+    }
+
     public static void addOnError(Promise sourcePromise) {
         sourcePromise.onError((_, _, promise) -> {
             try {

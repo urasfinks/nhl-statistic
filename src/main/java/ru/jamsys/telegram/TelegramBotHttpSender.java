@@ -26,6 +26,9 @@ import java.util.Map;
 
 public class TelegramBotHttpSender implements TelegramSender {
 
+    //private static final String urlEndpoint = "https://api.telegram.org/bot%s/%s";
+    private static final String urlEndpoint = "http://147.45.146.13:8081/bot%s/%s";
+
     private final String token;
 
     private final Session<String, String> fileUpload; //key - filePath; value - file_id
@@ -87,7 +90,7 @@ public class TelegramBotHttpSender implements TelegramSender {
         }
         HttpClientImpl httpClient = new HttpClientImpl();
         httpClient.setUrl(String.format(
-                        "https://api.telegram.org/bot%s/%s",
+                        urlEndpoint,
                         token,
                         apiMethod
                 ))
@@ -142,8 +145,9 @@ public class TelegramBotHttpSender implements TelegramSender {
 
         HttpClientImpl httpClient = new HttpClientImpl();
         httpClient.setUrl(String.format(
-                        "https://api.telegram.org/bot%s/sendPhoto",
-                        token
+                        urlEndpoint,
+                        token,
+                        "sendPhoto"
                 ))
                 .putRequestHeader(httpEntity.getContentType().getName(), httpEntity.getContentType().getValue())
                 .setPostData(postData)
