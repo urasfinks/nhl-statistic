@@ -58,7 +58,9 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
         private Map<String, String> lastData = new HashMap<>();
         private Map<String, List<GameEventData>> playerEvent = new LinkedHashMap<>(); // key - idPlayer; value - template
         private List<String> endGames = new ArrayList<>();
-        private List<PromiseGenerator> notificationList = new ArrayList<>();
+        private Map<String, RegisterNotificationGameEvent> nhlPlayerNotificationPromise = new HashMap<>(); // key - idPlayer;
+
+        RegisterNotificationGameEventOvi oviNotificationPromise;
 
         @JsonIgnore
         private Map<String, NHLBoxScore.Instance> currentNHLBoxScoreInstance = new HashMap<>();
@@ -361,7 +363,6 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                                 });
                                 context.getEndGames().add(idGame);
                             }
-                            //logToTelegram(idGame + ":" + UtilJson.toStringPretty(context.getEvent(), "{}"));
                         } catch (Throwable e) {
                             throw new ForwardException(e);
                         }
@@ -379,7 +380,12 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                             .getRepositoryMapClass(Tank01Request.class);
 
                     Map<String, Set<Long>> startGameNotify = new HashMap<>(); // key - idGame
-
+                    // Если мы пришли к тому, что надо контролировать задвоения на отправку одному пользователю
+                    // Следовательно ключём корневой карты должен быть пользователь
+                    // Вторым ключём составной ключ от события
+                    // Если это START_GAME -> START_GAME+idGame
+                    //          default -> uuid
+                    Map<Long, ClientEvent> mapClientEvent = new HashMap<>();
                     UtilRisc.forEach(atomicBoolean, context.getActiveRepository().getPlayerListIdChatByPlayer(), (idPlayer, listIdChat) -> {
                         try {
                             if (listIdChat.isEmpty()) {
@@ -389,34 +395,38 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                             if (player == null) {
                                 return;
                             }
-                            List<GameEventData> gameEventDataList = context.getPlayerEvent().get(idPlayer);
-                            // Может быть такое, что по одному игроку будут события, а по другому нет
-                            // Но context.getActiveRepository().getPlayerListIdChatByPlayer() всё равно будем пробегаться по каждому
-                            if (gameEventDataList != null && !gameEventDataList.isEmpty()) {
-                                gameEventDataList.forEach(gameEventData -> {
-                                    if (UtilNHL.isOvi(idPlayer)) {
-                                        context.getNotificationList().add(new RegisterNotificationGameEventOvi(
-                                                context.getActiveRepository().getIdGame(idPlayer),
-                                                gameEventData
-                                        ));
-                                    }
-                                    Set<Long> to = new HashSet<>(listIdChat);
-                                    if (gameEventData.getAction().equals(GameEventData.Action.START_GAME)) {
-                                        Set<Long> alreadySend = startGameNotify
-                                                .computeIfAbsent(gameEventData.getGameAbout(), _ -> new HashSet<>());
-                                        to.removeAll(alreadySend);
-                                        if (to.isEmpty()) {
-                                            return;
-                                        }
-                                        alreadySend.addAll(to);
-                                    }
 
-                                    context.getNotificationList().add(new RegisterNotificationGameEvent(
-                                            context.getActiveRepository().getIdGame(idPlayer),
-                                            player,
-                                            gameEventData,
-                                            to.stream().toList()
-                                    ));
+                            List<GameEventData> listPlayerGameEventData = context.getPlayerEvent().get(idPlayer);
+                            if (listPlayerGameEventData != null && !listPlayerGameEventData.isEmpty()) {
+                                RegisterNotificationGameEvent registerNotificationGameEvent = context
+                                        .getNhlPlayerNotificationPromise()
+                                        .computeIfAbsent(idPlayer, _ -> new RegisterNotificationGameEvent(
+                                                context.getActiveRepository().getIdGame(idPlayer),
+                                                player
+                                        ));
+                                listPlayerGameEventData.forEach(playerGameEventData -> {
+                                    if (UtilNHL.isOvi(idPlayer)) {
+                                        if (context.getOviNotificationPromise() == null) {
+                                            // Мы не можем раньше создать так как getIdGame вызывает исключение если
+                                            // игра не найдена по игроку
+                                            context.setOviNotificationPromise(
+                                                    new RegisterNotificationGameEventOvi(
+                                                            context
+                                                                    .getActiveRepository()
+                                                                    .getIdGame(UtilNHL.getOvi().getPlayerID())
+                                                    )
+                                            );
+                                        }
+                                        context
+                                                .getOviNotificationPromise()
+                                                .getListGameEventData()
+                                                .add(playerGameEventData);
+                                    }
+                                    listIdChat.forEach(idChat -> {
+                                        ClientEvent clientEvent = mapClientEvent
+                                                .computeIfAbsent(idChat, aLong -> new ClientEvent(idChat));
+                                        clientEvent.add(playerGameEventData, registerNotificationGameEvent);
+                                    });
                                 });
                             }
                         } catch (Throwable e) {
@@ -426,7 +436,14 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                 })
                 .then("send", (atomicBoolean, promiseTask, promise) -> {
                     Context context = promise.getRepositoryMapClass(Context.class);
-                    context.getNotificationList().forEach(promiseGenerator -> promiseGenerator.generate().run());
+                    if (context.getOviNotificationPromise() != null
+                            && !context.getOviNotificationPromise().getListGameEventData().isEmpty()
+                    ) {
+                        context.getOviNotificationPromise().generate().run();
+                    }
+                    context
+                            .getNhlPlayerNotificationPromise()
+                            .forEach((_, promiseGenerator) -> promiseGenerator.generate().run());
                 })
                 // saveData в конце Promise специально на случай критичных рассылок, если сломается, то будет всё по
                 // новой рассылать
@@ -484,6 +501,31 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                     }
                 })
                 .setDebug(false);
+    }
+
+    @Getter
+    @Setter
+    public static class ClientEvent {
+
+        private final Long idChat;
+
+        private Map<String, GameEventData> map = new HashMap<>(); // key - complexKey
+
+        public ClientEvent(Long idChat) {
+            this.idChat = idChat;
+        }
+
+        public void add(GameEventData gameEventData, RegisterNotificationGameEvent registerNotificationGameEvent) {
+            String complexKey = gameEventData.getAction().equals(GameEventData.Action.START_GAME)
+                    ? gameEventData.getGameAbout()
+                    : UUID.randomUUID().toString();
+            if (!map.containsKey(complexKey)) {
+                registerNotificationGameEvent.getListGameEventData().add(gameEventData);
+                registerNotificationGameEvent.getListIdChat().add(idChat);
+            }
+            map.put(complexKey, gameEventData);
+        }
+
     }
 
 }

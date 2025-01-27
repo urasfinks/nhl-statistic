@@ -68,7 +68,7 @@ public class TelegramBotEmbedded extends TelegramLongPollingBot implements Teleg
         super(botToken);
         this.botUsername = botUsername;
         this.routerRepository = routerRepository;
-        stepHandler = new Session<>("TelegramContext_" + botUsername, Long.class, 60_000L);
+        stepHandler = new Session<>("TelegramContext_" + botUsername, 60_000L);
         api.registerBot(this);
     }
 

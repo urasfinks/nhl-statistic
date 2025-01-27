@@ -22,6 +22,11 @@ import ru.jamsys.telegram.template.GameEventTemplateOvi;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+// Изначально предполагалось, что это обещание будет обрабатывать одно событие по игроку
+// В случае с Ovi добавилась пробежка по всем подписантам Ovi и получается событие множилось
+// Потом пришла рассылка с конца очереди, и пришлось менять порядок вставки, но тут одно событие
 
 @Getter
 @Setter
@@ -33,18 +38,18 @@ public class RegisterNotificationGameEventOvi implements PromiseGenerator {
 
     private final NHLPlayerList.Player player = UtilNHL.getOvi();
 
-    private final GameEventData gameEventData;
+    private final List<GameEventData> listGameEventData = new ArrayList<>();
 
     private final List<Long> listIdChat = new ArrayList<>();
 
-    private final List<TelegramNotification> mainEvent = new ArrayList<>();
+    private final List<TelegramNotification> listNotPlay = new ArrayList<>();
+
+    private final List<TelegramNotification> listEvent = new ArrayList<>();
 
     public RegisterNotificationGameEventOvi(
-            String idGame,
-            GameEventData gameEventData
+            String idGame
     ) {
         this.idGame = idGame;
-        this.gameEventData = gameEventData;
     }
 
     @Override
@@ -59,19 +64,16 @@ public class RegisterNotificationGameEventOvi implements PromiseGenerator {
                     ScorePlayerCurrentSeasonBeforeGame stat = promise
                             .getRepositoryMapClass(Promise.class, "lastGoals")
                             .getRepositoryMapClass(ScorePlayerCurrentSeasonBeforeGame.class);
-                    gameEventData
-                            .setScoredPrevGoal(stat.getCountGoal().get());
-                    String message = new GameEventTemplateOvi(gameEventData).toString();
-                    TelegramBotManager telegramBotManager = App.get(TelegramBotManager.class);
-
-                    List<TelegramNotification> listNotPlay = new ArrayList<>();
-                    List<TelegramNotification> listEvent = new ArrayList<>();
-                    UtilRisc.forEach(atomicBoolean, listIdChat, idChat -> {
-
+                    AtomicBoolean gameInProcess = new AtomicBoolean(true);
+                    listGameEventData.forEach(gameEventData -> {
+                        gameEventData.setScoredPrevGoal(stat.getCountGoal().get());
+                        String message = new GameEventTemplateOvi(gameEventData).toString();
+                        String botName = App.get(TelegramBotManager.class).getOviBotProperty().getName();
+                        UtilRisc.forEach(atomicBoolean, listIdChat, idChat -> {
                             if (gameEventData.getAction().equals(GameEventData.Action.NOT_PLAY)) {
                                 listNotPlay.add(new TelegramNotification(
                                         idChat,
-                                        telegramBotManager.getOviBotProperty().getName(),
+                                        botName,
                                         message,
                                         null,
                                         null
@@ -79,23 +81,26 @@ public class RegisterNotificationGameEventOvi implements PromiseGenerator {
                             } else {
                                 listEvent.add(new TelegramNotification(
                                         idChat,
-                                        telegramBotManager.getOviBotProperty().getName(),
+                                        botName,
                                         message,
                                         null,
                                         null
                                 ));
                             }
-
+                            if (gameEventData.getAction().equals(GameEventData.Action.FINISH_GAME)) {
+                                new HttpCacheReset(NHLGamesForPlayer.getUri(player.getPlayerID())).generate().run();
+                            }
+                            if (gameEventData.getAction().equals(GameEventData.Action.FINISH_GAME)) {
+                                gameInProcess.set(false);
+                            }
+                        });
                     });
-                    mainEvent.addAll(listNotPlay);
-                    mainEvent.addAll(listEvent);
-
-                    if (gameEventData.getAction().equals(GameEventData.Action.FINISH_GAME)) {
-                        new HttpCacheReset(NHLGamesForPlayer.getUri(player.getPlayerID())).generate().run();
-                    }
-                    if (!gameEventData.getAction().equals(GameEventData.Action.FINISH_GAME)) {
-                        RegisterNotification.add(mainEvent);
-                        promise.skipAllStep("not finish game");
+                    if (gameInProcess.get()) {
+                        ArrayList<TelegramNotification> merge = new ArrayList<>();
+                        merge.addAll(listNotPlay);
+                        merge.addAll(listEvent);
+                        RegisterNotification.add(merge);
+                        promise.skipAllStep("Game in process");
                     }
                 })
                 .then("ovi", new PlayerStatistic(UtilNHL.getOvi(), UtilNHL.getOviScoreLastSeason()).generate())
@@ -117,7 +122,7 @@ public class RegisterNotificationGameEventOvi implements PromiseGenerator {
 
                         String pathImage = "image/" + ovi.getTotalGoals() + ".png";
                         if (
-                                gameEventData.getScoredGoal() > 0
+                                listGameEventData.getFirst().getScoredGoal() > 0
                                         && UtilFileResource.isFile(pathImage, UtilFileResource.Direction.PROJECT)
                         ) {
                             listSendImage.add(new TelegramNotification(
@@ -129,9 +134,12 @@ public class RegisterNotificationGameEventOvi implements PromiseGenerator {
                             ));
                         }
                     });
-                    mainEvent.addAll(listSendImage);
-                    mainEvent.addAll(listSendStat);
-                    RegisterNotification.add(mainEvent);
+                    List<TelegramNotification> merge = new ArrayList<>();
+                    merge.addAll(listSendImage);
+                    merge.addAll(listSendStat);
+                    merge.addAll(listNotPlay);
+                    merge.addAll(listEvent);
+                    RegisterNotification.add(merge);
                 })
                 .setDebug(false)
                 ;

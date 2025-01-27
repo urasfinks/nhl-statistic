@@ -38,7 +38,6 @@ public class TelegramBotHttpSender implements TelegramSender {
         this.token = new String(securityComponent.get(botProperty.getSecurityAlias()));
         fileUpload = new Session<>(
                 TelegramBotHttpSender.class.getSimpleName() + "_" + botProperty.getName(),
-                String.class,
                 600_000L
         );
         //fileUpload.put("873.png", "AgACAgIAAxkDAAMjZ3xKa0B2nbPxHBFLcT-bOhNblMIAAvrvMRtnQ-BLLPvtL97-fIUBAAMCAANzAAM2BA");

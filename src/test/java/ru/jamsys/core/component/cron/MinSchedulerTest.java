@@ -350,7 +350,8 @@ class MinSchedulerTest {
         Assertions.assertEquals(GameEventData.Action.GOAL, promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("3101").getFirst().getAction());
         Assertions.assertEquals("[]", promise.getRepositoryMapClass(MinScheduler.Context.class).getEndGames().toString());
         //Assertions.assertFalse(promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerSubscriber().get("3101").isEmpty());
-        Assertions.assertEquals(2, promise.getRepositoryMapClass(MinScheduler.Context.class).getNotificationList().size());
+        Assertions.assertEquals(1, promise.getRepositoryMapClass(MinScheduler.Context.class).getNhlPlayerNotificationPromise().size());
+        Assertions.assertEquals(1, promise.getRepositoryMapClass(MinScheduler.Context.class).getOviNotificationPromise().getListGameEventData().size());
     }
 
     @Test
@@ -400,7 +401,9 @@ class MinSchedulerTest {
         });
 
         promise.setDebug(false).run().await(50_000L);
-        Assertions.assertEquals(5, promise.getRepositoryMapClass(MinScheduler.Context.class).getNotificationList().size());
+        Assertions.assertEquals(2, promise.getRepositoryMapClass(MinScheduler.Context.class).getNhlPlayerNotificationPromise().size());
+        Assertions.assertEquals(1, promise.getRepositoryMapClass(MinScheduler.Context.class).getNhlPlayerNotificationPromise().get("3101").getListGameEventData().size());
+        Assertions.assertEquals(2, promise.getRepositoryMapClass(MinScheduler.Context.class).getNhlPlayerNotificationPromise().get("3025524").getListGameEventData().size());
 
     }
 
@@ -528,6 +531,7 @@ class MinSchedulerTest {
         Assertions.assertNull(promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("5436"));
         Assertions.assertEquals(GameEventData.Action.GOAL, promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("4233583").getFirst().getAction());
         Assertions.assertNotEquals(promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("3114").getFirst().getAction(), GameEventData.Action.NOT_PLAY);
+        Assertions.assertNull(promise.getRepositoryMapClass(MinScheduler.Context.class).getOviNotificationPromise());
     }
 
     @Test
@@ -578,7 +582,11 @@ class MinSchedulerTest {
         promise.setDebug(false).run().await(50_000L);
 
         Assertions.assertFalse(promise.isException());
-        Assertions.assertEquals(2, promise.getRepositoryMapClass(MinScheduler.Context.class).getNotificationList().size());
+
+
+
+        Assertions.assertEquals(1, promise.getRepositoryMapClass(MinScheduler.Context.class).getNhlPlayerNotificationPromise().size());
+        Assertions.assertEquals(1, promise.getRepositoryMapClass(MinScheduler.Context.class).getOviNotificationPromise().getListGameEventData().size());
 
     }
 

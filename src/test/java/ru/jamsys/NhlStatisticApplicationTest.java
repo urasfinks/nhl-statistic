@@ -5,7 +5,6 @@ import org.junit.jupiter.api.BeforeAll;
 import ru.jamsys.core.App;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.component.TelegramBotManager;
-import ru.jamsys.core.extension.builder.ArrayListBuilder;
 import ru.jamsys.core.flat.util.*;
 import ru.jamsys.core.handler.promise.*;
 import ru.jamsys.core.jt.JTLogRequest;
@@ -71,12 +70,13 @@ class NhlStatisticApplicationTest {
         )
                 .setScoredGoal(1)
                 .setScoredLastSeason(300);
-        new RegisterNotificationGameEvent(
+        RegisterNotificationGameEvent registerNotificationGameEvent = new RegisterNotificationGameEvent(
                 idGame,
-                player,
-                gameEventData,
-                new ArrayListBuilder<Long>().append(290029195L)
-        ).generate().run().await(50_000L);
+                player
+        );
+        registerNotificationGameEvent.getListGameEventData().add(gameEventData);
+        registerNotificationGameEvent.getListIdChat().add(290029195L);
+        registerNotificationGameEvent.generate().run().await(50_000L);
     }
 
     @SuppressWarnings("unused")
@@ -177,10 +177,11 @@ class NhlStatisticApplicationTest {
         )
                 .setScoredGoal(1)
                 .setScoredLastSeason(300);
-        new RegisterNotificationGameEventOvi(
-                idGame,
-                gameEventData
-        ).generate().run().await(50_000L);
+        RegisterNotificationGameEventOvi registerNotificationGameEventOvi = new RegisterNotificationGameEventOvi(
+                idGame
+        );
+        registerNotificationGameEventOvi.getListGameEventData().add(gameEventData);
+        registerNotificationGameEventOvi.generate().run().await(50_000L);
     }
 
     @SuppressWarnings("unused")
