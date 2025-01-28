@@ -443,7 +443,12 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                     }
                     context
                             .getNhlPlayerNotificationPromise()
-                            .forEach((_, promiseGenerator) -> promiseGenerator.generate().run());
+                            .forEach((_, promiseGenerator) -> {
+                                Promise generate = promiseGenerator.generate();
+                                if (generate != null) {
+                                    generate.run();
+                                }
+                            });
                 })
                 // saveData в конце Promise специально на случай критичных рассылок, если сломается, то будет всё по
                 // новой рассылать
