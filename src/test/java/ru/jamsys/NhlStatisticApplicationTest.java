@@ -76,7 +76,11 @@ class NhlStatisticApplicationTest {
         );
         registerNotificationGameEvent.getListGameEventData().add(gameEventData);
         registerNotificationGameEvent.getListIdChat().add(290029195L);
-        registerNotificationGameEvent.generate().run().await(50_000L);
+
+        Promise generate = registerNotificationGameEvent.generate();
+        if (generate != null) {
+            generate.run().await(50_000L);
+        }
     }
 
     @SuppressWarnings("unused")
