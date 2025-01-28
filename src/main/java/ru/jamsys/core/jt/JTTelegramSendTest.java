@@ -16,6 +16,50 @@ public enum JTTelegramSendTest implements JdbcRequestRepository {
             SELECT * FROM telegram_send_test WHERE ts_send IS NULL
             """, StatementType.SELECT_WITH_AUTO_COMMIT),
 
+//    SELECT_ONE("""
+//            SELECT
+//                *
+//            FROM telegram_send_test
+//            WHERE
+//                ts_send IS NULL
+//                AND ts_add < now()::timestamp
+//                AND bot IN (${IN.bots::IN_ENUM_VARCHAR})
+//            ORDER BY id DESC
+//            LIMIT 1
+//            FOR UPDATE OF telegram_send_test SKIP LOCKED
+//            """, StatementType.SELECT_WITHOUT_AUTO_COMMIT),
+//
+//    SELECT_COUNT("""
+//            SELECT
+//                count(*)
+//            FROM telegram_send_test
+//            WHERE
+//                ts_send IS NULL
+//                AND ts_add < now()::timestamp
+//                AND bot IN (${IN.bots::IN_ENUM_VARCHAR})
+//            ORDER BY id DESC
+//            """, StatementType.SELECT_WITHOUT_AUTO_COMMIT),
+//
+//    COMMIT("""
+//            COMMIT;
+//            """, StatementType.SELECT_WITHOUT_AUTO_COMMIT),
+//
+//    SEND_FINISH("""
+//            UPDATE telegram_send_test SET
+//                ts_send = now()::timestamp,
+//                json = ${IN.json::VARCHAR}
+//            WHERE
+//                id = ${IN.id::NUMBER}
+//            """, StatementType.SELECT_WITHOUT_AUTO_COMMIT),
+//
+//    SEND_RETRY("""
+//            UPDATE telegram_send_test SET
+//                ts_add = now()::timestamp + interval '1 min',
+//                json = ${IN.json::VARCHAR}
+//            WHERE
+//                id = ${IN.id::NUMBER}
+//            """, StatementType.SELECT_WITHOUT_AUTO_COMMIT),
+
     INSERT("""
             INSERT INTO telegram_send_test (
                 id_chat,

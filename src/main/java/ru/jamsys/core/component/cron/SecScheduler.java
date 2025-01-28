@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import ru.jamsys.core.App;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.component.TelegramBotManager;
+import ru.jamsys.core.component.manager.item.Session;
 import ru.jamsys.core.extension.UniqueClassName;
 import ru.jamsys.core.flat.template.cron.release.Cron1s;
 import ru.jamsys.core.flat.util.Util;
@@ -30,19 +31,22 @@ public class SecScheduler implements Cron1s, PromiseGenerator, UniqueClassName {
 
     private final ServicePromise servicePromise;
 
+    private final Session<Long, AtomicInteger> session = new Session<>("RateLimitTelegramSend", 600_000L);
+
     private static final AtomicInteger countThread = new AtomicInteger(0);
 
-    private static final int maxThread = 1; // TelegramApi блокирует бота если в несколько потоков посылать (проверено)
+    // TelegramApi блокирует бота если в несколько потоков посылать (проверено)
+    // WebHook норм переваривает много потоков
+    private static final int maxThread = 10;
 
-    public SecScheduler(
-            ServicePromise servicePromise
-    ) {
+    public SecScheduler(ServicePromise servicePromise) {
         this.servicePromise = servicePromise;
     }
 
     public Promise generate() {
         return servicePromise.get(getClass().getSimpleName(), 6000_000L)
                 .then("check", (atomicBoolean, promiseTask, promise) -> {
+                    session.forEach((_, atomicInteger) -> atomicInteger.set(0));
                     if (App.get(TelegramBotManager.class).getRepository().size() < 4) {
                         promise.skipAllStep("size bot < 4");
                     }
@@ -51,7 +55,8 @@ public class SecScheduler implements Cron1s, PromiseGenerator, UniqueClassName {
                     if (countThread.get() >= maxThread) {
                         return;
                     }
-                    countThread.incrementAndGet();
+                    int currentCountThread = countThread.incrementAndGet();
+                    //Util.logConsole(getClass(), "Init thread: " + currentCountThread);
                     int countLoop = 0;
                     List<String> listBotName = App.get(TelegramBotManager.class).getListBotName();
                     TelegramBotManager telegramBotManager = App.get(TelegramBotManager.class);
@@ -65,10 +70,21 @@ public class SecScheduler implements Cron1s, PromiseGenerator, UniqueClassName {
                             if (execute.isEmpty()) {
                                 break;
                             }
+                            for (int i = currentCountThread; i < maxThread; i++) {
+                                this.generate().run();
+                            }
                             JTTelegramSend.Row first = execute.getFirst();
+                            long idChat = Long.parseLong(first.getIdChat().toString());
+
+                            AtomicInteger rateLimit = session.computeIfAbsent(idChat, _ -> new AtomicInteger(0));
+                            int rateLimitTotal = rateLimit.incrementAndGet();
+                            if (rateLimitTotal >= 30) {
+                                Util.logConsole(getClass(), "RateLimit(" + rateLimitTotal + ") by idChat: " + idChat);
+                                Util.sleepMs(1000);
+                            }
 
                             UtilTelegramResponse.Result send = telegramBotManager.send(new TelegramNotification(
-                                    Long.parseLong(first.getIdChat().toString()),
+                                    idChat,
                                     first.getBot(),
                                     first.getMessage(),
                                     parseButton(first.getButtons()),
@@ -93,8 +109,8 @@ public class SecScheduler implements Cron1s, PromiseGenerator, UniqueClassName {
                             jdbcResource.execute(new JdbcRequest(JTTelegramSend.COMMIT));
                         }
                         countLoop++;
-                        if (countLoop > 300) {
-                            Util.logConsole(getClass(), "loop break 300");
+                        if (countLoop > 1000) {
+                            Util.logConsole(getClass(), "loop break 1000");
                             break;
                         }
                     }
