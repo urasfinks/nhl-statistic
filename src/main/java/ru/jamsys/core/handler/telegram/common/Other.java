@@ -73,15 +73,15 @@ public class Other implements PromiseGenerator, NhlStatisticsBotCommandHandler {
 
                     List<TelegramNotification> listTelegramNotification = new ArrayList<>();
 
-                    String idGame = "20250125_WSH@VAN";
-                    String dataSend = "25.01.2025 19:00:00";
+                    String idGame = "20250128_WSH@CGY";
+                    String dataSend = "28.01.2025 19:00:00";
 
                     context.getListIdChat().forEach(idChat -> listTelegramNotification.add(new TelegramNotification(
                             idChat,
                             "ovi_goals_bot",
                             //"test_ovi_goals_bot",
                             """
-                            Матч Washington Capitals (WSH) 🆚 Vancouver Canucks (VAN) начнется уже через 11 часов — 26 января в 06:00 (МСК).
+                            Матч Washington Capitals (WSH) 🆚 Calgary Flames (CGY) начнется уже через 10 часов — 29 января в 05:00 (МСК).
                             
                             Как думаешь, сможет ли Александр Овечкин забить сегодня?
                             
