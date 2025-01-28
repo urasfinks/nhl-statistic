@@ -177,12 +177,14 @@ public class TelegramBotEmbedded extends TelegramLongPollingBot implements Teleg
                     .setException(UtilTelegramResponse.ResultException.ID_CHAT_EMPTY)
                     .setCause("idChat is null");
         }
+        long startTime = System.currentTimeMillis();
         UtilTelegramResponse.Result sandbox = UtilTelegramResponse.sandbox(result -> {
             result.setResponse(execute(method));
         });
         if (UtilTelegramResponse.ResultException.REVOKE.equals(sandbox.getException())) {
             new RemoveSubscriberOvi(idChat).generate().run();
         }
+        sandbox.setRequestTiming(System.currentTimeMillis() - startTime);
         return sandbox;
     }
 

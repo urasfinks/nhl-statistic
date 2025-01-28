@@ -122,6 +122,7 @@ public class TelegramBotManager implements LifeCycleComponent {
     }
 
     public UtilTelegramResponse.Result send(TelegramNotification telegramNotification, TypeSender typeSender) {
+        long startTime = System.currentTimeMillis();
         UtilTelegramResponse.Result telegramResult = new UtilTelegramResponse.Result();
         TelegramSender telegramSender = get(telegramNotification.getBotName(), typeSender);
         if (telegramSender == null) {
@@ -156,6 +157,7 @@ public class TelegramBotManager implements LifeCycleComponent {
                 App.error(th);
             }
         }
+        telegramResult.setRequestTiming(System.currentTimeMillis() - startTime);
         return telegramResult;
     }
 

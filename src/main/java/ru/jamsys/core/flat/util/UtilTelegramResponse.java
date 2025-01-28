@@ -22,12 +22,11 @@ public class UtilTelegramResponse {
     @Accessors(chain = true)
     public static class Result {
 
-        long timeAdd = System.currentTimeMillis();
+        long timeCreate = System.currentTimeMillis();
 
-        @SuppressWarnings("unused")
-        public long getTiming() {
-            return System.currentTimeMillis() - timeAdd;
-        }
+        long requestTiming;
+
+        long sandboxTiming;
 
         ResultException exception;
 
@@ -50,6 +49,7 @@ public class UtilTelegramResponse {
     }
 
     public static Result sandbox(ConsumerThrowing<Result> procedureThrowing) {
+        long startTime = System.currentTimeMillis();
         Result telegramResult = new Result();
         try {
             procedureThrowing.accept(telegramResult);
@@ -87,6 +87,7 @@ public class UtilTelegramResponse {
                 App.error(th);
             }
         }
+        telegramResult.setSandboxTiming(System.currentTimeMillis() - startTime);
         return telegramResult;
     }
 

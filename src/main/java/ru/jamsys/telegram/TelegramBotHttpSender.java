@@ -110,6 +110,7 @@ public class TelegramBotHttpSender implements TelegramSender {
         if (UtilTelegramResponse.ResultException.REVOKE.equals(sandbox.getException())) {
             new RemoveSubscriberOvi(idChat).generate().run();
         }
+        sandbox.setRequestTiming(httpClient.getTiming());
         return sandbox;
     }
 
@@ -169,6 +170,7 @@ public class TelegramBotHttpSender implements TelegramSender {
         if (UtilTelegramResponse.ResultException.REVOKE.equals(sandbox.getException())) {
             new RemoveSubscriberOvi(idChat).generate().run();
         }
+        sandbox.setRequestTiming(httpClient.getTiming());
         return sandbox;
     }
 
