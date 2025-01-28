@@ -96,17 +96,18 @@ public class NhlStatisticApplication {
         AvgMetric avg = new AvgMetric();
         AtomicBoolean a = new AtomicBoolean(false);
         AtomicBoolean isRun = new AtomicBoolean(true);
-        for (int i = 0; i < 1; i++) {
+        for (int i = 0; i < 10; i++) {
             new Thread(() -> {
                 while (isRun.get()) {
                     TelegramNotification poll = queue.poll();
                     if (poll != null) {
                         UtilTelegramResponse.Result send = telegramBotManager.send(poll, TelegramBotManager.TypeSender.HTTP);
-                        avg.add(send.getTiming());
+                        avg.add(send.getRequestTiming());
                     } else {
-                        Util.sleepMs(1000);
+                        break;
                     }
                 }
+                System.out.println(System.currentTimeMillis() - start);
                 if (a.compareAndSet(false, true)) {
                     Util.sleepMs(5000);
                     Util.logConsoleJson(NhlStatisticApplication.class, "Timing send: ", avg.flushInstance());
