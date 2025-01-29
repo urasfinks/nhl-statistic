@@ -7,8 +7,6 @@ import ru.jamsys.core.App;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.component.ServiceProperty;
 import ru.jamsys.core.component.TelegramBotManager;
-import ru.jamsys.core.extension.builder.HashMapBuilder;
-import ru.jamsys.core.flat.util.Util;
 import ru.jamsys.core.flat.util.UtilDate;
 import ru.jamsys.core.flat.util.UtilJson;
 import ru.jamsys.core.flat.util.UtilNHL;
@@ -69,14 +67,6 @@ public class InviteGameCommon implements PromiseGenerator {
                         try {
                             Map<String, Object> mapOrThrow = UtilJson.getMapOrThrow(rowInviteGame.getJson());
                             long timeGame = new BigDecimal(mapOrThrow.get("gameTime_epoch").toString()).longValue();
-                            Util.logConsoleJson(getClass(), new HashMapBuilder<>(mapOrThrow)
-                                    .append("curTimestamp", System.currentTimeMillis())
-                                    .append("gameTimestamp", timeGame * 1000)
-                                    .append("formal", UtilDate.getTimeBetween(System.currentTimeMillis(), timeGame * 1000).getDescription(
-                                            2,
-                                            UtilDate.TimeBetween.StyleDescription.FORMAL
-                                    ))
-                            );
                             String msg = String.format("""
                                             Матч %s 🆚 %s начнется уже через %s — %s""",
                                     mapOrThrow.get("awayTeam"),
@@ -119,7 +109,7 @@ public class InviteGameCommon implements PromiseGenerator {
                             Context context = promise.getRepositoryMapClass(Context.class);
                             jdbcResource.execute(
                                     new JdbcRequest(JTTeamScheduler.UPDATE_INVITED_GAME)
-                                            .addArg("id_game", context.getListIdGames())
+                                            .addArg("id_game", context.getListIdGames().stream().toList())
                             );
                         }
                 )
