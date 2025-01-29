@@ -2,6 +2,7 @@ package ru.jamsys.core.jt;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 import ru.jamsys.core.flat.template.jdbc.DataMapper;
 import ru.jamsys.core.flat.template.jdbc.JdbcRequestRepository;
 import ru.jamsys.core.flat.template.jdbc.JdbcTemplate;
@@ -62,6 +63,7 @@ public enum JTTeamScheduler implements JdbcRequestRepository {
             WHERE
                 ts1.send_invite = 0
                 AND ts1.time_game_start < (now()::timestamp + interval '12 hour')
+                AND ts1.time_game_start > now()::timestamp
             ORDER BY 1,2,3 DESC
             """, StatementType.SELECT_WITH_AUTO_COMMIT),
 
@@ -96,6 +98,7 @@ public enum JTTeamScheduler implements JdbcRequestRepository {
 
     @Getter
     @Setter
+    @Accessors(chain = true)
     public static class Row extends DataMapper<Row> {
         BigDecimal id;
         String idTeam;
@@ -109,6 +112,7 @@ public enum JTTeamScheduler implements JdbcRequestRepository {
 
     @Getter
     @Setter
+    @Accessors(chain = true)
     public static class RowInviteGame extends DataMapper<RowInviteGame> {
         BigDecimal idChat;
         BigDecimal idPlayer;

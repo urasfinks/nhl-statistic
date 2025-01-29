@@ -26,9 +26,9 @@ class NhlStatisticApplicationTest {
 
     @BeforeAll
     static void beforeAll() {
+        NhlStatisticApplication.startTelegramListener = false;
         App.getRunBuilder().addTestArguments().runCore();
         servicePromise = App.get(ServicePromise.class);
-        NhlStatisticApplication.startTelegramListener = false;
     }
 
     @AfterAll

@@ -5,6 +5,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import ru.jamsys.core.App;
 import ru.jamsys.core.component.ServicePromise;
+import ru.jamsys.core.component.ServiceProperty;
 import ru.jamsys.core.component.TelegramBotManager;
 import ru.jamsys.core.extension.builder.HashMapBuilder;
 import ru.jamsys.core.flat.util.Util;
@@ -27,14 +28,23 @@ public class InviteGameCommon implements PromiseGenerator {
     @Getter
     @Setter
     public static class Context {
-        List<JTTeamScheduler.RowInviteGame> listInviteGame;
-        List<String> listIdGames = new ArrayList<>();
+        private List<JTTeamScheduler.RowInviteGame> listInviteGame = new ArrayList<>();
+        private Set<String> listIdGames = new HashSet<>();
+        private Set<TelegramNotification> uniqueNotification = new HashSet<>();
+        private JTTeamScheduler.RowInviteGame oviInviteGame = null;
     }
 
     @Override
     public Promise generate() {
         return App.get(ServicePromise.class).get(getClass().getSimpleName(), 60_000L)
                 .extension(promise -> promise.setRepositoryMapClass(Context.class, new Context()))
+                .then("check", (_, _, promise) -> {
+                    ServiceProperty serviceProperty = App.get(ServiceProperty.class);
+                    String mode = serviceProperty.get(String.class, "run.mode", "test");
+                    if (!mode.equals("prod")) {
+                        promise.skipAllStep("mode not prod");
+                    }
+                })
                 .thenWithResource(
                         "select",
                         JdbcResource.class,
@@ -51,22 +61,18 @@ public class InviteGameCommon implements PromiseGenerator {
                 )
                 .then("handler", (_, _, promise) -> {
                     Context context = promise.getRepositoryMapClass(Context.class);
-                    JTTeamScheduler.RowInviteGame oviInviteGame = null;
-                    Set<TelegramNotification> map = new HashSet<>();
                     for (JTTeamScheduler.RowInviteGame rowInviteGame : context.getListInviteGame()) {
                         if (UtilNHL.isOvi(rowInviteGame.getIdPlayer().toString())) {
-                            oviInviteGame = rowInviteGame;
+                            context.setOviInviteGame(rowInviteGame);
                         }
+                        context.getListIdGames().add(rowInviteGame.getIdGame());
                         try {
                             Map<String, Object> mapOrThrow = UtilJson.getMapOrThrow(rowInviteGame.getJson());
-                            if (mapOrThrow.containsKey("gameID")) {
-                                context.getListIdGames().add(mapOrThrow.get("gameID").toString());
-                            }
                             long timeGame = new BigDecimal(mapOrThrow.get("gameTime_epoch").toString()).longValue();
-                            Util.logConsoleJson(getClass(), new HashMapBuilder<String, Object>(mapOrThrow)
+                            Util.logConsoleJson(getClass(), new HashMapBuilder<>(mapOrThrow)
                                     .append("curTimestamp", System.currentTimeMillis())
                                     .append("gameTimestamp", timeGame * 1000)
-                                    .append("fomal", UtilDate.getTimeBetween(System.currentTimeMillis(), timeGame * 1000).getDescription(
+                                    .append("formal", UtilDate.getTimeBetween(System.currentTimeMillis(), timeGame * 1000).getDescription(
                                             2,
                                             UtilDate.TimeBetween.StyleDescription.FORMAL
                                     ))
@@ -81,7 +87,8 @@ public class InviteGameCommon implements PromiseGenerator {
                                     ),
                                     UtilNHL.formatDate(timeGame)
                             );
-                            map
+                            context
+                                    .getUniqueNotification()
                                     .add(new TelegramNotification(
                                             rowInviteGame.getIdChat().longValue(),
                                             App.get(TelegramBotManager.class).getCommonBotProperty().getName(),
@@ -94,9 +101,15 @@ public class InviteGameCommon implements PromiseGenerator {
                             App.error(th);
                         }
                     }
-                    RegisterNotificationTest.add(map.stream().toList());
                     if (context.getListIdGames().isEmpty()) {
                         promise.skipAllStep("listIdGames is empty");
+                    }
+                })
+                .then("send", (_, _, promise) -> {
+                    Context context = promise.getRepositoryMapClass(Context.class);
+                    RegisterNotificationTest.add(context.getUniqueNotification().stream().toList());
+                    if (context.getOviInviteGame() != null) {
+                        new InviteGameOvi(context.getOviInviteGame()).generate().run();
                     }
                 })
                 .thenWithResource(

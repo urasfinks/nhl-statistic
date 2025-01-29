@@ -17,6 +17,7 @@ import ru.jamsys.core.flat.util.Util;
 import ru.jamsys.core.flat.util.UtilJson;
 import ru.jamsys.core.flat.util.UtilNHL;
 import ru.jamsys.core.flat.util.UtilRisc;
+import ru.jamsys.core.handler.promise.InviteGameCommon;
 import ru.jamsys.core.handler.promise.RegisterNotificationGameEvent;
 import ru.jamsys.core.handler.promise.RegisterNotificationGameEventOvi;
 import ru.jamsys.core.handler.promise.Tank01Request;
@@ -163,14 +164,16 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
         return servicePromise.get(getClass().getSimpleName(), 50_000L)
                 .extension(promise -> promise.setRepositoryMapClass(Context.class, new Context()))
                 .then("check", (atomicBoolean, promiseTask, promise) -> {
-                    String mode = serviceProperty.get(String.class, "run.mode", "prod");
-                    if (mode.equals("test")) {
+                    String mode = serviceProperty.get(String.class, "run.mode", "test");
+                    if (mode.equals("test")) { // Если запущены в режиме тест - не надо ничего делать
                         promise.skipAllStep("mode test");
                         return;
                     }
                     if (!NhlStatisticApplication.startTelegramListener) {
                         promise.skipAllStep("startTelegramListener = false");
+                        return;
                     }
+                    new InviteGameCommon().generate().run();
                 })
                 .thenWithResource("getActiveGame", JdbcResource.class, (_, _, promise, jdbcResource) -> {
                     Context context = promise.getRepositoryMapClass(Context.class);
