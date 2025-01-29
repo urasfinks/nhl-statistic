@@ -107,6 +107,15 @@ public enum JTTeamScheduler implements JdbcRequestRepository {
         BigDecimal sendInvite;
     }
 
+    @Getter
+    @Setter
+    public static class RowInviteGame extends DataMapper<RowInviteGame> {
+        BigDecimal idChat;
+        BigDecimal idPlayer;
+        String idGame;
+        String json;
+    }
+
     JTTeamScheduler(String sql, StatementType statementType) {
         jdbcTemplate = new JdbcTemplate(sql, statementType);
     }

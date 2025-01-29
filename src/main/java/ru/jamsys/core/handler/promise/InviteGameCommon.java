@@ -7,7 +7,6 @@ import ru.jamsys.core.App;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.component.TelegramBotManager;
 import ru.jamsys.core.extension.builder.HashMapBuilder;
-import ru.jamsys.core.flat.template.jdbc.DataMapper;
 import ru.jamsys.core.flat.util.Util;
 import ru.jamsys.core.flat.util.UtilDate;
 import ru.jamsys.core.flat.util.UtilJson;
@@ -27,17 +26,8 @@ public class InviteGameCommon implements PromiseGenerator {
 
     @Getter
     @Setter
-    public static class Row extends DataMapper<Row> {
-        BigDecimal idChat;
-        BigDecimal idPlayer;
-        String idGame;
-        String json;
-    }
-
-    @Getter
-    @Setter
     public static class Context {
-        List<Row> listInviteGame;
+        List<JTTeamScheduler.RowInviteGame> listInviteGame;
         List<String> listIdGames = new ArrayList<>();
     }
 
@@ -52,7 +42,7 @@ public class InviteGameCommon implements PromiseGenerator {
                             Context context = promise.getRepositoryMapClass(Context.class);
                             context.setListInviteGame(jdbcResource.execute(
                                     new JdbcRequest(JTTeamScheduler.SELECT_INVITE_GAME),
-                                    Row.class
+                                    JTTeamScheduler.RowInviteGame.class
                             ));
                             if (context.getListInviteGame().isEmpty()) {
                                 promise.skipAllStep("inviteGame is empty");
@@ -61,14 +51,14 @@ public class InviteGameCommon implements PromiseGenerator {
                 )
                 .then("handler", (_, _, promise) -> {
                     Context context = promise.getRepositoryMapClass(Context.class);
-                    Row oviInviteGame = null;
+                    JTTeamScheduler.RowInviteGame oviInviteGame = null;
                     Set<TelegramNotification> map = new HashSet<>();
-                    for (Row row : context.getListInviteGame()) {
-                        if (UtilNHL.isOvi(row.idPlayer.toString())) {
-                            oviInviteGame = row;
+                    for (JTTeamScheduler.RowInviteGame rowInviteGame : context.getListInviteGame()) {
+                        if (UtilNHL.isOvi(rowInviteGame.getIdPlayer().toString())) {
+                            oviInviteGame = rowInviteGame;
                         }
                         try {
-                            Map<String, Object> mapOrThrow = UtilJson.getMapOrThrow(row.getJson());
+                            Map<String, Object> mapOrThrow = UtilJson.getMapOrThrow(rowInviteGame.getJson());
                             if (mapOrThrow.containsKey("gameID")) {
                                 context.getListIdGames().add(mapOrThrow.get("gameID").toString());
                             }
@@ -93,7 +83,7 @@ public class InviteGameCommon implements PromiseGenerator {
                             );
                             map
                                     .add(new TelegramNotification(
-                                            row.getIdChat().longValue(),
+                                            rowInviteGame.getIdChat().longValue(),
                                             App.get(TelegramBotManager.class).getCommonBotProperty().getName(),
                                             msg,
                                             null,
