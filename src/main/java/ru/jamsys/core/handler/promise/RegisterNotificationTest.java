@@ -14,6 +14,7 @@ import ru.jamsys.telegram.TelegramNotification;
 
 import java.util.List;
 
+@SuppressWarnings("unused")
 @Accessors(chain = true)
 public class RegisterNotificationTest implements PromiseGenerator {
 

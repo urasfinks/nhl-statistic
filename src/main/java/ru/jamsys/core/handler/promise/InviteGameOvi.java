@@ -118,7 +118,7 @@ public class InviteGameOvi implements PromiseGenerator {
                 })
                 .then("send", (_, _, promise) -> {
                     Context context = promise.getRepositoryMapClass(Context.class);
-                    RegisterNotificationTest.add(context.getList());
+                    RegisterNotification.add(context.getList());
                 })
                 .setDebug(false)
                 ;
