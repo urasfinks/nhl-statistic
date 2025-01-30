@@ -8,7 +8,9 @@ import ru.jamsys.core.component.TelegramBotManager;
 import ru.jamsys.core.flat.util.UtilFileResource;
 import ru.jamsys.core.flat.util.UtilNHL;
 import ru.jamsys.core.flat.util.UtilRisc;
+import ru.jamsys.core.flat.util.UtilVoteOvi;
 import ru.jamsys.core.jt.JTOviSubscriber;
+import ru.jamsys.core.jt.JTVote;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
 import ru.jamsys.core.resource.jdbc.JdbcRequest;
@@ -20,6 +22,7 @@ import ru.jamsys.telegram.TelegramNotification;
 import ru.jamsys.telegram.template.GameEventTemplateOvi;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -45,6 +48,10 @@ public class RegisterNotificationGameEventOvi implements PromiseGenerator {
     private final List<TelegramNotification> listNotPlay = new ArrayList<>();
 
     private final List<TelegramNotification> listEvent = new ArrayList<>();
+
+    private final Map<Long, Boolean> userVote = new HashMap<>(); // key - idChat; value - vote
+
+    private Integer scoredGoalForward = null;
 
     public RegisterNotificationGameEventOvi(
             String idGame
@@ -87,13 +94,16 @@ public class RegisterNotificationGameEventOvi implements PromiseGenerator {
                                         null
                                 ));
                             }
-                            if (gameEventData.getAction().equals(GameEventData.Action.FINISH_GAME)) {
-                                new HttpCacheReset(NHLGamesForPlayer.getUri(player.getPlayerID())).generate().run();
-                            }
-                            if (gameEventData.getAction().equals(GameEventData.Action.FINISH_GAME)) {
-                                gameInProcess.set(false);
-                            }
                         });
+                        if (gameEventData.getAction().equals(GameEventData.Action.FINISH_GAME)) {
+                            new HttpCacheReset(NHLGamesForPlayer.getUri(player.getPlayerID())).generate().run();
+                            gameInProcess.set(false);
+                            try {
+                                scoredGoalForward = gameEventData.getScoredGoal();
+                            } catch (Throwable th) {
+                                App.error(th);
+                            }
+                        }
                     });
                     if (gameInProcess.get()) {
                         ArrayList<TelegramNotification> merge = new ArrayList<>();
@@ -104,17 +114,31 @@ public class RegisterNotificationGameEventOvi implements PromiseGenerator {
                     }
                 })
                 .then("ovi", new PlayerStatistic(UtilNHL.getOvi(), UtilNHL.getOviScoreLastSeason()).generate())
+                .thenWithResource("selectVote", JdbcResource.class, (_, _, _, jdbcResource) -> {
+                    try {
+                        jdbcResource.execute(new JdbcRequest(JTVote.SELECT_VOTE_GAME)
+                                        .addArg("id_game", idGame)
+                                        .addArg("id_player", player.getPlayerID()),
+                                JTVote.Row.class
+                        ).forEach(row -> getUserVote().put(
+                                Long.parseLong(row.getIdChat().toString()),
+                                "true".equals(row.getVote())
+                        ));
+                    } catch (Throwable th) {
+                        App.error(th);
+                    }
+                })
                 .then("send", (atomicBoolean, _, promise) -> {
                     PlayerStatistic ovi = promise.getRepositoryMapClass(Promise.class, "ovi")
                             .getRepositoryMapClass(PlayerStatistic.class);
                     String message = ovi.getMessage();
-                    TelegramBotManager telegramBotComponent = App.get(TelegramBotManager.class);
                     List<TelegramNotification> listSendStat = new ArrayList<>();
                     List<TelegramNotification> listSendImage = new ArrayList<>();
+                    String botName = App.get(TelegramBotManager.class).getOviBotProperty().getName();
                     UtilRisc.forEach(atomicBoolean, listIdChat, idChat -> {
                         listSendStat.add(new TelegramNotification(
                                 idChat,
-                                telegramBotComponent.getOviBotProperty().getName(),
+                                botName,
                                 message,
                                 null,
                                 null
@@ -127,7 +151,7 @@ public class RegisterNotificationGameEventOvi implements PromiseGenerator {
                         ) {
                             listSendImage.add(new TelegramNotification(
                                     idChat,
-                                    telegramBotComponent.getOviBotProperty().getName(),
+                                    botName,
                                     null,
                                     null,
                                     pathImage
@@ -135,6 +159,23 @@ public class RegisterNotificationGameEventOvi implements PromiseGenerator {
                         }
                     });
                     List<TelegramNotification> merge = new ArrayList<>();
+                    try {
+                        if (scoredGoalForward != null) {
+                            UtilRisc.forEach(atomicBoolean, listIdChat, idChat -> {
+                                if (getUserVote().containsKey(idChat)) {
+                                    merge.add(new TelegramNotification(
+                                            idChat,
+                                            botName,
+                                            UtilVoteOvi.get(scoredGoalForward, getUserVote().get(idChat)),
+                                            null,
+                                            null
+                                    ));
+                                }
+                            });
+                        }
+                    } catch (Throwable th) {
+                        App.error(th);
+                    }
                     merge.addAll(listSendImage);
                     merge.addAll(listSendStat);
                     merge.addAll(listNotPlay);

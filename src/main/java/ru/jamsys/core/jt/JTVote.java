@@ -22,6 +22,15 @@ public enum JTVote implements JdbcRequestRepository {
                AND id_player = ${IN.id_player::NUMBER}
             """, StatementType.SELECT_WITH_AUTO_COMMIT),
 
+    SELECT_VOTE_GAME("""
+            SELECT
+                *
+            FROM vote
+            WHERE
+               id_game = ${IN.id_game::VARCHAR}
+               AND id_player = ${IN.id_player::NUMBER}
+            """, StatementType.SELECT_WITH_AUTO_COMMIT),
+
     INSERT("""
             INSERT INTO vote (
                 id_chat,
