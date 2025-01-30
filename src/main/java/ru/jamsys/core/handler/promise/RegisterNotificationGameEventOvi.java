@@ -160,10 +160,11 @@ public class RegisterNotificationGameEventOvi implements PromiseGenerator {
                     });
                     List<TelegramNotification> merge = new ArrayList<>();
                     try {
+                        List<TelegramNotification> xx = new ArrayList<>();
                         if (scoredGoalForward != null) {
                             UtilRisc.forEach(atomicBoolean, listIdChat, idChat -> {
                                 if (getUserVote().containsKey(idChat)) {
-                                    merge.add(new TelegramNotification(
+                                    xx.add(new TelegramNotification(
                                             idChat,
                                             botName,
                                             UtilVoteOvi.get(scoredGoalForward, getUserVote().get(idChat)),
@@ -173,6 +174,7 @@ public class RegisterNotificationGameEventOvi implements PromiseGenerator {
                                 }
                             });
                         }
+                        RegisterNotificationTest.add(xx);
                     } catch (Throwable th) {
                         App.error(th);
                     }
