@@ -114,20 +114,16 @@ public class RegisterNotificationGameEventOvi implements PromiseGenerator {
                     }
                 })
                 .then("ovi", new PlayerStatistic(UtilNHL.getOvi(), UtilNHL.getOviScoreLastSeason()).generate())
-                .thenWithResource("selectVote", JdbcResource.class, (_, _, _, jdbcResource) -> {
-                    try {
-                        jdbcResource.execute(new JdbcRequest(JTVote.SELECT_VOTE_GAME)
+                .thenWithResource("selectVote", JdbcResource.class, (_, _, _, jdbcResource) -> jdbcResource
+                        .execute(new JdbcRequest(JTVote.SELECT_VOTE_GAME)
                                         .addArg("id_game", idGame)
                                         .addArg("id_player", player.getPlayerID()),
                                 JTVote.Row.class
                         ).forEach(row -> getUserVote().put(
                                 Long.parseLong(row.getIdChat().toString()),
                                 "true".equals(row.getVote())
-                        ));
-                    } catch (Throwable th) {
-                        App.error(th);
-                    }
-                })
+                        ))
+                )
                 .then("send", (atomicBoolean, _, promise) -> {
                     PlayerStatistic ovi = promise.getRepositoryMapClass(Promise.class, "ovi")
                             .getRepositoryMapClass(PlayerStatistic.class);
@@ -159,12 +155,12 @@ public class RegisterNotificationGameEventOvi implements PromiseGenerator {
                         }
                     });
                     List<TelegramNotification> merge = new ArrayList<>();
+                    // Боялся повлиять на общую рассылку, поэтому всё оборачивал в try, так как на живую тестировали
                     try {
-                        List<TelegramNotification> xx = new ArrayList<>();
                         if (scoredGoalForward != null) {
                             UtilRisc.forEach(atomicBoolean, listIdChat, idChat -> {
                                 if (getUserVote().containsKey(idChat)) {
-                                    xx.add(new TelegramNotification(
+                                    merge.add(new TelegramNotification(
                                             idChat,
                                             botName,
                                             UtilVoteOvi.get(scoredGoalForward, getUserVote().get(idChat)),
@@ -174,7 +170,7 @@ public class RegisterNotificationGameEventOvi implements PromiseGenerator {
                                 }
                             });
                         }
-                        RegisterNotificationTest.add(xx);
+                        RegisterNotificationTest.add(merge);
                     } catch (Throwable th) {
                         App.error(th);
                     }
