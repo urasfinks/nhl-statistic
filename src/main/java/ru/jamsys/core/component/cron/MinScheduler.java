@@ -427,7 +427,7 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                                     }
                                     listIdChat.forEach(idChat -> {
                                         ClientEvent clientEvent = mapClientEvent
-                                                .computeIfAbsent(idChat, aLong -> new ClientEvent(idChat));
+                                                .computeIfAbsent(idChat, _ -> new ClientEvent(idChat));
                                         clientEvent.add(playerGameEventData, registerNotificationGameEvent);
                                     });
                                 });
