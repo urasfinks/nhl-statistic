@@ -56,6 +56,7 @@ class NHLBoxScoreTest {
                 .setTeamID("33");
         GameEventData gameEventData = new GameEventData(
                 GameEventData.Action.GOAL,
+                "any",
                 "Washington Capitals (WSH) 🆚 Detroit Red Wings (DET)",
                 "Washington Capitals (WSH) 1 - 1 Detroit Red Wings (DET)",
                 player,

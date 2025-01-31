@@ -105,6 +105,7 @@ public class NHLBoxScore {
                             .computeIfAbsent(idPlayer, _ -> new ArrayList<>())
                             .add(new GameEventData(
                                             action,
+                                            currentInstance.getIdGame(),
                                             currentInstance.getAboutGame(),
                                             currentInstance.getScoreGame(),
                                             currentInstance.getPlayerStat(idPlayer).getPlayerOrEmpty(),
@@ -173,6 +174,8 @@ public class NHLBoxScore {
 
         final String scoreGame;
 
+        final String idGame;
+
         final String aboutGame;
 
         final Map<String, Object> parsedJson;
@@ -193,6 +196,8 @@ public class NHLBoxScore {
 
             @SuppressWarnings("unchecked")
             Map<String, Object> body = (Map<String, Object>) object.get("body");
+
+            idGame = body.get("gameID").toString();
 
             gameStatusCode = Integer.parseInt(body.getOrDefault("gameStatusCode", "-1").toString());
 
@@ -231,7 +236,6 @@ public class NHLBoxScore {
 
             scoreGame = getScoreGame(teamAway.getAbv());
             aboutGame = getAboutGame(teamAway.getAbv());
-
         }
 
         public List<String> getPlayerProblemStatistic() { // Возвращает список idPlayer у которых есть различия в статистики и расшифровке

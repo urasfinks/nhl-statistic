@@ -1,0 +1,84 @@
+{
+  "statusCode": 200,
+  "body": {
+    "gameStatus": "Live - In Progress",
+    "teamStats": {
+      "away": {
+        "penaltiesInMinutes": "",
+        "team": "MIN",
+        "teamAbv": "MIN",
+        "teamID": "15"
+      },
+      "home": {
+        "penaltiesInMinutes": "",
+        "team": "MTL",
+        "teamAbv": "MTL",
+        "teamID": "16"
+      }
+    },
+    "gameDate": "20250130",
+    "scoringPlays": [],
+    "homePoints": "",
+    "awayPoints": "",
+    "teamIDHome": "16",
+    "homeResult": "",
+    "linesmen": "Devin Berg, Julien Fournier",
+    "away": "MIN",
+    "lineScore": {
+      "period": "1st",
+      "gameClock": "17:11",
+      "away": {
+        "total": "0",
+        "teamID": "15",
+        "team": "MIN",
+        "teamAbv": "MIN",
+        "3P": "",
+        "2P": "",
+        "1P": "0"
+      },
+      "home": {
+        "total": "0",
+        "teamID": "16",
+        "team": "MTL",
+        "teamAbv": "MTL",
+        "3P": "",
+        "2P": "",
+        "1P": "0"
+      }
+    },
+    "currentPeriod": "1st",
+    "gameLocation": "Montreal, QC",
+    "home": "MTL",
+    "playerStats": {},
+    "shootout": "False",
+    "referees": "Garrett Rank, Morgan MacPhee",
+    "arena": "Bell Centre",
+    "homeTotal": "0",
+    "resultDetail": {
+      "away": {
+        "shootoutWin": "False",
+        "shootoutLoss": "False",
+        "regulationWin": "False",
+        "overtimeLoss": "False",
+        "overtimeWin": "False",
+        "regulationLoss": "False"
+      },
+      "home": {
+        "shootoutWin": "False",
+        "shootoutLoss": "False",
+        "regulationWin": "False",
+        "overtimeLoss": "False",
+        "overtimeWin": "False",
+        "regulationLoss": "False"
+      }
+    },
+    "awayResult": "",
+    "teamIDAway": "15",
+    "awayTotal": "0",
+    "gameClock": "17:11",
+    "gameID": "20250130_MIN@MTL",
+    "overtime": "False",
+    "seasonType": "Regular Season",
+    "gameStatusCode": "1"
+  }
+}

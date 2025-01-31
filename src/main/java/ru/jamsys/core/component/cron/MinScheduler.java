@@ -9,6 +9,7 @@ import ru.jamsys.NhlStatisticApplication;
 import ru.jamsys.core.App;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.component.ServiceProperty;
+import ru.jamsys.core.component.TelegramBotManager;
 import ru.jamsys.core.extension.UniqueClassName;
 import ru.jamsys.core.extension.builder.HashMapBuilder;
 import ru.jamsys.core.extension.exception.ForwardException;
@@ -17,10 +18,7 @@ import ru.jamsys.core.flat.util.Util;
 import ru.jamsys.core.flat.util.UtilJson;
 import ru.jamsys.core.flat.util.UtilNHL;
 import ru.jamsys.core.flat.util.UtilRisc;
-import ru.jamsys.core.handler.promise.InviteGameCommon;
-import ru.jamsys.core.handler.promise.RegisterNotificationGameEvent;
-import ru.jamsys.core.handler.promise.RegisterNotificationGameEventOvi;
-import ru.jamsys.core.handler.promise.Tank01Request;
+import ru.jamsys.core.handler.promise.*;
 import ru.jamsys.core.jt.JTGameDiff;
 import ru.jamsys.core.jt.JTLogRequest;
 import ru.jamsys.core.jt.JTTeamScheduler;
@@ -31,6 +29,8 @@ import ru.jamsys.core.resource.jdbc.JdbcResource;
 import ru.jamsys.tank.data.NHLBoxScore;
 import ru.jamsys.tank.data.NHLPlayerList;
 import ru.jamsys.telegram.GameEventData;
+import ru.jamsys.telegram.TelegramNotification;
+import ru.jamsys.telegram.template.GameEventTemplate;
 
 import java.util.*;
 
@@ -59,7 +59,8 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
         private Map<String, String> lastData = new HashMap<>();
         private Map<String, List<GameEventData>> playerEvent = new LinkedHashMap<>(); // key - idPlayer; value - template
         private List<String> endGames = new ArrayList<>();
-        private Map<String, RegisterNotificationGameEvent> nhlPlayerNotificationPromise = new HashMap<>(); // key - idPlayer;
+
+        private List<TelegramNotification> listNotify = new ArrayList<>();
 
         RegisterNotificationGameEventOvi oviNotificationPromise;
 
@@ -315,25 +316,25 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                                                         .getPlayerEvent()
                                                         .computeIfAbsent(idPlayer, _ -> new ArrayList<>())
                                                         .add(new GameEventData(
-                                                                        GameEventData.Action.NOT_PLAY,
-                                                                        currentBoxScore.getAboutGame(),
-                                                                        currentBoxScore.getScoreGame(),
+                                                                GameEventData.Action.NOT_PLAY,
+                                                                currentBoxScore.getIdGame(),
+                                                                currentBoxScore.getAboutGame(),
+                                                                currentBoxScore.getScoreGame(),
                                                                 player,
-                                                                        "now"
-                                                                )
-                                                        );
+                                                                "now"
+                                                        ));
                                             }
                                             context
                                                     .getPlayerEvent()
                                                     .computeIfAbsent(idPlayer, _ -> new ArrayList<>())
                                                     .add(new GameEventData(
                                                             GameEventData.Action.START_GAME,
-                                                                    currentBoxScore.getAboutGame(),
-                                                                    currentBoxScore.getScoreGame(),
+                                                            currentBoxScore.getIdGame(),
+                                                            currentBoxScore.getAboutGame(),
+                                                            currentBoxScore.getScoreGame(),
                                                             player,
-                                                                    "now"
-                                                            )
-                                                    );
+                                                            "now"
+                                                    ));
                                         }
                                 );
                             }
@@ -347,11 +348,12 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                                                         .getPlayerEvent()
                                                         .computeIfAbsent(idPlayer, _ -> new ArrayList<>())
                                                         .add(new GameEventData(
-                                                                        GameEventData.Action.FINISH_GAME,
-                                                                        currentBoxScore.getAboutGame(),
-                                                                        currentBoxScore.getScoreGame(),
+                                                                GameEventData.Action.FINISH_GAME,
+                                                                currentBoxScore.getIdGame(),
+                                                                currentBoxScore.getAboutGame(),
+                                                                currentBoxScore.getScoreGame(),
                                                                 playerStat.getPlayerOrEmpty(),
-                                                                        playerStat.getFinishTimeScore()
+                                                                playerStat.getFinishTimeScore()
                                                                 )
                                                                 .setScoredGoal(playerStat.getGoals())
                                                                 .setScoredAssists(playerStat.getAssists())
@@ -401,12 +403,6 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
 
                             List<GameEventData> listPlayerGameEventData = context.getPlayerEvent().get(idPlayer);
                             if (listPlayerGameEventData != null && !listPlayerGameEventData.isEmpty()) {
-                                RegisterNotificationGameEvent registerNotificationGameEvent = context
-                                        .getNhlPlayerNotificationPromise()
-                                        .computeIfAbsent(idPlayer, _ -> new RegisterNotificationGameEvent(
-                                                context.getActiveRepository().getIdGame(idPlayer),
-                                                player
-                                        ));
                                 listPlayerGameEventData.forEach(playerGameEventData -> {
                                     if (UtilNHL.isOvi(idPlayer)) {
                                         if (context.getOviNotificationPromise() == null) {
@@ -428,7 +424,7 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                                     listIdChat.forEach(idChat -> {
                                         ClientEvent clientEvent = mapClientEvent
                                                 .computeIfAbsent(idChat, _ -> new ClientEvent(idChat));
-                                        clientEvent.add(playerGameEventData, registerNotificationGameEvent);
+                                        clientEvent.add(playerGameEventData);
                                     });
                                 });
                             }
@@ -436,6 +432,38 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                             App.error(e);
                         }
                     });
+                    List<TelegramNotification> listEvent = new ArrayList<>();
+                    List<TelegramNotification> listNotPlay = new ArrayList<>();
+                    TelegramBotManager telegramBotManager = App.get(TelegramBotManager.class);
+                    Map<NHLPlayerList.Player, ScorePlayerCurrentSeasonBeforeGame> mapStat = new HashMap<>();
+                    mapClientEvent
+                            .forEach((idChat, clientEvent) -> clientEvent.getMap().forEach((_, gameEventData) -> {
+                                ScorePlayerCurrentSeasonBeforeGame stat = mapStat
+                                        .computeIfAbsent(gameEventData.getPlayer(), player -> {
+                                            ScorePlayerCurrentSeasonBeforeGame scorePlayerCurrentSeasonBeforeGame =
+                                                    new ScorePlayerCurrentSeasonBeforeGame(
+                                                            player,
+                                                            gameEventData.getIdGame()
+                                                    );
+                                            scorePlayerCurrentSeasonBeforeGame.generate().run().await(60_000L);
+                                            return scorePlayerCurrentSeasonBeforeGame;
+                                        });
+                                gameEventData.setScoredPrevGoal(stat.getCountGoal().get());
+                                TelegramNotification telegramNotification = new TelegramNotification(
+                                        idChat,
+                                        telegramBotManager.getCommonBotProperty().getName(),
+                                        new GameEventTemplate(gameEventData).toString(),
+                                        null,
+                                        null
+                                );
+                                if (gameEventData.getAction().equals(GameEventData.Action.NOT_PLAY)) {
+                                    listNotPlay.add(telegramNotification);
+                                } else {
+                                    listEvent.add(telegramNotification);
+                                }
+                            }));
+                    context.getListNotify().addAll(listNotPlay);
+                    context.getListNotify().addAll(listEvent);
                 })
                 .then("send", (atomicBoolean, promiseTask, promise) -> {
                     Context context = promise.getRepositoryMapClass(Context.class);
@@ -444,14 +472,9 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                     ) {
                         context.getOviNotificationPromise().generate().run();
                     }
-                    context
-                            .getNhlPlayerNotificationPromise()
-                            .forEach((_, promiseGenerator) -> {
-                                Promise generate = promiseGenerator.generate();
-                                if (generate != null) {
-                                    generate.run();
-                                }
-                            });
+                    if (context.getListNotify() != null && !context.getListNotify().isEmpty()) {
+                        RegisterNotification.add(context.getListNotify());
+                    }
                 })
                 // saveData в конце Promise специально на случай критичных рассылок, если сломается, то будет всё по
                 // новой рассылать
@@ -515,6 +538,9 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
     @Setter
     public static class ClientEvent {
 
+        // 5560 -> {RegisterNotificationGameEvent@8032}
+        // 3942335 -> {RegisterNotificationGameEvent@8034}
+
         private final Long idChat;
 
         private Map<String, GameEventData> map = new HashMap<>(); // key - complexKey
@@ -523,15 +549,15 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
             this.idChat = idChat;
         }
 
-        public void add(GameEventData gameEventData, RegisterNotificationGameEvent registerNotificationGameEvent) {
+        public void add(GameEventData gameEventData) {
             String complexKey = gameEventData.getAction().equals(GameEventData.Action.START_GAME)
                     ? gameEventData.getGameAbout()
                     : UUID.randomUUID().toString();
-            if (!map.containsKey(complexKey)) {
-                registerNotificationGameEvent.getListGameEventData().add(gameEventData);
-                registerNotificationGameEvent.getListIdChat().add(idChat);
-            }
             map.put(complexKey, gameEventData);
+        }
+
+        public boolean contains(GameEventData gameEventData) {
+            return map.containsValue(gameEventData);
         }
 
     }

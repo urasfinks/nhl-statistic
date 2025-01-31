@@ -1,0 +1,84 @@
+{
+  "statusCode": 200,
+  "body": {
+    "gameStatus": "Live - In Progress",
+    "teamStats": {
+      "away": {
+        "penaltiesInMinutes": "",
+        "team": "LA",
+        "teamAbv": "LA",
+        "teamID": "14"
+      },
+      "home": {
+        "penaltiesInMinutes": "",
+        "team": "TB",
+        "teamAbv": "TB",
+        "teamID": "27"
+      }
+    },
+    "gameDate": "20250130",
+    "scoringPlays": [],
+    "homePoints": "",
+    "awayPoints": "",
+    "teamIDHome": "27",
+    "homeResult": "",
+    "linesmen": "Trent Knorr, Andrew Smith",
+    "away": "LA",
+    "lineScore": {
+      "period": "1st",
+      "gameClock": "19:12",
+      "away": {
+        "total": "0",
+        "teamID": "14",
+        "team": "LA",
+        "teamAbv": "LA",
+        "3P": "",
+        "2P": "",
+        "1P": "0"
+      },
+      "home": {
+        "total": "0",
+        "teamID": "27",
+        "team": "TB",
+        "teamAbv": "TB",
+        "3P": "",
+        "2P": "",
+        "1P": "0"
+      }
+    },
+    "currentPeriod": "1st",
+    "gameLocation": "Tampa, FL",
+    "home": "TB",
+    "playerStats": {},
+    "shootout": "False",
+    "referees": "Ghislain Hebert, Kyle Rehman",
+    "arena": "Amalie Arena",
+    "homeTotal": "0",
+    "resultDetail": {
+      "away": {
+        "shootoutWin": "False",
+        "shootoutLoss": "False",
+        "regulationWin": "False",
+        "overtimeLoss": "False",
+        "overtimeWin": "False",
+        "regulationLoss": "False"
+      },
+      "home": {
+        "shootoutWin": "False",
+        "shootoutLoss": "False",
+        "regulationWin": "False",
+        "overtimeLoss": "False",
+        "overtimeWin": "False",
+        "regulationLoss": "False"
+      }
+    },
+    "awayResult": "",
+    "teamIDAway": "14",
+    "awayTotal": "0",
+    "gameClock": "19:12",
+    "gameID": "20250130_LA@TB",
+    "overtime": "False",
+    "seasonType": "Regular Season",
+    "gameStatusCode": "1"
+  }
+}

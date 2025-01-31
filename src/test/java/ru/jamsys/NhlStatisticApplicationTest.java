@@ -53,38 +53,6 @@ class NhlStatisticApplicationTest {
 
     @SuppressWarnings("unused")
         //@Test
-    void sendNotification() {
-        String idGame = "20241008_CHI@UTA";
-        NHLPlayerList.Player player = new NHLPlayerList.Player()
-                .setPlayerID("4874723")
-                .setPos("RW")
-                .setLongName("Dylan Guenther")
-                .setTeam("UTA")
-                .setTeamID("33");
-        GameEventData gameEventData = new GameEventData(
-                GameEventData.Action.GOAL,
-                "Washington Capitals (WSH) 🆚 Detroit Red Wings (DET)",
-                "Washington Capitals (WSH) 1 - 1 Detroit Red Wings (DET)",
-                player,
-                UtilDate.get("dd.MM.yyyy HH:mm:ss")
-        )
-                .setScoredGoal(1)
-                .setScoredLastSeason(300);
-        RegisterNotificationGameEvent registerNotificationGameEvent = new RegisterNotificationGameEvent(
-                idGame,
-                player
-        );
-        registerNotificationGameEvent.getListGameEventData().add(gameEventData);
-        registerNotificationGameEvent.getListIdChat().add(290029195L);
-
-        Promise generate = registerNotificationGameEvent.generate();
-        if (generate != null) {
-            generate.run().await(50_000L);
-        }
-    }
-
-    @SuppressWarnings("unused")
-        //@Test
     void telegramSend() {
         Promise promise = servicePromise.get("testPromise", 6_000L);
         promise
@@ -174,6 +142,7 @@ class NhlStatisticApplicationTest {
         NHLPlayerList.Player player = UtilNHL.getOvi();
         GameEventData gameEventData = new GameEventData(
                 GameEventData.Action.START_GAME,
+                idGame,
                 "Washington Capitals (WSH) 🆚 Detroit Red Wings (DET)",
                 "Washington Capitals (WSH) 1 - 1 Detroit Red Wings (DET)",
                 player,

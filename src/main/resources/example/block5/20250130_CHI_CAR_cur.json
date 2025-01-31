@@ -1,0 +1,72 @@
+{
+  "statusCode": 200,
+  "body": {
+    "gameStatus": "Live - In Progress",
+    "teamStats": {
+      "away": {
+        "teamAbv": "CHI",
+        "team": "CHI",
+        "teamID": "7"
+      },
+      "home": {
+        "teamAbv": "CAR",
+        "team": "CAR",
+        "teamID": "6"
+      }
+    },
+    "gameDate": "20250130",
+    "scoringPlays": [],
+    "homePoints": "",
+    "awayPoints": "",
+    "teamIDHome": "6",
+    "homeResult": "",
+    "linesmen": "Jonny Murray, Kilian McNamara",
+    "away": "CHI",
+    "lineScore": {
+      "period": "6:00 PM",
+      "gameClock": "",
+      "away": {
+        "teamAbv": "CHI",
+        "team": "CHI",
+        "teamID": "7"
+      },
+      "home": {
+        "teamAbv": "CAR",
+        "team": "CAR",
+        "teamID": "6"
+      }
+    },
+    "currentPeriod": "6:00 PM",
+    "gameLocation": "Raleigh, NC",
+    "home": "CAR",
+    "playerStats": {},
+    "shootout": "False",
+    "referees": "Brian Pochmara, Mike Sullivan",
+    "arena": "Lenovo Center",
+    "resultDetail": {
+      "away": {
+        "shootoutWin": "False",
+        "shootoutLoss": "False",
+        "regulationWin": "False",
+        "overtimeLoss": "False",
+        "overtimeWin": "False",
+        "regulationLoss": "False"
+      },
+      "home": {
+        "shootoutWin": "False",
+        "shootoutLoss": "False",
+        "regulationWin": "False",
+        "overtimeLoss": "False",
+        "overtimeWin": "False",
+        "regulationLoss": "False"
+      }
+    },
+    "awayResult": "",
+    "teamIDAway": "7",
+    "gameClock": "",
+    "gameID": "20250130_CHI@CAR",
+    "overtime": "False",
+    "seasonType": "Regular Season",
+    "gameStatusCode": "1"
+  }
+}

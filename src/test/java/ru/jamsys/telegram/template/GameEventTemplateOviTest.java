@@ -16,6 +16,7 @@ class GameEventTemplateOviTest {
         NHLPlayerList.Player player = UtilNHL.getOvi();
         GameEventData gameEventData = new GameEventData(
                 GameEventData.Action.GOAL,
+                "any",
                 "Washington Capitals (WSH) 🆚 Detroit Red Wings (DET)",
                 "Washington Capitals (WSH) 1 - 0 Detroit Red Wings (DET)",
                 player,
@@ -76,6 +77,7 @@ class GameEventTemplateOviTest {
         NHLPlayerList.Player player = UtilNHL.getOvi();
         GameEventData gameEventData = new GameEventData(
                 GameEventData.Action.GOAL,
+                "any",
                 "Washington Capitals (WSH) 🆚 Detroit Red Wings (DET)",
                 "Washington Capitals (WSH) 1 - 0 Detroit Red Wings (DET)",
                 player,
@@ -118,6 +120,7 @@ class GameEventTemplateOviTest {
         NHLBoxScore.PlayerStat playerStat = currentBoxScore.getPlayerStat(ovi.getPlayerID());
         GameEventData gameEventData = new GameEventData(
                 GameEventData.Action.FINISH_GAME,
+                currentBoxScore.getIdGame(),
                 currentBoxScore.getAboutGame(),
                 currentBoxScore.getScoreGame(),
                 playerStat.getPlayerOrEmpty(),

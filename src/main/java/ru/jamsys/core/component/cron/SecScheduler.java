@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import ru.jamsys.core.App;
 import ru.jamsys.core.component.ServicePromise;
+import ru.jamsys.core.component.ServiceProperty;
 import ru.jamsys.core.component.TelegramBotManager;
 import ru.jamsys.core.component.manager.item.Session;
 import ru.jamsys.core.extension.UniqueClassName;
@@ -31,6 +32,8 @@ public class SecScheduler implements Cron1s, PromiseGenerator, UniqueClassName {
 
     private final ServicePromise servicePromise;
 
+    private final ServiceProperty serviceProperty;
+
     private final Session<Long, AtomicInteger> session = new Session<>("RateLimitTelegramSend", 600_000L);
 
     private static final AtomicInteger countThread = new AtomicInteger(0);
@@ -39,13 +42,19 @@ public class SecScheduler implements Cron1s, PromiseGenerator, UniqueClassName {
     // WebHook норм переваривает много потоков
     private static final int maxThread = 10;
 
-    public SecScheduler(ServicePromise servicePromise) {
+    public SecScheduler(ServicePromise servicePromise, ServiceProperty serviceProperty) {
         this.servicePromise = servicePromise;
+        this.serviceProperty = serviceProperty;
     }
 
     public Promise generate() {
         return servicePromise.get(getClass().getSimpleName(), 6000_000L)
                 .then("check", (atomicBoolean, promiseTask, promise) -> {
+                    String mode = serviceProperty.get(String.class, "run.mode", "test");
+                    if (mode.equals("test")) { // Если запущены в режиме тест - не надо ничего делать
+                        promise.skipAllStep("mode test");
+                        return;
+                    }
                     session.forEach((_, atomicInteger) -> atomicInteger.set(0));
                     if (App.get(TelegramBotManager.class).getRepository().size() < 4) {
                         promise.skipAllStep("size bot < 4");

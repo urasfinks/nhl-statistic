@@ -1,0 +1,82 @@
+{
+  "statusCode": 200,
+  "body": {
+    "gameStatus": "Live - In Progress",
+    "teamStats": {
+      "away": {
+        "teamAbv": "WSH",
+        "team": "WSH",
+        "teamID": "31"
+      },
+      "home": {
+        "teamAbv": "OTT",
+        "team": "OTT",
+        "teamID": "21"
+      }
+    },
+    "gameDate": "20250130",
+    "scoringPlays": [],
+    "homePoints": "",
+    "awayPoints": "",
+    "teamIDHome": "21",
+    "homeResult": "",
+    "linesmen": "Shandor Alphonso, Ryan Daisy",
+    "away": "WSH",
+    "lineScore": {
+      "period": "1st",
+      "gameClock": "20:00",
+      "away": {
+        "total": "0",
+        "teamID": "31",
+        "team": "WSH",
+        "teamAbv": "WSH",
+        "3P": "",
+        "2P": "",
+        "1P": "0"
+      },
+      "home": {
+        "total": "0",
+        "teamID": "21",
+        "team": "OTT",
+        "teamAbv": "OTT",
+        "3P": "",
+        "2P": "",
+        "1P": "0"
+      }
+    },
+    "currentPeriod": "1st",
+    "gameLocation": "Ottawa, ON",
+    "home": "OTT",
+    "playerStats": {},
+    "shootout": "False",
+    "referees": "Chris Lee, Eric Furlatt",
+    "arena": "Canadian Tire Centre",
+    "homeTotal": "0",
+    "resultDetail": {
+      "away": {
+        "shootoutWin": "False",
+        "shootoutLoss": "False",
+        "regulationWin": "False",
+        "overtimeLoss": "False",
+        "overtimeWin": "False",
+        "regulationLoss": "False"
+      },
+      "home": {
+        "shootoutWin": "False",
+        "shootoutLoss": "False",
+        "regulationWin": "False",
+        "overtimeLoss": "False",
+        "overtimeWin": "False",
+        "regulationLoss": "False"
+      }
+    },
+    "awayResult": "",
+    "teamIDAway": "31",
+    "awayTotal": "0",
+    "gameClock": "20:00",
+    "gameID": "20250130_WSH@OTT",
+    "overtime": "False",
+    "seasonType": "Regular Season",
+    "gameStatusCode": "1"
+  }
+}

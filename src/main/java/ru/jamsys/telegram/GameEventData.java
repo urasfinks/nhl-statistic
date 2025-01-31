@@ -2,12 +2,14 @@ package ru.jamsys.telegram;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.Accessors;
 import ru.jamsys.tank.data.NHLPlayerList;
 
 @Getter
 @Setter
 @Accessors(chain = true)
+@ToString
 public class GameEventData {
 
     public enum Action {
@@ -26,9 +28,11 @@ public class GameEventData {
     final private String gameScore; // Состояние игры с X 1 - 1 Y
     final private NHLPlayerList.Player player;
     final private String time; // Время события
+    final private String idGame;
 
-    public GameEventData(Action action, String gameAbout, String gameScore, NHLPlayerList.Player player, String time) {
+    public GameEventData(Action action, String idGame, String gameAbout, String gameScore, NHLPlayerList.Player player, String time) {
         this.action = action;
+        this.idGame = idGame;
         this.gameAbout = gameAbout;
         this.gameScore = gameScore;
         this.player = player;
