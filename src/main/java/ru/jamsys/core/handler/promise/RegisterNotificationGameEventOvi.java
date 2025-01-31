@@ -170,7 +170,6 @@ public class RegisterNotificationGameEventOvi implements PromiseGenerator {
                                 }
                             });
                         }
-                        RegisterNotificationTest.add(merge);
                     } catch (Throwable th) {
                         App.error(th);
                     }
