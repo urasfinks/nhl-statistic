@@ -91,14 +91,20 @@ public class SecScheduler implements Cron1s, PromiseGenerator, UniqueClassName {
                                 Util.logConsole(getClass(), "RateLimit(" + rateLimitTotal + ") by idChat: " + idChat);
                                 Util.sleepMs(1000);
                             }
-
-                            UtilTelegramResponse.Result send = telegramBotManager.send(new TelegramNotification(
+                            TelegramNotification telegramNotification = new TelegramNotification(
                                     idChat,
                                     first.getBot(),
                                     first.getMessage(),
                                     parseButton(first.getButtons()),
                                     first.getPathImage()
-                            ), TelegramBotManager.TypeSender.HTTP);
+                            );
+                            telegramNotification.setIdImage(first.getIdImage());
+                            telegramNotification.setIdVideo(first.getIdVideo());
+
+                            UtilTelegramResponse.Result send = telegramBotManager.send(
+                                    telegramNotification,
+                                    TelegramBotManager.TypeSender.HTTP
+                            );
 
                             if (send.isRetry()) {
                                 jdbcResource.execute(new JdbcRequest(JTTelegramSend.SEND_RETRY)

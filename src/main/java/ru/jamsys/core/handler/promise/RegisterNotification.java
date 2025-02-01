@@ -39,6 +39,8 @@ public class RegisterNotification implements PromiseGenerator {
                             .addArg("bot", notificationObject.getBotName())
                             .addArg("message", notificationObject.getMessage())
                             .addArg("path_image", notificationObject.getPathImage())
+                            .addArg("id_image", notificationObject.getIdImage())
+                            .addArg("id_video", notificationObject.getIdVideo())
                             .addArg("buttons", notificationObject.getButtons() == null
                                     ? null
                                     : UtilJson.toStringPretty(notificationObject.getButtons(), "[]"))

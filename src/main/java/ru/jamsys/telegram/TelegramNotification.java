@@ -2,23 +2,30 @@ package ru.jamsys.telegram;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.Setter;
 import ru.jamsys.core.flat.util.telegram.Button;
 
 import java.util.List;
 
 @Getter
+@Setter
 @EqualsAndHashCode
 public class TelegramNotification {
 
-    final long idChat;
+    private final long idChat;
 
-    final String botName;
+    private final String botName;
 
-    final String message;
+    private final String message;
 
-    final List<Button> buttons;
+    private final List<Button> buttons;
 
-    final String pathImage;
+    private final String pathImage;
+
+    // NOT FINAL
+    private String idImage;
+
+    private String idVideo;
 
     public TelegramNotification(long idChat, String botName, String message, List<Button> buttons, String pathImage) {
         this.idChat = idChat;

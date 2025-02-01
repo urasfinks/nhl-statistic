@@ -130,16 +130,7 @@ public class TelegramBotManager implements LifeCycleComponent {
                     .setException(UtilTelegramResponse.ResultException.SENDER_NULL)
                     .setCause("TelegramSender is null");
         }
-        if (
-                telegramNotification.getPathImage() == null
-                        || telegramNotification.getPathImage().isEmpty()
-        ) {
-            return telegramSender.send(
-                    telegramNotification.getIdChat(),
-                    telegramNotification.getMessage(),
-                    telegramNotification.getButtons()
-            );
-        } else {
+        if (telegramNotification.getPathImage() != null && !telegramNotification.getPathImage().isEmpty()) {
             try { // Потому что UtilFileResource.get throw exception
                 return telegramSender.sendImage(
                         telegramNotification.getIdChat(),
@@ -156,6 +147,24 @@ public class TelegramBotManager implements LifeCycleComponent {
                         .setCause(th.getMessage());
                 App.error(th);
             }
+        } else if (telegramNotification.getIdImage() != null && !telegramNotification.getIdImage().isEmpty()) {
+            return telegramSender.sendImage(
+                    telegramNotification.getIdChat(),
+                    telegramNotification.getIdImage(),
+                    telegramNotification.getMessage()
+            );
+        } else if (telegramNotification.getIdVideo() != null && !telegramNotification.getIdVideo().isEmpty()) {
+            return telegramSender.sendVideo(
+                    telegramNotification.getIdChat(),
+                    telegramNotification.getIdVideo(),
+                    telegramNotification.getMessage()
+            );
+        } else {
+            return telegramSender.send(
+                    telegramNotification.getIdChat(),
+                    telegramNotification.getMessage(),
+                    telegramNotification.getButtons()
+            );
         }
         telegramResult.setRequestTiming(System.currentTimeMillis() - startTime);
         return telegramResult;

@@ -89,7 +89,9 @@ public class TelegramBotEmbedded extends TelegramLongPollingBot implements Teleg
         }
         String data = UtilTelegramMessage.getData(msg);
         if (data == null) {
-            return;
+            // Если надо допустим принять картинку или видео
+            // Сообщения же реально может не быть
+            data = "";
         }
         String remove = stepHandler.remove(idChat);
 
@@ -209,5 +211,14 @@ public class TelegramBotEmbedded extends TelegramLongPollingBot implements Teleg
         execute(setMyCommands);
     }
 
+    @Override
+    public UtilTelegramResponse.Result sendImage(long idChat, String idFile, String description) {
+        throw new RuntimeException("unsupported");
+    }
+
+    @Override
+    public UtilTelegramResponse.Result sendVideo(long idChat, String idFile, String description) {
+        throw new RuntimeException("unsupported");
+    }
 
 }

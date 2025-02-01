@@ -7,6 +7,7 @@ import ru.jamsys.core.flat.util.UtilJson;
 import ru.jamsys.core.flat.util.UtilListSort;
 import ru.jamsys.core.flat.util.UtilNHL;
 import ru.jamsys.tank.data.NHLTeamSchedule;
+import ru.jamsys.telegram.TelegramBotHttpSender;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
@@ -110,6 +111,63 @@ class NHLTeamScheduleTest {
     @Test
     void testDate() throws ParseException {
         Assertions.assertEquals("24 января в 03:00 (МСК)", UtilNHL.formatDate(new BigDecimal("1737676800.0").longValue()));
+    }
+
+    @Test
+    void testGetId(){
+        String fileId = TelegramBotHttpSender.getFilePhotoId("""
+                 {
+                  "update_id" : 909887856,
+                  "message" : {
+                    "message_id" : 4849,
+                    "from" : {
+                      "id" : 290029195,
+                      "first_name" : "Юра Мухин",
+                      "is_bot" : false,
+                      "username" : "urasfinks",
+                      "language_code" : "ru",
+                      "is_premium" : true
+                    },
+                    "date" : 1738406813,
+                    "chat" : {
+                      "id" : 290029195,
+                      "type" : "private",
+                      "first_name" : "Юра Мухин",
+                      "username" : "urasfinks"
+                    },
+                    "photo" : [
+                      {
+                        "file_id" : "AgACAgIAAxkBAAIS6Wed-TkCuCanrYFe3p4nfVKFrJHdAAIg7zEbui3wSBrhvpLj7DInAQADAgADcwADNgQ",
+                        "file_unique_id" : "AQADIO8xG7ot8Eh4",
+                        "width" : 90,
+                        "height" : 90,
+                        "file_size" : 928
+                      },
+                      {
+                        "file_id" : "AgACAgIAAxkBAAIS6Wed-TkCuCanrYFe3p4nfVKFrJHdAAIg7zEbui3wSBrhvpLj7DInAQADAgADbQADNgQ",
+                        "file_unique_id" : "AQADIO8xG7ot8Ehy",
+                        "width" : 320,
+                        "height" : 320,
+                        "file_size" : 10305
+                      },
+                      {
+                        "file_id" : "AgACAgIAAxkBAAIS6Wed-TkCuCanrYFe3p4nfVKFrJHdAAIg7zEbui3wSBrhvpLj7DInAQADAgADeQADNgQ",
+                        "file_unique_id" : "AQADIO8xG7ot8Eh-",
+                        "width" : 1000,
+                        "height" : 1000,
+                        "file_size" : 34481
+                      },
+                      {
+                        "file_id" : "AgACAgIAAxkBAAIS6Wed-TkCuCanrYFe3p4nfVKFrJHdAAIg7zEbui3wSBrhvpLj7DInAQADAgADeAADNgQ",
+                        "file_unique_id" : "AQADIO8xG7ot8Eh9",
+                        "width" : 800,
+                        "height" : 800,
+                        "file_size" : 39523
+                      }
+                    ]
+                  }
+                }""");
+        Assertions.assertEquals("AgACAgIAAxkBAAIS6Wed-TkCuCanrYFe3p4nfVKFrJHdAAIg7zEbui3wSBrhvpLj7DInAQADAgADeQADNgQ", fileId);
     }
 
 }

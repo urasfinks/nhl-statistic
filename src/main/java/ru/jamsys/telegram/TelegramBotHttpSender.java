@@ -41,13 +41,14 @@ public class TelegramBotHttpSender implements TelegramSender {
                 600_000L
         );
         //fileUpload.put("873.png", "AgACAgIAAxkDAAMjZ3xKa0B2nbPxHBFLcT-bOhNblMIAAvrvMRtnQ-BLLPvtL97-fIUBAAMCAANzAAM2BA");
-
     }
 
     public UtilTelegramResponse.Result send(long idChat, String data, List<Button> buttons) {
         Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("chat_id", idChat);
-        requestBody.put("text", data);
+        if (data != null && !data.isEmpty()) {
+            requestBody.put("text", data);
+        }
 
         if (buttons != null && !buttons.isEmpty()) {
             List<List<Map<String, Object>>> list = new ArrayList<>();
@@ -63,7 +64,7 @@ public class TelegramBotHttpSender implements TelegramSender {
 
     public UtilTelegramResponse.Result sendImage(long idChat, InputStream is, String fileName, String description) {
         if (fileUpload.containsKey(fileName)) {
-            return sendImageId(idChat, fileUpload.get(fileName), description);
+            return sendImage(idChat, fileUpload.get(fileName), description);
         } else {
             try {
                 return sendImageMultipart(idChat, fileName, is, description);
@@ -114,16 +115,6 @@ public class TelegramBotHttpSender implements TelegramSender {
         return sandbox;
     }
 
-    private UtilTelegramResponse.Result sendImageId(long idChat, String idFile, String description) {
-        Map<String, Object> requestBody = new HashMap<>();
-        requestBody.put("chat_id", idChat);
-        if (description != null && !description.isEmpty()) {
-            requestBody.put("caption", description);
-        }
-        requestBody.put("photo", idFile);
-        return httpSend(idChat, UtilJson.toStringPretty(requestBody, "{}"), "sendPhoto");
-    }
-
     private UtilTelegramResponse.Result sendImageMultipart(long idChat, String fileName, InputStream is, String description) throws Exception {
         MultipartEntityBuilder builder = MultipartEntityBuilder.create();
         builder.addTextBody("chat_id", String.valueOf(idChat));
@@ -158,7 +149,7 @@ public class TelegramBotHttpSender implements TelegramSender {
             if (httpResponse.getStatusCode() == 200) {
                 fileUpload.put(
                         fileName,
-                        httpResponse.getBody().replaceAll(".*\"file_id\":\"([^\"]+)\".*", "$1")
+                        getFilePhotoId(httpResponse.getBody())
                 );
                 result.setResponse(UtilJson.getMapOrThrow(httpResponse.getBody()));
             } else {
@@ -172,6 +163,75 @@ public class TelegramBotHttpSender implements TelegramSender {
         }
         sandbox.setRequestTiming(httpClient.getTiming());
         return sandbox;
+    }
+
+    public static String getFilePhotoId(String text) {
+        try {
+            Map<String, Object> mapOrThrow = UtilJson.getMapOrThrow(text);
+            if (!mapOrThrow.containsKey("message")) {
+                return null;
+            }
+            @SuppressWarnings("all")
+            Map<String, Object> message = (Map<String, Object>) mapOrThrow.get("message");
+            if (!message.containsKey("photo")) {
+                return null;
+            }
+            @SuppressWarnings("all")
+            List<Map<String, Object>> photos = (List<Map<String, Object>>) message.get("photo");
+            // Проходим по всем фото в массиве
+            String largestFileId = null;
+            int maxResolution = 0;
+            for (Map<String, Object> photo : photos) {
+                int width = Integer.parseInt(photo.get("width").toString());
+                int height = Integer.parseInt(photo.get("height").toString());
+                int resolution = width * height; // Вычисляем разрешение (ширина * высота)
+                // Если текущее фото имеет большее разрешение, обновляем данные
+                if (resolution > maxResolution) {
+                    maxResolution = resolution;
+                    largestFileId = photo.get("file_id").toString();
+                }
+            }
+            return largestFileId;
+        } catch (Throwable e) {
+            App.error(e);
+        }
+        return null;
+    }
+
+    public static String getTextFileId(String text) {
+        //return text.replaceAll(".*\"file_id\":\"([^\"]+)\".*", "$1");
+        if (text == null || text.isEmpty()) {
+            return null;
+        }
+        if (!text.contains("\"file_id\"")) {
+            return null;
+        }
+        text = text.substring(text.indexOf("\"file_id\"") + 9);
+
+        text = text.substring(text.indexOf("\"") + 1);
+        return text.substring(0, text.indexOf("\""));
+    }
+
+    @Override
+    public UtilTelegramResponse.Result sendImage(long idChat, String idFile, String description) {
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("chat_id", idChat);
+        if (description != null && !description.isEmpty()) {
+            requestBody.put("caption", description);
+        }
+        requestBody.put("photo", idFile);
+        return httpSend(idChat, UtilJson.toStringPretty(requestBody, "{}"), "sendPhoto");
+    }
+
+    @Override
+    public UtilTelegramResponse.Result sendVideo(long idChat, String idFile, String description) {
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("chat_id", idChat);
+        if (description != null && !description.isEmpty()) {
+            requestBody.put("caption", description);
+        }
+        requestBody.put("video", idFile);
+        return httpSend(idChat, UtilJson.toStringPretty(requestBody, "{}"), "sendVideo");
     }
 
 }

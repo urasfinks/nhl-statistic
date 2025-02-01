@@ -52,14 +52,18 @@ public enum JTTelegramSend implements JdbcRequestRepository {
                 bot,
                 message,
                 path_image,
-                buttons
+                buttons,
+                id_image,
+                id_video
             )
             VALUES (
                 ${IN.id_chat::NUMBER},
                 ${IN.bot::VARCHAR},
                 ${IN.message::VARCHAR},
                 ${IN.path_image::VARCHAR},
-                ${IN.buttons::VARCHAR}
+                ${IN.buttons::VARCHAR},
+                ${IN.id_image::VARCHAR},
+                ${IN.id_video::VARCHAR}
             )
             """, StatementType.SELECT_WITH_AUTO_COMMIT),
 
@@ -70,7 +74,9 @@ public enum JTTelegramSend implements JdbcRequestRepository {
                 bot,
                 message,
                 path_image,
-                buttons
+                buttons,
+                id_image,
+                id_video
             )
             VALUES (
                 ${IN.ts_add::TIMESTAMP},
@@ -78,11 +84,11 @@ public enum JTTelegramSend implements JdbcRequestRepository {
                 ${IN.bot::VARCHAR},
                 ${IN.message::VARCHAR},
                 ${IN.path_image::VARCHAR},
-                ${IN.buttons::VARCHAR}
+                ${IN.buttons::VARCHAR},
+                ${IN.id_image::VARCHAR},
+                ${IN.id_video::VARCHAR}
             )
             """, StatementType.SELECT_WITH_AUTO_COMMIT);
-
-
 
     @Getter
     @Setter
@@ -96,6 +102,8 @@ public enum JTTelegramSend implements JdbcRequestRepository {
         Timestamp tsSend;
         String buttons;
         String json;
+        String idImage;
+        String idVideo;
     }
 
     private final JdbcTemplate jdbcTemplate;

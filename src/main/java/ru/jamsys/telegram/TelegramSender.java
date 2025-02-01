@@ -14,6 +14,10 @@ public interface TelegramSender {
 
     UtilTelegramResponse.Result sendImage(long idChat, InputStream is, String fileName, String description);
 
+    UtilTelegramResponse.Result sendImage(long idChat, String idFile, String description);
+
+    UtilTelegramResponse.Result sendVideo(long idChat, String idFile, String description);
+
     void setMyCommands(SetMyCommands setMyCommands) throws TelegramApiException;
 
 }
