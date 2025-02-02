@@ -117,8 +117,6 @@ class NHLTeamScheduleTest {
     void testGetId(){
         String fileId = TelegramBotHttpSender.getFilePhotoId("""
                  {
-                  "update_id" : 909887856,
-                  "message" : {
                     "message_id" : 4849,
                     "from" : {
                       "id" : 290029195,
@@ -165,8 +163,7 @@ class NHLTeamScheduleTest {
                         "file_size" : 39523
                       }
                     ]
-                  }
-                }""");
+                  }""");
         Assertions.assertEquals("AgACAgIAAxkBAAIS6Wed-TkCuCanrYFe3p4nfVKFrJHdAAIg7zEbui3wSBrhvpLj7DInAQADAgADeQADNgQ", fileId);
     }
 

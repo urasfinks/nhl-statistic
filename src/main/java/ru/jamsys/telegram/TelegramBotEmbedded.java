@@ -1,11 +1,12 @@
 package ru.jamsys.telegram;
 
-import lombok.Getter;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
+import org.telegram.telegrambots.meta.api.methods.GetFile;
 import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
+import org.telegram.telegrambots.meta.api.objects.File;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -16,6 +17,7 @@ import ru.jamsys.core.component.manager.item.RouteGeneratorRepository;
 import ru.jamsys.core.component.manager.item.Session;
 import ru.jamsys.core.extension.http.ServletRequestReader;
 import ru.jamsys.core.flat.util.Util;
+import ru.jamsys.core.flat.util.UtilFile;
 import ru.jamsys.core.flat.util.UtilTelegramMessage;
 import ru.jamsys.core.flat.util.UtilTelegramResponse;
 import ru.jamsys.core.flat.util.telegram.Button;
@@ -23,8 +25,10 @@ import ru.jamsys.core.handler.promise.RemoveSubscriberOvi;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
@@ -43,8 +47,8 @@ public class TelegramBotEmbedded extends TelegramLongPollingBot implements Teleg
         }
     }
 
-    @Getter
-    private final String botUsername;
+
+    private final BotProperty botProperty;
 
     public static TelegramBotEmbedded getInstance(
             BotProperty botProperty,
@@ -58,17 +62,17 @@ public class TelegramBotEmbedded extends TelegramLongPollingBot implements Teleg
                         + botProperty.getSecurityAlias()
         );
         return new TelegramBotEmbedded(
-                botProperty.getName(),
-                new String(App.get(SecurityComponent.class).get(botProperty.getSecurityAlias())),
+                botProperty,
                 routerRepository
         );
     }
 
-    public TelegramBotEmbedded(String botUsername, String botToken, RouteGeneratorRepository routerRepository) throws TelegramApiException {
-        super(botToken);
-        this.botUsername = botUsername;
+
+    public TelegramBotEmbedded(BotProperty botProperty, RouteGeneratorRepository routerRepository) throws TelegramApiException {
+        super(new String(App.get(SecurityComponent.class).get(botProperty.getSecurityAlias())));
+        this.botProperty = botProperty;
         this.routerRepository = routerRepository;
-        stepHandler = new Session<>("TelegramContext_" + botUsername, 60_000L);
+        stepHandler = new Session<>("TelegramContext_" + botProperty.getName(), 60_000L);
         api.registerBot(this);
     }
 
@@ -219,6 +223,30 @@ public class TelegramBotEmbedded extends TelegramLongPollingBot implements Teleg
     @Override
     public UtilTelegramResponse.Result sendVideo(long idChat, String idFile, String description) {
         throw new RuntimeException("unsupported");
+    }
+
+    @SuppressWarnings("unused")
+    public String downloadFileCustom(String fileId) throws TelegramApiException, IOException {
+        GetFile getFile = new GetFile();
+        getFile.setFileId(fileId);
+        File file = execute(getFile);
+        //{
+        //  "file_id" : "AgACAgIAAxkBAAIS6Wed-TkCuCanrYFe3p4nfVKFrJHdAAIg7zEbui3wSBrhvpLj7DInAQADAgADeQADNgQ",
+        //  "file_unique_id" : "AQADIO8xG7ot8Eh-",
+        //  "file_size" : 34481,
+        //  "file_path" : "photos/file_0.jpg"
+        //}
+        String fileUrl = file.getFileUrl(new String(App.get(SecurityComponent.class).get(botProperty.getSecurityAlias())));
+        try (InputStream is = URI.create(fileUrl).toURL().openStream()) {
+            String fileName = "file_" + java.util.UUID.randomUUID() + "." + UtilFile.getExtension(file.getFilePath());
+            UtilFile.writeBytes(fileName, is);
+            return fileName;
+        }
+    }
+
+    @Override
+    public String getBotUsername() {
+        return botProperty.getName();
     }
 
 }

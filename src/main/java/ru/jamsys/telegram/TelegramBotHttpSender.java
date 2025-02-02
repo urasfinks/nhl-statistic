@@ -165,14 +165,10 @@ public class TelegramBotHttpSender implements TelegramSender {
         return sandbox;
     }
 
-    public static String getFilePhotoId(String text) {
+    public static String getFilePhotoId(String messageBlock) {
         try {
-            Map<String, Object> mapOrThrow = UtilJson.getMapOrThrow(text);
-            if (!mapOrThrow.containsKey("message")) {
-                return null;
-            }
             @SuppressWarnings("all")
-            Map<String, Object> message = (Map<String, Object>) mapOrThrow.get("message");
+            Map<String, Object> message = UtilJson.getMapOrThrow(messageBlock);
             if (!message.containsKey("photo")) {
                 return null;
             }

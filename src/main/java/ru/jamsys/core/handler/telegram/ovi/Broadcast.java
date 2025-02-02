@@ -1,4 +1,4 @@
-package ru.jamsys.core.handler.telegram.common;
+package ru.jamsys.core.handler.telegram.ovi;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -24,7 +24,7 @@ import ru.jamsys.core.resource.jdbc.JdbcResource;
 import ru.jamsys.telegram.TelegramBotHttpSender;
 import ru.jamsys.telegram.TelegramCommandContext;
 import ru.jamsys.telegram.TelegramNotification;
-import ru.jamsys.telegram.handler.NhlStatisticsBotCommandHandler;
+import ru.jamsys.telegram.handler.OviGoalsBotCommandHandler;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,7 +37,7 @@ import java.util.Map;
 @Component
 @Lazy
 @RequestMapping({"/broadcast/**", "/bt/**"})
-public class Broadcast implements PromiseGenerator, NhlStatisticsBotCommandHandler {
+public class Broadcast implements PromiseGenerator, OviGoalsBotCommandHandler {
 
     private final ServicePromise servicePromise;
 
@@ -186,7 +186,10 @@ public class Broadcast implements PromiseGenerator, NhlStatisticsBotCommandHandl
                     } else {
                         if (contextTelegram.getUriParameters().containsKey("image")) {
                             String fileId = TelegramBotHttpSender
-                                    .getFilePhotoId(UtilJson.toStringPretty(contextTelegram.getMsg(), "{}"));
+                                    .getFilePhotoId(UtilJson.toStringPretty(contextTelegram.getMsg().getMessage(), "{}"));
+                            // К сожалению, файл от пользователя] нельзя рассылать другим пользователям
+                            // поэтому надо его загрузить на сервер и от своего имени отправить
+                            // и только этот fileId прихранить для рассылки
                             if (fileId != null && !fileId.isEmpty()) {
                                 session.getMap().put("image", fileId);
                                 RegisterNotification.add(new TelegramNotification(
@@ -196,6 +199,25 @@ public class Broadcast implements PromiseGenerator, NhlStatisticsBotCommandHandl
                                         null,
                                         null
                                 ));
+//                                String filePathDownloaded = contextTelegram.getTelegramBot().downloadFileCustom(fileId);
+//                                //Util.logConsole(getClass(), filePathDownloaded);
+//                                UtilTelegramResponse.Result result = contextTelegram.getTelegramBot().sendImage(
+//                                        contextTelegram.getIdChat(),
+//                                        new FileInputStream(filePathDownloaded),
+//                                        filePathDownloaded,
+//                                        null
+//                                );
+//                                Util.logConsoleJson(getClass(), result.getResponse());
+//                                String fileId2 = TelegramBotHttpSender
+//                                        .getFilePhotoId(UtilJson.toStringPretty(result.getResponse(), "{}"));
+//                                session.getMap().put("image", fileId2);
+//                                RegisterNotification.add(new TelegramNotification(
+//                                        contextTelegram.getIdChat(),
+//                                        contextTelegram.getTelegramBot().getBotUsername(),
+//                                        "Зафиксировал изображение: " + fileId2,
+//                                        null,
+//                                        null
+//                                ));
                             }
                         } else if (contextTelegram.getUriParameters().containsKey("video")) {
                             String fileId = TelegramBotHttpSender
