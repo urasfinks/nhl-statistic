@@ -200,25 +200,6 @@ public class Broadcast implements PromiseGenerator, OviGoalsBotCommandHandler {
                                         null,
                                         null
                                 ));
-//                                String filePathDownloaded = contextTelegram.getTelegramBot().downloadFileCustom(fileId);
-//                                //Util.logConsole(getClass(), filePathDownloaded);
-//                                UtilTelegramResponse.Result result = contextTelegram.getTelegramBot().sendImage(
-//                                        contextTelegram.getIdChat(),
-//                                        new FileInputStream(filePathDownloaded),
-//                                        filePathDownloaded,
-//                                        null
-//                                );
-//                                Util.logConsoleJson(getClass(), result.getResponse());
-//                                String fileId2 = TelegramBotHttpSender
-//                                        .getFilePhotoId(UtilJson.toStringPretty(result.getResponse(), "{}"));
-//                                session.getMap().put("image", fileId2);
-//                                RegisterNotification.add(new TelegramNotification(
-//                                        contextTelegram.getIdChat(),
-//                                        contextTelegram.getTelegramBot().getBotUsername(),
-//                                        "Зафиксировал изображение: " + fileId2,
-//                                        null,
-//                                        null
-//                                ));
                             }
                         } else if (contextTelegram.getUriParameters().containsKey("video")) {
                             String fileId = TelegramBotHttpSender
@@ -251,16 +232,39 @@ public class Broadcast implements PromiseGenerator, OviGoalsBotCommandHandler {
                     List<Map<String, Object>> execute = jdbcResource.execute(new JdbcRequest(JTOviSubscriber.SELECT_NOT_REMOVE));
                     execute.forEach(map -> context.getListIdChat().add(Long.parseLong(map.get("id_chat").toString())));
                 })
+                .then("preHandle", (_, _, promise) -> {
+                    Context context = promise.getRepositoryMapClass(Context.class);
+                    TelegramCommandContext contextTelegram = promise.getRepositoryMapClass(TelegramCommandContext.class);
+                    if (context.isAll()) {
+                        //context.getListIdChat().clear();
+                    } else {
+                        context.getListIdChat().clear();
+                        context.getListIdChat().add(290029195L); // Ura
+                        context.getListIdChat().add(241022301L); // Igor
+                        context.getListIdChat().add(294097034L); // Alex
+                        context.getListIdChat().add(-4739098379L); // Group
+                    }
+                    if (!contextTelegram.getUriParameters().containsKey("yes")) {
+                        RegisterNotification.add(new TelegramNotification(
+                                contextTelegram.getIdChat(),
+                                contextTelegram.getTelegramBot().getBotUsername(),
+                                "Точно разослать уведомления?........................................",
+                                new ArrayListBuilder<Button>()
+                                        .append(new Button(
+                                                "Да, разослать " + context.getListIdChat().size() + " уведомлений!",
+                                                ServletResponseWriter.buildUrlQuery(
+                                                        "/bt/",
+                                                        new HashMapBuilder<>(contextTelegram.getUriParameters())
+                                                                .append("yes", "true")
+                                                )
+                                        )),
+                                null
+                        ));
+                        promise.skipAllStep("--");
+                    }
+                })
                 .then("handle", (_, _, promise) -> {
                     Context context = promise.getRepositoryMapClass(Context.class);
-
-                    context.getListIdChat().clear();
-                    context.getListIdChat().add(290029195L); // Ura
-                    context.getListIdChat().add(241022301L); // Igor
-                    context.getListIdChat().add(294097034L); // Alex
-                    context.getListIdChat().add(-4739098379L); // Group
-                    //Util.logConsoleJson(getClass(), context);
-
                     List<TelegramNotification> listTelegramNotification = new ArrayList<>();
 
                     TelegramCommandContext contextTelegram = promise.getRepositoryMapClass(TelegramCommandContext.class);
