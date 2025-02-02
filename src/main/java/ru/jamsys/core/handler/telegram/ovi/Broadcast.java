@@ -94,6 +94,7 @@ public class Broadcast implements PromiseGenerator, OviGoalsBotCommandHandler {
                     TelegramCommandContext contextTelegram = promise.getRepositoryMapClass(TelegramCommandContext.class);
                     if (contextTelegram.getIdChat() != 290029195L && contextTelegram.getIdChat() != 241022301L) {
                         promise.skipAllStep("not admin test");
+                        return;
                     }
                     CreateMessage session = mapSession.computeIfAbsent(contextTelegram.getIdChat(), aLong -> new CreateMessage(
                             contextTelegram.getIdChat(),
