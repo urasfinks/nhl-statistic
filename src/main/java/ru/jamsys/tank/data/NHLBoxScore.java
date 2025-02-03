@@ -269,7 +269,7 @@ public class NHLBoxScore {
             return gameStatusCode == 2;
         }
 
-        public List<String> getListIdPlayer(Set<String> listIdPlayer) {
+        public List<String> mergeIdPlayers(Set<String> listIdPlayer) {
             if (listIdPlayer == null) {
                 return playerStats.keySet().stream().toList();
             }
