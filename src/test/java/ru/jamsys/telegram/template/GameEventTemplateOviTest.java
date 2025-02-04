@@ -54,7 +54,7 @@ class GameEventTemplateOviTest {
         );
 
         Assertions.assertEquals("""
-                        ❌ Александр Овечкин не принимает участие""",
+                        ❌ Александр Овечкин не принимал участие""",
                 new GameEventTemplateOvi(gameEventData.setAction(GameEventData.Action.NOT_PLAY)).toString()
         );
 

@@ -54,7 +54,7 @@ class GameEventTemplateTest {
         );
 
         Assertions.assertEquals("""
-                        ❌ Александр Овечкин (WSH) не принимает участие""",
+                        ❌ Александр Овечкин (WSH) не принимал участие""",
                 new GameEventTemplate(gameEventData.setAction(GameEventData.Action.NOT_PLAY)).toString()
         );
 

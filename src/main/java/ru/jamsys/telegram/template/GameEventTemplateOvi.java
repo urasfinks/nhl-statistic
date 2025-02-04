@@ -38,7 +38,7 @@ public class GameEventTemplateOvi {
             .append(GameEventData.Action.START_GAME, """
                     Начало игры ${gameAbout}""")
             .append(GameEventData.Action.NOT_PLAY, """
-                    ❌ Александр Овечкин не принимает участие""")
+                    ❌ Александр Овечкин не принимал участие""")
             .append(GameEventData.Action.GOAL, """
                     🚨 ГОООЛ! ${time}. Александр Овечкин забивает свой ${goalsInCareer}-й гол в карьере! До рекорда Гретцки ${gretzkyOffsetPrefix} ${gretzkyOffset} ${gretzkyOffsetPostfix}.
                     ${gameScore}""")

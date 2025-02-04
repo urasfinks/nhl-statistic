@@ -36,7 +36,7 @@ public class GameEventTemplate {
             .append(GameEventData.Action.START_GAME, """
                     Начало игры ${gameAbout}""")
             .append(GameEventData.Action.NOT_PLAY, """
-                    ❌ ${playerNameWithTeamAbv} не принимает участие""")
+                    ❌ ${playerNameWithTeamAbv} не принимал участие""")
             .append(GameEventData.Action.GOAL, """
                     🚨 ГОООЛ! ${time}. ${playerNameWithTeamAbv} забивает свой ${goalsInSeason}-й гол в сезоне!
                     ${gameScore}""")
