@@ -8,6 +8,7 @@ import ru.jamsys.core.App;
 import ru.jamsys.core.component.SecurityComponent;
 import ru.jamsys.core.component.manager.item.Session;
 import ru.jamsys.core.extension.builder.HashMapBuilder;
+import ru.jamsys.core.flat.util.Util;
 import ru.jamsys.core.flat.util.UtilJson;
 import ru.jamsys.core.flat.util.UtilTelegramResponse;
 import ru.jamsys.core.flat.util.telegram.Button;
@@ -147,10 +148,10 @@ public class TelegramBotHttpSender implements TelegramSender {
         UtilTelegramResponse.Result sandbox = UtilTelegramResponse.sandbox(result -> {
             HttpResponse httpResponse = httpClient.getHttpResponse();
             if (httpResponse.getStatusCode() == 200) {
-                fileUpload.put(
-                        fileName,
-                        getFilePhotoId(httpResponse.getBody())
-                );
+                String filePhotoId = getFilePhotoId(httpResponse.getBody());
+                if (filePhotoId != null) {
+                    fileUpload.put(fileName, filePhotoId);
+                }
                 result.setResponse(UtilJson.getMapOrThrow(httpResponse.getBody()));
             } else {
                 Map<String, Object> mapOrThrow = UtilJson.getMapOrThrow(httpResponse.getBody());
@@ -170,7 +171,10 @@ public class TelegramBotHttpSender implements TelegramSender {
             @SuppressWarnings("all")
             Map<String, Object> message = UtilJson.getMapOrThrow(messageBlock);
             if (!message.containsKey("photo")) {
-                return null;
+                if(!message.containsKey("result")){
+                    return null;
+                }
+                message = (Map<String, Object>) message.get("result");
             }
             @SuppressWarnings("all")
             List<Map<String, Object>> photos = (List<Map<String, Object>>) message.get("photo");

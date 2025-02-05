@@ -165,6 +165,9 @@ class NHLTeamScheduleTest {
                     ]
                   }""");
         Assertions.assertEquals("AgACAgIAAxkBAAIS6Wed-TkCuCanrYFe3p4nfVKFrJHdAAIg7zEbui3wSBrhvpLj7DInAQADAgADeQADNgQ", fileId);
+
+        String filePhotoId = TelegramBotHttpSender.getFilePhotoId("{\"ok\":true,\"result\":{\"message_id\":9597,\"from\":{\"id\":7770107380,\"is_bot\":true,\"first_name\":\"ovi_goals_bot_test\",\"username\":\"test_ovi_goals_bot\"},\"chat\":{\"id\":290029195,\"first_name\":\"\\u042e\\u0440\\u0430 \\u041c\\u0443\\u0445\\u0438\\u043d\",\"username\":\"urasfinks\",\"type\":\"private\"},\"date\":1738779970,\"photo\":[{\"file_id\":\"AgACAgIAAxkDAAIlWGejqwgft29TQDh8id_CYU_6uUuXAAJy8jEbtNghSRIg0GTETIDWAQADAgADcwADNgQ\",\"file_unique_id\":\"AQADcvIxG7TYIUl4\",\"file_size\":750,\"width\":90,\"height\":67},{\"file_id\":\"AgACAgIAAxkDAAIlWGejqwgft29TQDh8id_CYU_6uUuXAAJy8jEbtNghSRIg0GTETIDWAQADAgADbQADNgQ\",\"file_unique_id\":\"AQADcvIxG7TYIUly\",\"file_size\":10586,\"width\":320,\"height\":240},{\"file_id\":\"AgACAgIAAxkDAAIlWGejqwgft29TQDh8id_CYU_6uUuXAAJy8jEbtNghSRIg0GTETIDWAQADAgADeAADNgQ\",\"file_unique_id\":\"AQADcvIxG7TYIUl9\",\"file_size\":37376,\"width\":800,\"height\":600}]}}\n");
+        Assertions.assertEquals("AgACAgIAAxkDAAIlWGejqwgft29TQDh8id_CYU_6uUuXAAJy8jEbtNghSRIg0GTETIDWAQADAgADeAADNgQ", filePhotoId);
     }
 
 }

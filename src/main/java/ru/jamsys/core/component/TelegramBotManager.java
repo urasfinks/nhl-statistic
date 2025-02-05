@@ -21,6 +21,7 @@ import ru.jamsys.telegram.*;
 import ru.jamsys.telegram.handler.NhlStatisticsBotCommandHandler;
 import ru.jamsys.telegram.handler.OviGoalsBotCommandHandler;
 
+import java.io.FileInputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -132,15 +133,24 @@ public class TelegramBotManager implements LifeCycleComponent {
         }
         if (telegramNotification.getPathImage() != null && !telegramNotification.getPathImage().isEmpty()) {
             try { // Потому что UtilFileResource.get throw exception
-                return telegramSender.sendImage(
-                        telegramNotification.getIdChat(),
-                        UtilFileResource.get(
-                                telegramNotification.getPathImage(),
-                                UtilFileResource.Direction.PROJECT
-                        ),
-                        UtilFile.getFileName(telegramNotification.getPathImage()),
-                        telegramNotification.getMessage()
-                );
+                if (telegramNotification.getPathImage().startsWith("file:/")) {
+                    return telegramSender.sendImage(
+                            telegramNotification.getIdChat(),
+                            new FileInputStream(telegramNotification.getPathImage().substring(6)),
+                            UtilFile.getFileName(telegramNotification.getPathImage()),
+                            telegramNotification.getMessage()
+                    );
+                } else {
+                    return telegramSender.sendImage(
+                            telegramNotification.getIdChat(),
+                            UtilFileResource.get(
+                                    telegramNotification.getPathImage(),
+                                    UtilFileResource.Direction.PROJECT
+                            ),
+                            UtilFile.getFileName(telegramNotification.getPathImage()),
+                            telegramNotification.getMessage()
+                    );
+                }
             } catch (Throwable th) {
                 telegramResult
                         .setException(UtilTelegramResponse.ResultException.OTHER)
