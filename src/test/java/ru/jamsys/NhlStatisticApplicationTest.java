@@ -2,6 +2,7 @@ package ru.jamsys;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import ru.jamsys.core.App;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.component.TelegramBotManager;
@@ -254,6 +255,11 @@ class NhlStatisticApplicationTest {
                 .await(50_000L);
         System.out.println(stat.getCountGoal().get());
 
+    }
+
+    //@Test
+    void testI(){
+        new OviToGretzky().generate().run().await(60_000);
     }
 
 }
