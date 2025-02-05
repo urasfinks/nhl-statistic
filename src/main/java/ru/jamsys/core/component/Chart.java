@@ -51,9 +51,9 @@ public class Chart extends RepositoryPropertiesField {
         response.setInitGame(xy.getY().length);
 
         int countGame = xy.getXy().size();
-
-        File file = new File(folder + "/chart_" + offsetGretsky + "_" + countGame + ".png"); // Имя файла
-        response.setPathChart(file.getAbsolutePath());
+        String fileName = "chart_" + offsetGretsky + "_" + countGame + ".png";
+        File file = new File(folder + "/" + fileName); // Имя файла
+        response.setPathChart(fileName);
 
         double currentGoals = xy.getY()[xy.getY().length - 1];
         response.setInitCountGoals((int) currentGoals);
