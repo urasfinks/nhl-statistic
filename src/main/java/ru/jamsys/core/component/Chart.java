@@ -115,7 +115,7 @@ public class Chart extends RepositoryPropertiesField {
         }
 
         if (file.exists()) {
-            System.out.println("File: " + file.getAbsolutePath() + " exist");
+            //System.out.println("File: " + file.getAbsolutePath() + " exist");
             return response;
         }
 
@@ -197,7 +197,7 @@ public class Chart extends RepositoryPropertiesField {
         try {
 
             ChartUtils.saveChartAsPNG(file, chart, 800, 600); // Ширина и высота изображения
-            System.out.println("График сохранен в файл: " + file.getAbsolutePath());
+            //System.out.println("График сохранен в файл: " + file.getAbsolutePath());
         } catch (IOException e) {
             e.printStackTrace();
         }
