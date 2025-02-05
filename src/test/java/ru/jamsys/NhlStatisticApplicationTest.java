@@ -276,9 +276,4 @@ class NhlStatisticApplicationTest {
         Util.logConsoleJson(getClass(), chart);
     }
 
-    //@Test
-    void testI(){
-        new ChartOviToGretzky().generate().run().await(60_000);
-    }
-
 }
