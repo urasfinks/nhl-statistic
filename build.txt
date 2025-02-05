@@ -22,3 +22,12 @@ docker run --name nhl-statistic -v /root/nhl-statistic:/home/storage -v /etc/loc
 [Для локального докера nhl-statistic]
 
 docker run --platform linux/amd64 --name nhl-statistic -v /Users/sfinks/IdeaProjects/nhl-statistic:/home/storage -p 443:443 -p 80:80 -p 10001:10001 --log-driver json-file --log-opt max-size=18m --log-opt max-file=50 --env JAVA_TOOL_OPTIONS="-Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.port=10001 -Dcom.sun.management.jmxremote.rmi.port=10001 -Djava.rmi.server.hostname=nhl-statistic.ru -Dcom.sun.management.jmxremote.local.only=false -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/Users/sfinks/IdeaProjects/heap/crash.hprof -Dspring.config.location=classpath:application.properties,classpath:application.docker.properties" -d nhl-statistic
+
+[Сброс кеша после кривого матча]
+Удалить:
+select * from http_cache
+where url like '%/getNHLGamesForPlayer?playerID=3101%'
+select * from http_cache
+where url like '%/getNHLBoxScore?gameID=20250204_FLA%'
+
+NHLBoxScore.getUri(getIdGame())).setOnlyCache(true).generate()) заменить на false и выполнить /stats для тестового бота
