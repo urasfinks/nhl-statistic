@@ -26,14 +26,16 @@ public class Chart {
 
     public static void main(String[] args) {
         List<Double> list = new ArrayList<>();
-        //String s = "0,0,0,0,1,2,2,2,2,2,2,2,4,4,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,6,6,6,6,7,8,8,8,8,8,8,8,8,8,9,10,11,12,13,14,14,16,16,16,16,16,17,17,18,18,18,18,18,19,21,23,24,26,26,26,26,26,27,29,29,30,30,30,30,31,31,31,31,31,31,31,31,32,32,33,33,35,36,37,38,39,39,41,41,41,44,46,47,48,48,49,50,50,50,50,51,51,52,52,52,53,53,53,54,55";
-        String s = "0.0,2.0,3.0,4.0,5.0,6.0,6.0,8.0,8.0,8.0,11.0,13.0,14.0,15.0,15.0,16.0,17.0,17.0,17.0,17.0,18.0,18.0,19.0,19.0,19.0,20.0,20.0,20.0,21.0,22.0";
+        String s = "0,0,0,0,1,2,2,2,2,2,2,2,4,4,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,6,6,6,6,7,8,8,8,8,8,8,8,8,8,9,10,11,12,13,14,14,16,16,16,16,16,17,17,18,18,18,18,18,19,21,23,24,26,26,26,26,26,27,29,29,30,30,30,30,31,31,31,31,31,31,31,31,32,32,33,33,35,36,37,38,39,39,41,41,41,44,46,47,48,48,49,50,50,50,50,51,51,52,52,52,53,53,53,54,55";
+        //String s = "0.0,2.0,3.0,4.0,5.0,6.0,6.0,8.0,8.0,8.0,11.0,13.0,14.0,15.0,15.0,16.0,17.0,17.0,17.0,17.0,18.0,18.0,19.0,19.0,19.0,20.0,20.0,20.0,21.0,22.0";
         int offsetGretsky = 17;
 
 
         //String s = "0,0,0,0,1,2,2,2,2,2,2,2,4,4,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,6,6,6,6,7,8,8,8,8,8,8,8,8,8,9,10,11,12,13,14,14,16,16,16,16,16,17,17,18,18,18,18,18,19,21,23,24,26,26,26,26,26,27,29,29,30,30,30,30,31,31,31,31,31,31,31,31,32,32,33,33,35,36,37,38,39,39,41,41,41,44,46,47,48,48,49,50,50,50,50,51,51,52,52,52,53,53,53,54,55,56";
         //String s = "0.0,2.0,3.0,4.0,5.0,6.0,6.0,8.0,8.0,8.0,11.0,13.0,14.0,15.0,15.0,16.0,17.0,17.0,17.0,17.0,18.0,18.0,19.0,19.0,19.0,20.0,20.0,20.0,21.0,22.0,23.0";
         //int offsetGretsky = 16;
+
+        Color trans = new Color(0xFF, 0xFF, 0xFF, 0);
 
         String[] split = s.split(",");
         int countGame = split.length;
@@ -121,50 +123,17 @@ public class Chart {
         dataset.addSeries(seriesPoly5);
 
         // Создаем график
-        JFreeChart chart = ChartFactory.createXYLineChart(
-                null, // Заголовок
-                "", // Ось X
-                "", // Ось Y
-                dataset // Данные
-        );
+        JFreeChart chart = ChartFactory.createXYLineChart(null, "Игры", "Голы", dataset);
         XYPlot plot = chart.getXYPlot();
         XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
         plot.setRenderer(renderer);
 
-        ValueMarker horizontalMarker = new ValueMarker(curLine);
-        horizontalMarker.setPaint(Color.GRAY);
-        horizontalMarker.setStroke(new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 10.0f, new float[]{5f, 5f}, 0.0f));
-        horizontalMarker.setLabel("Y = " + curLine);
-        horizontalMarker.setLabelAnchor(RectangleAnchor.TOP_RIGHT);
-        horizontalMarker.setLabelTextAnchor(TextAnchor.BOTTOM_RIGHT);
-        plot.addRangeMarker(horizontalMarker);
-
-        ValueMarker horizontalMarker2 = new ValueMarker(needGoals);
-        horizontalMarker2.setPaint(Color.GRAY);
-        horizontalMarker2.setStroke(new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 10.0f, new float[]{5f, 5f}, 0.0f));
-        horizontalMarker2.setLabel("Y = " + needGoals);
-        horizontalMarker2.setLabelAnchor(RectangleAnchor.TOP_RIGHT);
-        horizontalMarker2.setLabelTextAnchor(TextAnchor.BOTTOM_RIGHT);
-        plot.addRangeMarker(horizontalMarker2);
-
-        ValueMarker verticalMarker = new ValueMarker(countGame);
-        verticalMarker.setPaint(Color.GRAY);
-        horizontalMarker2.setStroke(new BasicStroke(1.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10.0f, new float[]{5f, 5f}, 0.0f));
-        verticalMarker.setLabel("X = " + countGame);
-        verticalMarker.setLabelAnchor(RectangleAnchor.TOP_LEFT);
-        verticalMarker.setLabelTextAnchor(TextAnchor.TOP_RIGHT);
-        plot.addDomainMarker(verticalMarker);
-
+        plot.addRangeMarker(getMarkerHor(curLine, "Y = " + curLine));
+        plot.addRangeMarker(getMarkerHor(needGoals, "Y = " + needGoals));
+        plot.addDomainMarker(getMarkerVer(countGame, "X = " + countGame));
         if (findXGame > 0) {
-            ValueMarker verticalMarker2 = new ValueMarker(findXGame);
-            verticalMarker2.setPaint(Color.GRAY);
-            horizontalMarker2.setStroke(new BasicStroke(1.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10.0f, new float[]{5f, 5f}, 0.0f));
-            verticalMarker2.setLabel("X = " + findXGame);
-            verticalMarker2.setLabelAnchor(RectangleAnchor.TOP_LEFT);
-            verticalMarker2.setLabelTextAnchor(TextAnchor.TOP_RIGHT);
-            plot.addDomainMarker(verticalMarker2);
+            plot.addDomainMarker(getMarkerVer(findXGame, "X = " + findXGame));
         }
-
 
         // Меняем цвета линий
         plot.getRenderer().setSeriesPaint(0, Color.BLACK);
@@ -204,7 +173,6 @@ public class Chart {
 
 
         renderer.setSeriesShapesVisible(0, false);
-        //renderer.setSeriesShapesVisible(1, false);
         renderer.setSeriesShapesVisible(2, false);
         renderer.setSeriesShapesVisible(3, false);
         renderer.setSeriesShapesVisible(4, false);
@@ -215,7 +183,6 @@ public class Chart {
 
 
         renderer.setSeriesStroke(0, new BasicStroke(2f));
-        //renderer.setSeriesStroke(0, new BasicStroke(2f));
 
         renderer.setSeriesStroke(1, dashedStroke3);
         renderer.setSeriesStroke(2, dashedStroke2);
@@ -224,11 +191,6 @@ public class Chart {
         renderer.setSeriesStroke(5, dashedStroke);
         renderer.setSeriesStroke(6, dashedStroke);
 
-        renderer.setSeriesStroke(7, dashedStroke2); //maxLine
-        renderer.setSeriesStroke(8, dashedStroke2); //findGame
-
-
-        Color trans = new Color(0xFF, 0xFF, 0xFF, 0);
         chart.removeLegend();
         chart.getPlot().setBackgroundPaint(trans);
         chart.getPlot().setOutlineVisible(false);
@@ -245,22 +207,6 @@ public class Chart {
         }
     }
 
-    public static double getCoef(double middle, double p1) {
-        double width = Math.abs(middle - p1);
-        double v = (p1 + (middle - p1) / (middle / width));
-        //System.out.println("middle: " + middle + "; p1: " + p1 + "; width: " + width + "; prc: " + (middle / width) + "; v:" + v);
-        if (p1 > middle) {
-            if (v < middle) {
-                return middle;
-            }
-        } else {
-            if (v > middle) {
-                return middle;
-            }
-        }
-        return v;
-    }
-
     public static Double addPredict(XYSeries xySeries, PolyTrendLine polyTrendLine, int x, double offset, int maxLine) {
         double predict = polyTrendLine.predict(x);
         if (predict > maxLine) {
@@ -274,8 +220,6 @@ public class Chart {
     }
 
     public static double getAvg(double base, double p1) {
-        double average = 0f;
-
         double w = Math.abs(base - p1);
         double prc = w * 100 / 120;
         if (prc < 0) {
@@ -285,29 +229,40 @@ public class Chart {
             prc = 100;
         }
         double y = prc * w / 100;
-
-        /*
-         * 76 -> 0% -> coef = w
-         * 38 -> 50% -> coef = w/2
-         *
-         * 76 - 100
-         * w - x
-         * x = w * 100/76
-         *
-         * w - 100
-         * y = prc
-         * y = x * w / 100
-         * */
         if (y < 1) {
             y = 1;
         }
+        double average;
         if (base > p1) {
             average = base - w / y;
-            //System.out.println("base: " + base + "; w: " + w + "; prc: " + prc + "; y: " + y + "; div: " + (w / y) + "; avg:" + average);
         } else {
             average = base + w / y;
         }
         return average;
+    }
+
+    public static ValueMarker getMarkerVer(double countGame, String label) {
+        ValueMarker verticalMarker = new ValueMarker(countGame);
+        verticalMarker.setPaint(Color.GRAY);
+        verticalMarker.setStroke(new BasicStroke(1.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10.0f, new float[]{5f, 5f}, 0.0f));
+        verticalMarker.setLabel(label);
+        verticalMarker.setLabelFont(new Font("SansSerif", Font.BOLD, 12));
+        verticalMarker.setLabelBackgroundColor(new Color(0xFF, 0xFF, 0xFF, 0));
+        verticalMarker.setLabelAnchor(RectangleAnchor.TOP_LEFT);
+        verticalMarker.setLabelTextAnchor(TextAnchor.TOP_RIGHT);
+        return verticalMarker;
+    }
+
+    public static ValueMarker getMarkerHor(double curLine, String label) {
+        ValueMarker horizontalMarker = new ValueMarker(curLine);
+        horizontalMarker.setPaint(Color.GRAY);
+        horizontalMarker.setStroke(new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 10.0f, new float[]{5f, 5f}, 0.0f));
+        horizontalMarker.setLabel(label);
+        horizontalMarker.setLabelFont(new Font("SansSerif", Font.BOLD, 12));
+        horizontalMarker.setLabelBackgroundColor(new Color(0xFF, 0xFF, 0xFF, 0));
+        horizontalMarker.setLabelAnchor(RectangleAnchor.TOP_RIGHT);
+        horizontalMarker.setLabelTextAnchor(TextAnchor.BOTTOM_RIGHT);
+        return horizontalMarker;
     }
 
 }
