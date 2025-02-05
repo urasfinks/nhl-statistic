@@ -1,5 +1,7 @@
-package ru.jamsys;
+package ru.jamsys.core.component;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtils;
 import org.jfree.chart.JFreeChart;
@@ -10,57 +12,50 @@ import org.jfree.chart.ui.RectangleAnchor;
 import org.jfree.chart.ui.TextAnchor;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Component;
+import ru.jamsys.core.extension.annotation.PropertyName;
+import ru.jamsys.core.extension.property.repository.RepositoryPropertiesField;
 import ru.jamsys.core.flat.trend.PolyTrendLine;
 import ru.jamsys.core.flat.util.UtilTrend;
 
 import java.awt.*;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Line2D;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.DoubleSummaryStatistics;
-import java.util.List;
 
-public class Chart {
+@Setter
+@Component
+@Lazy
+public class Chart extends RepositoryPropertiesField {
 
-    public static void main(String[] args) {
-        List<Double> list = new ArrayList<>();
-        String s = "0,0,0,0,1,2,2,2,2,2,2,2,4,4,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,6,6,6,6,7,8,8,8,8,8,8,8,8,8,9,10,11,12,13,14,14,16,16,16,16,16,17,17,18,18,18,18,18,19,21,23,24,26,26,26,26,26,27,29,29,30,30,30,30,31,31,31,31,31,31,31,31,32,32,33,33,35,36,37,38,39,39,41,41,41,44,46,47,48,48,49,50,50,50,50,51,51,52,52,52,53,53,53,54,55";
-        //String s = "0.0,2.0,3.0,4.0,5.0,6.0,6.0,8.0,8.0,8.0,11.0,13.0,14.0,15.0,15.0,16.0,17.0,17.0,17.0,17.0,18.0,18.0,19.0,19.0,19.0,20.0,20.0,20.0,21.0,22.0";
-        int offsetGretsky = 17;
+    @PropertyName("run.args.chart.folder")
+    private String folder;
 
+    public Chart(ServiceProperty serviceProperty) {
+        autoFill(serviceProperty);
+    }
 
-        //String s = "0,0,0,0,1,2,2,2,2,2,2,2,4,4,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,6,6,6,6,7,8,8,8,8,8,8,8,8,8,9,10,11,12,13,14,14,16,16,16,16,16,17,17,18,18,18,18,18,19,21,23,24,26,26,26,26,26,27,29,29,30,30,30,30,31,31,31,31,31,31,31,31,32,32,33,33,35,36,37,38,39,39,41,41,41,44,46,47,48,48,49,50,50,50,50,51,51,52,52,52,53,53,53,54,55,56";
-        //String s = "0.0,2.0,3.0,4.0,5.0,6.0,6.0,8.0,8.0,8.0,11.0,13.0,14.0,15.0,15.0,16.0,17.0,17.0,17.0,17.0,18.0,18.0,19.0,19.0,19.0,20.0,20.0,20.0,21.0,22.0,23.0";
-        //int offsetGretsky = 16;
+    @Getter
+    @Setter
+    public static class Response {
+        String pathChart;
+        int countGame;
+        int countGoals;
+    }
 
-        Color trans = new Color(0xFF, 0xFF, 0xFF, 0);
+    public Response createChart(UtilTrend.XY xy, int offsetGretsky) {
+        Response response = new Response();
 
-        String[] split = s.split(",");
-        int countGame = split.length;
-        int curLine = (int) Double.parseDouble(split[split.length - 1]);
-        int needGoals = (int) Double.parseDouble(split[split.length - 1]) + offsetGretsky;
-        UtilTrend.XY xy = new UtilTrend.XY();
-        for (String string : split) {
-            xy.addY(Double.parseDouble(string));
-        }
+        int countGame = xy.getXy().size();
+        double currentGoals = xy.getY()[xy.getY().length - 1];
+        int needGoals = (int) currentGoals + offsetGretsky;
 
-        PolyTrendLine polyTrendLine1 = new PolyTrendLine(1);
-        polyTrendLine1.setValues(xy.getY(), xy.getX());
-
-        PolyTrendLine polyTrendLine2 = new PolyTrendLine(2);
-        polyTrendLine2.setValues(xy.getY(), xy.getX());
-
-        PolyTrendLine polyTrendLine3 = new PolyTrendLine(3);
-        polyTrendLine3.setValues(xy.getY(), xy.getX());
-
-        PolyTrendLine polyTrendLine4 = new PolyTrendLine(4);
-        polyTrendLine4.setValues(xy.getY(), xy.getX());
-
-        PolyTrendLine polyTrendLine5 = new PolyTrendLine(5);
-        polyTrendLine5.setValues(xy.getY(), xy.getX());
-
+        PolyTrendLine polyTrendLine1 = new PolyTrendLine(1, xy.getY(), xy.getX());
+        PolyTrendLine polyTrendLine2 = new PolyTrendLine(2, xy.getY(), xy.getX());
+        PolyTrendLine polyTrendLine3 = new PolyTrendLine(3, xy.getY(), xy.getX());
+        PolyTrendLine polyTrendLine4 = new PolyTrendLine(4, xy.getY(), xy.getX());
+        PolyTrendLine polyTrendLine5 = new PolyTrendLine(5, xy.getY(), xy.getX());
 
         // Создаем набор данных
         XYSeries seriesGoals = new XYSeries("goals");
@@ -124,13 +119,17 @@ public class Chart {
         // Создаем график
         JFreeChart chart = ChartFactory.createXYLineChart(null, "Игры", "Голы", dataset);
         XYPlot plot = chart.getXYPlot();
+        plot.getDomainAxis().setLabelFont(new Font("SansSerif", Font.PLAIN, 13));
+        plot.getRangeAxis().setLabelFont(new Font("SansSerif", Font.PLAIN, 13));
         XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
         plot.setRenderer(renderer);
 
-        plot.addRangeMarker(getMarkerHor(curLine, "Y = " + curLine));
+        plot.addRangeMarker(getMarkerHor(currentGoals, "Y = " + (int) currentGoals));
         plot.addRangeMarker(getMarkerHor(needGoals, "Y = " + needGoals));
+        response.setCountGoals(needGoals);
         plot.addDomainMarker(getMarkerVer(countGame, "X = " + countGame));
         if (findXGame > 0) {
+            response.setCountGame(findXGame - countGame);
             plot.addDomainMarker(getMarkerVer(findXGame, "X = " + findXGame));
         }
 
@@ -151,8 +150,8 @@ public class Chart {
         float[] dashPattern3 = {0f, 500f}; // 5 пикселей линия, 5 пикселей пробел //,
         BasicStroke dashedStroke3 = new BasicStroke(1.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10.0f, dashPattern3, 0.0f);
 
-        int[] xPoints = {0, -3, 0, 3};
-        int[] yPoints = {3, 0, -3, 0};
+        int[] xPoints = {0, -2, 0, 2};
+        int[] yPoints = {2, 0, -2, 0};
         Shape diamond = new Polygon(xPoints, yPoints, 4);
 
         renderer.setSeriesShape(1, diamond);
@@ -176,19 +175,21 @@ public class Chart {
         renderer.setSeriesStroke(6, dashedStroke);
 
         chart.removeLegend();
-        chart.getPlot().setBackgroundPaint(trans);
+        chart.getPlot().setBackgroundPaint(new Color(0xFF, 0xFF, 0xFF, 0));
         chart.getPlot().setOutlineVisible(false);
         chart.getXYPlot().setRangeGridlinesVisible(false);
         chart.getXYPlot().setDomainGridlinesVisible(false);
         chart.setAntiAlias(true);
 
         try {
-            File file = new File("chart_" + offsetGretsky + "_" + countGame + ".png"); // Имя файла
-            ChartUtils.saveChartAsPNG(file, chart, 1200, 800); // Ширина и высота изображения
+            File file = new File(folder + "/chart_" + offsetGretsky + "_" + countGame + ".png"); // Имя файла
+            response.setPathChart(file.getAbsolutePath());
+            ChartUtils.saveChartAsPNG(file, chart, 800, 600); // Ширина и высота изображения
             System.out.println("График сохранен в файл: " + file.getAbsolutePath());
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return response;
     }
 
     public static Double addPredict(XYSeries xySeries, PolyTrendLine polyTrendLine, int x, double offset, int maxLine) {
@@ -230,7 +231,7 @@ public class Chart {
         verticalMarker.setPaint(Color.GRAY);
         verticalMarker.setStroke(new BasicStroke(1.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10.0f, new float[]{5f, 5f}, 0.0f));
         verticalMarker.setLabel(label);
-        verticalMarker.setLabelFont(new Font("SansSerif", Font.BOLD, 12));
+        verticalMarker.setLabelFont(new Font("SansSerif", Font.PLAIN, 13));
         verticalMarker.setLabelBackgroundColor(new Color(0xFF, 0xFF, 0xFF, 0));
         verticalMarker.setLabelAnchor(RectangleAnchor.TOP_LEFT);
         verticalMarker.setLabelTextAnchor(TextAnchor.TOP_RIGHT);
@@ -242,7 +243,7 @@ public class Chart {
         horizontalMarker.setPaint(Color.GRAY);
         horizontalMarker.setStroke(new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 10.0f, new float[]{5f, 5f}, 0.0f));
         horizontalMarker.setLabel(label);
-        horizontalMarker.setLabelFont(new Font("SansSerif", Font.BOLD, 12));
+        horizontalMarker.setLabelFont(new Font("SansSerif", Font.PLAIN, 13));
         horizontalMarker.setLabelBackgroundColor(new Color(0xFF, 0xFF, 0xFF, 0));
         horizontalMarker.setLabelAnchor(RectangleAnchor.TOP_RIGHT);
         horizontalMarker.setLabelTextAnchor(TextAnchor.BOTTOM_RIGHT);
