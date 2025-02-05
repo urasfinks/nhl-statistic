@@ -64,6 +64,12 @@ public class PlayerStatistic implements PromiseGenerator {
         return scoreLastSeason + seasonGoals;
     }
 
+    public int getOffsetGretzky() {
+        int seasonGoals = Integer.parseInt(scoreTotal.getOrDefault("goals", "0").toString());
+        int totalGoals = scoreLastSeason + seasonGoals;
+        return UtilNHL.getScoreGretzky() - totalGoals;
+    }
+
     public String getMessage() {
         int seasonGoals = Integer.parseInt(scoreTotal.getOrDefault("goals", "0").toString());
         int countGame = Integer.parseInt(scoreTotal.getOrDefault("countGame", "").toString());

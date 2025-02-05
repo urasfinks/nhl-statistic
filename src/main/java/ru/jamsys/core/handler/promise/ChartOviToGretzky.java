@@ -5,20 +5,17 @@ import lombok.Setter;
 import lombok.ToString;
 import ru.jamsys.core.App;
 import ru.jamsys.core.component.ServicePromise;
-import ru.jamsys.core.flat.util.*;
+import ru.jamsys.core.flat.util.UtilNHL;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
 import ru.jamsys.tank.data.NHLGamesForPlayer;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @Getter
 @Setter
 @ToString
-public class OviToGretzky implements PromiseGenerator {
+public class ChartOviToGretzky implements PromiseGenerator {
 
     public static class Context {
 

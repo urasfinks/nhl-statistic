@@ -278,7 +278,7 @@ class NhlStatisticApplicationTest {
 
     //@Test
     void testI(){
-        new OviToGretzky().generate().run().await(60_000);
+        new ChartOviToGretzky().generate().run().await(60_000);
     }
 
 }

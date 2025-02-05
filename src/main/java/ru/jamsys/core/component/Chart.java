@@ -41,15 +41,24 @@ public class Chart extends RepositoryPropertiesField {
     public static class Response {
         String pathChart;
         int countGame;
-        int countGoals;
+        int needCountGoals;
+        int initGame;
+        int initCountGoals;
     }
 
     public Response createChart(UtilTrend.XY xy, int offsetGretsky) {
         Response response = new Response();
+        response.setInitGame(xy.getY().length);
 
         int countGame = xy.getXy().size();
+
+        File file = new File(folder + "/chart_" + offsetGretsky + "_" + countGame + ".png"); // Имя файла
+        response.setPathChart(file.getAbsolutePath());
+
         double currentGoals = xy.getY()[xy.getY().length - 1];
+        response.setInitCountGoals((int) currentGoals);
         int needGoals = (int) currentGoals + offsetGretsky;
+        response.setNeedCountGoals(needGoals);
 
         PolyTrendLine polyTrendLine1 = new PolyTrendLine(1, xy.getY(), xy.getX());
         PolyTrendLine polyTrendLine2 = new PolyTrendLine(2, xy.getY(), xy.getX());
@@ -96,13 +105,18 @@ public class Chart extends RepositoryPropertiesField {
             avg.accept(getAvg(base, v5));
 
             double average = avg.getAverage();
-
+            if (average > needGoals && findXGame == 0) {
+                findXGame = realI;
+                response.setCountGame(findXGame - countGame);
+            }
             if (average > 0 && average <= needGoals + 3) {
-                if (Math.round(average) == needGoals) {
-                    findXGame = realI;
-                }
                 seriesPolyPredict.add(realI, average);
             }
+        }
+
+        if (file.exists()) {
+            System.out.println("File: " + file.getAbsolutePath() + " exist");
+            return response;
         }
 
         XYSeriesCollection dataset = new XYSeriesCollection();
@@ -126,10 +140,9 @@ public class Chart extends RepositoryPropertiesField {
 
         plot.addRangeMarker(getMarkerHor(currentGoals, "Y = " + (int) currentGoals));
         plot.addRangeMarker(getMarkerHor(needGoals, "Y = " + needGoals));
-        response.setCountGoals(needGoals);
+
         plot.addDomainMarker(getMarkerVer(countGame, "X = " + countGame));
         if (findXGame > 0) {
-            response.setCountGame(findXGame - countGame);
             plot.addDomainMarker(getMarkerVer(findXGame, "X = " + findXGame));
         }
 
@@ -182,8 +195,7 @@ public class Chart extends RepositoryPropertiesField {
         chart.setAntiAlias(true);
 
         try {
-            File file = new File(folder + "/chart_" + offsetGretsky + "_" + countGame + ".png"); // Имя файла
-            response.setPathChart(file.getAbsolutePath());
+
             ChartUtils.saveChartAsPNG(file, chart, 800, 600); // Ширина и высота изображения
             System.out.println("График сохранен в файл: " + file.getAbsolutePath());
         } catch (IOException e) {
