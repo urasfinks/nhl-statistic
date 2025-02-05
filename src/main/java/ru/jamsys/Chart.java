@@ -63,17 +63,17 @@ public class Chart {
 
 
         // Создаем набор данных
-        XYSeries series = new XYSeries("1");
-        XYSeries seriesPolyAvg = new XYSeries("2");
+        XYSeries seriesGoals = new XYSeries("goals");
+        XYSeries seriesPolyPredict = new XYSeries("predict");
 
-        XYSeries seriesPoly1 = new XYSeries("3");
-        XYSeries seriesPoly2 = new XYSeries("4");
-        XYSeries seriesPoly3 = new XYSeries("5");
-        XYSeries seriesPoly4 = new XYSeries("6");
-        XYSeries seriesPoly5 = new XYSeries("7");
+        XYSeries seriesPoly1 = new XYSeries("base");
+        XYSeries seriesPoly2 = new XYSeries("p2");
+        XYSeries seriesPoly3 = new XYSeries("p3");
+        XYSeries seriesPoly4 = new XYSeries("p4");
+        XYSeries seriesPoly5 = new XYSeries("p5");
 
         xy.getXy().forEach((x, y) -> {
-            series.add(x, y);
+            seriesGoals.add(x, y);
             seriesPoly1.add((double) x, polyTrendLine1.predict(x));
             seriesPoly2.add((double) x, polyTrendLine2.predict(x) - 0.2f);
             seriesPoly3.add((double) x, polyTrendLine3.predict(x) - 0.4f);
@@ -106,15 +106,14 @@ public class Chart {
                 if (Math.round(average) == needGoals) {
                     findXGame = realI;
                 }
-                seriesPolyAvg.add(realI, average);
+                seriesPolyPredict.add(realI, average);
             }
         }
 
-        // Создаем коллекцию данных
         XYSeriesCollection dataset = new XYSeriesCollection();
 
-        dataset.addSeries(series);
-        dataset.addSeries(seriesPolyAvg);
+        dataset.addSeries(seriesGoals);
+        dataset.addSeries(seriesPolyPredict);
         dataset.addSeries(seriesPoly1);
 
         dataset.addSeries(seriesPoly2);
@@ -135,19 +134,13 @@ public class Chart {
             plot.addDomainMarker(getMarkerVer(findXGame, "X = " + findXGame));
         }
 
-        // Меняем цвета линий
         plot.getRenderer().setSeriesPaint(0, Color.BLACK);
         plot.getRenderer().setSeriesPaint(1, Color.BLACK);
-
         plot.getRenderer().setSeriesPaint(2, Color.GRAY); // middle
-
         plot.getRenderer().setSeriesPaint(3, Color.PINK);
         plot.getRenderer().setSeriesPaint(4, Color.GREEN);
         plot.getRenderer().setSeriesPaint(5, Color.ORANGE);
         plot.getRenderer().setSeriesPaint(6, Color.CYAN);
-
-        plot.getRenderer().setSeriesPaint(7, Color.GRAY);
-        plot.getRenderer().setSeriesPaint(8, Color.GRAY);
 
         float[] dashPattern = {0f, 6f}; // 5 пикселей линия, 5 пикселей пробел
         BasicStroke dashedStroke = new BasicStroke(3.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 50.0f, dashPattern, 0.0f);
@@ -158,21 +151,13 @@ public class Chart {
         float[] dashPattern3 = {0f, 500f}; // 5 пикселей линия, 5 пикселей пробел //,
         BasicStroke dashedStroke3 = new BasicStroke(1.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10.0f, dashPattern3, 0.0f);
 
-        Shape circle = new Ellipse2D.Double(-2, -2, 4, 4); // Радиус 3 пикселя
-
         int[] xPoints = {0, -3, 0, 3};
         int[] yPoints = {3, 0, -3, 0};
         Shape diamond = new Polygon(xPoints, yPoints, 4);
-        Shape cross = new Line2D.Double(-3, -3, 3, 3); // Одна диагональ
-        int[] xPoints2 = {-3, 3, 0};
-        int[] yPoints2 = {3, 3, -3};
-        Shape triangle = new Polygon(xPoints2, yPoints2, 3);
 
         renderer.setSeriesShape(1, diamond);
-        renderer.setSeriesShapesVisible(1, true);
-
-
         renderer.setSeriesShapesVisible(0, false);
+        renderer.setSeriesShapesVisible(1, true);
         renderer.setSeriesShapesVisible(2, false);
         renderer.setSeriesShapesVisible(3, false);
         renderer.setSeriesShapesVisible(4, false);
@@ -180,7 +165,6 @@ public class Chart {
         renderer.setSeriesShapesVisible(6, false);
         renderer.setSeriesShapesVisible(7, false);
         renderer.setSeriesShapesVisible(8, false);
-
 
         renderer.setSeriesStroke(0, new BasicStroke(2f));
 
