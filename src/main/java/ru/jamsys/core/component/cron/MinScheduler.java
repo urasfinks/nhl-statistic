@@ -10,6 +10,7 @@ import ru.jamsys.core.App;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.component.ServiceProperty;
 import ru.jamsys.core.component.TelegramBotManager;
+import ru.jamsys.core.component.manager.item.Session;
 import ru.jamsys.core.extension.UniqueClassName;
 import ru.jamsys.core.extension.builder.HashMapBuilder;
 import ru.jamsys.core.extension.exception.ForwardException;
@@ -42,6 +43,8 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
     private final ServicePromise servicePromise;
 
     private final ServiceProperty serviceProperty;
+
+    private final Session<String, Long> finishGameRegister = new Session<>(getClassName(), 600_000L); // key - idGame, value timestamp
 
     public MinScheduler(
             ServicePromise servicePromise,
@@ -221,6 +224,20 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                             if (currentInstance.getPlayerStats().isEmpty()) { // Блок статистики не пустой
                                 App.error(new RuntimeException("idGame: " + idGame + " continue; cause: getPlayerStats().isEmpty()"));
                                 continue;
+                            }
+                            // Случилась проблема, что Ови забил за 0.1 секунду до конца и статисты не успели внести корректировки
+                            // Добавлена 2-х минутная задержка
+                            if (currentInstance.isFinish()) {
+                                if (!finishGameRegister.containsKey(currentInstance.getIdGame())) {
+                                    finishGameRegister.put(currentInstance.getIdGame(), System.currentTimeMillis());
+                                    App.error(new RuntimeException("idGame: " + idGame + " continue; cause: First register finish"));
+                                    continue;
+                                }
+                                long l = finishGameRegister.get(currentInstance.getIdGame()) + 2 * 60 * 1000;
+                                if (System.currentTimeMillis() < l) {
+                                    App.error(new RuntimeException("idGame: " + idGame + " continue; cause: Finish delay remaining: " + (l - System.currentTimeMillis()) + " ms"));
+                                    continue;
+                                }
                             }
                             context.getCurrentData().put(idGame, data);
                         } catch (Throwable e) {
