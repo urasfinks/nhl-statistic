@@ -2,6 +2,7 @@ package ru.jamsys.core.handler.telegram.ovi;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
 import ru.jamsys.NhlStatisticApplication;
@@ -61,7 +62,16 @@ public class Prediction implements PromiseGenerator, OviGoalsBotCommandHandler {
                     PlayerStatistic ovi = promise.getRepositoryMapClass(Promise.class, "ovi")
                             .getRepositoryMapClass(PlayerStatistic.class);
                     if (ovi.getOffsetGretzky() <= 0) {
-                        //TODO: всё
+                        RegisterNotification.add(new TelegramNotification(
+                                context.getIdChat(),
+                                context.getTelegramBot().getBotUsername(),
+                                """
+                                        🎉 Рекорд Гретцки побит! 🎉
+                                        Спасибо, что наблюдали за этим величайшим событием вместе с нами 🏒✨
+                                        """,
+                                null,
+                                null
+                        ));
                         return;
                     }
                     // ----------------
@@ -75,20 +85,6 @@ public class Prediction implements PromiseGenerator, OviGoalsBotCommandHandler {
                             .getRepositoryMapClass(Tank01Request.class);
                     NHLTeamSchedule.Instance instance = new NHLTeamSchedule.Instance(response.getResponseData());
                     List<String> lisIdGameInSeason = new ArrayList<>(instance.getIdGame());
-                    // -----------------
-                    UtilTrend.XY allXy = new UtilTrend.XY();
-                    AtomicInteger allCountGoals = new AtomicInteger(0);
-                    Map<String, Integer> mapAllGoals = NHLGamesForPlayer
-                            .getOnlyGoalsFilter(tank01Request.getResponseData(), null);
-                    UtilRisc.forEach(
-                            run,
-                            mapAllGoals.keySet(),
-                            (idGame) -> {
-                                allXy.addY(allCountGoals.addAndGet(mapAllGoals.get(idGame)));
-                            },
-                            true
-                    );
-                    Chart.Response allChart = App.get(Chart.class).createChart(allXy, ovi.getOffsetGretzky());
                     // ----------------
                     UtilTrend.XY seasonXy = new UtilTrend.XY();
                     AtomicInteger seasonCountGoals = new AtomicInteger(0);
@@ -102,44 +98,15 @@ public class Prediction implements PromiseGenerator, OviGoalsBotCommandHandler {
                             },
                             true
                     );
-                    Chart.Response seasonChart = App.get(Chart.class).createChart(seasonXy, ovi.getOffsetGretzky());
+                    Chart.Response seasonChart = App.get(Chart.class)
+                            .createChart(seasonXy, ovi.getOffsetGretzky(), false);
 
                     List<NHLTeamSchedule.Game> listGameInstance = instance
                             .initAlreadyGame()
                             .getFutureGame()
                             .getListGameInstance();
 
-                    String templateInGame = "🔹 Рекорд, скорее всего, устоит в этом сезоне";
-                    if (listGameInstance.size() >= seasonChart.getCountGame()) {
-                        NHLTeamSchedule.Game game = listGameInstance.get(seasonChart.getCountGame() - 1);
-                        templateInGame = String.format(
-                                """
-                                        📅 Возможная ключевая игра: 🆚 %s
-                                        🕑 Дата и время: %s (МСК)""",
-                                game.toggleTeam(UtilNHL.getOvi().getTeam()),
-                                game.getMoscowDate()
-                        );
-                    }
-
-                    String templateInGame2 = "🔹 Рекорд, скорее всего, устоит в этом сезоне";
-                    if (listGameInstance.size() >= allChart.getCountGame()) {
-                        NHLTeamSchedule.Game game = listGameInstance.get(allChart.getCountGame() - 1);
-                        templateInGame = String.format(
-                                """
-                                        📅 Возможная ключевая игра: 🆚 %s
-                                        🕑 Дата и время: %s (МСК)""",
-                                game.toggleTeam(UtilNHL.getOvi().getTeam()),
-                                game.getMoscowDate()
-                        );
-                    }
                     List<TelegramNotification> telegramNotifications = new ArrayListBuilder<TelegramNotification>()
-                            .append(new TelegramNotification(
-                                    context.getIdChat(),
-                                    context.getTelegramBot().getBotUsername(),
-                                    null,
-                                    null,
-                                    "file:/" + allChart.getPathChart()
-                            ))
                             .append(new TelegramNotification(
                                     context.getIdChat(),
                                     context.getTelegramBot().getBotUsername(),
@@ -150,30 +117,18 @@ public class Prediction implements PromiseGenerator, OviGoalsBotCommandHandler {
                             .append(new TelegramNotification(
                                     context.getIdChat(),
                                     context.getTelegramBot().getBotUsername(), //Сезон : ${countGame} ${countGamePostfix}, ${seasonGoals} ${seasonGoalsPostfix}
-                                    TemplateTwix.template("""
+                                    TemplateTwix.template("""                                            
                                             🏆 Охота за рекордом Гретцки
                                             
-                                            📊 По анализу сезона ${seasonTitle}:
+                                            📈 По анализу сезона ${seasonTitle} потребуется еще ${count} ${countPostfix}
+                                            
                                             ${gameAbout}
-                                            
-                                            📊 По анализу последних ${allCountGame} ${allCountGamePostfix}:
-                                            ${gameAbout2}
-                                            
-                                            🤖 Мы тут прикинули — Александру потребуется еще ${seasonPrediction}–${allPrediction} ${predictionPostfix}, чтобы вписать свое имя в историю.
                                             
                                             """, new HashMapBuilder<String, String>()
                                             .append("seasonTitle", UtilNHL.seasonFormat(UtilNHL.getActiveSeasonOrNext()))
-                                            .append("countGame", String.valueOf(seasonChart.getInitGame()))
-                                            .append("countGamePostfix", Util.digitTranslate(seasonChart.getInitGame(), "матч", "матча", "матчей"))
-                                            .append("seasonGoals", String.valueOf(seasonChart.getInitCountGoals()))
-                                            .append("seasonGoalsPostfix", Util.digitTranslate(seasonChart.getInitCountGoals(), "гол", "гола", "голов"))
-                                            .append("gameAbout", templateInGame)
-                                            .append("allCountGame", String.valueOf(allChart.getInitGame()))
-                                            .append("allCountGamePostfix", Util.digitTranslate(allChart.getInitGame(), "матч", "матча", "матчей"))
-                                            .append("gameAbout2", templateInGame2)
-                                            .append("seasonPrediction", String.valueOf(seasonChart.getCountGame()))
-                                            .append("allPrediction", String.valueOf(allChart.getCountGame()))
-                                            .append("predictionPostfix", Util.digitTranslate(allChart.getCountGame(), "матч", "матча", "матчей"))
+                                            .append("gameAbout", getString(listGameInstance, seasonChart))
+                                            .append("count", String.valueOf(seasonChart.getCountGame()))
+                                            .append("countPostfix", Util.digitTranslate(seasonChart.getCountGame(), "игра", "игры", "игр"))
                                     ),
                                     null,
                                     null
@@ -182,6 +137,21 @@ public class Prediction implements PromiseGenerator, OviGoalsBotCommandHandler {
                     RegisterNotification.add(telegramNotifications);
                 })
                 .extension(NhlStatisticApplication::addOnError);
+    }
+
+    private static @NotNull String getString(List<NHLTeamSchedule.Game> listGameInstance, Chart.Response seasonChart) {
+        String templateInGame = "🔹 Рекорд, скорее всего, не будет побит в этом сезоне";
+        if (listGameInstance.size() >= seasonChart.getCountGame()) {
+            NHLTeamSchedule.Game game = listGameInstance.get(seasonChart.getCountGame() - 1);
+            templateInGame = String.format(
+                    """
+                            📅 Ключевой может стать игра 🆚 %s, %s (МСК)
+                            """,
+                    game.toggleTeam(UtilNHL.getOvi().getTeam()),
+                    game.getMoscowDate()
+            );
+        }
+        return templateInGame;
     }
 
 }

@@ -272,7 +272,7 @@ class NhlStatisticApplicationTest {
         for (String string : split) {
             xy.addY(Double.parseDouble(string));
         }
-        Chart.Response chart = App.get(Chart.class).createChart(xy, offsetGretsky);
+        Chart.Response chart = App.get(Chart.class).createChart(xy, offsetGretsky, true);
         Util.logConsoleJson(getClass(), chart);
     }
 

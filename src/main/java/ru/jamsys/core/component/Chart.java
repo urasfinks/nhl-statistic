@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 import ru.jamsys.core.extension.annotation.PropertyName;
 import ru.jamsys.core.extension.property.repository.RepositoryPropertiesField;
 import ru.jamsys.core.flat.trend.PolyTrendLine;
+import ru.jamsys.core.flat.util.Util;
 import ru.jamsys.core.flat.util.UtilTrend;
 
 import java.awt.*;
@@ -46,18 +47,18 @@ public class Chart extends RepositoryPropertiesField {
         int initCountGoals;
     }
 
-    public Response createChart(UtilTrend.XY xy, int offsetGretsky) {
+    public Response createChart(UtilTrend.XY xy, int offsetGretzky, boolean update) {
         Response response = new Response();
         response.setInitGame(xy.getY().length);
 
         int countGame = xy.getXy().size();
-        String fileName = "chart_" + offsetGretsky + "_" + countGame + ".png";
+        String fileName = "chart_" + offsetGretzky + "_" + countGame + ".png";
         File file = new File(folder + "/" + fileName); // Имя файла
         response.setPathChart(file.getAbsolutePath());
 
         double currentGoals = xy.getY()[xy.getY().length - 1];
         response.setInitCountGoals((int) currentGoals);
-        int needGoals = (int) currentGoals + offsetGretsky;
+        int needGoals = (int) currentGoals + offsetGretzky;
         response.setNeedCountGoals(needGoals);
 
         PolyTrendLine polyTrendLine1 = new PolyTrendLine(1, xy.getY(), xy.getX());
@@ -87,7 +88,8 @@ public class Chart extends RepositoryPropertiesField {
 
         int size = xy.getXy().size();
         int findXGame = 0;
-        for (int i = 1; i < 50; i++) {
+        int maxI = offsetGretzky * 2;
+        for (int i = 1; i < maxI; i++) {
             int realI = i + size;
 
             double base = addPredict(seriesPoly1, polyTrendLine1, realI, 0, needGoals);
@@ -99,10 +101,10 @@ public class Chart extends RepositoryPropertiesField {
 
             DoubleSummaryStatistics avg = new DoubleSummaryStatistics();
 
-            avg.accept(getAvg(base, v2));
-            avg.accept(getAvg(base, v3));
-            avg.accept(getAvg(base, v4));
-            avg.accept(getAvg(base, v5));
+            avg.accept(getAvg(base, v2, i, maxI));
+            avg.accept(getAvg(base, v3, i, maxI));
+            avg.accept(getAvg(base, v4, i, maxI));
+            avg.accept(getAvg(base, v5, i, maxI));
 
             double average = avg.getAverage();
             if (average > needGoals && findXGame == 0) {
@@ -114,8 +116,7 @@ public class Chart extends RepositoryPropertiesField {
             }
         }
 
-        if (file.exists()) {
-            //System.out.println("File: " + file.getAbsolutePath() + " exist");
+        if (file.exists() && !update) {
             return response;
         }
 
@@ -131,19 +132,21 @@ public class Chart extends RepositoryPropertiesField {
         dataset.addSeries(seriesPoly5);
 
         // Создаем график
-        JFreeChart chart = ChartFactory.createXYLineChart(null, "Игры", "Голы", dataset);
+        JFreeChart chart = ChartFactory.createXYLineChart("Статистика забитых голов в текущем сезоне", "Игры", "Голы", dataset);
         XYPlot plot = chart.getXYPlot();
         plot.getDomainAxis().setLabelFont(new Font("SansSerif", Font.PLAIN, 13));
         plot.getRangeAxis().setLabelFont(new Font("SansSerif", Font.PLAIN, 13));
         XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
         plot.setRenderer(renderer);
 
-        plot.addRangeMarker(getMarkerHor(currentGoals, "Y = " + (int) currentGoals));
-        plot.addRangeMarker(getMarkerHor(needGoals, "Y = " + needGoals));
 
-        plot.addDomainMarker(getMarkerVer(countGame, "X = " + countGame));
+        plot.addRangeMarker(getMarkerHor(currentGoals, (int) currentGoals + " " + Util.digitTranslate((int) currentGoals, "гол", "гола", "голов")));
+        plot.addRangeMarker(getMarkerHor(needGoals, needGoals + " " + Util.digitTranslate(needGoals, "гол", "гола", "голов")));
+
+        plot.addDomainMarker(getMarkerVer(countGame, countGame + " " + Util.digitTranslate(countGame, "игра", "игры", "игр")));
         if (findXGame > 0) {
-            plot.addDomainMarker(getMarkerVer(findXGame, "X = " + findXGame));
+
+            plot.addDomainMarker(getMarkerVer(findXGame, findXGame + " " + Util.digitTranslate(findXGame, "игра", "игры", "игр")));
         }
 
         plot.getRenderer().setSeriesPaint(0, Color.BLACK);
@@ -216,26 +219,20 @@ public class Chart extends RepositoryPropertiesField {
         return predict;
     }
 
-    public static double getAvg(double base, double p1) {
-        double w = Math.abs(base - p1);
-        double prc = w * 100 / 120;
-        if (prc < 0) {
-            prc = 0;
+    public static double getAvg(double base, double p1, int i, int maxI) {
+        double newPrc = ((double) ((i + 1) * 100) / maxI) / 100;
+        double v = p1 + newPrc * (base - p1);
+        // Доверительный интервал отхода от базовой линии
+        double w = Math.abs(base - v);
+        double maxDeviation = (double) maxI / 3;
+        if (w > maxDeviation) {
+            if (base > p1) {
+                return base - maxDeviation;
+            } else {
+                return base + maxDeviation;
+            }
         }
-        if (prc > 100) {
-            prc = 100;
-        }
-        double y = prc * w / 100;
-        if (y < 1) {
-            y = 1;
-        }
-        double average;
-        if (base > p1) {
-            average = base - w / y;
-        } else {
-            average = base + w / y;
-        }
-        return average;
+        return v;
     }
 
     public static ValueMarker getMarkerVer(double countGame, String label) {
