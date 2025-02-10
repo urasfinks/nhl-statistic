@@ -163,10 +163,10 @@ public class NHLBoxScore {
     public static class Instance {
 
         @JsonIgnore
-        final private List<Map<String, Object>> scoringPlays;
+        final private List<Map<String, Object>> scoringPlays = new ArrayList<>();
 
         @JsonIgnore
-        final private Map<String, Map<String, Object>> playerStats;
+        final private Map<String, Map<String, Object>> playerStats = new HashMap<>();
 
         final private Map<String, Integer> scoreTeam = new HashMap<>(); //key TeamAbv; value score
 
@@ -203,8 +203,6 @@ public class NHLBoxScore {
 
             if (gameStatusCode == 3) {
                 new RemoveScheduler(body.get("gameID").toString()).generate().run();
-                this.scoringPlays = new ArrayList<>();
-                this.playerStats = new HashMap<>();
                 this.scoreGame = "Game has been postponed";
                 this.aboutGame = "Game has been postponed";
                 return;
@@ -217,7 +215,7 @@ public class NHLBoxScore {
                 tmpScoringPlays = tmp;
             } catch (Throwable _) {
             }
-            this.scoringPlays = tmpScoringPlays;
+            this.scoringPlays.addAll(tmpScoringPlays);
 
             Map<String, Map<String, Object>> tmpPlayerStats = new HashMap<>();
             try {
@@ -226,7 +224,7 @@ public class NHLBoxScore {
                 tmpPlayerStats = playerStats;
             } catch (Throwable _) {
             }
-            this.playerStats = tmpPlayerStats;
+            this.playerStats.putAll(tmpPlayerStats);
 
             NHLTeams.Team teamHome = NHLTeams.teams.getById(body.get("teamIDHome").toString());
             NHLTeams.Team teamAway = NHLTeams.teams.getById(body.get("teamIDAway").toString());
@@ -261,8 +259,13 @@ public class NHLBoxScore {
             return listIdPlayer;
         }
 
+        public boolean isPostponed() {
+            return gameStatusCode == 3;
+        }
+
         public boolean isFinish() {
             List<String> listAbv = scoreTeam.keySet().stream().toList();
+            // Если кол-во голов одинаковое - игра не может быть завершена
             if (scoreTeam.get(listAbv.getFirst()).equals(scoreTeam.get(listAbv.getLast()))) {
                 return false;
             }
@@ -340,7 +343,7 @@ public class NHLBoxScore {
                         Map<String, Object> goal = (Map<String, Object>) map.get("goal");
                         // Мы должны сразу откинуть SO потому что время гола берётся из listGoal
                         // Если предположим БОТ протупит и выполнит генерацию событий, после буллита
-                        // Будут голы у игрока и мы возьмём с конца scoringPlays и нарвёися на SO
+                        // Будут голы у игрока и мы возьмём с конца scoringPlays и нарвёмся на SO
                         // А это не корректно, SO вообще за голы не считаются и scoreTime у них нет
                         if (
                                 goal.containsKey("playerID") && goal.get("playerID").equals(idPlayer)

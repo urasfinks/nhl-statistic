@@ -54,8 +54,11 @@ class GameEventTemplateOviTest {
         );
 
         Assertions.assertEquals("""
+                        Матч завершен.
+                        Washington Capitals (WSH) 1 - 0 Detroit Red Wings (DET).
+                       
                         ❌ Александр Овечкин не принимал участие""",
-                new GameEventTemplateOvi(gameEventData.setAction(GameEventData.Action.NOT_PLAY)).toString()
+                new GameEventTemplateOvi(gameEventData.setAction(GameEventData.Action.FINISH_NOT_PLAY)).toString()
         );
 
         Assertions.assertEquals("""

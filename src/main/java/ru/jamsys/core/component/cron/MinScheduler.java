@@ -217,23 +217,26 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                         }
                         String data = tank01Request.getResponseData();
                         try { // Если что-то не спарсилось - другие игры не должны страдать
-                            NHLBoxScore.Instance currentInstance = new NHLBoxScore.Instance(data);
+                            NHLBoxScore.Instance currentBoxScore = new NHLBoxScore.Instance(data);
+                            if (currentBoxScore.isPostponed()) {
+                                App.error(new RuntimeException("idGame: " + idGame + " continue; cause: isPostponed()"));
+                                continue;
+                            }
                             // Получилось, что при старте был пустой список статистики и мы выслали уведомление, что
                             // Овечкин не участвует в игре
                             // Нет статистики нет начала игры
-                            if (currentInstance.getPlayerStats().isEmpty()) { // Блок статистики не пустой
+                            // 10.02.2025 Информацию о не принятии участника вынесли в конец, более не актуально проверять блок статистики
+                            if (currentBoxScore.getPlayerStats().isEmpty()) { // Блок статистики пустой
                                 App.error(new RuntimeException("idGame: " + idGame + " continue; cause: getPlayerStats().isEmpty()"));
                                 continue;
                             }
                             // Случилась проблема, что Ови забил за 0.1 секунду до конца и статисты не успели внести корректировки
                             // Добавлена 2-х минутная задержка
-                            if (currentInstance.isFinish()) {
-                                if (!finishGameRegister.containsKey(currentInstance.getIdGame())) {
-                                    finishGameRegister.put(currentInstance.getIdGame(), System.currentTimeMillis());
-                                    App.error(new RuntimeException("idGame: " + idGame + " continue; cause: First register finish"));
-                                    continue;
+                            if (currentBoxScore.isFinish()) {
+                                if (!finishGameRegister.containsKey(currentBoxScore.getIdGame())) {
+                                    finishGameRegister.put(currentBoxScore.getIdGame(), System.currentTimeMillis());
                                 }
-                                long l = finishGameRegister.get(currentInstance.getIdGame()) + 2 * 60 * 1000;
+                                long l = finishGameRegister.get(currentBoxScore.getIdGame()) + 2 * 60 * 1000;
                                 if (System.currentTimeMillis() < l) {
                                     App.error(new RuntimeException("idGame: " + idGame + " continue; cause: Finish delay remaining: " + (l - System.currentTimeMillis()) + " ms"));
                                     continue;
@@ -352,7 +355,7 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                                                         .getPlayerEvent()
                                                         .computeIfAbsent(idPlayer, _ -> new ArrayList<>())
                                                         .add(new GameEventData(
-                                                                GameEventData.Action.NOT_PLAY,
+                                                                GameEventData.Action.FINISH_NOT_PLAY,
                                                                 currentBoxScore.getIdGame(),
                                                                 currentBoxScore.getAboutGame(),
                                                                 currentBoxScore.getScoreGame(),
@@ -451,8 +454,6 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                             App.error(e);
                         }
                     });
-                    List<TelegramNotification> listEvent = new ArrayList<>();
-                    List<TelegramNotification> listNotPlay = new ArrayList<>();
                     TelegramBotManager telegramBotManager = App.get(TelegramBotManager.class);
                     Map<NHLPlayerList.Player, ScorePlayerCurrentSeasonBeforeGame> mapStat = new HashMap<>();
                     mapClientEvent
@@ -475,14 +476,8 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                                         null,
                                         null
                                 );
-                                if (gameEventData.getAction().equals(GameEventData.Action.NOT_PLAY)) {
-                                    listNotPlay.add(telegramNotification);
-                                } else {
-                                    listEvent.add(telegramNotification);
-                                }
+                                context.getListNotify().add(telegramNotification);
                             }));
-                    context.getListNotify().addAll(listNotPlay);
-                    context.getListNotify().addAll(listEvent);
                 })
                 .then("send", (atomicBoolean, promiseTask, promise) -> {
                     Context context = promise.getRepositoryMapClass(Context.class);

@@ -45,8 +45,6 @@ public class RegisterNotificationGameEventOvi implements PromiseGenerator {
 
     private final List<Long> listIdChat = new ArrayList<>();
 
-    private final List<TelegramNotification> listNotPlay = new ArrayList<>();
-
     private final List<TelegramNotification> listEvent = new ArrayList<>();
 
     private final Map<Long, Boolean> userVote = new HashMap<>(); // key - idChat; value - vote
@@ -77,23 +75,13 @@ public class RegisterNotificationGameEventOvi implements PromiseGenerator {
                         String message = new GameEventTemplateOvi(gameEventData).toString();
                         String botName = App.get(TelegramBotManager.class).getOviBotProperty().getName();
                         UtilRisc.forEach(atomicBoolean, listIdChat, idChat -> {
-                            if (gameEventData.getAction().equals(GameEventData.Action.NOT_PLAY)) {
-                                listNotPlay.add(new TelegramNotification(
-                                        idChat,
-                                        botName,
-                                        message,
-                                        null,
-                                        null
-                                ));
-                            } else {
-                                listEvent.add(new TelegramNotification(
-                                        idChat,
-                                        botName,
-                                        message,
-                                        null,
-                                        null
-                                ));
-                            }
+                            listEvent.add(new TelegramNotification(
+                                    idChat,
+                                    botName,
+                                    message,
+                                    null,
+                                    null
+                            ));
                         });
                         if (gameEventData.getAction().equals(GameEventData.Action.FINISH_GAME)) {
                             new HttpCacheReset(NHLGamesForPlayer.getUri(player.getPlayerID())).generate().run();
@@ -106,10 +94,7 @@ public class RegisterNotificationGameEventOvi implements PromiseGenerator {
                         }
                     });
                     if (gameInProcess.get()) {
-                        ArrayList<TelegramNotification> merge = new ArrayList<>();
-                        merge.addAll(listNotPlay);
-                        merge.addAll(listEvent);
-                        RegisterNotification.add(merge);
+                        RegisterNotification.add(listEvent);
                         promise.skipAllStep("Game in process");
                     }
                 })
@@ -175,7 +160,6 @@ public class RegisterNotificationGameEventOvi implements PromiseGenerator {
                     }
                     merge.addAll(listSendImage);
                     merge.addAll(listSendStat);
-                    merge.addAll(listNotPlay);
                     merge.addAll(listEvent);
                     RegisterNotification.add(merge);
                 })

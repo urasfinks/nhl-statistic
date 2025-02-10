@@ -37,8 +37,6 @@ public class GameEventTemplateOvi {
     Map<GameEventData.Action, String> template = new HashMapBuilder<GameEventData.Action, String>()
             .append(GameEventData.Action.START_GAME, """
                     Начало игры ${gameAbout}""")
-            .append(GameEventData.Action.NOT_PLAY, """
-                    ❌ Александр Овечкин не принимал участие""")
             .append(GameEventData.Action.GOAL, """
                     🚨 ГОООЛ! ${time}. Александр Овечкин забивает свой ${goalsInCareer}-й гол в карьере! До рекорда Гретцки ${gretzkyOffsetPrefix} ${gretzkyOffset} ${gretzkyOffsetPostfix}.
                     ${gameScore}""")
@@ -59,7 +57,13 @@ public class GameEventTemplateOvi {
                     🌟 Очки: ${score}
                     🥷 Силовые приемы: ${scoredHits}
                     🥊 Штрафные минуты: ${scoredPenaltiesInMinutes}
-                    ⏰ Время на льду: ${scoredTimeOnIce}""");
+                    ⏰ Время на льду: ${scoredTimeOnIce}""")
+            .append(GameEventData.Action.FINISH_NOT_PLAY, """
+                    Матч завершен.${finishDetail}
+                    ${gameScore}.
+                    
+                    ❌ Александр Овечкин не принимал участие""")
+            ;
 
     public GameEventTemplateOvi(GameEventData gameEventData) {
         this.gameEventData = gameEventData;

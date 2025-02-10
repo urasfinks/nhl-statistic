@@ -520,7 +520,7 @@ class MinSchedulerTest {
         Assertions.assertEquals(1, promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("4233583").size());
         Assertions.assertNull(promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("5436"));
         Assertions.assertEquals(GameEventData.Action.GOAL, promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("4233583").getFirst().getAction());
-        Assertions.assertNotEquals(promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("3114").getFirst().getAction(), GameEventData.Action.NOT_PLAY);
+        Assertions.assertNotEquals(promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("3114").getFirst().getAction(), GameEventData.Action.FINISH_NOT_PLAY);
         Assertions.assertNull(promise.getRepositoryMapClass(MinScheduler.Context.class).getOviNotificationPromise());
     }
 
