@@ -1,0 +1,318 @@
+{
+  "statusCode": 200,
+  "body": {
+    "gameStatus": "Live - In Progress",
+    "teamStats": {
+      "away": {
+        "shootoutGoals": "0",
+        "penalties": "2",
+        "powerPlayOpportunities": "1",
+        "blockedShots": "17",
+        "powerPlaySaves": "3",
+        "shotsMissedNet": "18",
+        "saves": "35",
+        "assists": "9",
+        "teamID": "31",
+        "powerPlayPoints": "3",
+        "goalsAgainst": "2",
+        "goals": "5",
+        "faceoffsWon": "26",
+        "shortHandedSaves": "1",
+        "faceoffs": "55",
+        "powerPlayGoals": "1",
+        "takeaways": "6",
+        "team": "WSH",
+        "teamAbv": "WSH",
+        "hits": "17",
+        "penaltiesInMinutes": "4",
+        "powerPlayAssists": "2",
+        "shots": "32",
+        "faceoffsLost": "29",
+        "giveaways": "14",
+        "shotsAgainst": "37"
+      },
+      "home": {
+        "shootoutGoals": "0",
+        "penalties": "1",
+        "powerPlayOpportunities": "2",
+        "blockedShots": "9",
+        "powerPlaySaves": "3",
+        "shotsMissedNet": "16",
+        "saves": "27",
+        "assists": "4",
+        "teamID": "28",
+        "powerPlayPoints": "0",
+        "goalsAgainst": "4",
+        "goals": "2",
+        "faceoffsWon": "29",
+        "shortHandedSaves": "0",
+        "faceoffs": "55",
+        "powerPlayGoals": "0",
+        "takeaways": "1",
+        "team": "TOR",
+        "teamAbv": "TOR",
+        "hits": "28",
+        "penaltiesInMinutes": "2",
+        "powerPlayAssists": "0",
+        "shots": "37",
+        "faceoffsLost": "26",
+        "giveaways": "13",
+        "shotsAgainst": "31"
+      }
+    },
+    "gameDate": "20241228",
+    "scoringPlays": [
+      {
+        "period": "1P",
+        "goal": {
+          "longName": "John Tavares",
+          "playerID": "5160"
+        },
+        "shortHanded": "False",
+        "shootout": "False",
+        "assists": [
+          {
+            "longName": "Simon Benoit",
+            "playerID": "4392642"
+          },
+          {
+            "longName": "Max Pacioretty",
+            "playerID": "4005"
+          }
+        ],
+        "powerPlay": "False",
+        "teamID": "28",
+        "scoreTime": "3:14",
+        "team": "TOR",
+        "teamAbv": "TOR"
+      },
+      {
+        "period": "1P",
+        "goal": {
+          "longName": "Andrew Mangiapane",
+          "playerID": "3149619"
+        },
+        "shortHanded": "False",
+        "shootout": "False",
+        "assists": [
+          {
+            "longName": "Hendrix Lapierre",
+            "playerID": "4697405"
+          }
+        ],
+        "powerPlay": "False",
+        "teamID": "31",
+        "scoreTime": "4:46",
+        "team": "WSH",
+        "teamAbv": "WSH"
+      },
+      {
+        "period": "1P",
+        "goal": {
+          "longName": "Jakob Chychrun",
+          "playerID": "4024950"
+        },
+        "shortHanded": "False",
+        "shootout": "False",
+        "assists": [
+          {
+            "longName": "Trevor van Riemsdyk",
+            "playerID": "3025524"
+          },
+          {
+            "longName": "Taylor Raddysh",
+            "playerID": "4063502"
+          }
+        ],
+        "powerPlay": "False",
+        "teamID": "31",
+        "scoreTime": "8:54",
+        "team": "WSH",
+        "teamAbv": "WSH"
+      },
+      {
+        "period": "2P",
+        "goal": {
+          "longName": "Bobby McMann",
+          "playerID": "5048894"
+        },
+        "shortHanded": "False",
+        "shootout": "False",
+        "assists": [
+          {
+            "longName": "Max Domi",
+            "playerID": "3042014"
+          },
+          {
+            "longName": "Mitch Marner",
+            "playerID": "3899937"
+          }
+        ],
+        "powerPlay": "False",
+        "teamID": "28",
+        "scoreTime": "8:10",
+        "team": "TOR",
+        "teamAbv": "TOR"
+      },
+      {
+        "period": "2P",
+        "goal": {
+          "longName": "Nic Dowd",
+          "playerID": "3025616"
+        },
+        "shortHanded": "False",
+        "shootout": "False",
+        "assists": [
+          {
+            "longName": "Rasmus Sandin",
+            "playerID": "4352803"
+          },
+          {
+            "longName": "Andrew Mangiapane",
+            "playerID": "3149619"
+          }
+        ],
+        "powerPlay": "False",
+        "teamID": "31",
+        "scoreTime": "9:53",
+        "team": "WSH",
+        "teamAbv": "WSH"
+      },
+      {
+        "period": "3P",
+        "goal": {
+          "longName": "Tom Wilson",
+          "playerID": "2970615"
+        },
+        "shortHanded": "False",
+        "shootout": "False",
+        "assists": [
+          {
+            "longName": "Jakob Chychrun",
+            "playerID": "4024950"
+          },
+          {
+            "longName": "Dylan Strome",
+            "playerID": "3899933"
+          }
+        ],
+        "powerPlay": "True",
+        "teamID": "31",
+        "scoreTime": "12:36",
+        "team": "WSH",
+        "teamAbv": "WSH"
+      },
+      {
+        "period": "3P",
+        "goal": {
+          "longName": "Alex Ovechkin",
+          "playerID": "3101"
+        },
+        "shortHanded": "False",
+        "shootout": "False",
+        "assists": [
+          {
+            "longName": "Aliaksei Protas",
+            "playerID": "4587943"
+          },
+          {
+            "longName": "Pierre-Luc Dubois",
+            "playerID": "4024833"
+          }
+        ],
+        "powerPlay": "False",
+        "teamID": "31",
+        "scoreTime": "16:37",
+        "team": "WSH",
+        "teamAbv": "WSH"
+      },
+      {
+        "period": "3P",
+        "goal": {
+          "longName": "Alex Ovechkin",
+          "playerID": "4587943"
+        },
+        "shortHanded": "False",
+        "shootout": "False",
+        "assists": [
+          {
+            "longName": "Aliaksei Protas",
+            "playerID": "4587943"
+          },
+          {
+            "longName": "Pierre-Luc Dubois",
+            "playerID": "4024833"
+          }
+        ],
+        "powerPlay": "False",
+        "teamID": "31",
+        "scoreTime": "16:38",
+        "team": "WSH",
+        "teamAbv": "WSH"
+      }
+    ],
+    "homePoints": "0",
+    "awayPoints": "2",
+    "teamIDHome": "28",
+    "homeResult": "L",
+    "linesmen": "David Brisebois, Tyson Baker",
+    "away": "WSH",
+    "attendance": "19,125",
+    "lineScore": {
+      "period": "Final",
+      "gameClock": "",
+      "away": {
+        "total": "5",
+        "teamID": "31",
+        "team": "WSH",
+        "teamAbv": "WSH",
+        "3P": "2",
+        "2P": "1",
+        "1P": "2"
+      },
+      "home": {
+        "total": "2",
+        "teamID": "28",
+        "team": "TOR",
+        "teamAbv": "TOR",
+        "3P": "0",
+        "2P": "1",
+        "1P": "1"
+      }
+    },
+    "currentPeriod": "Final",
+    "gameLocation": "Toronto, ON",
+    "home": "TOR",
+    "playerStats": {},
+    "shootout": "False",
+    "referees": "Graham Skilliter, Peter MacDougall",
+    "arena": "Scotiabank Arena",
+    "homeTotal": "2",
+    "resultDetail": {
+      "away": {
+        "shootoutWin": "False",
+        "shootoutLoss": "False",
+        "regulationWin": "True",
+        "overtimeLoss": "False",
+        "overtimeWin": "False",
+        "regulationLoss": "False"
+      },
+      "home": {
+        "shootoutWin": "False",
+        "shootoutLoss": "False",
+        "regulationWin": "False",
+        "overtimeLoss": "False",
+        "overtimeWin": "False",
+        "regulationLoss": "True"
+      }
+    },
+    "awayResult": "W",
+    "teamIDAway": "31",
+    "awayTotal": "5",
+    "gameClock": "",
+    "gameID": "20241228_WSH@TOR",
+    "overtime": "False",
+    "seasonType": "Regular Season",
+    "gameStatusCode": "1"
+  }
+}

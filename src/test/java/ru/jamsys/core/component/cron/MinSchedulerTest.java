@@ -121,7 +121,7 @@ class MinSchedulerTest {
         });
         promise.setDebug(false).run().await(50_000L);
         Assertions.assertEquals("(16:37, 3-й период)", promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("3101").getLast().getTime());
-        Assertions.assertEquals(2, promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("3101").size());
+        Assertions.assertEquals(3, promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("3101").size());
         Assertions.assertEquals(GameEventData.Action.START_GAME, promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("3101").getFirst().getAction());
         Assertions.assertEquals(GameEventData.Action.FINISH_GAME, promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("3101").getLast().getAction());
         Assertions.assertEquals("[20241228_WSH@TOR]", promise.getRepositoryMapClass(MinScheduler.Context.class).getEndGames().toString());
@@ -246,8 +246,9 @@ class MinSchedulerTest {
         });
         promise.setDebug(false).run().await(50_000L);
 
-        Assertions.assertEquals(1, promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("3101").size());
+        Assertions.assertEquals(2, promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("3101").size());
         Assertions.assertEquals(GameEventData.Action.START_GAME, promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("3101").getFirst().getAction());
+        Assertions.assertEquals(GameEventData.Action.GOAL, promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("3101").getLast().getAction());
         Assertions.assertEquals("[]", promise.getRepositoryMapClass(MinScheduler.Context.class).getEndGames().toString());
     }
 
@@ -392,11 +393,8 @@ class MinSchedulerTest {
         });
 
         promise.setDebug(false).run().await(50_000L);
-        Assertions.assertEquals(6, promise.getRepositoryMapClass(MinScheduler.Context.class).getListNotify().size());
-        //TODO: check commit 06.01.2025  https://github.com/urasfinks/nhl-statistic/blob/b28c26c90ff4c9644690aca9bd89bc8e679e0ba1/src/test/java/ru/jamsys/core/component/cron/MinSchedulerTest.java
-        //Assertions.assertEquals(1, promise.getRepositoryMapClass(MinScheduler.Context.class).getNhlPlayerNotificationPromise().get("3101").getListGameEventData().size());
-        //Assertions.assertEquals(2, promise.getRepositoryMapClass(MinScheduler.Context.class).getNhlPlayerNotificationPromise().get("3025524").getListGameEventData().size());
-
+        // 2 подписанта (1L/2L), 2 начала игры, 4 конца игры, так как на двух игроков подписаны, 2 Овечкин забил гол
+        Assertions.assertEquals(8, promise.getRepositoryMapClass(MinScheduler.Context.class).getListNotify().size());
     }
 
     @Test
@@ -516,7 +514,7 @@ class MinSchedulerTest {
         });
         promise.setDebug(false).run().await(50_000L);
 
-        Assertions.assertEquals("[20250107_NSH@WPG, 20250105_PHI@TOR, 20250105_PIT@CAR]", promise.getRepositoryMapClass(MinScheduler.Context.class).getCurrentData().keySet().toString());
+        Assertions.assertEquals("[20241210_COL@PIT, 20250107_NSH@WPG, 20250105_PHI@TOR, 20250105_PIT@CAR]", promise.getRepositoryMapClass(MinScheduler.Context.class).getCurrentData().keySet().toString());
         Assertions.assertEquals(1, promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("4233583").size());
         Assertions.assertNull(promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("5436"));
         Assertions.assertEquals(GameEventData.Action.GOAL, promise.getRepositoryMapClass(MinScheduler.Context.class).getPlayerEvent().get("4233583").getFirst().getAction());
@@ -742,6 +740,52 @@ class MinSchedulerTest {
 
         Assertions.assertEquals("[20250130_LA@TB, 20250130_MIN@MTL]", repositoryMapClass.getCurrentData().keySet().toString());
         Assertions.assertEquals(4, repositoryMapClass.getListNotify().size());
+    }
+
+    @Test
+    void test14() {
+        Promise promise = new MinScheduler(
+                App.get(ServicePromise.class),
+                App.get(ServiceProperty.class)
+        ).generate();
+        PromiseTest promiseTest = new PromiseTest(promise);
+        promiseTest.remove("check");
+        promiseTest.replace("getActiveGame", promise.createTaskCompute("getActiveGame", (_, _, _) -> {
+            MinScheduler.Context context = promise.getRepositoryMapClass(MinScheduler.Context.class);
+            context
+                    .getActiveRepository()
+                    .add(new MinScheduler.ActiveObject(1L, "3149619", "20241228_WSH@TOR"))
+            ;
+        }));
+        promiseTest.replace(
+                "getLastData",
+                promise.createTaskCompute(
+                        "getLastData",
+                        (_, _, promise1) -> promise1
+                                .getRepositoryMapClass(MinScheduler.Context.class)
+                                .getLastData()
+                                .put("20241228_WSH@TOR", UtilFileResource.getAsString("example/block4/Test2_empty.json"))
+                )
+        );
+        promiseTest.replace(
+                "getBoxScoreByActiveGame",
+                promise.createTaskCompute(
+                        "getBoxScoreByActiveGame",
+                        (_, _, promise1) -> promise1
+                                .getRepositoryMapClass(MinScheduler.Context.class)
+                                .getCurrentData()
+                                .put("20241228_WSH@TOR", UtilFileResource.getAsString("example/block4/Test2.json"))
+                )
+        );
+        promiseTest.removeAfter("createNotification");
+        promise.then("saveData", (_, _, _) -> {
+        });
+        promise.setDebug(false).run().await(50_000L);
+        MinScheduler.Context repositoryMapClass = promise.getRepositoryMapClass(MinScheduler.Context.class);
+        Assertions.assertEquals(7, repositoryMapClass.getPlayerEvent().size());
+        Assertions.assertEquals(1, repositoryMapClass.getListNotify().size());
+        Assertions.assertEquals(repositoryMapClass.getPlayerEvent().get("3149619").getFirst().getAction(), GameEventData.Action.GOAL);
+
     }
 
 }

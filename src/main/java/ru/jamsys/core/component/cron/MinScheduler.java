@@ -86,13 +86,16 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
 
         @JsonIgnore
         public NHLBoxScore.Instance getLastNHLBoxScoreInstance(String idGame) {
-            return lastNHLBoxScoreInstance.computeIfAbsent(idGame, s -> {
+            if (!lastNHLBoxScoreInstance.containsKey(idGame)) {
                 try {
-                    return new NHLBoxScore.Instance(getLastData().get(idGame));
-                } catch (Throwable e) {
-                    throw new RuntimeException(e);
+                    lastNHLBoxScoreInstance.put(
+                            idGame,
+                            new NHLBoxScore.Instance(getLastData().get(idGame))
+                    );
+                } catch (Throwable _) {
                 }
-            });
+            }
+            return lastNHLBoxScoreInstance.get(idGame);
         }
     }
 
@@ -226,10 +229,10 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                             // Овечкин не участвует в игре
                             // Нет статистики нет начала игры
                             // 10.02.2025 Информацию о не принятии участника вынесли в конец, более не актуально проверять блок статистики
-                            if (currentBoxScore.getPlayerStats().isEmpty()) { // Блок статистики пустой
-                                App.error(new RuntimeException("idGame: " + idGame + " continue; cause: getPlayerStats().isEmpty()"));
-                                continue;
-                            }
+//                            if (currentBoxScore.getPlayerStats().isEmpty()) { // Блок статистики пустой
+//                                App.error(new RuntimeException("idGame: " + idGame + " continue; cause: getPlayerStats().isEmpty()"));
+//                                continue;
+//                            }
                             // Случилась проблема, что Ови забил за 0.1 секунду до конца и статисты не успели внести корректировки
                             // Добавлена 2-х минутная задержка
                             if (currentBoxScore.isFinish()) {
@@ -303,48 +306,56 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                     UtilRisc.forEach(atomicBoolean, context.getCurrentData(), (idGame, data) -> {
                         try {
                             NHLBoxScore.Instance currentBoxScore = context.getCurrentNHLBoxScoreInstance(idGame);
-                            // Дополнительный блок зачистки, нужен для юнитов, так как блоки getBoxScoreByActiveGame
-                            // и getLastData в основном переопределяются
-                            if (currentBoxScore.getPlayerStats().isEmpty()) {
+                            if (currentBoxScore.isPostponed()) {
                                 context.getCurrentData().remove(idGame);
                                 context.getLastData().remove(idGame);
-                                App.error(new RuntimeException("idGame: " + idGame + " continue; cause: getPlayerStats().isEmpty()"));
+                                App.error(new RuntimeException("idGame: " + idGame + " continue; cause: isPostponed()"));
                                 return;
                             }
-                            if (context.getLastData().get(idGame) != null) { // События генерируются только при наличии двух снимков
-                                NHLBoxScore
-                                        .getEvent(
-                                                context.getLastNHLBoxScoreInstance(idGame),
-                                                context.getCurrentNHLBoxScoreInstance(idGame)
-                                        )
-                                        .forEach((idPlayer, gameEventData) -> context
-                                                .getPlayerEvent()
-                                                .computeIfAbsent(idPlayer, _ -> new ArrayList<>())
-                                                .addAll(gameEventData));
-                            }
+                            // Дополнительный блок зачистки, нужен для юнитов, так как блоки getBoxScoreByActiveGame
+                            // и getLastData в основном переопределяются
+//                            if (currentBoxScore.getPlayerStats().isEmpty()) {
+//                                context.getCurrentData().remove(idGame);
+//                                context.getLastData().remove(idGame);
+//                                App.error(new RuntimeException("idGame: " + idGame + " continue; cause: getPlayerStats().isEmpty()"));
+//                                return;
+//                            }
 
+                            // Если нет данных о прошлом состоянии значит игра началась
                             if (context.getLastData().get(idGame) == null) {
                                 currentBoxScore
                                         .mergeIdPlayers(context.getActiveRepository().getIdPlayers(idGame))
                                         .forEach((idPlayer) -> {
-                                            NHLPlayerList.Player player = currentBoxScore.getPlayer(idPlayer);
-                                            if (player == null) {
-                                                player = NHLPlayerList.findByIdStaticOrEmpty(idPlayer);
-                                            }
-                                            context
-                                                    .getPlayerEvent()
-                                                    .computeIfAbsent(idPlayer, _ -> new ArrayList<>())
-                                                    .add(new GameEventData(
-                                                            GameEventData.Action.START_GAME,
-                                                            currentBoxScore.getIdGame(),
-                                                            currentBoxScore.getAboutGame(),
-                                                            currentBoxScore.getScoreGame(),
-                                                            player,
-                                                            "now"
-                                                    ));
-                                        }
-                                );
+                                                    NHLPlayerList.Player player = currentBoxScore.getPlayer(idPlayer);
+                                                    if (player == null) {
+                                                        player = NHLPlayerList.findByIdStaticOrEmpty(idPlayer);
+                                                    }
+                                                    context
+                                                            .getPlayerEvent()
+                                                            .computeIfAbsent(idPlayer, _ -> new ArrayList<>())
+                                                            .add(new GameEventData(
+                                                                    GameEventData.Action.START_GAME,
+                                                                    currentBoxScore.getIdGame(),
+                                                                    currentBoxScore.getAboutGame(),
+                                                                    currentBoxScore.getScoreGame(),
+                                                                    player,
+                                                                    "now"
+                                                            ));
+                                                }
+                                        );
                             }
+                            // Начало игры может прийти сразу с блоком статистики и там уже могут быть голы
+                            // Так что хочешь - не хочешь надо получать события
+                            NHLBoxScore
+                                    .getEvent(
+                                            context.getLastNHLBoxScoreInstance(idGame),
+                                            context.getCurrentNHLBoxScoreInstance(idGame)
+                                    )
+                                    .forEach((idPlayer, gameEventData) -> context
+                                            .getPlayerEvent()
+                                            .computeIfAbsent(idPlayer, _ -> new ArrayList<>())
+                                            .addAll(gameEventData));
+
                             if (currentBoxScore.isFinish()) {
                                 currentBoxScore
                                         .mergeIdPlayers(context.getActiveRepository().getIdPlayers(idGame))

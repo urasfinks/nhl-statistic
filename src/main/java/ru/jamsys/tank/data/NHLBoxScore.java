@@ -2,6 +2,7 @@ package ru.jamsys.tank.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
+import lombok.NonNull;
 import ru.jamsys.core.App;
 import ru.jamsys.core.extension.exception.ForwardException;
 import ru.jamsys.core.flat.util.*;
@@ -72,52 +73,58 @@ public class NHLBoxScore {
         return UtilFileResource.getAsString("example/20250104_BOS_TOR_2.json");
     }
 
+    @NonNull
     // Получить события по игрокам на разности снимков статистики
-    public static Map<String, List<GameEventData>> getEvent(Instance lastInstance, Instance currentInstance) {
+    public static Map<String, List<GameEventData>> getEvent(Instance lastInstance, @NonNull Instance currentInstance) {
         Map<String, List<GameEventData>> result = new HashMap<>(); //key: idPlayer; value: list GameEventData
-        lastInstance.getPlayerStats().forEach((idPlayer, lastStat) -> {
-            Map<String, Object> currentStat = currentInstance.getPlayerStats().get(idPlayer);
-            // Бывает такое что тупо нет goal
-            if (lastStat.containsKey("goals") && currentStat.containsKey("goals")
-                    && !lastStat.get("goals").equals(currentStat.get("goals"))) {
-                int lastGoals = Integer.parseInt(lastStat.get("goals").toString());
-                int currentGoals = Integer.parseInt(currentStat.get("goals").toString());
+        currentInstance.getPlayerStats().forEach((idPlayer, currentStat) -> {
+            // lastInstance может быть null, а currentInstance не может быть null
+            Map<String, Object> lastStat = lastInstance != null
+                    ? lastInstance.getPlayerStats().getOrDefault(idPlayer, new HashMap<>())
+                    : new HashMap<>();
+            int lastGoals = Integer.parseInt(lastStat.getOrDefault("goals", "0").toString());
+            int currentGoals = Integer.parseInt(currentStat.getOrDefault("goals", "0").toString());
+            // Бывает такое, что тупо нет goal
+            if (lastGoals != currentGoals) {
                 int diff = currentGoals - lastGoals;
-                List<Map<String, Object>> listGoal = (diff > 0 ? currentInstance : lastInstance)
-                        .getPlayerStat(idPlayer)
-                        .getSortByTimeListGoal(UtilListSort.Type.ASC);
-                getLastNElements(listGoal, Math.abs(diff)).forEach(map -> {
-                    GameEventData.Action action = diff > 0 ? GameEventData.Action.GOAL : GameEventData.Action.CANCEL;
-                    if (action.equals(GameEventData.Action.CANCEL)) {
-                        try {
-                            String teamAbv = currentInstance.getPlayer(idPlayer).getTeam();
-                            if (Objects.equals(
-                                    lastInstance.getScoreTeam().get(teamAbv),
-                                    currentInstance.getScoreTeam().get(teamAbv))
-                            ) {
-                                action = GameEventData.Action.CORRECTION;
+                Instance instance1 = diff > 0 ? currentInstance : lastInstance;
+                if (instance1 != null) {
+                    List<Map<String, Object>> listGoal = instance1
+                            .getPlayerStat(idPlayer)
+                            .getSortByTimeListGoal(UtilListSort.Type.ASC);
+                    getLastNElements(listGoal, Math.abs(diff)).forEach(map -> {
+                        GameEventData.Action action = diff > 0 ? GameEventData.Action.GOAL : GameEventData.Action.CANCEL;
+                        if (action.equals(GameEventData.Action.CANCEL)) {
+                            try {
+                                String teamAbv = currentInstance.getPlayer(idPlayer).getTeam();
+                                if (Objects.equals(
+                                        lastInstance.getScoreTeam().get(teamAbv),
+                                        currentInstance.getScoreTeam().get(teamAbv))
+                                ) {
+                                    action = GameEventData.Action.CORRECTION;
+                                }
+                            } catch (Throwable th) {
+                                App.error(th);
                             }
-                        } catch (Throwable th) {
-                            App.error(th);
                         }
-                    }
-                    result
-                            .computeIfAbsent(idPlayer, _ -> new ArrayList<>())
-                            .add(new GameEventData(
-                                            action,
-                                            currentInstance.getIdGame(),
-                                            currentInstance.getAboutGame(),
-                                            currentInstance.getScoreGame(),
-                                            currentInstance.getPlayerStat(idPlayer).getPlayerOrEmpty(),
-                                            map.get("scoreTime") + ", " + periodExpandRu(map.get("period").toString())
-                                    )
-                                            .setScoredGoal(currentGoals)
-                                            .setScoredLastSeason(UtilNHL.isOvi(idPlayer)
-                                                    ? UtilNHL.getOviScoreLastSeason()
-                                                    : 0
-                                            )
-                            );
-                });
+                        result
+                                .computeIfAbsent(idPlayer, _ -> new ArrayList<>())
+                                .add(new GameEventData(
+                                                action,
+                                                currentInstance.getIdGame(),
+                                                currentInstance.getAboutGame(),
+                                                currentInstance.getScoreGame(),
+                                                currentInstance.getPlayerStat(idPlayer).getPlayerOrEmpty(),
+                                                map.get("scoreTime") + ", " + periodExpandRu(map.get("period").toString())
+                                        )
+                                                .setScoredGoal(currentGoals)
+                                                .setScoredLastSeason(UtilNHL.isOvi(idPlayer)
+                                                        ? UtilNHL.getOviScoreLastSeason()
+                                                        : 0
+                                                )
+                                );
+                    });
+                }
             }
         });
         return result;
