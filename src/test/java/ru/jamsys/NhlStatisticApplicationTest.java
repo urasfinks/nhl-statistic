@@ -276,4 +276,15 @@ class NhlStatisticApplicationTest {
         Util.logConsoleJson(getClass(), chart);
     }
 
+    //@Test
+    void testYandexLlm() {
+        YandexLlmRequest stat = new YandexLlmRequest("Что делать, если ребёнок не хочет брать грудь?");
+        stat
+                .generate()
+                .run()
+                .await(50_000L);
+        Util.logConsoleJson(getClass(), stat.getMotherResponse());
+
+    }
+
 }

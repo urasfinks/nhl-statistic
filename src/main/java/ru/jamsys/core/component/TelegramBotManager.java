@@ -18,6 +18,7 @@ import ru.jamsys.core.flat.util.UtilFile;
 import ru.jamsys.core.flat.util.UtilFileResource;
 import ru.jamsys.core.flat.util.UtilTelegramResponse;
 import ru.jamsys.telegram.*;
+import ru.jamsys.telegram.handler.MotherBotCommandHandler;
 import ru.jamsys.telegram.handler.NhlStatisticsBotCommandHandler;
 import ru.jamsys.telegram.handler.OviGoalsBotCommandHandler;
 
@@ -37,6 +38,8 @@ public class TelegramBotManager implements LifeCycleComponent {
 
     private final BotProperty oviBotProperty = BotProperty.getInstance("telegram.bot.ovi");
 
+    private final BotProperty motherBotProperty = BotProperty.getInstance("telegram.bot.mother");
+
     private final Map<String, TelegramSender> repository = new HashMap<>(); //key - name bot; value - sender
 
     public enum TypeSender {
@@ -47,7 +50,9 @@ public class TelegramBotManager implements LifeCycleComponent {
     public List<String> getListBotName() {
         return new ArrayListBuilder<String>()
                 .append(getCommonBotProperty().getName())
-                .append(getOviBotProperty().getName());
+                .append(getOviBotProperty().getName())
+                .append(getMotherBotProperty().getName())
+                ;
     }
 
     @Override
@@ -59,28 +64,43 @@ public class TelegramBotManager implements LifeCycleComponent {
                         getCommonBotProperty(),
                         App.get(RouteGenerator.class).getRouterRepository(NhlStatisticsBotCommandHandler.class)
                 )
-                        .setMyCommands(
-                                new SetMyCommands(new ArrayListBuilder<BotCommand>()
-                                        .append(new BotCommand("/subscribe", "Подписаться на игрока"))
-                                        .append(new BotCommand("/schedule", "Расписание"))
-                                        .append(new BotCommand("/remove", "Удалить подписку")),
-                                        new BotCommandScopeDefault(), null));
+                        .setMyCommands(new SetMyCommands(new ArrayListBuilder<BotCommand>()
+                                .append(new BotCommand("/subscribe", "Подписаться на игрока"))
+                                .append(new BotCommand("/schedule", "Расписание"))
+                                .append(new BotCommand("/remove", "Удалить подписку")),
+                                new BotCommandScopeDefault(),
+                                null
+                        ));
                 init(
                         TypeSender.EMBEDDED,
                         getOviBotProperty(),
                         App.get(RouteGenerator.class).getRouterRepository(OviGoalsBotCommandHandler.class)
-                ).setMyCommands(
-                        new SetMyCommands(new ArrayListBuilder<BotCommand>()
+                )
+                        .setMyCommands(new SetMyCommands(new ArrayListBuilder<BotCommand>()
                                 .append(new BotCommand("/start", "Включить уведомления"))
                                 .append(new BotCommand("/stats", "Текущая статистика: количество голов, оставшихся до рекорда, и статистика по сезону"))
                                 .append(new BotCommand("/poll_results", "Статистика голосования"))
                                 .append(new BotCommand("/schedule", "Ближайшие игры Александра Овечкина и команды Washington Capitals"))
                                 .append(new BotCommand("/prediction", "Когда Овечкин побьет рекорд Гретцки?"))
                                 .append(new BotCommand("/stop", "Отключить уведомления")),
-                                new BotCommandScopeDefault(), null));
+                                new BotCommandScopeDefault(),
+                                null
+                        ));
+
+                init(
+                        TypeSender.EMBEDDED,
+                        getMotherBotProperty(),
+                        App.get(RouteGenerator.class).getRouterRepository(MotherBotCommandHandler.class)
+                )
+                        .setMyCommands(new SetMyCommands(new ArrayListBuilder<BotCommand>()
+                                .append(new BotCommand("/ask_question", "Задать вопрос")),
+                                new BotCommandScopeDefault(),
+                                null
+                        ));
 
                 init(TypeSender.HTTP, getCommonBotProperty());
                 init(TypeSender.HTTP, getOviBotProperty());
+                init(TypeSender.HTTP, getMotherBotProperty());
 
             } catch (TelegramApiException e) {
                 throw new RuntimeException(e);
