@@ -287,4 +287,15 @@ class NhlStatisticApplicationTest {
 
     }
 
+    //@Test
+    void testYandexToken() {
+        YandexTokenRequest stat = new YandexTokenRequest();
+        stat
+                .generate()
+                .run()
+                .await(50_000L);
+        Util.logConsoleJson(getClass(), YandexTokenRequest.token);
+
+    }
+
 }

@@ -50,8 +50,6 @@ public class YandexLlmRequest implements PromiseGenerator {
                 .extension(promise -> promise.setRepositoryMapClass(YandexLlmRequest.class, this)).thenWithResource("request", HttpResource.class, (_, _, promise, httpResource) -> {
                     promise.getRepositoryMapClass(YandexLlmRequest.class);
                     Util.logConsole(getClass(), "Request Yandex.LLM; isAlwaysRequestApi: " + alwaysRequestApi);
-                    //HttpClient httpClient = getHttpClient(question);
-                    //Util.logConsoleJson(getClass(), httpClient);
                     HttpResponse execute = httpResource.execute(getHttpClient(question));
                     motherResponse = checkResponse(execute);
                 })
@@ -60,30 +58,29 @@ public class YandexLlmRequest implements PromiseGenerator {
 
     public static HttpClient getHttpClient(String question) {
         ServiceProperty serviceProperty = App.get(ServiceProperty.class);
-        SecurityComponent securityComponent = App.get(SecurityComponent.class);
         return new HttpClientImpl()
                 .setUrl(serviceProperty.get("yandex.llm.host"))
                 .putRequestHeader("Content-Type", "application/json")
-                .putRequestHeader("Authorization", "Bearer " + new String(securityComponent.get("yandex.llm")))
+                .putRequestHeader("Authorization", "Bearer " + YandexTokenRequest.token)
                 .setMethod(HttpMethodEnum.POST)
                 .setPostData(String.format("""
-                                        {
-                                          "messages": [
-                                            {
-                                              "text": "Ты — помощник для молодых мам, консультант по грудному вскармливанию. Твоя задача — классифицировать вопрос по возможным причинам и дать рекомендации по шагам, которые стоит предпринять. \\n\\n1. Если вопрос пользователя не связан с кормлением ребёнка, верни JSON: {\\"error\\":\\"Вопрос не связан с кормлением\\"}.\\n2. Если вопрос связан с кормлением, но недостаточно конкретный, верни JSON с уточняющим вопросом: {\\"clarification\\": \\"Уточните, пожалуйста, о каком аспекте идёт речь?\\"}.\\n3. Если вопрос конкретный и связан с кормлением, верни JSON с рекомендациями в виде списка возможных причин и шагов для решения проблемы: {\\"recommendations\\": [\\"Рекомендация 1\\", \\"Рекомендация 2\\"]}.\\n\\nИспользуй только проверенную информацию. Будь вежливым и поддерживающим.",
-                                              "role": "system"
-                                            },
-                                            {
-                                              "text": "%s",
-                                              "role": "user"
-                                            }
-                                          ],
-                                          "completionOptions": {
-                                            "temperature": 1,
-                                            "maxTokens": 1000
-                                          },
-                                          "modelUri": "gpt://b1g05tf6j6kur2mhmotm/yandexgpt/rc"
-                                        }""",
+                                {
+                                   "messages": [
+                                     {
+                                       "text": "Ты — помощник, консультант по грудному вскармливанию. Твоя задача — анализировать вопросы и предоставлять точные и полезные ответы. Действуй по следующему алгоритму:\\nЕсли вопрос не связан с кормлением ребёнка, верни JSON: {\\"error\\": \\"Вопрос не связан с кормлением\\"} Если вопрос связан с кормлением, но недостаточно конкретный, верни JSON с уточняющим вопросом, чтобы помочь пользователю сформулировать запрос более точно: {\\"clarification\\": \\"...\\"} Если вопрос конкретный и связан с кормлением, проанализируй его, определи возможные причины и дай рекомендации в виде списка шагов для решения проблемы. Верни JSON: {\\"recommendations\\": [\\"...\\"]} Используй только проверенную и научно обоснованную информацию.\\nБудь вежливым, поддерживающим и понимающим.\\nЕсли вопрос требует срочного медицинского вмешательства, порекомендуй обратиться к врачу. Ничего кроме json возвращать не надо!",
+                                       "role": "system"
+                                     },
+                                     {
+                                       "text": "%s",
+                                       "role": "user"
+                                     }
+                                   ],
+                                   "completionOptions": {
+                                     "temperature": 0,
+                                     "maxTokens": 1000
+                                   },
+                                   "modelUri": "gpt://b1g05tf6j6kur2mhmotm/yandexgpt/rc"
+                                 }""",
                                 escape(question)
                         ).getBytes(StandardCharsets.UTF_8)
                 );
@@ -98,7 +95,6 @@ public class YandexLlmRequest implements PromiseGenerator {
     }
 
     public static MotherResponse checkResponse(String response) {
-        //Util.logConsole(YandexLlmRequest.class, response);
         Map<String, Object> result = new LinkedHashMap<>();
         try {
             UtilJson.selector(
