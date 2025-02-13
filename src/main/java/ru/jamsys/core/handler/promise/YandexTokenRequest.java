@@ -20,15 +20,14 @@ import ru.jamsys.core.resource.http.client.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
+@Setter
 @Getter
 public class YandexTokenRequest implements PromiseGenerator {
 
     public static String token;
 
-    @Setter
     private boolean onlyCache = false;
 
-    @Setter
     private boolean alwaysRequestApi = false;
 
     @Override

@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import ru.jamsys.core.App;
-import ru.jamsys.core.component.SecurityComponent;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.component.ServiceProperty;
 import ru.jamsys.core.extension.builder.HashMapBuilder;
@@ -64,23 +63,23 @@ public class YandexLlmRequest implements PromiseGenerator {
                 .putRequestHeader("Authorization", "Bearer " + YandexTokenRequest.token)
                 .setMethod(HttpMethodEnum.POST)
                 .setPostData(String.format("""
-                                {
-                                   "messages": [
-                                     {
-                                       "text": "Ты — помощник, консультант по грудному вскармливанию. Твоя задача — анализировать вопросы и предоставлять точные и полезные ответы. Действуй по следующему алгоритму:\\nЕсли вопрос не связан с кормлением ребёнка, верни JSON: {\\"error\\": \\"Вопрос не связан с кормлением\\"} Если вопрос связан с кормлением, но недостаточно конкретный, верни JSON с уточняющим вопросом, чтобы помочь пользователю сформулировать запрос более точно: {\\"clarification\\": \\"...\\"} Если вопрос конкретный и связан с кормлением, проанализируй его, определи возможные причины и дай рекомендации в виде списка шагов для решения проблемы. Верни JSON: {\\"recommendations\\": [\\"...\\"]} Используй только проверенную и научно обоснованную информацию.\\nБудь вежливым, поддерживающим и понимающим.\\nЕсли вопрос требует срочного медицинского вмешательства, порекомендуй обратиться к врачу. Ничего кроме json возвращать не надо!",
-                                       "role": "system"
-                                     },
-                                     {
-                                       "text": "%s",
-                                       "role": "user"
-                                     }
-                                   ],
-                                   "completionOptions": {
-                                     "temperature": 0,
-                                     "maxTokens": 1000
-                                   },
-                                   "modelUri": "gpt://b1g05tf6j6kur2mhmotm/yandexgpt/rc"
-                                 }""",
+                                        {
+                                           "messages": [
+                                             {
+                                               "text": "Ты — помощник, консультант по грудному вскармливанию. Твоя задача — анализировать вопросы и предоставлять точные и полезные ответы. Действуй по следующему алгоритму:\\nЕсли вопрос не связан с кормлением ребёнка, верни JSON: {\\"error\\": \\"Вопрос не связан с кормлением\\"} Если вопрос связан с кормлением, но недостаточно конкретный, верни JSON с уточняющим вопросом, чтобы помочь пользователю сформулировать запрос более точно: {\\"clarification\\": \\"...\\"} Если вопрос конкретный и связан с кормлением, проанализируй его, определи возможные причины и дай рекомендации в виде списка шагов для решения проблемы. Верни JSON: {\\"recommendations\\": [\\"...\\"]} Используй только проверенную и научно обоснованную информацию.\\nБудь вежливым, поддерживающим и понимающим.\\nЕсли вопрос требует срочного медицинского вмешательства, порекомендуй обратиться к врачу. Ничего кроме json возвращать не надо!",
+                                               "role": "system"
+                                             },
+                                             {
+                                               "text": "%s",
+                                               "role": "user"
+                                             }
+                                           ],
+                                           "completionOptions": {
+                                             "temperature": 0,
+                                             "maxTokens": 1000
+                                           },
+                                           "modelUri": "gpt://b1g05tf6j6kur2mhmotm/yandexgpt/rc"
+                                         }""",
                                 escape(question)
                         ).getBytes(StandardCharsets.UTF_8)
                 );
