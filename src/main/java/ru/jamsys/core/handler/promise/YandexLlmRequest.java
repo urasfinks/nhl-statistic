@@ -50,7 +50,7 @@ public class YandexLlmRequest implements PromiseGenerator {
                 .extension(promise -> promise.setRepositoryMapClass(YandexLlmRequest.class, this)).thenWithResource("request", HttpResource.class, (_, _, promise, httpResource) -> {
                     promise.getRepositoryMapClass(YandexLlmRequest.class);
                     Util.logConsole(getClass(), "Request Yandex.LLM; isAlwaysRequestApi: " + alwaysRequestApi);
-                    HttpClient httpClient = getHttpClient(question);
+                    //HttpClient httpClient = getHttpClient(question);
                     //Util.logConsoleJson(getClass(), httpClient);
                     HttpResponse execute = httpResource.execute(getHttpClient(question));
                     motherResponse = checkResponse(execute);
