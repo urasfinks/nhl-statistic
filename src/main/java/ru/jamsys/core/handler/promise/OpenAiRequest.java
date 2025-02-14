@@ -19,6 +19,8 @@ import ru.jamsys.core.resource.http.client.HttpClientImpl;
 import ru.jamsys.core.resource.http.client.HttpMethodEnum;
 import ru.jamsys.core.resource.http.client.HttpResponse;
 
+import java.net.Authenticator;
+import java.net.PasswordAuthentication;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -50,8 +52,32 @@ public class OpenAiRequest implements PromiseGenerator {
 
     public static HttpClient getHttpClient(String question) {
         ServiceProperty serviceProperty = App.get(ServiceProperty.class);
+        Authenticator.setDefault(new Authenticator() {
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                // Проверяем, что запрос идет к прокси
+                if (getRequestorType() == Authenticator.RequestorType.PROXY) {
+                    Util.logConsole(getClass(), "USE PROXY!!!");
+                    return new PasswordAuthentication(
+                            App.get(ServiceProperty.class).get("http.proxy.server.user"),
+                            App
+                                    .get(SecurityComponent.class)
+                                    .get(App
+                                            .get(ServiceProperty.class)
+                                            .get("http.proxy.server.password.security.alias")
+                                    )
+
+                    );
+                }
+                return null;
+            }
+        });
         return new HttpClientImpl()
                 .setUrl(serviceProperty.get("openai.host"))
+                .setProxy(
+                        serviceProperty.get("http.proxy.server.host"),
+                        serviceProperty.get(Integer.class, "http.proxy.server.port", 8888)
+                )
                 .putRequestHeader("Content-Type", "application/json")
 
                 .putRequestHeader(
