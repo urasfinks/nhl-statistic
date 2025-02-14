@@ -23,7 +23,7 @@ public class Min30Scheduler implements Cron30m, PromiseGenerator, UniqueClassNam
     public Promise generate() {
         return servicePromise.get(getClass().getSimpleName(), 6_000L)
                 .then("YandexToken", (atomicBoolean, promiseTask, promise) -> {
-                    new YandexTokenRequest().generate().run();
+                    //new YandexTokenRequest().generate().run();
                 });
     }
 

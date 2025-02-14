@@ -1,7 +1,6 @@
 package ru.jamsys.core.handler.promise;
 
 import lombok.Getter;
-import lombok.Setter;
 import lombok.experimental.Accessors;
 import ru.jamsys.core.App;
 import ru.jamsys.core.component.ServicePromise;
