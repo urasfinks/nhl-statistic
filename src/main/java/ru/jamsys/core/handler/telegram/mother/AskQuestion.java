@@ -30,7 +30,7 @@ public class AskQuestion implements PromiseGenerator, MotherBotCommandHandler {
 
     @Override
     public Promise generate() {
-        return servicePromise.get(getClass().getSimpleName(), 12_000L)
+        return servicePromise.get(getClass().getSimpleName(), 31_000L)
                 .extension(promise -> promise.setRepositoryMapClass(AskQuestion.class, this))
                 .then("start", (_, _, promise) -> {
                     TelegramCommandContext telegramContext = promise.getRepositoryMapClass(TelegramCommandContext.class);

@@ -19,9 +19,8 @@ import ru.jamsys.core.resource.http.client.HttpClientImpl;
 import ru.jamsys.core.resource.http.client.HttpMethodEnum;
 import ru.jamsys.core.resource.http.client.HttpResponse;
 
-import java.net.Authenticator;
-import java.net.PasswordAuthentication;
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -52,34 +51,22 @@ public class OpenAiRequest implements PromiseGenerator {
 
     public static HttpClient getHttpClient(String question) {
         ServiceProperty serviceProperty = App.get(ServiceProperty.class);
-        Authenticator.setDefault(new Authenticator() {
-            @Override
-            protected PasswordAuthentication getPasswordAuthentication() {
-                // Проверяем, что запрос идет к прокси
-                if (getRequestorType() == Authenticator.RequestorType.PROXY) {
-                    Util.logConsole(getClass(), "USE PROXY!!!");
-                    return new PasswordAuthentication(
-                            App.get(ServiceProperty.class).get("http.proxy.server.user"),
-                            App
-                                    .get(SecurityComponent.class)
-                                    .get(App
-                                            .get(ServiceProperty.class)
-                                            .get("http.proxy.server.password.security.alias")
-                                    )
+        String proxyHost = serviceProperty.get("http.proxy.server.host"); // Адрес прокси-сервера
+        int proxyPort = serviceProperty.get(Integer.class, "http.proxy.server.port", 3128); // Порт прокси-сервера
+        String proxyUser = serviceProperty.get("http.proxy.server.user"); // Логин для прокси
+        String proxyPassword = new String(App
+                .get(SecurityComponent.class)
+                .get(serviceProperty.get("http.proxy.server.password.security.alias"))
+        );
+        String credentials = proxyUser + ":" + proxyPassword;
+        String encodedCredentials = Base64.getEncoder().encodeToString(credentials.getBytes());
 
-                    );
-                }
-                return null;
-            }
-        });
         return new HttpClientImpl()
                 .setUrl(serviceProperty.get("openai.host"))
-                .setProxy(
-                        serviceProperty.get("http.proxy.server.host"),
-                        serviceProperty.get(Integer.class, "http.proxy.server.port", 8888)
-                )
+                .setTimeoutMs(30_000)
+                .setProxy(proxyHost, proxyPort)
                 .putRequestHeader("Content-Type", "application/json")
-
+                .putRequestHeader("Proxy-Authorization", "Basic " + encodedCredentials)
                 .putRequestHeader(
                         "Authorization",
                         "Bearer " + new String(App
@@ -94,7 +81,7 @@ public class OpenAiRequest implements PromiseGenerator {
                                               "messages": [
                                                 {
                                                   "role": "developer",
-                                                  "content": "You are a breastfeeding consultant. Your task is to analyze users' questions and provide accurate and helpful answers. Follow this algorithm:\\nIf the question is not related to breastfeeding, return JSON: {\\"error\\": \\"...\\"}\\nIf the question is related to breastfeeding but lacks specificity, return JSON with a clarifying question: {\\"clarification\\": \\"...\\"}\\nIf the question is specific, provide a maximum of 10 recommendations in JSON format: {\\"recommendations\\": []}\\nUse only verified and scientifically based information.\\nBe polite, supportive, and understanding.\\nIf the question requires urgent medical attention, recommend consulting a doctor."
+                                                  "content": "You are a pediatric feeding specialist. Your task is to analyze users' questions and provide accurate and helpful answers. Follow this algorithm:\\nIf the question is not related to infant feeding, return JSON: {\\"error\\": \\"...\\"}\\nIf the question is related to feeding but lacks specificity, return JSON with a clarifying question: {\\"clarification\\": \\"...\\"}\\nIf the question is specific, provide a maximum of 10 recommendations in JSON format: {\\"recommendations\\": []}\\nUse only verified and scientifically based information.\\nBe polite, supportive, and understanding.\\nIf the question requires urgent medical attention, recommend consulting a doctor. Respond in the language of the question"
                                                 },
                                                 {
                                                   "role": "user",
