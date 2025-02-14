@@ -298,4 +298,16 @@ class NhlStatisticApplicationTest {
 
     }
 
+    //@Test
+    void testOpenAi() {
+        OpenAiRequest stat = new OpenAiRequest("Что делать, если ребёнок не хочет брать грудь?");
+        stat
+                .generate()
+                .run()
+                .await(50_000L);
+        Util.logConsoleJson(getClass(), stat.getMotherResponse());
+
+    }
+
+
 }

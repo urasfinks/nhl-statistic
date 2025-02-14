@@ -1,9 +1,9 @@
 package ru.jamsys.core.handler.promise;
 
 import lombok.Getter;
-import lombok.Setter;
 import lombok.experimental.Accessors;
 import ru.jamsys.core.App;
+import ru.jamsys.core.component.SecurityComponent;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.component.ServiceProperty;
 import ru.jamsys.core.extension.builder.HashMapBuilder;
@@ -24,23 +24,24 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 @Accessors(chain = true)
-public class YandexLlmRequest implements PromiseGenerator {
+public class OpenAiRequest implements PromiseGenerator {
 
     @Getter
     private MotherResponse motherResponse;
 
     String question;
 
-    public YandexLlmRequest(String question) {
+    public OpenAiRequest(String question) {
         this.question = question;
     }
 
     @Override
     public Promise generate() {
-        return App.get(ServicePromise.class).get(getClass().getSimpleName(), 60_000L)
-                .extension(promise -> promise.setRepositoryMapClass(YandexLlmRequest.class, this)).thenWithResource("request", HttpResource.class, (_, _, promise, httpResource) -> {
-                    promise.getRepositoryMapClass(YandexLlmRequest.class);
-                    Util.logConsole(getClass(), "Request Yandex.LL");
+        return App.get(ServicePromise.class).get(getClass().getSimpleName(), 600_000L)
+                .extension(promise -> promise.setRepositoryMapClass(OpenAiRequest.class, this))
+                .thenWithResource("request", HttpResource.class, (_, _, promise, httpResource) -> {
+                    promise.getRepositoryMapClass(OpenAiRequest.class);
+                    Util.logConsole(getClass(), "Request openai");
                     HttpResponse execute = httpResource.execute(getHttpClient(question));
                     motherResponse = checkResponse(execute);
                 })
@@ -50,28 +51,31 @@ public class YandexLlmRequest implements PromiseGenerator {
     public static HttpClient getHttpClient(String question) {
         ServiceProperty serviceProperty = App.get(ServiceProperty.class);
         return new HttpClientImpl()
-                .setUrl(serviceProperty.get("yandex.llm.host"))
+                .setUrl(serviceProperty.get("openai.host"))
                 .putRequestHeader("Content-Type", "application/json")
-                .putRequestHeader("Authorization", "Bearer " + YandexTokenRequest.token)
+
+                .putRequestHeader(
+                        "Authorization",
+                        "Bearer " + new String(App
+                                .get(SecurityComponent.class)
+                                .get(serviceProperty.get("openai.security.alias"))
+                        )
+                )
                 .setMethod(HttpMethodEnum.POST)
                 .setPostData(String.format("""
                                         {
-                                           "messages": [
-                                             {
-                                               "text": "Ты — помощник, консультант по грудному вскармливанию. Твоя задача — анализировать вопросы и предоставлять точные и полезные ответы. Действуй по следующему алгоритму:\\nЕсли вопрос не связан с кормлением ребёнка, верни JSON: {\\"error\\": \\"Вопрос не связан с кормлением\\"} Если вопрос связан с кормлением, но недостаточно конкретный, верни JSON с уточняющим вопросом, чтобы помочь пользователю сформулировать запрос более точно: {\\"clarification\\": \\"...\\"} Если вопрос конкретный и связан с кормлением, проанализируй его, определи возможные причины и дай рекомендации в виде списка шагов для решения проблемы. Верни JSON: {\\"recommendations\\": [\\"...\\"]} Используй только проверенную и научно обоснованную информацию.\\nБудь вежливым, поддерживающим и понимающим.\\nЕсли вопрос требует срочного медицинского вмешательства, порекомендуй обратиться к врачу. Ничего кроме json возвращать не надо!",
-                                               "role": "system"
-                                             },
-                                             {
-                                               "text": "%s",
-                                               "role": "user"
-                                             }
-                                           ],
-                                           "completionOptions": {
-                                             "temperature": 0,
-                                             "maxTokens": 1000
-                                           },
-                                           "modelUri": "gpt://b1g05tf6j6kur2mhmotm/yandexgpt/rc"
-                                         }""",
+                                              "model": "gpt-4o",
+                                              "messages": [
+                                                {
+                                                  "role": "developer",
+                                                  "content": "You are a breastfeeding consultant. Your task is to analyze users' questions and provide accurate and helpful answers. Follow this algorithm:\\nIf the question is not related to breastfeeding, return JSON: {\\"error\\": \\"...\\"}\\nIf the question is related to breastfeeding but lacks specificity, return JSON with a clarifying question: {\\"clarification\\": \\"...\\"}\\nIf the question is specific, provide a maximum of 10 recommendations in JSON format: {\\"recommendations\\": []}\\nUse only verified and scientifically based information.\\nBe polite, supportive, and understanding.\\nIf the question requires urgent medical attention, recommend consulting a doctor."
+                                                },
+                                                {
+                                                  "role": "user",
+                                                  "content": "%s"
+                                                }
+                                              ]
+                                            }""",
                                 escape(question)
                         ).getBytes(StandardCharsets.UTF_8)
                 );
@@ -86,19 +90,23 @@ public class YandexLlmRequest implements PromiseGenerator {
     }
 
     public static MotherResponse checkResponse(String response) {
+        //Util.logConsole(OpenAiRequest.class, response);
         Map<String, Object> result = new LinkedHashMap<>();
         try {
             UtilJson.selector(
                     response,
                     new HashMapBuilder<String, String>()
-                            .append("text", "$.result.alternatives[0].message.text"),
+                            .append("text", "$.choices[0].message.content"),
                     result
             );
             if (result.containsKey("text")) {
                 Map<String, Object> mapOrThrow = UtilJson.getMapOrThrow(
-                        ((String) result.getOrDefault("text", "{}")).replaceAll("```", "")
+                        ((String) result.getOrDefault("text", "{}"))
+                                .replaceAll("```json", "")
+                                .replaceAll("```", "")
                 );
                 //Util.logConsoleJson(YandexLlmRequest.class, mapOrThrow);
+                //Util.logConsoleJson(OpenAiRequest.class, Util.mapToObject(mapOrThrow, MotherResponse.class));
                 return Util.mapToObject(mapOrThrow, MotherResponse.class);
             } else {
                 return new MotherResponse().setError("Нет данных").setRetry(false);
@@ -124,6 +132,7 @@ public class YandexLlmRequest implements PromiseGenerator {
     }
 
     public static MotherResponse checkResponse(HttpResponse execute) throws Throwable {
+        //Util.logConsoleJson(OpenAiRequest.class, execute);
         if (execute.getException() != null) {
             throw execute.getException();
         }

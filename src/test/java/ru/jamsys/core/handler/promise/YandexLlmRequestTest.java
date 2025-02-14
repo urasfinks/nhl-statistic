@@ -93,7 +93,7 @@ class YandexLlmRequestTest {
                 }
                 }""").getRecommendations().toString());
 
-        Assertions.assertEquals("The token has expired 2025-02-13T06:29:05.678288657Z. Now 2025-02-13T10:01:04.864921440Z, which is more than PT10M later", YandexLlmRequest.checkResponse("""
+        Assertions.assertEquals("Ошибка, попробуйте позже", YandexLlmRequest.checkResponse("""
                 {"error":{"grpcCode":16,"httpCode":401,"message":"The token has expired 2025-02-13T06:29:05.678288657Z. Now 2025-02-13T10:01:04.864921440Z, which is more than PT10M later","httpStatus":"Unauthorized","details":[]}}""").getError());
 
         //

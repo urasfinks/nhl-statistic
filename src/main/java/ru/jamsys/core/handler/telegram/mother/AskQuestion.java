@@ -56,8 +56,7 @@ public class AskQuestion implements PromiseGenerator, MotherBotCommandHandler {
                 })
                 .then("request", (atomicBoolean, promiseTask, promise) -> {
                     TelegramCommandContext telegramContext = promise.getRepositoryMapClass(TelegramCommandContext.class);
-                    YandexLlmRequest yandexRequest = new YandexLlmRequest(telegramContext.getUriParameters().get("question"))
-                            .setAlwaysRequestApi(true);
+                    YandexLlmRequest yandexRequest = new YandexLlmRequest(telegramContext.getUriParameters().get("question"));
                     Promise req = yandexRequest.generate().run().await(50_000L);
                     if (req.isException()) {
                         throw req.getExceptionSource();
