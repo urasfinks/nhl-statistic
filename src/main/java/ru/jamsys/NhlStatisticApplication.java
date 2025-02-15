@@ -22,6 +22,7 @@ public class NhlStatisticApplication {
     public static boolean startTelegramListener = true; // Запускать чтение сообщений от бота
 
     public static void main(String[] args) {
+        System.setProperty("file.encoding", "UTF-8");
         App.springSource = NhlStatisticApplication.class;
         App.main(args);
     }

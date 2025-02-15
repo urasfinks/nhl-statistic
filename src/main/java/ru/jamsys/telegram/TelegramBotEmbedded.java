@@ -72,7 +72,7 @@ public class TelegramBotEmbedded extends TelegramLongPollingBot implements Teleg
         super(new String(App.get(SecurityComponent.class).get(botProperty.getSecurityAlias())));
         this.botProperty = botProperty;
         this.routerRepository = routerRepository;
-        stepHandler = new Session<>("TelegramContext_" + botProperty.getName(), 60_000L);
+        stepHandler = new Session<>("TelegramContext_" + botProperty.getName(), 600_000L);
         api.registerBot(this);
     }
 

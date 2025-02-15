@@ -2,6 +2,18 @@ package ru.jamsys.core.handler.promise;
 
 import lombok.Getter;
 import lombok.experimental.Accessors;
+import org.apache.http.HttpHost;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
+import org.springframework.http.HttpStatus;
 import ru.jamsys.core.App;
 import ru.jamsys.core.component.SecurityComponent;
 import ru.jamsys.core.component.ServicePromise;
@@ -11,16 +23,15 @@ import ru.jamsys.core.extension.exception.ForwardException;
 import ru.jamsys.core.flat.util.MotherResponse;
 import ru.jamsys.core.flat.util.Util;
 import ru.jamsys.core.flat.util.UtilJson;
+import ru.jamsys.core.jt.JTLogRequest;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
 import ru.jamsys.core.resource.http.HttpResource;
-import ru.jamsys.core.resource.http.client.HttpClient;
-import ru.jamsys.core.resource.http.client.HttpClientImpl;
-import ru.jamsys.core.resource.http.client.HttpMethodEnum;
 import ru.jamsys.core.resource.http.client.HttpResponse;
+import ru.jamsys.core.resource.jdbc.JdbcRequest;
+import ru.jamsys.core.resource.jdbc.JdbcResource;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
+import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -30,7 +41,19 @@ public class OpenAiRequest implements PromiseGenerator {
     @Getter
     private MotherResponse motherResponse;
 
+    @Getter
+    private HttpResponse httpResponse;
+
     String question;
+
+    String prev = """
+            Ты — детский врач или детский врач-диетолог. Твоя задача — помогать молодым мамам, анализируя их вопросы о здоровье и питании детей, и предоставлять точные, полезные и понятные ответы. Действуй по следующему алгоритму:
+            Если вопрос вообще не связан с детским здоровьем и питанием (например, о ремонте, технике, финансах и т. п.), верни JSON: {"error": "..."}
+            Если вопрос конкретный и относится к детскому здоровью, питанию (включая введение прикорма, допустимые продукты, аллергии, нормы питания), дай максимально полезные рекомендации (не более 10) в виде JSON: {"recommendations": []}"
+            Дополнительно:
+            Используй только проверенную и научно обоснованную информацию.
+            Будь вежливым, поддерживающим и понимающим.
+            Если вопрос требует срочного медицинского вмешательства, порекомендуй немедленно обратиться к врачу.""";
 
     public OpenAiRequest(String question) {
         this.question = question;
@@ -43,13 +66,26 @@ public class OpenAiRequest implements PromiseGenerator {
                 .thenWithResource("request", HttpResource.class, (_, _, promise, httpResource) -> {
                     promise.getRepositoryMapClass(OpenAiRequest.class);
                     Util.logConsole(getClass(), "Request openai");
-                    HttpResponse execute = httpResource.execute(getHttpClient(question));
-                    motherResponse = checkResponse(execute);
+                    httpResponse = getHttpClient(question, prev);
+                    motherResponse = checkResponse(httpResponse);
+                })
+                .thenWithResource("logData", JdbcResource.class, (run, _, promise, jdbcResource) -> {
+                    jdbcResource.execute(
+                            new JdbcRequest(JTLogRequest.INSERT)
+                                    .addArg("url", "meta")
+                                    .addArg("data", UtilJson.toStringPretty(new HashMapBuilder<String, Object>()
+                                                    .append("prev", prev)
+                                                    .append("question", question)
+                                                    .append("motherResponse", motherResponse)
+                                                    .append("httpResponse", httpResponse),
+                                            "{}"))
+                                    .setDebug(false)
+                    );
                 })
                 ;
     }
 
-    public static HttpClient getHttpClient(String question) {
+    public static HttpResponse getHttpClient(String question, String prev) {
         ServiceProperty serviceProperty = App.get(ServiceProperty.class);
         String proxyHost = serviceProperty.get("http.proxy.server.host"); // Адрес прокси-сервера
         int proxyPort = serviceProperty.get(Integer.class, "http.proxy.server.port", 3128); // Порт прокси-сервера
@@ -58,40 +94,84 @@ public class OpenAiRequest implements PromiseGenerator {
                 .get(SecurityComponent.class)
                 .get(serviceProperty.get("http.proxy.server.password.security.alias"))
         );
-        String credentials = proxyUser + ":" + proxyPassword;
-        String encodedCredentials = Base64.getEncoder().encodeToString(credentials.getBytes());
 
-        return new HttpClientImpl()
-                .setUrl(serviceProperty.get("openai.host"))
-                .setTimeoutMs(30_000)
-                .setProxy(proxyHost, proxyPort)
-                .putRequestHeader("Content-Type", "application/json")
-                .putRequestHeader("Proxy-Authorization", "Basic " + encodedCredentials)
-                .putRequestHeader(
-                        "Authorization",
-                        "Bearer " + new String(App
-                                .get(SecurityComponent.class)
-                                .get(serviceProperty.get("openai.security.alias"))
-                        )
-                )
-                .setMethod(HttpMethodEnum.POST)
-                .setPostData(String.format("""
-                                        {
-                                              "model": "gpt-4o",
-                                              "messages": [
-                                                {
-                                                  "role": "developer",
-                                                  "content": "You are a pediatric feeding specialist. Your task is to analyze users' questions and provide accurate and helpful answers. Follow this algorithm:\\nIf the question is not related to infant feeding, return JSON: {\\"error\\": \\"...\\"}\\nIf the question is related to feeding but lacks specificity, return JSON with a clarifying question: {\\"clarification\\": \\"...\\"}\\nIf the question is specific, provide a maximum of 10 recommendations in JSON format: {\\"recommendations\\": []}\\nUse only verified and scientifically based information.\\nBe polite, supportive, and understanding.\\nIf the question requires urgent medical attention, recommend consulting a doctor. Respond in the language of the question"
-                                                },
-                                                {
-                                                  "role": "user",
-                                                  "content": "%s"
-                                                }
-                                              ]
-                                            }""",
-                                escape(question)
-                        ).getBytes(StandardCharsets.UTF_8)
+        // Настройка прокси и авторизации
+        HttpHost proxy = new HttpHost(proxyHost, proxyPort);
+        CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+        credentialsProvider.setCredentials(
+                new AuthScope(proxyHost, proxyPort), // Указываем область авторизации
+                new UsernamePasswordCredentials(proxyUser, proxyPassword) // Учетные данные
+        );
+
+        // Создание HTTP-клиента с прокси и авторизацией
+        try (CloseableHttpClient httpClient = HttpClients.custom()
+                .setProxy(proxy) // Указываем прокси
+                .setDefaultCredentialsProvider(credentialsProvider) // Указываем провайдер учетных данных
+                .build()) {
+
+            // Создаем HTTP-запрос
+            HttpPost request = new HttpPost(serviceProperty.get("openai.host"));
+            request.setHeader("Content-Type", "application/json; charset=utf-8");
+            request.setHeader("Accept", "application/json");
+            request.setHeader("Authorization",
+                    "Bearer " + new String(App
+                            .get(SecurityComponent.class)
+                            .get(serviceProperty.get("openai.security.alias"))
+                    ));
+
+            request.setEntity(new StringEntity(String.format("""
+                            {
+                                  "model": "gpt-4o",
+                                  "messages": [
+                                    {
+                                      "role": "developer",
+                                      "content": "%s"
+                                    },
+                                    {
+                                      "role": "user",
+                                      "content": "%s"
+                                    }
+                                  ]
+                                }""",
+
+                    escape(prev),
+                    escape(question)
+            ), "UTF-8"));
+            // Выполняем запрос
+            try (CloseableHttpResponse response = httpClient.execute(request)) {
+                // Получаем и выводим ответ
+                return getHttpResponse(
+                        response.getStatusLine().getStatusCode(),
+                        EntityUtils.toString(response.getEntity(), "UTF-8")
                 );
+            }
+        } catch (IOException e) {
+            App.error(e);
+            return getHttpResponse(
+                    -1,
+                    null
+            );
+        }
+
+    }
+
+    public static HttpResponse getHttpResponse(int status, String body) {
+        HttpResponse httpResponse = new HttpResponse();
+        httpResponse.setStatusCode(status);
+        if (status == -1) {
+            httpResponse.addException("Запроса не было");
+        } else {
+            httpResponse.setStatusDesc(HttpStatus.valueOf(status));
+        }
+        if (httpResponse.getException() == null) {
+            try {
+                httpResponse.setBody(body);
+
+            } catch (Exception e) {
+                httpResponse.addException(e);
+            }
+        }
+        return httpResponse;
     }
 
     public static String escape(String text) {
