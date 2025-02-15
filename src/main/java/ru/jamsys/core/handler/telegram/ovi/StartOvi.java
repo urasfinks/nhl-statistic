@@ -30,19 +30,18 @@ import java.util.Map;
 @Getter
 @Component
 @RequestMapping("/start/**")
-public class Start implements PromiseGenerator, OviGoalsBotCommandHandler {
+public class StartOvi implements PromiseGenerator, OviGoalsBotCommandHandler {
 
     private final ServicePromise servicePromise;
 
-    public Start(ServicePromise servicePromise) {
+    public StartOvi(ServicePromise servicePromise) {
         this.servicePromise = servicePromise;
     }
 
     @Override
     public Promise generate() {
         return servicePromise.get(getClass().getSimpleName(), 12_000L)
-                .extension(promise -> promise.setRepositoryMapClass(Start.class, this))
-                //TODO: кейс нет ресурса, и в итоге не отлетели логи ошибки по timeout 1сек
+                .extension(promise -> promise.setRepositoryMapClass(StartOvi.class, this))
                 .thenWithResource("subscribe", JdbcResource.class, (_, _, promise, jdbcResource) -> {
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
                     List<Map<String, Object>> result = jdbcResource.execute(new JdbcRequest(JTOviSubscriber.SELECT)
