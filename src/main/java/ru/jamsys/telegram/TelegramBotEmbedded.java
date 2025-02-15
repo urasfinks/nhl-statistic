@@ -122,6 +122,12 @@ public class TelegramBotEmbedded extends TelegramLongPollingBot implements Teleg
         }
         if (data.startsWith("/")) {
             if (idChat < 0) {
+                if (
+                        idChat == -4748226035L //Breast Feeding Feedback
+                        || idChat == -4739098379L //NHL stats bot
+                ) {
+                    return;
+                }
                 send(UtilTelegramMessage.message(
                         idChat,
                         "Группы не поддерживаются",
