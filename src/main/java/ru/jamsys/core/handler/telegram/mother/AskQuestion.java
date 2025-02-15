@@ -46,6 +46,29 @@ public class AskQuestion implements PromiseGenerator, MotherBotCommandHandler {
                         promise.skipAllStep("wait question");
                         return;
                     }
+                    String question = telegramContext.getUriParameters().get("question");
+                    if (question == null || question.trim().isEmpty()) {
+                        RegisterNotification.add(new TelegramNotification(
+                                telegramContext.getIdChat(),
+                                telegramContext.getTelegramBot().getBotUsername(),
+                                "❌ Пустой вопрос",
+                                null,
+                                null
+                        ));
+                        promise.skipAllStep("question is empty");
+                        return;
+                    }
+                    if (question.length() > 300) {
+                        RegisterNotification.add(new TelegramNotification(
+                                telegramContext.getIdChat(),
+                                telegramContext.getTelegramBot().getBotUsername(),
+                                "❌ Вопрос слишком большой",
+                                null,
+                                null
+                        ));
+                        promise.skipAllStep("question too large");
+                        return;
+                    }
                     RegisterNotification.add(new TelegramNotification(
                             telegramContext.getIdChat(),
                             telegramContext.getTelegramBot().getBotUsername(),
@@ -56,13 +79,13 @@ public class AskQuestion implements PromiseGenerator, MotherBotCommandHandler {
                 })
                 .then("request", (atomicBoolean, promiseTask, promise) -> {
                     TelegramCommandContext telegramContext = promise.getRepositoryMapClass(TelegramCommandContext.class);
-                    //YandexLlmRequest yandexRequest = new YandexLlmRequest(telegramContext.getUriParameters().get("question"));
-                    OpenAiRequest yandexRequest = new OpenAiRequest(telegramContext.getUriParameters().get("question"));
-                    Promise req = yandexRequest.generate().run().await(50_000L);
+                    //YandexLlmRequest request = new YandexLlmRequest(telegramContext.getUriParameters().get("question"));
+                    OpenAiRequest request = new OpenAiRequest(telegramContext.getUriParameters().get("question"));
+                    Promise req = request.generate().run().await(30_000L);
                     if (req.isException()) {
                         throw req.getExceptionSource();
                     }
-                    MotherResponse motherResponse = yandexRequest.getMotherResponse();
+                    MotherResponse motherResponse = request.getMotherResponse();
                     if (motherResponse.isError()) {
                         if (motherResponse.isRetry()) {
                             RegisterNotification.add(new TelegramNotification(
