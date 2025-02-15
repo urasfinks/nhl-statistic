@@ -34,7 +34,7 @@ public class MotherResponse {
         }
         StringBuilder sb = new StringBuilder();
         recommendations.forEach(s -> sb.append("🔸 ").append(s).append("\n"));
-        sb.append("\nЕсли есть ещё вопросы, я с радостью подскажу! 😊 /ask_question");
+        sb.append("\nЕсли есть ещё вопросы, я с радостью подскажу! 😊");
         return sb.toString();
     }
 

@@ -1,5 +1,6 @@
 package ru.jamsys.telegram;
 
+import lombok.Getter;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
@@ -38,6 +39,7 @@ public class TelegramBotEmbedded extends TelegramLongPollingBot implements Teleg
     private final Map<Long, String> stepHandler;
 
     private static final TelegramBotsApi api;
+
 
     static {
         try {
@@ -99,6 +101,10 @@ public class TelegramBotEmbedded extends TelegramLongPollingBot implements Teleg
         }
         String remove = stepHandler.remove(idChat);
 
+        if (remove == null && notCommandPrefix != null) {
+            remove = notCommandPrefix;
+        }
+
         // Тут 2 варианта:
         // 1) Приходит чистое сообщение от пользователя
         // 2) Приходит ButtonCallbackData - подразумевает, что имеет полный путь /command/?args=...
@@ -106,6 +112,7 @@ public class TelegramBotEmbedded extends TelegramLongPollingBot implements Teleg
         if (remove != null && msg.hasMessage() && data.startsWith("/")) {
             remove = null;
         }
+
         if (remove != null) {
             try {
                 data = remove + Util.urlEncode(data);
@@ -113,6 +120,7 @@ public class TelegramBotEmbedded extends TelegramLongPollingBot implements Teleg
                 App.error(e);
             }
         }
+        System.out.println(data);
         if (data.startsWith("/")) {
             if (idChat < 0) {
                 send(UtilTelegramMessage.message(
@@ -213,6 +221,16 @@ public class TelegramBotEmbedded extends TelegramLongPollingBot implements Teleg
     @Override
     public void setMyCommands(SetMyCommands setMyCommands) throws TelegramApiException {
         execute(setMyCommands);
+    }
+
+    @Getter
+    private String notCommandPrefix = null; //Если приход чистое сообщение от пользователя без команды и нет данных из шага
+
+
+    @Override
+    public TelegramSender setNotCommandPrefix(String notCommandPrefix) {
+        this.notCommandPrefix = notCommandPrefix;
+        return this;
     }
 
     @Override

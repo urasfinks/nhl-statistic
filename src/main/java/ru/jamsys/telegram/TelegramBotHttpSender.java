@@ -81,6 +81,12 @@ public class TelegramBotHttpSender implements TelegramSender {
         // Как будто для Sender не надо ничего высылать по командам
     }
 
+    @Override
+    public TelegramSender setNotCommandPrefix(String notCommandPrefix) {
+        // Для реализации http предполагается только рассылка без возможности обрабатывать сообщения
+        return this;
+    }
+
     private UtilTelegramResponse.Result httpSend(long idChat, String data, String apiMethod) {
         //Util.logConsole(getClass(), idChat + ">>" + data);
         if (data == null) {

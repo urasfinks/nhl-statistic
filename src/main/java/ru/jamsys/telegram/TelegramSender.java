@@ -20,4 +20,6 @@ public interface TelegramSender {
 
     void setMyCommands(SetMyCommands setMyCommands) throws TelegramApiException;
 
+    TelegramSender setNotCommandPrefix(String notCommandPrefix);
+
 }

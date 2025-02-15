@@ -92,8 +92,9 @@ public class TelegramBotManager implements LifeCycleComponent {
                         getMotherBotProperty(),
                         App.get(RouteGenerator.class).getRouterRepository(MotherBotCommandHandler.class)
                 )
+                        .setNotCommandPrefix("/ask_question/?question=")
                         .setMyCommands(new SetMyCommands(new ArrayListBuilder<BotCommand>()
-                                .append(new BotCommand("/ask_question", "Задать вопрос")),
+                                .append(new BotCommand("/start", "Старт")),
                                 new BotCommandScopeDefault(),
                                 null
                         ));

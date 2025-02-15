@@ -68,7 +68,7 @@ public class AskQuestion implements PromiseGenerator, MotherBotCommandHandler {
                             RegisterNotification.add(new TelegramNotification(
                                     telegramContext.getIdChat(),
                                     telegramContext.getTelegramBot().getBotUsername(),
-                                    "⏱️ " + motherResponse.getError() + "\nПопробуйте задать вопрос позже /ask_question",
+                                    "⏱️ " + motherResponse.getError() + "\nПопробуйте задать вопрос позже",
                                     null,
                                     null
                             ));
@@ -76,7 +76,7 @@ public class AskQuestion implements PromiseGenerator, MotherBotCommandHandler {
                             RegisterNotification.add(new TelegramNotification(
                                     telegramContext.getIdChat(),
                                     telegramContext.getTelegramBot().getBotUsername(),
-                                    "❌ " + motherResponse.getError() + "\nЗадайте другой вопрос /ask_question",
+                                    "❌ " + motherResponse.getError() + "\nЗадайте другой вопрос",
                                     null,
                                     null
                             ));
