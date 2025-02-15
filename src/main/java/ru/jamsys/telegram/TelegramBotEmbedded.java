@@ -120,7 +120,6 @@ public class TelegramBotEmbedded extends TelegramLongPollingBot implements Teleg
                 App.error(e);
             }
         }
-        System.out.println(data);
         if (data.startsWith("/")) {
             if (idChat < 0) {
                 send(UtilTelegramMessage.message(

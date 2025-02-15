@@ -254,8 +254,7 @@ class NhlStatisticApplicationTest {
                 .generate()
                 .run()
                 .await(50_000L);
-        System.out.println(stat.getCountGoal().get());
-
+        Util.logConsole(getClass(), stat.getCountGoal().get() + "");
     }
 
     @Test

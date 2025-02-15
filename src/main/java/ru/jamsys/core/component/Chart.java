@@ -198,9 +198,7 @@ public class Chart extends RepositoryPropertiesField {
         chart.setAntiAlias(true);
 
         try {
-
             ChartUtils.saveChartAsPNG(file, chart, 800, 600); // Ширина и высота изображения
-            //System.out.println("График сохранен в файл: " + file.getAbsolutePath());
         } catch (IOException e) {
             e.printStackTrace();
         }

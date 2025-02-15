@@ -108,7 +108,6 @@ public class NhlStatisticApplication {
                         break;
                     }
                 }
-                System.out.println(System.currentTimeMillis() - start);
                 if (a.compareAndSet(false, true)) {
                     Util.sleepMs(5000);
                     Util.logConsoleJson(NhlStatisticApplication.class, "Timing send: ", avg.flushInstance());
