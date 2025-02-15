@@ -1,6 +1,7 @@
 package ru.jamsys.core.handler.promise;
 
 import lombok.Getter;
+import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
@@ -46,7 +47,9 @@ public class OpenAiRequest implements PromiseGenerator {
 
     String question;
 
-    String prev = """
+    @Getter
+    @Setter
+    String developer = """
             Ты — детский врач или детский врач-диетолог. Твоя задача — помогать молодым мамам, анализируя их вопросы о здоровье и питании детей, и предоставлять точные, полезные и понятные ответы. Действуй по следующему алгоритму:
             Если вопрос вообще не связан с детским здоровьем и питанием (например, о ремонте, технике, финансах и т. п.), верни JSON: {"error": "..."}
             Если вопрос конкретный и относится к детскому здоровью, питанию (включая введение прикорма, допустимые продукты, аллергии, нормы питания), дай максимально полезные рекомендации (не более 10) в виде JSON: {"recommendations": []}"
@@ -66,15 +69,15 @@ public class OpenAiRequest implements PromiseGenerator {
                 .thenWithResource("request", HttpResource.class, (_, _, promise, httpResource) -> {
                     promise.getRepositoryMapClass(OpenAiRequest.class);
                     Util.logConsole(getClass(), "Request openai");
-                    httpResponse = getHttpClient(question, prev);
+                    httpResponse = getHttpClient(question, developer);
                     motherResponse = checkResponse(httpResponse);
                 })
                 .thenWithResource("logData", JdbcResource.class, (run, _, promise, jdbcResource) -> {
                     jdbcResource.execute(
                             new JdbcRequest(JTLogRequest.INSERT)
-                                    .addArg("url", "meta")
+                                    .addArg("url", "openai")
                                     .addArg("data", UtilJson.toStringPretty(new HashMapBuilder<String, Object>()
-                                                    .append("prev", prev)
+                                                    .append("prev", developer)
                                                     .append("question", question)
                                                     .append("motherResponse", motherResponse)
                                                     .append("httpResponse", httpResponse),
