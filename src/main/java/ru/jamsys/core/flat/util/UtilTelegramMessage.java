@@ -1,10 +1,13 @@
 package ru.jamsys.core.flat.util;
 
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
+import org.telegram.telegrambots.meta.api.methods.AnswerPreCheckoutQuery;
+import org.telegram.telegrambots.meta.api.methods.invoices.SendInvoice;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.payments.LabeledPrice;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import ru.jamsys.core.flat.util.telegram.Button;
@@ -59,9 +62,12 @@ public class UtilTelegramMessage {
             return msg.getCallbackQuery().getFrom().getIsBot();
         } else if (msg.hasMessage()) {
             return msg.getMessage().getFrom().getIsBot();
+        } else if (msg.hasPreCheckoutQuery()) {
+            return false;
+        } else {
+            // Если какие-то обходные пути будут, лучше прикрыть, так как я не знаю
+            return true;
         }
-        // Если какие-то обходные пути будут, лучше прикрыть, так как я не знаю
-        return true;
     }
 
     public static EditMessageText editMessage(Update msg, String data) {
@@ -97,6 +103,48 @@ public class UtilTelegramMessage {
         InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
         markup.setKeyboard(list);
         message.setReplyMarkup(markup);
+    }
+
+    public static SendInvoice getInvoice(
+            Long chatId,
+            String title,
+            String description,
+            String rqUid,
+            String providerToken,
+            String labelPrice,
+            int amount,
+            String playload
+    ) {
+        // Создаем инвойс
+        SendInvoice sendInvoice = new SendInvoice();
+        sendInvoice.setChatId(chatId.toString());
+        sendInvoice.setTitle(title);
+        sendInvoice.setDescription(description);
+        sendInvoice.setPayload(rqUid); // Уникальный идентификатор платежа
+        sendInvoice.setProviderToken(providerToken); // Токен платежного провайдера
+        sendInvoice.setCurrency("RUB"); // Валюта
+        sendInvoice.setPrices(List.of(new LabeledPrice(labelPrice, amount))); // Цена в копейках (10000 = 100 рублей)
+        sendInvoice.setStartParameter(playload);
+
+        // Добавляем кнопку "Оплатить"
+        InlineKeyboardMarkup keyboardMarkup = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
+        List<InlineKeyboardButton> row = new ArrayList<>();
+        InlineKeyboardButton payButton = new InlineKeyboardButton();
+        payButton.setText("Оплатить");
+        payButton.setPay(true);
+        row.add(payButton);
+        keyboard.add(row);
+        keyboardMarkup.setKeyboard(keyboard);
+        sendInvoice.setReplyMarkup(keyboardMarkup);
+        return sendInvoice;
+    }
+
+    public static AnswerPreCheckoutQuery getPreCheckAnswer(String id, boolean valid) {
+        AnswerPreCheckoutQuery answer = new AnswerPreCheckoutQuery();
+        answer.setPreCheckoutQueryId(id);
+        answer.setOk(valid);
+        return answer;
     }
 
     public static SendMessage message(Long idChat, String data, List<Button> listButtons) {

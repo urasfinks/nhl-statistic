@@ -94,7 +94,9 @@ public class TelegramBotManager implements LifeCycleComponent {
                 )
                         .setNotCommandPrefix("/ask_question/?question=")
                         .setMyCommands(new SetMyCommands(new ArrayListBuilder<BotCommand>()
-                                .append(new BotCommand("/feedback", "Обратная связь")),
+                                .append(new BotCommand("/feedback", "Обратная связь"))
+                                //.append(new BotCommand("/pay", "Купить подписку"))
+                                ,
                                 new BotCommandScopeDefault(),
                                 null
                         ));

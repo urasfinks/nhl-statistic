@@ -90,16 +90,29 @@ public class TelegramBotEmbedded extends TelegramLongPollingBot implements Teleg
             );
         }
         Long idChat = UtilTelegramMessage.getIdChat(msg);
+
+        // Если это запрос от Telegram Payments, фиктивно подменяем idChat, так как у pre_checkout_query нет id_chat
+        if (msg.hasPreCheckoutQuery()) {
+            idChat = msg.getPreCheckoutQuery().getFrom().getId();
+        }
         if (idChat == null) {
             return;
         }
         String data = UtilTelegramMessage.getData(msg);
         if (data == null) {
-            // Если надо допустим принять картинку или видео
-            // Сообщения же реально может не быть
+            // Сообщения может не быть
+            // Если надо допустим принять картинку или видео, конечно при условии наличия stepHandler
             data = "";
         }
-        String remove = stepHandler.remove(idChat);
+
+        String remove;
+        if (msg.hasMessage() && msg.getMessage().hasSuccessfulPayment()) {
+            remove = "/successful_payment";
+        } else if (msg.hasPreCheckoutQuery()) {
+            remove = "/pre_checkout_query";
+        } else {
+            remove = stepHandler.remove(idChat);
+        }
 
         if (remove == null && notCommandPrefix != null) {
             remove = notCommandPrefix;
@@ -124,7 +137,7 @@ public class TelegramBotEmbedded extends TelegramLongPollingBot implements Teleg
             if (idChat < 0) {
                 if (
                         idChat == -4748226035L //Breast Feeding Feedback
-                        || idChat == -4739098379L //NHL stats bot
+                                || idChat == -4739098379L //NHL stats bot
                 ) {
                     return;
                 }
@@ -150,7 +163,9 @@ public class TelegramBotEmbedded extends TelegramLongPollingBot implements Teleg
             if (match == null) {
                 send(UtilTelegramMessage.message(
                         idChat,
-                        "Команда " + UtilTelegramMessage.getData(msg) + " не поддерживается",
+                        // Изначально выводился запрос из данных запроса: UtilTelegramMessage.getData(msg)
+                        // Но реально запрос может быть переопределён из notCommandPrefix или msg.hasPreCheckoutQuery()
+                        "Команда " + data + " не поддерживается",
                         null
                 ), idChat);
                 return;
@@ -191,16 +206,14 @@ public class TelegramBotEmbedded extends TelegramLongPollingBot implements Teleg
 
     @SuppressWarnings("all")
     public <T extends Serializable, Method extends BotApiMethod<T>> UtilTelegramResponse.Result send(Method method, Long idChat) {
-        if (idChat == null) {
-            return new UtilTelegramResponse.Result()
-                    .setException(UtilTelegramResponse.ResultException.ID_CHAT_EMPTY)
-                    .setCause("idChat is null");
-        }
         long startTime = System.currentTimeMillis();
         UtilTelegramResponse.Result sandbox = UtilTelegramResponse.sandbox(result -> {
             result.setResponse(execute(method));
         });
-        if (UtilTelegramResponse.ResultException.REVOKE.equals(sandbox.getException())) {
+        if (
+                UtilTelegramResponse.ResultException.REVOKE.equals(sandbox.getException())
+                        && idChat != null
+        ) {
             new RemoveSubscriberOvi(idChat).generate().run();
         }
         sandbox.setRequestTiming(System.currentTimeMillis() - startTime);
