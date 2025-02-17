@@ -45,7 +45,6 @@ public class FeedBack implements PromiseGenerator, MotherBotCommandHandler {
                         promise.skipAllStep("wait question");
                         return;
                     }
-                    ;
                     RegisterNotification.add(new ArrayListBuilder<TelegramNotification>()
                             .append(new TelegramNotification(
                                     -4748226035L, //Breast Feeding Feedback
