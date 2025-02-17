@@ -14,7 +14,7 @@ import ru.jamsys.core.flat.util.UtilListSort;
 import ru.jamsys.core.flat.util.UtilNHL;
 import ru.jamsys.core.flat.util.telegram.Button;
 import ru.jamsys.core.handler.promise.RegisterNotification;
-import ru.jamsys.core.handler.promise.Tank01Request;
+import ru.jamsys.core.handler.promise.RequestTank01;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
 import ru.jamsys.tank.data.NHLTeamSchedule;
@@ -41,15 +41,15 @@ public class Schedule implements PromiseGenerator, OviGoalsBotCommandHandler {
     public Promise generate() {
         return servicePromise.get(getClass().getSimpleName(), 12_000L)
                 .extension(promise -> promise.setRepositoryMapClass(Schedule.class, this))
-                .then("requestGameInSeason", new Tank01Request(() -> NHLTeamSchedule.getUri(
+                .then("requestGameInSeason", new RequestTank01(() -> NHLTeamSchedule.getUri(
                         UtilNHL.getOvi().getTeamID(),
                         UtilNHL.getActiveSeasonOrNext() + ""
                 )).generate())
                 .then("parseGameInSeason", (_, _, promise) -> {
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
-                    Tank01Request response = promise
+                    RequestTank01 response = promise
                             .getRepositoryMapClass(Promise.class, "requestGameInSeason")
-                            .getRepositoryMapClass(Tank01Request.class);
+                            .getRepositoryMapClass(RequestTank01.class);
                     NHLTeamSchedule.Instance instance = new NHLTeamSchedule.Instance(response.getResponseData())
                             .initAlreadyGame()
                             .getFutureGame()

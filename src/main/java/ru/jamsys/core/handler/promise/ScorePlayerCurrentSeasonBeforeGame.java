@@ -55,29 +55,29 @@ public class ScorePlayerCurrentSeasonBeforeGame implements PromiseGenerator {
                         promise.skipAllStep("already cache");
                     }
                 })
-                .then("requestGameInSeason", new Tank01Request(() -> NHLTeamSchedule.getUri(
+                .then("requestGameInSeason", new RequestTank01(() -> NHLTeamSchedule.getUri(
                         getPlayer().getTeamID(),
                         UtilNHL.getActiveSeasonOrNext() + ""
                 )).generate())
                 .then("parseGameInSeason", (_, _, promise) -> {
-                    Tank01Request response = promise
+                    RequestTank01 response = promise
                             .getRepositoryMapClass(Promise.class, "requestGameInSeason")
-                            .getRepositoryMapClass(Tank01Request.class);
+                            .getRepositoryMapClass(RequestTank01.class);
                     NHLTeamSchedule.Instance instance = new NHLTeamSchedule.Instance(response.getResponseData());
                     setAllGameInSeason(instance);
                     getLisIdGameInSeason().addAll(instance.getIdGame());
                     //Вычитаем текущий матч так как надо считать кол-во голов до матча
                     getLisIdGameInSeason().remove(getIdGame());
                 })
-                .then("requestGamesForPlayer", new Tank01Request(() -> NHLGamesForPlayer.getUri(
+                .then("requestGamesForPlayer", new RequestTank01(() -> NHLGamesForPlayer.getUri(
                         getPlayer().getPlayerID()
                 )).generate())
                 .then("parseGamesForPlayer", (_, _, promise) -> {
-                    Tank01Request tank01Request = promise
+                    RequestTank01 requestTank01 = promise
                             .getRepositoryMapClass(Promise.class, "requestGamesForPlayer")
-                            .getRepositoryMapClass(Tank01Request.class);
+                            .getRepositoryMapClass(RequestTank01.class);
                     NHLGamesForPlayer.getOnlyGoalsFilter(
-                            tank01Request.getResponseData(),
+                            requestTank01.getResponseData(),
                             getLisIdGameInSeason()
                     ).forEach((_, countGoal) -> getCountGoal().addAndGet(countGoal));
                 })

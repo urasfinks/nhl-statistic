@@ -212,13 +212,13 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                         if (!run.get()) {
                             return;
                         }
-                        Tank01Request tank01Request = new Tank01Request(() -> NHLBoxScore.getUri(idGame))
+                        RequestTank01 requestTank01 = new RequestTank01(() -> NHLBoxScore.getUri(idGame))
                                 .setAlwaysRequestApi(true);
-                        Promise req = tank01Request.generate().run().await(50_000L);
+                        Promise req = requestTank01.generate().run().await(50_000L);
                         if (req.isException()) {
                             throw req.getExceptionSource();
                         }
-                        String data = tank01Request.getResponseData();
+                        String data = requestTank01.getResponseData();
                         try { // Если что-то не спарсилось - другие игры не должны страдать
                             NHLBoxScore.Instance currentBoxScore = new NHLBoxScore.Instance(data);
                             if (currentBoxScore.isPostponed()) {
@@ -410,12 +410,12 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                         promise.goTo("saveData");
                     }
                 })
-                .then("getPlayerList", new Tank01Request(NHLPlayerList::getUri).generate())
+                .then("getPlayerList", new RequestTank01(NHLPlayerList::getUri).generate())
                 .then("createNotification", (atomicBoolean, _, promise) -> {
                     Context context = promise.getRepositoryMapClass(Context.class);
-                    Tank01Request response = promise
+                    RequestTank01 response = promise
                             .getRepositoryMapClass(Promise.class, "getPlayerList")
-                            .getRepositoryMapClass(Tank01Request.class);
+                            .getRepositoryMapClass(RequestTank01.class);
 
                     Map<String, Set<Long>> startGameNotify = new HashMap<>(); // key - idGame
                     // Если мы пришли к тому, что надо контролировать задвоения на отправку одному пользователю

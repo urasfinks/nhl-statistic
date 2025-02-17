@@ -3,22 +3,22 @@ package ru.jamsys.core.handler.promise;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-class YandexLlmRequestTest {
+class RequestYandexLlmTest {
 
     @Test
     void escape() {
-        Assertions.assertEquals("Привет", YandexLlmRequest.escape("Привет"));
-        Assertions.assertEquals("", YandexLlmRequest.escape(""));
-        Assertions.assertEquals("Привет\\nСтрана", YandexLlmRequest.escape("""
+        Assertions.assertEquals("Привет", RequestYandexLlm.escape("Привет"));
+        Assertions.assertEquals("", RequestYandexLlm.escape(""));
+        Assertions.assertEquals("Привет\\nСтрана", RequestYandexLlm.escape("""
                 Привет
                 Страна"""));
-        Assertions.assertEquals("Привет\\\"Страна", YandexLlmRequest.escape("""
+        Assertions.assertEquals("Привет\\\"Страна", RequestYandexLlm.escape("""
                 Привет"Страна"""));
     }
 
     @Test
     void checkResponse()  {
-        Assertions.assertEquals("Уточните, пожалуйста, что именно происходит с ребёнком? Это поможет лучше понять вашу ситуацию и предложить конкретные рекомендации.", YandexLlmRequest.checkResponse("""
+        Assertions.assertEquals("Уточните, пожалуйста, что именно происходит с ребёнком? Это поможет лучше понять вашу ситуацию и предложить конкретные рекомендации.", RequestYandexLlm.checkResponse("""
                 {
                     "result": {
                         "alternatives": [
@@ -41,7 +41,7 @@ class YandexLlmRequestTest {
                         "modelVersion": "23.10.2024"
                     }
                 }""").getClarification());
-        Assertions.assertEquals("Ошибка обработки ответа", YandexLlmRequest.checkResponse("""
+        Assertions.assertEquals("Ошибка обработки ответа", RequestYandexLlm.checkResponse("""
                 {
                     "result": {
                         "alternatives1": [
@@ -65,7 +65,7 @@ class YandexLlmRequestTest {
                     }
                 }""").getError());
 
-        Assertions.assertEquals("[Проверьте, что положение ребёнка при кормлении удобное и правильное. Возможно, стоит попробовать разные позы для кормления, чтобы найти наиболее удобную для малыша., Убедитесь, что у ребёнка нет проблем со здоровьем или дискомфорта, которые могут мешать ему брать грудь. Если есть сомнения, обратитесь к врачу., Возможно, ребёнок испытывает сложности с захватом груди из-за короткой уздечки языка. Если это так, проконсультируйтесь с педиатром или консультантом по грудному вскармливанию., Будьте спокойны и расслаблены во время кормления. Ваши эмоции могут влиять на поведение ребёнка., Если ребёнок привык к бутылочке или другому виду кормления, перестройка на грудное кормление может занять некоторое время., Некоторые дети могут быть слишком сонными или уставшими, чтобы брать грудь. Попробуйте разбудить ребёнка и кормить его, когда он в более активном состоянии., Если вы используете какие-либо косметические средства, убедитесь, что они не имеют запаха, который может отталкивать ребёнка от груди., Обратитесь за помощью к консультанту по грудному вскармливанию или опытной кормящей маме. Они могут дать практические советы и поддержать вас.]", YandexLlmRequest.checkResponse("""
+        Assertions.assertEquals("[Проверьте, что положение ребёнка при кормлении удобное и правильное. Возможно, стоит попробовать разные позы для кормления, чтобы найти наиболее удобную для малыша., Убедитесь, что у ребёнка нет проблем со здоровьем или дискомфорта, которые могут мешать ему брать грудь. Если есть сомнения, обратитесь к врачу., Возможно, ребёнок испытывает сложности с захватом груди из-за короткой уздечки языка. Если это так, проконсультируйтесь с педиатром или консультантом по грудному вскармливанию., Будьте спокойны и расслаблены во время кормления. Ваши эмоции могут влиять на поведение ребёнка., Если ребёнок привык к бутылочке или другому виду кормления, перестройка на грудное кормление может занять некоторое время., Некоторые дети могут быть слишком сонными или уставшими, чтобы брать грудь. Попробуйте разбудить ребёнка и кормить его, когда он в более активном состоянии., Если вы используете какие-либо косметические средства, убедитесь, что они не имеют запаха, который может отталкивать ребёнка от груди., Обратитесь за помощью к консультанту по грудному вскармливанию или опытной кормящей маме. Они могут дать практические советы и поддержать вас.]", RequestYandexLlm.checkResponse("""
                 {
                     "result": {
                   "alternatives": [
@@ -93,7 +93,7 @@ class YandexLlmRequestTest {
                 }
                 }""").getRecommendations().toString());
 
-        Assertions.assertEquals("Ошибка, попробуйте позже", YandexLlmRequest.checkResponse("""
+        Assertions.assertEquals("Ошибка, попробуйте позже", RequestYandexLlm.checkResponse("""
                 {"error":{"grpcCode":16,"httpCode":401,"message":"The token has expired 2025-02-13T06:29:05.678288657Z. Now 2025-02-13T10:01:04.864921440Z, which is more than PT10M later","httpStatus":"Unauthorized","details":[]}}""").getError());
 
         //

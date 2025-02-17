@@ -75,12 +75,12 @@ class NhlStatisticApplicationTest {
     @SuppressWarnings("unused")
         //@Test
     void testRequest() {
-        Tank01Request tank01Request = new Tank01Request(() -> NHLBoxScore.getUri("20241129_NYR@PHI"));
-        tank01Request.setOnlyCache(true);
-        tank01Request.generate()
+        RequestTank01 requestTank01 = new RequestTank01(() -> NHLBoxScore.getUri("20241129_NYR@PHI"));
+        requestTank01.setOnlyCache(true);
+        requestTank01.generate()
                 .run()
                 .await(60_000L, 200);
-        Util.logConsole(getClass(), tank01Request.getResponseData());
+        Util.logConsole(getClass(), requestTank01.getResponseData());
     }
 
     @SuppressWarnings("unused")
@@ -277,7 +277,7 @@ class NhlStatisticApplicationTest {
 
     //@Test
     void testYandexLlm() {
-        YandexLlmRequest stat = new YandexLlmRequest("Что делать, если ребёнок не хочет брать грудь?");
+        RequestYandexLlm stat = new RequestYandexLlm("Что делать, если ребёнок не хочет брать грудь?");
         stat
                 .generate()
                 .run()
@@ -288,18 +288,18 @@ class NhlStatisticApplicationTest {
 
     //@Test
     void testYandexToken() {
-        YandexTokenRequest stat = new YandexTokenRequest();
+        RequestYandexToken stat = new RequestYandexToken();
         stat
                 .generate()
                 .run()
                 .await(50_000L);
-        Util.logConsoleJson(getClass(), YandexTokenRequest.token);
+        Util.logConsoleJson(getClass(), RequestYandexToken.token);
 
     }
 
     //@Test
     void testOpenAi() {
-        OpenAiRequest stat = new OpenAiRequest("Что делать, если ребёнок не хочет брать грудь?");
+        RequestOpenAi stat = new RequestOpenAi("Что делать, если ребёнок не хочет брать грудь?");
         stat
                 .generate()
                 .run()

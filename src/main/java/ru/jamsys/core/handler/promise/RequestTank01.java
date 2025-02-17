@@ -28,7 +28,7 @@ import java.util.Map;
 //  Запрос к API Tank01
 
 @Accessors(chain = true)
-public class Tank01Request implements PromiseGenerator {
+public class RequestTank01 implements PromiseGenerator {
 
     @Getter
     private String responseData;
@@ -45,16 +45,16 @@ public class Tank01Request implements PromiseGenerator {
     @Setter
     private boolean alwaysRequestApi = false;
 
-    public Tank01Request(Supplier<String> uriSupplier) {
+    public RequestTank01(Supplier<String> uriSupplier) {
         this.uriSupplier = uriSupplier;
     }
 
     @Override
     public Promise generate() {
         return App.get(ServicePromise.class).get(getClass().getSimpleName(), 60_000L)
-                .extension(promise -> promise.setRepositoryMapClass(Tank01Request.class, this))
+                .extension(promise -> promise.setRepositoryMapClass(RequestTank01.class, this))
                 .thenWithResource("select", JdbcResource.class, (_, _, promise, jdbcResource) -> {
-                    promise.getRepositoryMapClass(Tank01Request.class);
+                    promise.getRepositoryMapClass(RequestTank01.class);
                     responseData = null; // Обнуляем данные, если последовательные цепочки
                     List<Map<String, Object>> execute = jdbcResource.execute(new JdbcRequest(JTHttpCache.SELECT)
                             .addArg("url", uriSupplier.get())
@@ -80,14 +80,14 @@ public class Tank01Request implements PromiseGenerator {
                     }
                 })
                 .thenWithResource("request", HttpResource.class, (_, _, promise, httpResource) -> {
-                    promise.getRepositoryMapClass(Tank01Request.class);
+                    promise.getRepositoryMapClass(RequestTank01.class);
                     Util.logConsole(getClass(), "Request: " + uriSupplier.get() + "; isAlwaysRequestApi: " + alwaysRequestApi);
                     HttpResponse execute = httpResource.execute(getHttpClient(uriSupplier.get()));
                     checkResponse(execute);
                     responseData = execute.getBody();
                 })
                 .thenWithResource("insert", JdbcResource.class, (_, _, promise, jdbcResource) -> {
-                    promise.getRepositoryMapClass(Tank01Request.class);
+                    promise.getRepositoryMapClass(RequestTank01.class);
                     jdbcResource.execute(
                             new JdbcRequest(dataFindInDb ? JTHttpCache.UPDATE : JTHttpCache.INSERT)
                                     .addArg("url", uriSupplier.get())

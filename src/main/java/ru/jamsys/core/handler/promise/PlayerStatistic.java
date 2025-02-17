@@ -81,15 +81,15 @@ public class PlayerStatistic implements PromiseGenerator {
                     setDate(UtilDate.timestampFormatUTC(UtilDate.getTimestamp() + 3 * 60 * 60, "dd.MM.yyyy HH:mm"));
                 })
                 // На текущий момент мы не знаем конкретную игру, поэтому получаем всё
-                .then("requestGameInSeason", new Tank01Request(() -> NHLTeamSchedule.getUri(
+                .then("requestGameInSeason", new RequestTank01(() -> NHLTeamSchedule.getUri(
                         getPlayer().getTeamID(),
                         UtilNHL.getActiveSeasonOrNext() + ""
                 )).generate())
                 .then("parseGameInSeason", (_, _, promise) -> {
                     promise.getRepositoryMapClass(PlayerStatistic.class);
-                    Tank01Request response = promise
+                    RequestTank01 response = promise
                             .getRepositoryMapClass(Promise.class, "requestGameInSeason")
-                            .getRepositoryMapClass(Tank01Request.class);
+                            .getRepositoryMapClass(RequestTank01.class);
 
                     NHLTeamSchedule.Instance instance = new NHLTeamSchedule.Instance(response.getResponseData())
                             .initAlreadyGame();
@@ -135,12 +135,12 @@ public class PlayerStatistic implements PromiseGenerator {
                         getLisIdGameInSeason().remove(getIdGameToday());
                     }
                 })
-                .then("requestGameByPlayer", new Tank01Request(() -> NHLGamesForPlayer.getUri(getPlayer().getPlayerID())).generate())
+                .then("requestGameByPlayer", new RequestTank01(() -> NHLGamesForPlayer.getUri(getPlayer().getPlayerID())).generate())
                 .then("parseGameByPlayer", (_, _, promise) -> {
                     promise.getRepositoryMapClass(PlayerStatistic.class);
-                    Tank01Request response = promise
+                    RequestTank01 response = promise
                             .getRepositoryMapClass(Promise.class, "requestGameByPlayer")
-                            .getRepositoryMapClass(Tank01Request.class);
+                            .getRepositoryMapClass(RequestTank01.class);
                     setScoreCurrentSeasons(NHLGamesForPlayer.getAggregateStatistic(
                             response.getResponseData(),
                             getLisIdGameInSeason()

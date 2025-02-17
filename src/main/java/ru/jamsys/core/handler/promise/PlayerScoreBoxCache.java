@@ -42,12 +42,12 @@ public class PlayerScoreBoxCache implements PromiseGenerator {
         }
         return App.get(ServicePromise.class).get(getClass().getSimpleName(), 60_000L)
                 .extension(promise -> promise.setRepositoryMapClass(PlayerScoreBoxCache.class, this)) // Просто для отладки
-                .then("getScoreBox", new Tank01Request(() -> NHLBoxScore.getUri(getIdGame())).setOnlyCache(true).generate())
+                .then("getScoreBox", new RequestTank01(() -> NHLBoxScore.getUri(getIdGame())).setOnlyCache(true).generate())
                 .then("parseScoreBox", (_, _, promise) -> {
                     promise.getRepositoryMapClass(PlayerScoreBoxCache.class); // Для отладки
-                    Tank01Request response = promise
+                    RequestTank01 response = promise
                             .getRepositoryMapClass(Promise.class, "getScoreBox")
-                            .getRepositoryMapClass(Tank01Request.class);
+                            .getRepositoryMapClass(RequestTank01.class);
                     if (response.getResponseData() != null && !response.getResponseData().isEmpty()) {
                         try {
                             Map<String, Object> playerStat = NHLBoxScore.getPlayerStat(response.getResponseData(), getPlayer().getPlayerID());

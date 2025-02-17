@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import ru.jamsys.NhlStatisticApplication;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.flat.util.MotherResponse;
-import ru.jamsys.core.handler.promise.OpenAiRequest;
+import ru.jamsys.core.handler.promise.RequestOpenAi;
 import ru.jamsys.core.handler.promise.RegisterNotification;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
@@ -80,7 +80,7 @@ public class AskQuestion implements PromiseGenerator, MotherBotCommandHandler {
                 .then("request", (atomicBoolean, promiseTask, promise) -> {
                     TelegramCommandContext telegramContext = promise.getRepositoryMapClass(TelegramCommandContext.class);
                     //YandexLlmRequest request = new YandexLlmRequest(telegramContext.getUriParameters().get("question"));
-                    OpenAiRequest request = new OpenAiRequest(telegramContext.getUriParameters().get("question"));
+                    RequestOpenAi request = new RequestOpenAi(telegramContext.getUriParameters().get("question"));
                     Promise req = request.generate().run().await(30_000L);
                     if (req.isException()) {
                         throw req.getExceptionSource();

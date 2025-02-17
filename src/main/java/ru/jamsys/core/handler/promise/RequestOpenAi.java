@@ -39,7 +39,7 @@ import java.util.Map;
 // Одноконтекстный ChatGpt запрос
 
 @Accessors(chain = true)
-public class OpenAiRequest implements PromiseGenerator {
+public class RequestOpenAi implements PromiseGenerator {
 
     @Getter
     private MotherResponse motherResponse;
@@ -60,16 +60,16 @@ public class OpenAiRequest implements PromiseGenerator {
             Будь вежливым, поддерживающим и понимающим.
             Если вопрос требует срочного медицинского вмешательства, порекомендуй немедленно обратиться к врачу.""";
 
-    public OpenAiRequest(String question) {
+    public RequestOpenAi(String question) {
         this.question = question;
     }
 
     @Override
     public Promise generate() {
         return App.get(ServicePromise.class).get(getClass().getSimpleName(), 600_000L)
-                .extension(promise -> promise.setRepositoryMapClass(OpenAiRequest.class, this))
+                .extension(promise -> promise.setRepositoryMapClass(RequestOpenAi.class, this))
                 .thenWithResource("request", HttpResource.class, (_, _, promise, _) -> {
-                    promise.getRepositoryMapClass(OpenAiRequest.class);
+                    promise.getRepositoryMapClass(RequestOpenAi.class);
                     Util.logConsole(getClass(), "Request openai");
                     httpResponse = getHttpClient(question, gptContext);
                     motherResponse = checkResponse(httpResponse);
@@ -217,7 +217,7 @@ public class OpenAiRequest implements PromiseGenerator {
                         result
                 );
                 if (result.containsKey("error")) {
-                    Util.logConsole(OpenAiRequest.class, result.get("error").toString());
+                    Util.logConsole(RequestOpenAi.class, result.get("error").toString());
                     return new MotherResponse().setError("Ошибка, попробуйте позже").setRetry(true);
                 }
             } catch (Throwable th2) {

@@ -26,22 +26,22 @@ import java.util.Map;
 // Если использовать - надо включить в Min30Scheduler пересоздание токена yandex для iam proxy
 
 @Accessors(chain = true)
-public class YandexLlmRequest implements PromiseGenerator {
+public class RequestYandexLlm implements PromiseGenerator {
 
     @Getter
     private MotherResponse motherResponse;
 
     String question;
 
-    public YandexLlmRequest(String question) {
+    public RequestYandexLlm(String question) {
         this.question = question;
     }
 
     @Override
     public Promise generate() {
         return App.get(ServicePromise.class).get(getClass().getSimpleName(), 60_000L)
-                .extension(promise -> promise.setRepositoryMapClass(YandexLlmRequest.class, this)).thenWithResource("request", HttpResource.class, (_, _, promise, httpResource) -> {
-                    promise.getRepositoryMapClass(YandexLlmRequest.class);
+                .extension(promise -> promise.setRepositoryMapClass(RequestYandexLlm.class, this)).thenWithResource("request", HttpResource.class, (_, _, promise, httpResource) -> {
+                    promise.getRepositoryMapClass(RequestYandexLlm.class);
                     Util.logConsole(getClass(), "Request Yandex.LL");
                     HttpResponse execute = httpResource.execute(getHttpClient(question));
                     motherResponse = checkResponse(execute);
@@ -54,7 +54,7 @@ public class YandexLlmRequest implements PromiseGenerator {
         return new HttpConnectorDefault()
                 .setUrl(serviceProperty.get("yandex.llm.host"))
                 .setRequestHeader("Content-Type", "application/json")
-                .setRequestHeader("Authorization", "Bearer " + YandexTokenRequest.token)
+                .setRequestHeader("Authorization", "Bearer " + RequestYandexToken.token)
                 .setMethod(HttpMethodEnum.POST)
                 .setPostData(String.format("""
                                         {
@@ -115,7 +115,7 @@ public class YandexLlmRequest implements PromiseGenerator {
                         result
                 );
                 if (result.containsKey("error")) {
-                    Util.logConsole(OpenAiRequest.class, result.get("error").toString());
+                    Util.logConsole(RequestYandexLlm.class, result.get("error").toString());
                     return new MotherResponse().setError("Ошибка, попробуйте позже").setRetry(true);
                 }
             } catch (Throwable th2) {

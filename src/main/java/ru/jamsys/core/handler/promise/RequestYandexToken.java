@@ -24,7 +24,7 @@ import java.util.Map;
 
 @Setter
 @Getter
-public class YandexTokenRequest implements PromiseGenerator {
+public class RequestYandexToken implements PromiseGenerator {
 
     public static String token;
 
@@ -35,9 +35,9 @@ public class YandexTokenRequest implements PromiseGenerator {
     @Override
     public Promise generate() {
         return App.get(ServicePromise.class).get(getClass().getSimpleName(), 60_000L)
-                .extension(promise -> promise.setRepositoryMapClass(YandexTokenRequest.class, this))
+                .extension(promise -> promise.setRepositoryMapClass(RequestYandexToken.class, this))
                 .thenWithResource("request", HttpResource.class, (_, _, promise, httpResource) -> {
-                    promise.getRepositoryMapClass(YandexTokenRequest.class);
+                    promise.getRepositoryMapClass(RequestYandexToken.class);
                     Util.logConsole(getClass(), "Request Yandex.Token; isAlwaysRequestApi: " + alwaysRequestApi);
                     HttpResponse execute = httpResource.execute(getHttpClient());
                     token = checkResponse(execute);

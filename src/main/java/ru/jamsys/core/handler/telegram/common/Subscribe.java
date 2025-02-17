@@ -13,7 +13,7 @@ import ru.jamsys.core.flat.util.UtilNHL;
 import ru.jamsys.core.flat.util.UtilTelegramMessage;
 import ru.jamsys.core.flat.util.telegram.Button;
 import ru.jamsys.core.handler.promise.RegisterNotification;
-import ru.jamsys.core.handler.promise.Tank01Request;
+import ru.jamsys.core.handler.promise.RequestTank01;
 import ru.jamsys.core.handler.promise.UpdateScheduler;
 import ru.jamsys.core.jt.JTPlayerSubscriber;
 import ru.jamsys.core.promise.Promise;
@@ -75,14 +75,14 @@ public class Subscribe implements PromiseGenerator, NhlStatisticsBotCommandHandl
                         promise.goTo("findPlayerByIdMarker");
                     }
                 })
-                .then("getPlayerList", new Tank01Request(NHLPlayerList::getUri).generate())
+                .then("getPlayerList", new RequestTank01(NHLPlayerList::getUri).generate())
                 .then("findPlayerByName", (_, _, promise) -> {
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
                     List<Map<String, Object>> userList = NHLPlayerList.findByName(
                             context.getUriParameters().get("namePlayer"),
                             promise
                                     .getRepositoryMapClass(Promise.class, "getPlayerList")
-                                    .getRepositoryMapClass(Tank01Request.class).getResponseData()
+                                    .getRepositoryMapClass(RequestTank01.class).getResponseData()
                     );
                     if (userList.isEmpty()) {
                         RegisterNotification.add(new TelegramNotification(
@@ -139,14 +139,14 @@ public class Subscribe implements PromiseGenerator, NhlStatisticsBotCommandHandl
                         promise.skipAllStep("The subscription already exists");
                     }
                 })
-                .then("getPlayerList2", new Tank01Request(NHLPlayerList::getUri).generate())
+                .then("getPlayerList2", new RequestTank01(NHLPlayerList::getUri).generate())
                 .then("findPlayerById", (_, _, promise) -> {
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
                     NHLPlayerList.Player player = NHLPlayerList.findById(
                             context.getUriParameters().get("idPlayer"),
                             promise
                                     .getRepositoryMapClass(Promise.class, "getPlayerList2")
-                                    .getRepositoryMapClass(Tank01Request.class).getResponseData()
+                                    .getRepositoryMapClass(RequestTank01.class).getResponseData()
                     );
                     if (player == null) {
                         context.getTelegramBot().send(

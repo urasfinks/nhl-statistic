@@ -18,7 +18,7 @@ import ru.jamsys.core.flat.util.UtilRisc;
 import ru.jamsys.core.flat.util.UtilTrend;
 import ru.jamsys.core.handler.promise.PlayerStatistic;
 import ru.jamsys.core.handler.promise.RegisterNotification;
-import ru.jamsys.core.handler.promise.Tank01Request;
+import ru.jamsys.core.handler.promise.RequestTank01;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
 import ru.jamsys.tank.data.NHLGamesForPlayer;
@@ -49,11 +49,11 @@ public class Prediction implements PromiseGenerator, OviGoalsBotCommandHandler {
     public Promise generate() {
         return servicePromise.get(getClass().getSimpleName(), 12_000L)
                 .then("ovi", new PlayerStatistic(UtilNHL.getOvi(), UtilNHL.getOviScoreLastSeason()).generate())
-                .then("requestGameInSeason", new Tank01Request(() -> NHLTeamSchedule.getUri(
+                .then("requestGameInSeason", new RequestTank01(() -> NHLTeamSchedule.getUri(
                         UtilNHL.getOvi().getTeamID(),
                         UtilNHL.getActiveSeasonOrNext() + ""
                 )).generate())
-                .then("requestGamesForPlayer", new Tank01Request(() -> NHLGamesForPlayer.getUri(
+                .then("requestGamesForPlayer", new RequestTank01(() -> NHLGamesForPlayer.getUri(
                         UtilNHL.getOvi().getPlayerID()
                 )).generate())
                 .then("send", (run, _, promise) -> {
@@ -75,21 +75,21 @@ public class Prediction implements PromiseGenerator, OviGoalsBotCommandHandler {
                         return;
                     }
                     // ----------------
-                    Tank01Request tank01Request = promise
+                    RequestTank01 requestTank01 = promise
                             .getRepositoryMapClass(Promise.class, "requestGamesForPlayer")
-                            .getRepositoryMapClass(Tank01Request.class);
+                            .getRepositoryMapClass(RequestTank01.class);
 
                     // -- Игры сезона --
-                    Tank01Request response = promise
+                    RequestTank01 response = promise
                             .getRepositoryMapClass(Promise.class, "requestGameInSeason")
-                            .getRepositoryMapClass(Tank01Request.class);
+                            .getRepositoryMapClass(RequestTank01.class);
                     NHLTeamSchedule.Instance instance = new NHLTeamSchedule.Instance(response.getResponseData());
                     List<String> lisIdGameInSeason = new ArrayList<>(instance.getIdGame());
                     // ----------------
                     UtilTrend.XY seasonXy = new UtilTrend.XY();
                     AtomicInteger seasonCountGoals = new AtomicInteger(0);
                     Map<String, Integer> mapSeasonGoals = NHLGamesForPlayer
-                            .getOnlyGoalsFilter(tank01Request.getResponseData(), lisIdGameInSeason);
+                            .getOnlyGoalsFilter(requestTank01.getResponseData(), lisIdGameInSeason);
                     UtilRisc.forEach(
                             run,
                             mapSeasonGoals.keySet(),

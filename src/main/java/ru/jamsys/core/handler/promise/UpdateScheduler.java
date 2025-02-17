@@ -95,19 +95,19 @@ public class UpdateScheduler implements PromiseGenerator {
                         if (!run.get()) {
                             return;
                         }
-                        Tank01Request tank01Request = new Tank01Request(() -> NHLTeamSchedule.getUri(
+                        RequestTank01 requestTank01 = new RequestTank01(() -> NHLTeamSchedule.getUri(
                                 idTeam,
                                 UtilNHL.getActiveSeasonOrNext() + "")
                         )
                                 .setAlwaysRequestApi(updateScheduler.isAlwaysRequestApi());
-                        Promise req = tank01Request.generate().run().await(10_000L);
+                        Promise req = requestTank01.generate().run().await(10_000L);
                         if (req.isException()) {
                             throw req.getExceptionSource();
                         }
                         List<NHLTeamSchedule.Game> listGameInstance = teamsGameInstance
                                 .computeIfAbsent(idTeam, _ -> new ArrayList<>());
                         listGameInstance
-                                .addAll(new NHLTeamSchedule.Instance(tank01Request.getResponseData())
+                                .addAll(new NHLTeamSchedule.Instance(requestTank01.getResponseData())
                                         .initAlreadyGame()
                                         .getFutureGame()
                                         .sort(UtilListSort.Type.ASC)
