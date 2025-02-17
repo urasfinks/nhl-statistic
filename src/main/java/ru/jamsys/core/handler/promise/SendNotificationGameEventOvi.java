@@ -5,10 +5,7 @@ import lombok.Setter;
 import ru.jamsys.core.App;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.component.TelegramBotManager;
-import ru.jamsys.core.flat.util.UtilFileResource;
-import ru.jamsys.core.flat.util.UtilNHL;
-import ru.jamsys.core.flat.util.UtilRisc;
-import ru.jamsys.core.flat.util.UtilVoteOvi;
+import ru.jamsys.core.flat.util.*;
 import ru.jamsys.core.jt.JTOviSubscriber;
 import ru.jamsys.core.jt.JTVote;
 import ru.jamsys.core.promise.Promise;
@@ -33,9 +30,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 @Getter
 @Setter
-public class RegisterNotificationGameEventOvi implements PromiseGenerator {
+public class SendNotificationGameEventOvi implements PromiseGenerator {
 
-    private final String log = RegisterNotificationGameEventOvi.class.getSimpleName();
+    private final String log = SendNotificationGameEventOvi.class.getSimpleName();
 
     private final String idGame;
 
@@ -51,7 +48,7 @@ public class RegisterNotificationGameEventOvi implements PromiseGenerator {
 
     private Integer scoredGoalForward = null;
 
-    public RegisterNotificationGameEventOvi(
+    public SendNotificationGameEventOvi(
             String idGame
     ) {
         this.idGame = idGame;
@@ -112,7 +109,7 @@ public class RegisterNotificationGameEventOvi implements PromiseGenerator {
                 .then("send", (atomicBoolean, _, promise) -> {
                     PlayerStatistic ovi = promise.getRepositoryMapClass(Promise.class, "ovi")
                             .getRepositoryMapClass(PlayerStatistic.class);
-                    String message = ovi.getMessage();
+                    String message = OviStatisticMessage.get(ovi);
                     List<TelegramNotification> listSendStat = new ArrayList<>();
                     List<TelegramNotification> listSendImage = new ArrayList<>();
                     String botName = App.get(TelegramBotManager.class).getOviBotProperty().getName();

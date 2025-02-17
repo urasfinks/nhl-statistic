@@ -14,11 +14,13 @@ import ru.jamsys.tank.data.NHLPlayerList;
 
 import java.util.Map;
 
+// Получаем кеш статистики игрока по игре, если кеша нет - будет пустой объект с 0 голов
+
 @Getter
 @Setter
 @Accessors(chain = true)
 @ToString
-public class ScoreBoxCache implements PromiseGenerator {
+public class PlayerScoreBoxCache implements PromiseGenerator {
 
     private final NHLPlayerList.Player player;
 
@@ -28,7 +30,7 @@ public class ScoreBoxCache implements PromiseGenerator {
 
     private Map<String, Object> allStatistic = null;
 
-    public ScoreBoxCache(NHLPlayerList.Player player, String idGame) {
+    public PlayerScoreBoxCache(NHLPlayerList.Player player, String idGame) {
         this.player = player;
         this.idGame = idGame;
     }
@@ -39,10 +41,10 @@ public class ScoreBoxCache implements PromiseGenerator {
             return null;
         }
         return App.get(ServicePromise.class).get(getClass().getSimpleName(), 60_000L)
-                .extension(promise -> promise.setRepositoryMapClass(ScoreBoxCache.class, this)) // Просто для отладки
+                .extension(promise -> promise.setRepositoryMapClass(PlayerScoreBoxCache.class, this)) // Просто для отладки
                 .then("getScoreBox", new Tank01Request(() -> NHLBoxScore.getUri(getIdGame())).setOnlyCache(true).generate())
                 .then("parseScoreBox", (_, _, promise) -> {
-                    promise.getRepositoryMapClass(ScoreBoxCache.class); // Для отладки
+                    promise.getRepositoryMapClass(PlayerScoreBoxCache.class); // Для отладки
                     Tank01Request response = promise
                             .getRepositoryMapClass(Promise.class, "getScoreBox")
                             .getRepositoryMapClass(Tank01Request.class);

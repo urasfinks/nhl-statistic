@@ -25,6 +25,8 @@ import ru.jamsys.core.resource.jdbc.JdbcResource;
 import java.util.List;
 import java.util.Map;
 
+//  Запрос к API Tank01
+
 @Accessors(chain = true)
 public class Tank01Request implements PromiseGenerator {
 

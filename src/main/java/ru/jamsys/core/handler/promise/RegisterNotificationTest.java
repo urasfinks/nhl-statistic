@@ -14,6 +14,8 @@ import ru.jamsys.telegram.TelegramNotification;
 
 import java.util.List;
 
+// Аналог RegisterNotification, для тестирования формирования сообщений в отдельную таблицу, без реальной рассылки
+
 @SuppressWarnings("unused")
 @Accessors(chain = true)
 public class RegisterNotificationTest implements PromiseGenerator {

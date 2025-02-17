@@ -21,6 +21,9 @@ import ru.jamsys.tank.data.NHLTeamSchedule;
 import java.math.BigDecimal;
 import java.util.*;
 
+// Ежедневное обновление расписания
+// Так как бывает, что игры отменяются и добавляются, их надо постоянно синхронизировать
+
 @Getter
 @Setter
 @Accessors(chain = true)

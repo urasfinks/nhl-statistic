@@ -92,13 +92,13 @@ class NhlStatisticApplicationTest {
                 .setLongName("Bobby Brink")
                 .setTeam("PHI")
                 .setTeamID("22");
-        ScoreBoxCache scoreBoxCache = new ScoreBoxCache(player, "20241129_NYR@PHI2");
+        PlayerScoreBoxCache playerScoreBoxCache = new PlayerScoreBoxCache(player, "20241129_NYR@PHI2");
 
-        scoreBoxCache.generate()
+        playerScoreBoxCache.generate()
                 .run()
                 .await(60_000L);
-        Util.logConsoleJson(getClass(), scoreBoxCache.getGoals());
-        Util.logConsoleJson(getClass(), scoreBoxCache.getAllStatistic());
+        Util.logConsoleJson(getClass(), playerScoreBoxCache.getGoals());
+        Util.logConsoleJson(getClass(), playerScoreBoxCache.getAllStatistic());
     }
 
     @SuppressWarnings("unused")
@@ -127,7 +127,7 @@ class NhlStatisticApplicationTest {
                 .run()
                 .await(60_000L);
         Util.logConsoleJson(getClass(), playerStatistic);
-        Util.logConsole(getClass(), playerStatistic.getMessage());
+        Util.logConsole(getClass(), OviStatisticMessage.get(playerStatistic));
     }
 
     @SuppressWarnings("unused")
@@ -152,11 +152,11 @@ class NhlStatisticApplicationTest {
         )
                 .setScoredGoal(1)
                 .setScoredLastSeason(300);
-        RegisterNotificationGameEventOvi registerNotificationGameEventOvi = new RegisterNotificationGameEventOvi(
+        SendNotificationGameEventOvi sendNotificationGameEventOvi = new SendNotificationGameEventOvi(
                 idGame
         );
-        registerNotificationGameEventOvi.getListGameEventData().add(gameEventData);
-        registerNotificationGameEventOvi.generate().run().await(50_000L);
+        sendNotificationGameEventOvi.getListGameEventData().add(gameEventData);
+        sendNotificationGameEventOvi.generate().run().await(50_000L);
     }
 
     @SuppressWarnings("unused")

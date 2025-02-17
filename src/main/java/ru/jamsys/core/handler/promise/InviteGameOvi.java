@@ -28,6 +28,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+// Рассылка приглашений на игру, которая начнётся через 12 часов у Овечкина
+
 @Accessors(chain = true)
 public class InviteGameOvi implements PromiseGenerator {
 

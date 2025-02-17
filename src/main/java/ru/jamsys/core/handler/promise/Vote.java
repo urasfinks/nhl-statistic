@@ -22,7 +22,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
-@SuppressWarnings("unused")
+// Обработчик голосования
+// Принимает голос, фиксирует в БД, высылает в агрегацию по голосам
+
 @Setter
 @Getter
 public class Vote implements PromiseGenerator, NhlStatisticsBotCommandHandler {
@@ -48,7 +50,7 @@ public class Vote implements PromiseGenerator, NhlStatisticsBotCommandHandler {
     public Promise generate() {
         return servicePromise.get(getClass().getSimpleName(), 12_000L)
                 .extension(promise -> promise.setRepositoryMapClass(Context.class, new Context()))
-                .then("check", (atomicBoolean, promiseTask, promise) -> {
+                .then("check", (_, _, promise) -> {
                     TelegramCommandContext contextTelegram = promise.getRepositoryMapClass(TelegramCommandContext.class);
                     if (contextTelegram.getUriParameters().isEmpty()) {
                         promise.goTo("selectAgg");
@@ -105,7 +107,7 @@ public class Vote implements PromiseGenerator, NhlStatisticsBotCommandHandler {
                             )
                     ));
                 })
-                .then("send", (atomicBoolean, promiseTask, promise) -> {
+                .then("send", (_, _, promise) -> {
                     TelegramCommandContext contextTelegram = promise.getRepositoryMapClass(TelegramCommandContext.class);
                     Context context = promise.getRepositoryMapClass(Context.class);
                     List<TelegramNotification> list = new ArrayList<>();

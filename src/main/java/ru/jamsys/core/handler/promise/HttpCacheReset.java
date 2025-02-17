@@ -9,6 +9,10 @@ import ru.jamsys.core.promise.PromiseGenerator;
 import ru.jamsys.core.resource.jdbc.JdbcRequest;
 import ru.jamsys.core.resource.jdbc.JdbcResource;
 
+// Сброс http кеша
+// Используется когда игра закончена - мы удаляем кеш статистики по играм у игрока (NHLGamesForPlayer)
+// По этой статистике строится рекорд до Гретцки
+
 @Accessors(chain = true)
 public class HttpCacheReset implements PromiseGenerator {
 

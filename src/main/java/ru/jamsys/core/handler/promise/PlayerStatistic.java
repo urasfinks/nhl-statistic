@@ -7,9 +7,6 @@ import lombok.ToString;
 import ru.jamsys.core.App;
 import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.extension.builder.ArrayListBuilder;
-import ru.jamsys.core.extension.builder.HashMapBuilder;
-import ru.jamsys.core.flat.template.twix.TemplateTwix;
-import ru.jamsys.core.flat.util.Util;
 import ru.jamsys.core.flat.util.UtilDate;
 import ru.jamsys.core.flat.util.UtilListSort;
 import ru.jamsys.core.flat.util.UtilNHL;
@@ -25,6 +22,9 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+// Статистика по игроку в текущем сезоне
+// + статика за прошлый сезон
 
 @Getter
 @Setter
@@ -70,66 +70,7 @@ public class PlayerStatistic implements PromiseGenerator {
         return UtilNHL.getScoreGretzky() - totalGoals;
     }
 
-    public String getMessage() {
-        int seasonGoals = Integer.parseInt(scoreTotal.getOrDefault("goals", "0").toString());
-        int countGame = Integer.parseInt(scoreTotal.getOrDefault("countGame", "").toString());
 
-        int assists = Integer.parseInt(scoreTotal.getOrDefault("assists", "").toString());
-
-        int totalGoals = scoreLastSeason + seasonGoals;
-        int gretzkyOffset = UtilNHL.getScoreGretzky() - totalGoals;
-
-        String templateNextGame = "";
-        if (nextGame != null) {
-            NHLTeamSchedule.Game game = new NHLTeamSchedule.Game(nextGame);
-            templateNextGame = String.format(
-                    "Следующая игра: 🆚 %s, %s",
-                    game.toggleTeam(UtilNHL.getOvi().getTeam()),
-                    game.getMoscowDate()
-            );
-        }
-
-        return TemplateTwix.template("""
-                Статистика Александра Овечкина на ${currentDate}:
-                🎯 Забито голов: ${totalGoals}
-                🏆 До рекорда Гретцки: ${gretzkyOffset} ${gretzkyOffsetPostfix}
-                📅 Сезон ${seasonTitle}: ${countGame} ${countGamePostfix}, ${seasonGoals} ${seasonGoalsPostfix}, ${assists} ${assistsPostfix}, ${score} ${scorePostfix}, ${countTailGamePrefix} ${countTailGame} ${countTailGamePostfix} в регулярном чемпионате
-                📈 Темп: В среднем ${avgGoalsInGame} гола за игру в этом сезоне
-                
-                ${templateNextGame}
-                
-                📍 Время указано по МСК
-                """, new HashMapBuilder<String, String>()
-                .append("currentDate", date)
-
-                .append("totalGoals", String.valueOf(totalGoals))
-                .append("totalGoalsPostfix", Util.digitTranslate(totalGoals, "гол", "гола", "голов"))
-
-                .append("seasonGoals", String.valueOf(seasonGoals))
-                .append("seasonGoalsPostfix", Util.digitTranslate(seasonGoals, "гол", "гола", "голов"))
-
-                .append("gretzkyOffset", String.valueOf(gretzkyOffset))
-                .append("gretzkyOffsetPostfix", Util.digitTranslate(gretzkyOffset, "гол", "гола", "голов"))
-
-                .append("countTailGamePrefix", Util.digitTranslate(countTailGame, "остался", "осталось", "осталось"))
-                .append("countTailGame", String.valueOf(countTailGame))
-                .append("countTailGamePostfix", Util.digitTranslate(countTailGame, "матч", "матча", "матчей"))
-
-                .append("avgGoalsInGame", avgGoalsInGame.toString())
-
-                .append("countGame", String.valueOf(countGame))
-                .append("countGamePostfix", Util.digitTranslate(countGame, "матч", "матча", "матчей"))
-
-                .append("seasonTitle", UtilNHL.seasonFormat(UtilNHL.getActiveSeasonOrNext()))
-                .append("assists", String.valueOf(assists))
-                .append("assistsPostfix", Util.digitTranslate(assists, "передача", "передачи", "передач"))
-
-                .append("score", String.valueOf(assists + seasonGoals))
-                .append("scorePostfix", Util.digitTranslate(assists + seasonGoals, "очко", "очка", "очков"))
-
-                .append("templateNextGame", templateNextGame)
-        ).trim();
-    }
 
     @Override
     public Promise generate() {
@@ -178,16 +119,16 @@ public class PlayerStatistic implements PromiseGenerator {
                         promise.addToHead(new ArrayListBuilder<PromiseTask>()
                                 .append(promise.promiseToTask(
                                         "scoreBoxCache",
-                                        new ScoreBoxCache(getPlayer(), getIdGameToday()).generate()
+                                        new PlayerScoreBoxCache(getPlayer(), getIdGameToday()).generate()
                                 ))
                                 .append(promise.createTaskWait("scoreBoxCache"))
                                 .append(promise.createTaskCompute(
                                         "parseScoreBoxCache",
                                         (_, _, p) -> {
-                                            ScoreBoxCache scoreBoxCache = p
+                                            PlayerScoreBoxCache playerScoreBoxCache = p
                                                     .getRepositoryMapClass(Promise.class, "scoreBoxCache")
-                                                    .getRepositoryMapClass(ScoreBoxCache.class);
-                                            setScoreToday(scoreBoxCache.getAllStatistic());
+                                                    .getRepositoryMapClass(PlayerScoreBoxCache.class);
+                                            setScoreToday(playerScoreBoxCache.getAllStatistic());
                                         }
                                 ))
                         );

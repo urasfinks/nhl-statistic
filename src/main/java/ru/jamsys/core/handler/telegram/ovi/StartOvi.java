@@ -9,6 +9,7 @@ import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.extension.builder.ArrayListBuilder;
 import ru.jamsys.core.extension.builder.HashMapBuilder;
 import ru.jamsys.core.extension.http.ServletResponseWriter;
+import ru.jamsys.core.flat.util.OviStatisticMessage;
 import ru.jamsys.core.flat.util.UtilNHL;
 import ru.jamsys.core.flat.util.telegram.Button;
 import ru.jamsys.core.handler.promise.PlayerStatistic;
@@ -94,7 +95,7 @@ public class StartOvi implements PromiseGenerator, OviGoalsBotCommandHandler {
                                             
                                             %s
                                             """,
-                                    ovi.getMessage()
+                                    OviStatisticMessage.get(ovi)
                             ),
                             null,
                             null

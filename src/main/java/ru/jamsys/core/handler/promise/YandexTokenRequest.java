@@ -20,6 +20,8 @@ import ru.jamsys.core.resource.http.client.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
+// Обновление yandex токена для iam proxy
+
 @Setter
 @Getter
 public class YandexTokenRequest implements PromiseGenerator {

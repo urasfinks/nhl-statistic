@@ -22,6 +22,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+// Одноконтекстный запрос в YandexGpt
+// Если использовать - надо включить в Min30Scheduler пересоздание токена yandex для iam proxy
+
 @Accessors(chain = true)
 public class YandexLlmRequest implements PromiseGenerator {
 

@@ -11,6 +11,8 @@ import ru.jamsys.core.promise.PromiseGenerator;
 import ru.jamsys.core.resource.jdbc.JdbcRequest;
 import ru.jamsys.core.resource.jdbc.JdbcResource;
 
+// Удаление игры из планировщика, если получаем статус игры "перенесена" (Game has been postponed)
+
 @Getter
 @Setter
 @Accessors(chain = true)

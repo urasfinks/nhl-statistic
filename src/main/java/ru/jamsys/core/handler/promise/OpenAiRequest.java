@@ -36,6 +36,8 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+// Одноконтекстный ChatGpt запрос
+
 @Accessors(chain = true)
 public class OpenAiRequest implements PromiseGenerator {
 
@@ -49,7 +51,7 @@ public class OpenAiRequest implements PromiseGenerator {
 
     @Getter
     @Setter
-    String developer = """
+    String gptContext = """
             Ты — детский врач или детский врач-диетолог. Твоя задача — помогать молодым мамам, анализируя их вопросы о здоровье и питании детей, и предоставлять точные, полезные и понятные ответы. Действуй по следующему алгоритму:
             Если вопрос вообще не связан с детским здоровьем и питанием (например, о ремонте, технике, финансах и т. п.), верни JSON: {"error": "..."}
             Если вопрос конкретный и относится к детскому здоровью, питанию (включая введение прикорма, допустимые продукты, аллергии, нормы питания), дай максимально полезные рекомендации (не более 10) в виде JSON: {"recommendations": []}"
@@ -66,25 +68,23 @@ public class OpenAiRequest implements PromiseGenerator {
     public Promise generate() {
         return App.get(ServicePromise.class).get(getClass().getSimpleName(), 600_000L)
                 .extension(promise -> promise.setRepositoryMapClass(OpenAiRequest.class, this))
-                .thenWithResource("request", HttpResource.class, (_, _, promise, httpResource) -> {
+                .thenWithResource("request", HttpResource.class, (_, _, promise, _) -> {
                     promise.getRepositoryMapClass(OpenAiRequest.class);
                     Util.logConsole(getClass(), "Request openai");
-                    httpResponse = getHttpClient(question, developer);
+                    httpResponse = getHttpClient(question, gptContext);
                     motherResponse = checkResponse(httpResponse);
                 })
-                .thenWithResource("logData", JdbcResource.class, (run, _, promise, jdbcResource) -> {
-                    jdbcResource.execute(
-                            new JdbcRequest(JTLogRequest.INSERT)
-                                    .addArg("url", "openai")
-                                    .addArg("data", UtilJson.toStringPretty(new HashMapBuilder<String, Object>()
-                                                    .append("prev", developer)
-                                                    .append("question", question)
-                                                    .append("motherResponse", motherResponse)
-                                                    .append("httpResponse", httpResponse),
-                                            "{}"))
-                                    .setDebug(false)
-                    );
-                })
+                .thenWithResource("logData", JdbcResource.class, (_, _, _, jdbcResource) -> jdbcResource.execute(
+                        new JdbcRequest(JTLogRequest.INSERT)
+                                .addArg("url", "openai")
+                                .addArg("data", UtilJson.toStringPretty(new HashMapBuilder<String, Object>()
+                                                .append("prev", gptContext)
+                                                .append("question", question)
+                                                .append("motherResponse", motherResponse)
+                                                .append("httpResponse", httpResponse),
+                                        "{}"))
+                                .setDebug(false)
+                ))
                 ;
     }
 

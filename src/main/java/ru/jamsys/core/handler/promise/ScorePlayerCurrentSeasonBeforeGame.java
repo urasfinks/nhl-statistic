@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+// Получить статистику игрока по сезону, за исключением установленной игры
+
 @Getter
 @Setter
 public class ScorePlayerCurrentSeasonBeforeGame implements PromiseGenerator {

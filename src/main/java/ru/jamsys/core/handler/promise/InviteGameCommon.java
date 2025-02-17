@@ -20,6 +20,9 @@ import ru.jamsys.telegram.TelegramNotification;
 import java.math.BigDecimal;
 import java.util.*;
 
+// Рассылка приглашений на игры, которые начнутся через 12 часов
+// Вызывается каждую минуту в MinScheduler
+
 @Accessors(chain = true)
 public class InviteGameCommon implements PromiseGenerator {
 

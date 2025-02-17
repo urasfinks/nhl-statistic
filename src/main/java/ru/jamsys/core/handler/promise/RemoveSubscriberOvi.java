@@ -11,6 +11,8 @@ import ru.jamsys.core.promise.PromiseGenerator;
 import ru.jamsys.core.resource.jdbc.JdbcRequest;
 import ru.jamsys.core.resource.jdbc.JdbcResource;
 
+// Если пользователь удалил чат с блокировкой бота - помечаем пользователя как удалённого
+
 @Getter
 @Setter
 @Accessors(chain = true)

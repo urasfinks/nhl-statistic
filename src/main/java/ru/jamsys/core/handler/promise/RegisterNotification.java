@@ -14,6 +14,10 @@ import ru.jamsys.telegram.TelegramNotification;
 
 import java.util.List;
 
+// Асинхронная отправка сообщений через таблицу
+// Вся прелесть работы в таком режиме отправки в том, что используется многопоточный механизм отправки
+// через блокировку for update skip lock + работает RateLimit на отправку сообщений, что бы не превышать лимиты Telegram
+
 @Accessors(chain = true)
 public class RegisterNotification implements PromiseGenerator {
 

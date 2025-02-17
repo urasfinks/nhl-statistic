@@ -65,7 +65,7 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
 
         private List<TelegramNotification> listNotify = new ArrayList<>();
 
-        RegisterNotificationGameEventOvi oviNotificationPromise;
+        SendNotificationGameEventOvi oviNotificationPromise;
 
         @JsonIgnore
         private Map<String, NHLBoxScore.Instance> currentNHLBoxScoreInstance = new HashMap<>();
@@ -442,7 +442,7 @@ public class MinScheduler implements Cron1m, PromiseGenerator, UniqueClassName {
                                             // Мы не можем раньше создать так как getIdGame вызывает исключение если
                                             // игра не найдена по игроку
                                             context.setOviNotificationPromise(
-                                                    new RegisterNotificationGameEventOvi(
+                                                    new SendNotificationGameEventOvi(
                                                             context
                                                                     .getActiveRepository()
                                                                     .getIdGame(UtilNHL.getOvi().getPlayerID())
