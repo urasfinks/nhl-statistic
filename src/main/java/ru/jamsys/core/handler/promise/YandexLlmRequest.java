@@ -13,8 +13,8 @@ import ru.jamsys.core.flat.util.UtilJson;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
 import ru.jamsys.core.resource.http.HttpResource;
-import ru.jamsys.core.resource.http.client.HttpClient;
-import ru.jamsys.core.resource.http.client.HttpClientImpl;
+import ru.jamsys.core.resource.http.client.HttpConnector;
+import ru.jamsys.core.resource.http.client.HttpConnectorDefault;
 import ru.jamsys.core.resource.http.client.HttpMethodEnum;
 import ru.jamsys.core.resource.http.client.HttpResponse;
 
@@ -49,12 +49,12 @@ public class YandexLlmRequest implements PromiseGenerator {
                 ;
     }
 
-    public static HttpClient getHttpClient(String question) {
+    public static HttpConnector getHttpClient(String question) {
         ServiceProperty serviceProperty = App.get(ServiceProperty.class);
-        return new HttpClientImpl()
+        return new HttpConnectorDefault()
                 .setUrl(serviceProperty.get("yandex.llm.host"))
-                .putRequestHeader("Content-Type", "application/json")
-                .putRequestHeader("Authorization", "Bearer " + YandexTokenRequest.token)
+                .setRequestHeader("Content-Type", "application/json")
+                .setRequestHeader("Authorization", "Bearer " + YandexTokenRequest.token)
                 .setMethod(HttpMethodEnum.POST)
                 .setPostData(String.format("""
                                         {

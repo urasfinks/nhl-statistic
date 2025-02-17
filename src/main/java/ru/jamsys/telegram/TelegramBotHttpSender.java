@@ -12,7 +12,8 @@ import ru.jamsys.core.flat.util.UtilJson;
 import ru.jamsys.core.flat.util.UtilTelegramResponse;
 import ru.jamsys.core.flat.util.telegram.Button;
 import ru.jamsys.core.handler.promise.RemoveSubscriberOvi;
-import ru.jamsys.core.resource.http.client.HttpClientImpl;
+import ru.jamsys.core.resource.http.client.HttpConnector;
+import ru.jamsys.core.resource.http.client.HttpConnectorDefault;
 import ru.jamsys.core.resource.http.client.HttpResponse;
 
 import java.io.ByteArrayOutputStream;
@@ -94,18 +95,18 @@ public class TelegramBotHttpSender implements TelegramSender {
                     .setException(UtilTelegramResponse.ResultException.OTHER)
                     .setCause("data is null");
         }
-        HttpClientImpl httpClient = new HttpClientImpl();
+        HttpConnector httpClient = new HttpConnectorDefault();
         httpClient.setUrl(String.format(
                         urlEndpoint,
                         token,
                         apiMethod
                 ))
-                .putRequestHeader("Content-Type", "application/json")
+                .setRequestHeader("Content-Type", "application/json")
                 .setPostData(data.getBytes())
                 .setTimeoutMs(10_000);
         httpClient.exec();
         UtilTelegramResponse.Result sandbox = UtilTelegramResponse.sandbox(result -> {
-            HttpResponse httpResponse = httpClient.getHttpResponse();
+            HttpResponse httpResponse = httpClient.getResponseObject();
             if (httpResponse.getStatusCode() == 200) {
                 result.setResponse(UtilJson.getMapOrThrow(httpResponse.getBody()));
             } else {
@@ -140,18 +141,18 @@ public class TelegramBotHttpSender implements TelegramSender {
             postData = byteArrayOutputStream.toByteArray();
         }
 
-        HttpClientImpl httpClient = new HttpClientImpl();
+        HttpConnector httpClient = new HttpConnectorDefault();
         httpClient.setUrl(String.format(
                         urlEndpoint,
                         token,
                         "sendPhoto"
                 ))
-                .putRequestHeader(httpEntity.getContentType().getName(), httpEntity.getContentType().getValue())
+                .setRequestHeader(httpEntity.getContentType().getName(), httpEntity.getContentType().getValue())
                 .setPostData(postData)
                 .setTimeoutMs(10_000);
         httpClient.exec();
         UtilTelegramResponse.Result sandbox = UtilTelegramResponse.sandbox(result -> {
-            HttpResponse httpResponse = httpClient.getHttpResponse();
+            HttpResponse httpResponse = httpClient.getResponseObject();
             if (httpResponse.getStatusCode() == 200) {
                 String filePhotoId = getFilePhotoId(httpResponse.getBody());
                 if (filePhotoId != null) {

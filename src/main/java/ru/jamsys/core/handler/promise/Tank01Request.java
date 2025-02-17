@@ -16,8 +16,8 @@ import ru.jamsys.core.jt.JTLogRequest;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
 import ru.jamsys.core.resource.http.HttpResource;
-import ru.jamsys.core.resource.http.client.HttpClient;
-import ru.jamsys.core.resource.http.client.HttpClientImpl;
+import ru.jamsys.core.resource.http.client.HttpConnector;
+import ru.jamsys.core.resource.http.client.HttpConnectorDefault;
 import ru.jamsys.core.resource.http.client.HttpResponse;
 import ru.jamsys.core.resource.jdbc.JdbcRequest;
 import ru.jamsys.core.resource.jdbc.JdbcResource;
@@ -104,13 +104,13 @@ public class Tank01Request implements PromiseGenerator {
                 ;
     }
 
-    public static HttpClient getHttpClient(String uri) {
+    public static HttpConnector getHttpClient(String uri) {
         ServiceProperty serviceProperty = App.get(ServiceProperty.class);
         SecurityComponent securityComponent = App.get(SecurityComponent.class);
-        return new HttpClientImpl()
+        return new HttpConnectorDefault()
                 .setUrl(serviceProperty.get("rapidapi.host") + uri)
-                .putRequestHeader("x-rapidapi-key", new String(securityComponent.get("rapidapi.tank01.key")))
-                .putRequestHeader("x-rapidapi-host", serviceProperty.get("rapidapi.tank01.host"));
+                .setRequestHeader("x-rapidapi-key", new String(securityComponent.get("rapidapi.tank01.key")))
+                .setRequestHeader("x-rapidapi-host", serviceProperty.get("rapidapi.tank01.host"));
     }
 
     public static void checkResponse(HttpResponse execute) throws Throwable {
