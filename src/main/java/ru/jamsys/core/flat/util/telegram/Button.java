@@ -11,7 +11,13 @@ public class Button {
 
     private final String data;
 
-    private final String callback;
+    private String callback;
+
+    private String url;
+
+    public Button(String data) {
+        this.data = data;
+    }
 
     public Button(String data, String callback) {
         this.data = data;

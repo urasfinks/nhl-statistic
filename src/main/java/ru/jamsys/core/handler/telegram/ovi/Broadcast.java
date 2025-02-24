@@ -57,11 +57,21 @@ public class Broadcast implements PromiseGenerator, OviGoalsBotCommandHandler {
         }
 
         public TelegramNotification get() {
+            List<Button> buttonList = null;
+            if (map.containsKey("btn") && map.get("btn") != null && !map.get("btn").isEmpty()) {
+                String btn = map.get("btn");
+                String btnTitle = btn.substring(0, btn.indexOf(";")).trim();
+                String btnUrl = btn.substring(btn.indexOf(";") + 1).trim();
+                Button button = new Button(btnTitle);
+                button.setUrl(btnUrl);
+                buttonList = new ArrayList<>();
+                buttonList.add(button);
+            }
             TelegramNotification telegramNotification = new TelegramNotification(
                     idChat,
                     bot,
                     map.get("text"),
-                    null,
+                    buttonList,
                     null
             );
             telegramNotification.setIdImage(map.get("image"));
@@ -92,7 +102,10 @@ public class Broadcast implements PromiseGenerator, OviGoalsBotCommandHandler {
                 .then("prep", (_, _, promise) -> {
                     Context context = promise.getRepositoryMapClass(Context.class);
                     TelegramCommandContext contextTelegram = promise.getRepositoryMapClass(TelegramCommandContext.class);
-                    if (contextTelegram.getIdChat() != 241022301L) {
+                    List<Long> permission = new ArrayList<>();
+                    permission.add(241022301L); //Igor
+                    //permission.add(290029195L); //Ura
+                    if (!permission.contains(contextTelegram.getIdChat())) {
                         promise.skipAllStep("not admin test");
                         return;
                     }
@@ -126,6 +139,13 @@ public class Broadcast implements PromiseGenerator, OviGoalsBotCommandHandler {
                                                 ServletResponseWriter.buildUrlQuery(
                                                         "/bt/",
                                                         new HashMapBuilder<String, String>().append("setup", "video")
+                                                )
+                                        ))
+                                        .append(new Button(
+                                                "Кнопка",
+                                                ServletResponseWriter.buildUrlQuery(
+                                                        "/bt/",
+                                                        new HashMapBuilder<String, String>().append("setup", "btn")
                                                 )
                                         ))
                                         .append(new Button(
@@ -175,10 +195,15 @@ public class Broadcast implements PromiseGenerator, OviGoalsBotCommandHandler {
                             );
                             default -> {
                                 contextTelegram.getStepHandler().put(contextTelegram.getIdChat(), contextTelegram.getUriPath() + "/?" + setup + "=");
+                                String typed = switch (setup) {
+                                    case "text" -> "Вводи:";
+                                    case "btn" -> "Наименование; https://....";
+                                    default -> "Грузи";
+                                };
                                 RegisterNotification.add(new TelegramNotification(
                                         contextTelegram.getIdChat(),
                                         contextTelegram.getTelegramBot().getBotUsername(),
-                                        setup.equals("text") ? "Вводи:" : "Грузи",
+                                        typed,
                                         null,
                                         null
                                 ));

@@ -97,7 +97,12 @@ public class UtilTelegramMessage {
         List<List<InlineKeyboardButton>> list = new ArrayList<>();
         listButtons.forEach(button -> {
             InlineKeyboardButton markupInline = new InlineKeyboardButton(button.getData());
-            markupInline.setCallbackData(button.getCallback());
+            if (button.getCallback() != null) {
+                markupInline.setCallbackData(button.getCallback());
+            }
+            if (button.getUrl() != null) {
+                markupInline.setUrl(button.getUrl());
+            }
             list.add(List.of(markupInline));
         });
         InlineKeyboardMarkup markup = new InlineKeyboardMarkup();

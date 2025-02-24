@@ -117,7 +117,7 @@ public class SecScheduler implements Cron1s, PromiseGenerator, UniqueClassName {
                                         .addArg("json", UtilJson.toStringPretty(send, "{}"))
                                 );
                             }
-                        } catch (Throwable th){
+                        } catch (Throwable th) {
                             App.error(th);
                         } finally {
                             // В любом случае надо отпустить блокировку, даже если сломались
@@ -144,7 +144,15 @@ public class SecScheduler implements Cron1s, PromiseGenerator, UniqueClassName {
             listOrThrow.forEach(o -> {
                 @SuppressWarnings("unchecked")
                 Map<String, Object> o1 = (Map<String, Object>) o;
-                result.add(new Button(o1.get("data").toString(), o1.get("callback").toString()));
+                Button btn = new Button(o1.get("data").toString());
+
+                if (o1.containsKey("callback") && o1.get("callback") != null) {
+                    btn.setCallback(o1.get("callback").toString());
+                }
+                if (o1.containsKey("url") && o1.get("url") != null) {
+                    btn.setUrl(o1.get("url").toString());
+                }
+                result.add(btn);
             });
         } catch (Throwable th) {
             App.error(th);

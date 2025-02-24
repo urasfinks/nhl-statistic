@@ -53,9 +53,17 @@ public class TelegramBotHttpSender implements TelegramSender {
 
         if (buttons != null && !buttons.isEmpty()) {
             List<List<Map<String, Object>>> list = new ArrayList<>();
-            buttons.forEach(button -> list.add(List.of(new HashMapBuilder<String, Object>()
-                    .append("text", button.getData())
-                    .append("callback_data", button.getCallback()))));
+            buttons.forEach(button -> {
+                Map<String, Object> objectObjectHashMap = new HashMap<>();
+                objectObjectHashMap.put("text", button.getData());
+                if (button.getCallback() != null) {
+                    objectObjectHashMap.put("callback_data", button.getCallback());
+                }
+                if (button.getUrl() != null) {
+                    objectObjectHashMap.put("url", button.getUrl());
+                }
+                list.add(List.of(objectObjectHashMap));
+            });
             requestBody.put(
                     "reply_markup", new HashMapBuilder<>().append("inline_keyboard", list)
             );
@@ -177,7 +185,7 @@ public class TelegramBotHttpSender implements TelegramSender {
             @SuppressWarnings("all")
             Map<String, Object> message = UtilJson.getMapOrThrow(messageBlock);
             if (!message.containsKey("photo")) {
-                if(!message.containsKey("result")){
+                if (!message.containsKey("result")) {
                     return null;
                 }
                 message = (Map<String, Object>) message.get("result");

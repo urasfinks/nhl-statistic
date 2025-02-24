@@ -13,4 +13,13 @@ class NHLTeamsTest {
         Assertions.assertEquals("Vegas Golden Knights (VGK)", vgk.getAbout());
         Assertions.assertEquals(32, NHLTeams.teams.getListTeam().size());
     }
+
+    @Test
+    void btButton() {
+        String btn = "Hello; https://ya.ru";
+        String btnTitle = btn.substring(0, btn.indexOf(";")).trim();
+        String btnUrl = btn.substring(btn.indexOf(";") + 1).trim();
+        Assertions.assertEquals("Hello", btnTitle);
+        Assertions.assertEquals("https://ya.ru", btnUrl);
+    }
 }
