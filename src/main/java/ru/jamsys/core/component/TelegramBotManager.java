@@ -18,6 +18,7 @@ import ru.jamsys.core.flat.util.UtilFile;
 import ru.jamsys.core.flat.util.UtilFileResource;
 import ru.jamsys.core.flat.util.UtilTelegramResponse;
 import ru.jamsys.telegram.*;
+import ru.jamsys.telegram.handler.EyeBotCommandHandler;
 import ru.jamsys.telegram.handler.MotherBotCommandHandler;
 import ru.jamsys.telegram.handler.NhlStatisticsBotCommandHandler;
 import ru.jamsys.telegram.handler.OviGoalsBotCommandHandler;
@@ -39,6 +40,8 @@ public class TelegramBotManager implements LifeCycleComponent {
     private final BotProperty oviBotProperty = BotProperty.getInstance("telegram.bot.ovi");
 
     private final BotProperty motherBotProperty = BotProperty.getInstance("telegram.bot.mother");
+
+    private final BotProperty eyeBotProperty = BotProperty.getInstance("telegram.bot.eye");
 
     private final Map<String, TelegramSender> repository = new HashMap<>(); //key - name bot; value - sender
 
@@ -101,9 +104,23 @@ public class TelegramBotManager implements LifeCycleComponent {
                                 null
                         ));
 
+                init(
+                        TypeSender.EMBEDDED,
+                        getEyeBotProperty(),
+                        App.get(RouteGenerator.class).getRouterRepository(EyeBotCommandHandler.class)
+                )
+                        .setMyCommands(new SetMyCommands(new ArrayListBuilder<BotCommand>()
+                                .append(new BotCommand("/perform_spread", "Выполнить расклад"))
+                                //.append(new BotCommand("/pay", "Купить подписку"))
+                                ,
+                                new BotCommandScopeDefault(),
+                                null
+                        ));
+
                 init(TypeSender.HTTP, getCommonBotProperty());
                 init(TypeSender.HTTP, getOviBotProperty());
                 init(TypeSender.HTTP, getMotherBotProperty());
+                init(TypeSender.HTTP, getEyeBotProperty());
 
             } catch (TelegramApiException e) {
                 throw new RuntimeException(e);
