@@ -55,6 +55,7 @@ public class TelegramBotManager implements LifeCycleComponent {
                 .append(getCommonBotProperty().getName())
                 .append(getOviBotProperty().getName())
                 .append(getMotherBotProperty().getName())
+                .append(getEyeBotProperty().getName())
                 ;
     }
 
