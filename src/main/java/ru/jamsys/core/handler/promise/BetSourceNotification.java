@@ -40,7 +40,7 @@ public class BetSourceNotification implements PromiseGenerator {
     public Promise generate() {
         return App.get(ServicePromise.class).get(getClass().getSimpleName(), 60_000L)
                 .extension(promise -> promise.setRepositoryMapClass(BetSourceNotification.class, this)) // Просто для отладки
-                .thenWithResource("get", JdbcResource.class, (_, _, promise, jdbcResource) -> {
+                .thenWithResource("get", JdbcResource.class, (_, _, _, jdbcResource) -> {
                     List<JTBroadcastTemplate.Row> res = jdbcResource.execute(new JdbcRequest(JTBroadcastTemplate.SELECT)
                             .addArg("key", key), JTBroadcastTemplate.Row.class);
                     if (!res.isEmpty()) {

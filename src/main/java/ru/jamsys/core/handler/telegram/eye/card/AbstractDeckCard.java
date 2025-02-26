@@ -7,7 +7,7 @@ import ru.jamsys.core.extension.builder.ArrayListBuilder;
 @Getter
 public abstract class AbstractDeckCard {
 
-    private ArrayListBuilder<Card> cards = new ArrayListBuilder<>();
+    private final ArrayListBuilder<Card> cards = new ArrayListBuilder<>();
 
     final String name;
 
