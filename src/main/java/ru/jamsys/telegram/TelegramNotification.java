@@ -3,12 +3,14 @@ package ru.jamsys.telegram;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 import ru.jamsys.core.flat.util.telegram.Button;
 
 import java.util.List;
 
 @Getter
 @Setter
+@Accessors(chain = true)
 @EqualsAndHashCode
 public class TelegramNotification {
 

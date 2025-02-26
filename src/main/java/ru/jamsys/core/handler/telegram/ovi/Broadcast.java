@@ -16,6 +16,7 @@ import ru.jamsys.core.extension.http.ServletResponseWriter;
 import ru.jamsys.core.flat.util.UtilJson;
 import ru.jamsys.core.flat.util.telegram.Button;
 import ru.jamsys.core.handler.promise.RegisterNotification;
+import ru.jamsys.core.jt.JTBroadcastTemplate;
 import ru.jamsys.core.jt.JTOviSubscriber;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
@@ -104,7 +105,7 @@ public class Broadcast implements PromiseGenerator, OviGoalsBotCommandHandler {
                     TelegramCommandContext contextTelegram = promise.getRepositoryMapClass(TelegramCommandContext.class);
                     List<Long> permission = new ArrayList<>();
                     permission.add(241022301L); //Igor
-                    //permission.add(290029195L); //Ura
+                    permission.add(290029195L); //Ura
                     if (!permission.contains(contextTelegram.getIdChat())) {
                         promise.skipAllStep("not admin test");
                         return;
@@ -169,18 +170,52 @@ public class Broadcast implements PromiseGenerator, OviGoalsBotCommandHandler {
                                                         new HashMapBuilder<String, String>().append("setup", "all")
                                                 )
                                         ))
+                                        .append(new Button(
+                                                "Сохранить в блок перед матчем",
+                                                ServletResponseWriter.buildUrlQuery(
+                                                        "/bt/",
+                                                        new HashMapBuilder<String, String>().append("setup", "inviteGame")
+                                                )
+                                        ))
+                                        .append(new Button(
+                                                "Сохранить в результат голосования",
+                                                ServletResponseWriter.buildUrlQuery(
+                                                        "/bt/",
+                                                        new HashMapBuilder<String, String>().append("setup", "voteResult")
+                                                )
+                                        ))
+                                        .append(new Button(
+                                                "Сохранить в прогноз",
+                                                ServletResponseWriter.buildUrlQuery(
+                                                        "/bt/",
+                                                        new HashMapBuilder<String, String>().append("setup", "prediction")
+                                                )
+                                        ))
+                                        .append(new Button(
+                                                "Сохранить в ставки",
+                                                ServletResponseWriter.buildUrlQuery(
+                                                        "/bt/",
+                                                        new HashMapBuilder<String, String>().append("setup", "bets")
+                                                )
+                                        ))
                                 ,
                                 null
                         ));
                     } else if (contextTelegram.getUriParameters().containsKey("setup")) {
                         String setup = contextTelegram.getUriParameters().get("setup");
                         switch (setup) {
+                            case "inviteGame", "voteResult", "prediction", "bets" -> {
+                                promise.goTo("saveBroadcastTemplate");
+                                return;
+                            }
                             case "all" -> {
                                 context.setAll(true);
+                                // return что бы не скипалась рассылка
                                 return;
                             }
                             case "test" -> {
                                 context.setAll(false);
+                                // return что бы не скипалась рассылка
                                 return;
                             }
                             case "preview" -> RegisterNotification.add(new ArrayListBuilder<TelegramNotification>()
@@ -261,7 +296,7 @@ public class Broadcast implements PromiseGenerator, OviGoalsBotCommandHandler {
                     Context context = promise.getRepositoryMapClass(Context.class);
                     TelegramCommandContext contextTelegram = promise.getRepositoryMapClass(TelegramCommandContext.class);
                     if (context.isAll()) {
-                        //context.getListIdChat().clear();
+                        context.getListIdChat().clear();
                     } else {
                         context.getListIdChat().clear();
                         context.getListIdChat().add(290029195L); // Ura
@@ -313,6 +348,42 @@ public class Broadcast implements PromiseGenerator, OviGoalsBotCommandHandler {
                         listTelegramNotification.add(n);
                     });
                     RegisterNotification.add(listTelegramNotification);
+                    // Что бы туда дойти, надо выбрать сохранение promise.goTo("saveBroadcastTemplate");
+                    promise.skipAllStep("skip saveBroadcastTemplate");
+                })
+                .thenWithResource("saveBroadcastTemplate", JdbcResource.class, (_, _, promise, jdbcResource) -> {
+                    TelegramCommandContext contextTelegram = promise.getRepositoryMapClass(TelegramCommandContext.class);
+                    String setup = contextTelegram.getUriParameters().get("setup");
+                    List<String> available = new ArrayListBuilder<String>()
+                            .append("inviteGame")
+                            .append("voteResult")
+                            .append("prediction")
+                            .append("bets");
+                    if (!available.contains(setup)) {
+                        return;
+                    }
+                    CreateMessage session = mapSession.computeIfAbsent(contextTelegram.getIdChat(), aLong -> new CreateMessage(
+                            contextTelegram.getIdChat(),
+                            contextTelegram.getTelegramBot().getBotUsername()
+                    ));
+                    TelegramNotification telegramNotification = session.get();
+                    List<Map<String, Object>> execute = jdbcResource.execute(new JdbcRequest(JTBroadcastTemplate.UPDATE)
+                            .addArg("key", setup)
+                            .addArg("telegram_notification", UtilJson.toStringPretty(new HashMapBuilder<String, Object>()
+                                            .append("message", telegramNotification.getMessage())
+                                            .append("buttons", telegramNotification.getButtons())
+                                            .append("idImage", telegramNotification.getIdImage())
+                                            .append("idVideo", telegramNotification.getIdVideo())
+                                    ,
+                                    "{}"))
+                    );
+                    RegisterNotification.add(new TelegramNotification(
+                            contextTelegram.getIdChat(),
+                            contextTelegram.getTelegramBot().getBotUsername(),
+                            "Сохранено в: " + setup,
+                            null,
+                            null
+                    ));
                 })
                 .extension(NhlStatisticApplication::addOnError);
         return gen;

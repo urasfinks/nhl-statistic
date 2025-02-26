@@ -107,10 +107,24 @@ public class Vote implements PromiseGenerator, NhlStatisticsBotCommandHandler {
                             )
                     ));
                 })
+                .then("betSourceNotification", new BetSourceNotification("voteResult").generate())
                 .then("send", (_, _, promise) -> {
                     TelegramCommandContext contextTelegram = promise.getRepositoryMapClass(TelegramCommandContext.class);
                     Context context = promise.getRepositoryMapClass(Context.class);
                     List<TelegramNotification> list = new ArrayList<>();
+                    BetSourceNotification betSourceNotification = promise.getRepositoryMapClass(Promise.class, "betSourceNotification")
+                            .getRepositoryMapClass(BetSourceNotification.class);
+                    if (betSourceNotification.isNotEmpty()) {
+                        list.add(new TelegramNotification(
+                                contextTelegram.getIdChat(),
+                                contextTelegram.getTelegramBot().getBotUsername(),
+                                betSourceNotification.getMessage(),
+                                betSourceNotification.getListButton(),
+                                betSourceNotification.getPathImage()
+                        )
+                                .setIdImage(betSourceNotification.getIdImage())
+                                .setIdVideo(betSourceNotification.getIdVideo()));
+                    }
                     list.add(new TelegramNotification(
                             contextTelegram.getIdChat(),
                             contextTelegram.getTelegramBot().getBotUsername(),

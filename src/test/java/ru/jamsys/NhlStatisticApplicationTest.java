@@ -308,5 +308,16 @@ class NhlStatisticApplicationTest {
 
     }
 
+    //@Test
+    void testBetSourceNotification() {
+        BetSourceNotification stat = new BetSourceNotification("voteResult");
+        stat
+                .generate()
+                .run()
+                .await(50_000L);
+        Util.logConsoleJson(getClass(), stat);
+
+    }
+
 
 }
