@@ -109,7 +109,10 @@ public class StartOvi implements PromiseGenerator, OviGoalsBotCommandHandler {
                                     /stats — Текущая статистика: количество голов, оставшихся до рекорда, и статистика по сезону
                                     /poll_results — Статистика голосования
                                     /schedule — Ближайшие игры Александра Овечкина и команды Washington Capitals
-                                    /stop — Отключить уведомления""",
+                                    /prediction — Когда Овечкин побьет рекорд Гретцки?
+                                    /quiz — Насколько хорошо ты знаешь Александра Овечкина?
+                                    /stop — Отключить уведомления
+                                    """,
                             null,
                             null
                     ), System.currentTimeMillis() + 10_000L);

@@ -86,6 +86,7 @@ public class TelegramBotManager implements LifeCycleComponent {
                                 .append(new BotCommand("/poll_results", "Статистика голосования"))
                                 .append(new BotCommand("/schedule", "Ближайшие игры Александра Овечкина и команды Washington Capitals"))
                                 .append(new BotCommand("/prediction", "Когда Овечкин побьет рекорд Гретцки?"))
+                                .append(new BotCommand("/quiz", "Насколько хорошо ты знаешь Александра Овечкина?"))
                                 .append(new BotCommand("/stop", "Отключить уведомления")),
                                 new BotCommandScopeDefault(),
                                 null
