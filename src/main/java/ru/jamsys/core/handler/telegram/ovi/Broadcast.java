@@ -105,7 +105,7 @@ public class Broadcast implements PromiseGenerator, OviGoalsBotCommandHandler {
                     TelegramCommandContext contextTelegram = promise.getRepositoryMapClass(TelegramCommandContext.class);
                     List<Long> permission = new ArrayList<>();
                     permission.add(241022301L); //Igor
-                    permission.add(290029195L); //Ura
+                    //permission.add(290029195L); //Ura
                     if (!permission.contains(contextTelegram.getIdChat())) {
                         promise.skipAllStep("not admin test");
                         return;
@@ -296,7 +296,7 @@ public class Broadcast implements PromiseGenerator, OviGoalsBotCommandHandler {
                     Context context = promise.getRepositoryMapClass(Context.class);
                     TelegramCommandContext contextTelegram = promise.getRepositoryMapClass(TelegramCommandContext.class);
                     if (context.isAll()) {
-                        context.getListIdChat().clear();
+                        //context.getListIdChat().clear();
                     } else {
                         context.getListIdChat().clear();
                         context.getListIdChat().add(290029195L); // Ura
