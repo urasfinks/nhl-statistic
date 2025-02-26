@@ -15,6 +15,7 @@ import ru.jamsys.core.extension.http.ServletResponseWriter;
 import ru.jamsys.core.flat.util.Util;
 import ru.jamsys.core.flat.util.telegram.Button;
 import ru.jamsys.core.handler.promise.RegisterNotification;
+import ru.jamsys.core.handler.telegram.eye.card.SpreadRepository;
 import ru.jamsys.core.promise.Promise;
 import ru.jamsys.core.promise.PromiseGenerator;
 import ru.jamsys.telegram.TelegramCommandContext;
@@ -162,7 +163,7 @@ public class PerformSpread implements PromiseGenerator, EyeBotCommandHandler {
     public static class Steps {
         String question;
         String title;
-        ArrayListBuilder<String> variant = new ArrayListBuilder<>();
+        List<String> variant = new ArrayListBuilder<>();
     }
 
     public static Map<String, Steps> titleQuestion = new HashMapBuilder<String, Steps>()
@@ -180,15 +181,7 @@ public class PerformSpread implements PromiseGenerator, EyeBotCommandHandler {
             .append("s2", new Steps()
                     .setQuestion("Выберите тип расклада:")
                     .setTitle("Тип расклада")
-                    .setVariant(new ArrayListBuilder<String>()
-                            .append("🎴 Одна карта (быстрый ответ на конкретный вопрос)")
-                            .append("🎭 Три карты (прошлое – настоящее – будущее)")
-                            .append("🌀 Кельтский крест (глубокий анализ ситуации)")
-                            .append("💞 Расклад на отношения (чувства партнера, перспективы, развитие)")
-                            .append("⚖️ Расклад на выбор (какой путь выбрать)")
-                            .append("🔥 Кармический путь (уроки, кармические задачи)")
-                            .append("🌟 Совет Таро (что делать в сложной ситуации)")
-                    )
+                    .setVariant(SpreadRepository.getListSpreadTitle())
             )
             .append("s3", new Steps()
                     .setQuestion("Определите временные рамки:")
@@ -211,7 +204,7 @@ public class PerformSpread implements PromiseGenerator, EyeBotCommandHandler {
                             .append("💋 Таро Манара (любовные и интимные вопросы)")
                             .append("🌲 Таро Друидов (природные энергии, магия)")
                             .append("🔥 Таро Теней (глубинный анализ, карма)")
-                            .append("🃏 Оракул Ленорман (не совсем Таро, но тоже предсказательная система)")
+                            //.append("🃏 Оракул Ленорман (не совсем Таро, но тоже предсказательная система)")
                     )
             )
             .append("s5", new Steps()
