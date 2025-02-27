@@ -160,6 +160,7 @@ public class UtilTelegramMessage {
         SendMessage message = new SendMessage();
         message.setChatId(idChat);
         message.setText(data);
+        message.setParseMode("HTML");
         if (listButtons != null && !listButtons.isEmpty()) {
             addMessageButtonList(message, listButtons);
         }

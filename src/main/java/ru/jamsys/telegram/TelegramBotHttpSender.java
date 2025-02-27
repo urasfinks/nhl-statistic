@@ -47,6 +47,7 @@ public class TelegramBotHttpSender implements TelegramSender {
     public UtilTelegramResponse.Result send(long idChat, String data, List<Button> buttons) {
         Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("chat_id", idChat);
+        requestBody.put("parse_mode", "HTML");
         if (data != null && !data.isEmpty()) {
             requestBody.put("text", data);
         }
