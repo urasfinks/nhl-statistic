@@ -152,6 +152,9 @@ public class SecScheduler implements Cron1s, PromiseGenerator, UniqueClassName {
                 if (o1.containsKey("url") && o1.get("url") != null) {
                     btn.setUrl(o1.get("url").toString());
                 }
+                if (o1.containsKey("webapp") && o1.get("webapp") != null) {
+                    btn.setWebapp(o1.get("webapp").toString());
+                }
                 result.add(btn);
             });
         } catch (Throwable th) {

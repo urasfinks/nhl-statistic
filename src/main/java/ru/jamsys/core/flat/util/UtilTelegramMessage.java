@@ -10,6 +10,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.payments.LabeledPrice;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.webapp.WebAppInfo;
 import ru.jamsys.core.flat.util.telegram.Button;
 
 import java.util.ArrayList;
@@ -93,10 +94,13 @@ public class UtilTelegramMessage {
         return answerCallbackQuery;
     }
 
-    public static void addMessageButton(SendMessage message, List<Button> listButtons) {
+    public static void addMessageButtonList(SendMessage message, List<Button> listButtons) {
         List<List<InlineKeyboardButton>> list = new ArrayList<>();
         listButtons.forEach(button -> {
             InlineKeyboardButton markupInline = new InlineKeyboardButton(button.getData());
+            if (button.getWebapp() != null) {
+                markupInline.setWebApp(new WebAppInfo(button.getWebapp()));
+            }
             if (button.getCallback() != null) {
                 markupInline.setCallbackData(button.getCallback());
             }
@@ -157,7 +161,7 @@ public class UtilTelegramMessage {
         message.setChatId(idChat);
         message.setText(data);
         if (listButtons != null && !listButtons.isEmpty()) {
-            addMessageButton(message, listButtons);
+            addMessageButtonList(message, listButtons);
         }
         return message;
     }

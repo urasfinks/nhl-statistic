@@ -111,44 +111,61 @@ public class StartOvi implements PromiseGenerator, OviGoalsBotCommandHandler {
                                     /schedule — Ближайшие игры Александра Овечкина и команды Washington Capitals
                                     /prediction — Когда Овечкин побьет рекорд Гретцки?
                                     /quiz — Насколько хорошо ты знаешь Александра Овечкина?
+                                    /bets — Ставки на Овечкина
                                     /stop — Отключить уведомления
                                     """,
                             null,
                             null
                     ), System.currentTimeMillis() + 10_000L);
 
-                    RegisterNotification.addDeferred(
-                            new TelegramNotification(
-                                    context.getIdChat(),
-                                    context.getTelegramBot().getBotUsername(),
-                                    "Побьет ли Александр Овечкин рекорд Уэйна Гретцки в этом сезоне?",
-                                    new ArrayListBuilder<Button>()
-                                            .append(new Button(
-                                                    "Да 🔥",
-                                                    ServletResponseWriter.buildUrlQuery(
-                                                            "/vote/",
-                                                            new HashMapBuilder<String, String>()
-                                                                    .append("g", "Ovi")
-                                                                    .append("p", UtilNHL.getOvi().getPlayerID())
-                                                                    .append("v", "true")
+                    RegisterNotification.addDeferred(new TelegramNotification(
+                            context.getIdChat(),
+                            context.getTelegramBot().getBotUsername(),
+                            "Побьет ли Александр Овечкин рекорд Уэйна Гретцки в этом сезоне?",
+                            new ArrayListBuilder<Button>()
+                                    .append(new Button(
+                                            "Да 🔥",
+                                            ServletResponseWriter.buildUrlQuery(
+                                                    "/vote/",
+                                                    new HashMapBuilder<String, String>()
+                                                            .append("g", "Ovi")
+                                                            .append("p", UtilNHL.getOvi().getPlayerID())
+                                                            .append("v", "true")
+                                            )
+                                    ))
+                                    .append(new Button(
+                                            "Нет ⛔",
+                                            ServletResponseWriter.buildUrlQuery(
+                                                    "/vote/",
+                                                    new HashMapBuilder<String, String>()
+                                                            .append("g", "Ovi")
+                                                            .append("p", UtilNHL.getOvi().getPlayerID())
+                                                            .append("v", "false")
 
+                                            )
+                                    ))
+                            ,
+                            null
+                    ), System.currentTimeMillis() + 20_000L);
 
-                                                    )
-                                            ))
-                                            .append(new Button(
-                                                    "Нет ⛔",
-                                                    ServletResponseWriter.buildUrlQuery(
-                                                            "/vote/",
-                                                            new HashMapBuilder<String, String>()
-                                                                    .append("g", "Ovi")
-                                                                    .append("p", UtilNHL.getOvi().getPlayerID())
-                                                                    .append("v", "false")
-
-                                                    )
-                                            ))
-                                    ,
-                                    null
-                            ), System.currentTimeMillis() + 20_000L);
+                    RegisterNotification.addDeferred(new TelegramNotification(
+                            context.getIdChat(),
+                            context.getTelegramBot().getBotUsername(),
+                            """
+                                    Пока Ови готовится к игре, у тебя есть минутка проверить свои знания о нём? 🔥
+                                    
+                                    Пройди наш квиз и узнай, насколько хорошо ты знаешь карьеру Александра Овечкина! 🏒💪
+                                    
+                                    ⚡️ 10 вопросов, 4 варианта ответов – только самые интересные факты и рекорды. Сможешь набрать 10/10?
+                                    
+                                    Жми «Начать» и покажи, кто здесь главный эксперт по Ови!""",
+                            new ArrayListBuilder<Button>()
+                                    .append(new Button("Начать 🚀")
+                                            .setWebapp("https://quiz.ovechkingoals.ru/?utm_source=bot_menu&mode=tg")
+                                    )
+                            ,
+                            null
+                    ), System.currentTimeMillis() + 30_000L);
                 })
                 .extension(NhlStatisticApplication::addOnError);
     }

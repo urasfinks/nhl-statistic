@@ -62,6 +62,10 @@ public class TelegramBotHttpSender implements TelegramSender {
                 if (button.getUrl() != null) {
                     objectObjectHashMap.put("url", button.getUrl());
                 }
+                if (button.getWebapp() != null) {
+                    objectObjectHashMap.put("web_app", new HashMapBuilder<String, String>()
+                            .append("url", button.getWebapp()));
+                }
                 list.add(List.of(objectObjectHashMap));
             });
             requestBody.put(

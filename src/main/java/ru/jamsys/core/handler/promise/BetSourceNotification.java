@@ -100,6 +100,9 @@ public class BetSourceNotification implements PromiseGenerator {
                 if (o1.containsKey("url") && o1.get("url") != null) {
                     btn.setUrl(o1.get("url").toString());
                 }
+                if (o1.containsKey("webapp") && o1.get("webapp") != null) {
+                    btn.setWebapp(o1.get("webapp").toString());
+                }
                 result.add(btn);
             });
         } catch (Throwable th) {

@@ -81,14 +81,22 @@ public class TelegramBotManager implements LifeCycleComponent {
                         App.get(RouteGenerator.class).getRouterRepository(OviGoalsBotCommandHandler.class)
                 )
                         .setMyCommands(new SetMyCommands(new ArrayListBuilder<BotCommand>()
-                                .append(new BotCommand("/start", "Включить уведомления"))
-                                .append(new BotCommand("/stats", "Текущая статистика: количество голов, оставшихся до рекорда, и статистика по сезону"))
-                                .append(new BotCommand("/poll_results", "Статистика голосования"))
-                                .append(new BotCommand("/schedule", "Ближайшие игры Александра Овечкина и команды Washington Capitals"))
-                                .append(new BotCommand("/prediction", "Когда Овечкин побьет рекорд Гретцки?"))
-                                .append(new BotCommand("/quiz", "Насколько хорошо ты знаешь Александра Овечкина?"))
+//                                .append(new BotCommand("/start", "Включить уведомления"))
+//                                .append(new BotCommand("/stats", "Текущая статистика: количество голов, оставшихся до рекорда, и статистика по сезону"))
+//                                .append(new BotCommand("/poll_results", "Статистика голосования"))
+//                                .append(new BotCommand("/schedule", "Ближайшие игры Александра Овечкина и команды Washington Capitals"))
+//                                .append(new BotCommand("/prediction", "Когда Овечкин побьет рекорд Гретцки?"))
+//                                .append(new BotCommand("/quiz", "Насколько хорошо ты знаешь Александра Овечкина?"))
+//                                .append(new BotCommand("/bets", "Ставки на Овечкина"))
+//                                .append(new BotCommand("/stop", "Отключить уведомления"))
+                                .append(new BotCommand("/all", "Все команды"))
+                                .append(new BotCommand("/stats", "Статистика Овечкина"))
+                                .append(new BotCommand("/schedule", "Расписание матчей"))
+                                .append(new BotCommand("/prediction", "Прогноз даты рекорда"))
+                                .append(new BotCommand("/quiz", "Квиз"))
                                 .append(new BotCommand("/bets", "Ставки на Овечкина"))
-                                .append(new BotCommand("/stop", "Отключить уведомления")),
+
+                                ,
                                 new BotCommandScopeDefault(),
                                 null
                         ));
