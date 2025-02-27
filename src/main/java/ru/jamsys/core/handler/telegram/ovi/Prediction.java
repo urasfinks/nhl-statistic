@@ -16,6 +16,7 @@ import ru.jamsys.core.flat.util.Util;
 import ru.jamsys.core.flat.util.UtilNHL;
 import ru.jamsys.core.flat.util.UtilRisc;
 import ru.jamsys.core.flat.util.UtilTrend;
+import ru.jamsys.core.handler.promise.BetSourceNotification;
 import ru.jamsys.core.handler.promise.PlayerStatistic;
 import ru.jamsys.core.handler.promise.RegisterNotification;
 import ru.jamsys.core.handler.promise.RequestTank01;
@@ -56,6 +57,7 @@ public class Prediction implements PromiseGenerator, OviGoalsBotCommandHandler {
                 .then("requestGamesForPlayer", new RequestTank01(() -> NHLGamesForPlayer.getUri(
                         UtilNHL.getOvi().getPlayerID()
                 )).generate())
+                .then("betSourceNotification", new BetSourceNotification("prediction").generate())
                 .then("send", (run, _, promise) -> {
                     // -- Статистика Ови ----
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
@@ -106,7 +108,23 @@ public class Prediction implements PromiseGenerator, OviGoalsBotCommandHandler {
                             .getFutureGame()
                             .getListGameInstance();
 
-                    List<TelegramNotification> telegramNotifications = new ArrayListBuilder<TelegramNotification>()
+                    ArrayListBuilder<TelegramNotification> telegramNotifications = new ArrayListBuilder<>();
+
+                    BetSourceNotification betSourceNotification = promise.getRepositoryMapClass(Promise.class, "betSourceNotification")
+                            .getRepositoryMapClass(BetSourceNotification.class);
+                    if (betSourceNotification.isNotEmpty()) {
+                        telegramNotifications.add(new TelegramNotification(
+                                context.getIdChat(),
+                                context.getTelegramBot().getBotUsername(),
+                                betSourceNotification.getMessage(),
+                                betSourceNotification.getListButton(),
+                                betSourceNotification.getPathImage()
+                        )
+                                .setIdImage(betSourceNotification.getIdImage())
+                                .setIdVideo(betSourceNotification.getIdVideo()));
+                    }
+
+                    telegramNotifications
                             .append(new TelegramNotification(
                                     context.getIdChat(),
                                     context.getTelegramBot().getBotUsername(),
