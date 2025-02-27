@@ -66,6 +66,7 @@ public class InviteGameOvi implements PromiseGenerator {
                     List<Map<String, Object>> execute = jdbcResource.execute(new JdbcRequest(JTOviSubscriber.SELECT_NOT_REMOVE));
                     execute.forEach(map -> context.getListIdChat().add(Long.parseLong(map.get("id_chat").toString())));
                 })
+                .then("betSourceNotification", new BetSourceNotification("inviteGame").generate())
                 .then("send", (atomicBoolean, _, promise) -> {
                     Context context = promise.getRepositoryMapClass(Context.class);
                     Map<String, Object> mapOrThrow = UtilJson.getMapOrThrow(oviInviteGame.getJson());
@@ -107,11 +108,27 @@ public class InviteGameOvi implements PromiseGenerator {
 
                                     )
                             ));
+                    String botName = App.get(TelegramBotManager.class).getOviBotProperty().getName();
+                    BetSourceNotification betSourceNotification = promise.getRepositoryMapClass(Promise.class, "betSourceNotification")
+                            .getRepositoryMapClass(BetSourceNotification.class);
+                    if (betSourceNotification.isNotEmpty()) {
+                        UtilRisc.forEach(atomicBoolean, context.getListIdChat(), idChat -> {
+                            context.getList().add(new TelegramNotification(
+                                    idChat,
+                                    botName,
+                                    betSourceNotification.getMessage(),
+                                    betSourceNotification.getListButton(),
+                                    betSourceNotification.getPathImage()
+                            )
+                                    .setIdImage(betSourceNotification.getIdImage())
+                                    .setIdVideo(betSourceNotification.getIdVideo()));
+                        });
+                    }
 
                     UtilRisc.forEach(atomicBoolean, context.getListIdChat(), idChat -> {
                         context.getList().add(new TelegramNotification(
                                 idChat,
-                                App.get(TelegramBotManager.class).getOviBotProperty().getName(),
+                                botName,
                                 msg,
                                 listButtons,
                                 null
