@@ -19,7 +19,7 @@ import ru.jamsys.telegram.handler.OviGoalsBotCommandHandler;
 public class PollResults extends Vote implements PromiseGenerator, OviGoalsBotCommandHandler {
 
     public PollResults(ServicePromise servicePromise) {
-        super(servicePromise);
+        super(servicePromise, true);
     }
 
     @Override

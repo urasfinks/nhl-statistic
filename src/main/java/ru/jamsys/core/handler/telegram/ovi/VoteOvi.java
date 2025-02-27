@@ -17,7 +17,7 @@ import ru.jamsys.telegram.handler.OviGoalsBotCommandHandler;
 public class VoteOvi extends Vote implements PromiseGenerator, OviGoalsBotCommandHandler {
 
     public VoteOvi(ServicePromise servicePromise) {
-        super(servicePromise);
+        super(servicePromise, false);
     }
 
 }

@@ -31,8 +31,11 @@ public class Vote implements PromiseGenerator, NhlStatisticsBotCommandHandler {
 
     private final ServicePromise servicePromise;
 
-    public Vote(ServicePromise servicePromise) {
+    private final boolean bet;
+
+    public Vote(ServicePromise servicePromise, boolean bet) {
         this.servicePromise = servicePromise;
+        this.bet = bet;
     }
 
     @Getter
@@ -44,12 +47,13 @@ public class Vote implements PromiseGenerator, NhlStatisticsBotCommandHandler {
         private boolean already = false;
         private String defaultIdPlayer;
         private String defaultIdGame;
+        private boolean bet;
     }
 
     @Override
     public Promise generate() {
         return servicePromise.get(getClass().getSimpleName(), 12_000L)
-                .extension(promise -> promise.setRepositoryMapClass(Context.class, new Context()))
+                .extension(promise -> promise.setRepositoryMapClass(Context.class, new Context().setBet(bet)))
                 .then("check", (_, _, promise) -> {
                     TelegramCommandContext contextTelegram = promise.getRepositoryMapClass(TelegramCommandContext.class);
                     if (contextTelegram.getUriParameters().isEmpty()) {
@@ -68,6 +72,8 @@ public class Vote implements PromiseGenerator, NhlStatisticsBotCommandHandler {
                 .thenWithResource("insertIfNotExist", JdbcResource.class, (_, _, promise, jdbcResource) -> {
                     TelegramCommandContext contextTelegram = promise.getRepositoryMapClass(TelegramCommandContext.class);
                     Context context = promise.getRepositoryMapClass(Context.class);
+                    // Если зашли в этот блок, значит происходит голосование и выводить ставки не надо
+                    context.setBet(false);
                     List<Map<String, Object>> execute = jdbcResource.execute(new JdbcRequest(JTVote.SELECT)
                             .addArg("id_chat", contextTelegram.getIdChat())
                             .addArg("id_game", contextTelegram.getUriParameters().get("g"))
@@ -112,18 +118,20 @@ public class Vote implements PromiseGenerator, NhlStatisticsBotCommandHandler {
                     TelegramCommandContext contextTelegram = promise.getRepositoryMapClass(TelegramCommandContext.class);
                     Context context = promise.getRepositoryMapClass(Context.class);
                     List<TelegramNotification> list = new ArrayList<>();
-                    BetSourceNotification betSourceNotification = promise.getRepositoryMapClass(Promise.class, "betSourceNotification")
-                            .getRepositoryMapClass(BetSourceNotification.class);
-                    if (betSourceNotification.isNotEmpty()) {
-                        list.add(new TelegramNotification(
-                                contextTelegram.getIdChat(),
-                                contextTelegram.getTelegramBot().getBotUsername(),
-                                betSourceNotification.getMessage(),
-                                betSourceNotification.getListButton(),
-                                betSourceNotification.getPathImage()
-                        )
-                                .setIdImage(betSourceNotification.getIdImage())
-                                .setIdVideo(betSourceNotification.getIdVideo()));
+                    if (context.isBet()) {
+                        BetSourceNotification betSourceNotification = promise.getRepositoryMapClass(Promise.class, "betSourceNotification")
+                                .getRepositoryMapClass(BetSourceNotification.class);
+                        if (betSourceNotification.isNotEmpty()) {
+                            list.add(new TelegramNotification(
+                                    contextTelegram.getIdChat(),
+                                    contextTelegram.getTelegramBot().getBotUsername(),
+                                    betSourceNotification.getMessage(),
+                                    betSourceNotification.getListButton(),
+                                    betSourceNotification.getPathImage()
+                            )
+                                    .setIdImage(betSourceNotification.getIdImage())
+                                    .setIdVideo(betSourceNotification.getIdVideo()));
+                        }
                     }
                     list.add(new TelegramNotification(
                             contextTelegram.getIdChat(),

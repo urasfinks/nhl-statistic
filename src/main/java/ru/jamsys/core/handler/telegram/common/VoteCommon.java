@@ -17,7 +17,7 @@ import ru.jamsys.telegram.handler.NhlStatisticsBotCommandHandler;
 public class VoteCommon extends Vote implements PromiseGenerator, NhlStatisticsBotCommandHandler {
 
     public VoteCommon(ServicePromise servicePromise) {
-        super(servicePromise);
+        super(servicePromise, false);
     }
 
 }
