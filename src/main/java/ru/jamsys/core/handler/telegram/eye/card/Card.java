@@ -8,4 +8,6 @@ public interface Card {
 
     String getImage();
 
+    String getDescription();
+
 }
