@@ -37,7 +37,7 @@ public class All implements PromiseGenerator, OviGoalsBotCommandHandler {
                                     context.getTelegramBot().getBotUsername(),
                                     """
                                             /start — Включить уведомления
-                                            /stats — Текущая статистика: количество голов, оставшихся до рекорда, и статистика по сезону
+                                            /stats — Текущая статистика по сезону
                                             /poll_results — Статистика голосования
                                             /schedule — Ближайшие игры Александра Овечкина и команды Washington Capitals
                                             /prediction — Когда Овечкин побьет рекорд Гретцки?

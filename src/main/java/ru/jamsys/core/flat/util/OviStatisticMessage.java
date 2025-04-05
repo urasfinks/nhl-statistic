@@ -32,7 +32,7 @@ public class OviStatisticMessage {
         return TemplateTwix.template("""
                 Статистика Александра Овечкина на ${currentDate}:
                 🎯 Забито голов: ${totalGoals}
-                🏆 До рекорда Гретцки: ${gretzkyOffset} ${gretzkyOffsetPostfix}
+                🏆 ${newReq}
                 📅 Сезон ${seasonTitle}: ${countGame} ${countGamePostfix}, ${seasonGoals} ${seasonGoalsPostfix}, ${assists} ${assistsPostfix}, ${score} ${scorePostfix}, ${countTailGamePrefix} ${countTailGame} ${countTailGamePostfix} в регулярном чемпионате
                 📈 Темп: В среднем ${avgGoalsInGame} гола за игру в этом сезоне
                 
@@ -68,6 +68,17 @@ public class OviStatisticMessage {
                 .append("scorePostfix", Util.digitTranslate(assists + seasonGoals, "очко", "очка", "очков"))
 
                 .append("templateNextGame", templateNextGame)
+
+                .append("newReq", get(totalGoals))
         ).trim();
+    }
+
+    public static String get(int totalGoals) {
+        int toRec = 895 - totalGoals;
+        if (toRec <= 0) {
+            return "Рекорд Грецки побит на " + (Math.abs(toRec) + 1) + " "+Util.digitTranslate(Math.abs(toRec) + 1, "гол", "гола", "голов");
+        } else {
+            return "До нового рекорда: " + toRec + " " + Util.digitTranslate(toRec, "гол", "гола", "голов");
+        }
     }
 }

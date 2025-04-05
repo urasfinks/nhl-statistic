@@ -12,10 +12,7 @@ import ru.jamsys.core.component.ServicePromise;
 import ru.jamsys.core.extension.builder.ArrayListBuilder;
 import ru.jamsys.core.extension.builder.HashMapBuilder;
 import ru.jamsys.core.flat.template.twix.TemplateTwix;
-import ru.jamsys.core.flat.util.Util;
-import ru.jamsys.core.flat.util.UtilNHL;
-import ru.jamsys.core.flat.util.UtilRisc;
-import ru.jamsys.core.flat.util.UtilTrend;
+import ru.jamsys.core.flat.util.*;
 import ru.jamsys.core.handler.promise.BetSourceNotification;
 import ru.jamsys.core.handler.promise.PlayerStatistic;
 import ru.jamsys.core.handler.promise.RegisterNotification;
@@ -63,7 +60,8 @@ public class Prediction implements PromiseGenerator, OviGoalsBotCommandHandler {
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
                     PlayerStatistic ovi = promise.getRepositoryMapClass(Promise.class, "ovi")
                             .getRepositoryMapClass(PlayerStatistic.class);
-                    if (ovi.getOffsetGretzky() <= 0) {
+                    Util.logConsole(Prediction.class, UtilJson.toStringPretty(ovi, "{}"));
+                    if (ovi.getOffsetGretzky() < 0) {
                         RegisterNotification.add(new TelegramNotification(
                                 context.getIdChat(),
                                 context.getTelegramBot().getBotUsername(),
@@ -103,6 +101,7 @@ public class Prediction implements PromiseGenerator, OviGoalsBotCommandHandler {
                     Chart.Response seasonChart = App.get(Chart.class)
                             .createChart(seasonXy, ovi.getOffsetGretzky(), false);
 
+
                     List<NHLTeamSchedule.Game> listGameInstance = instance
                             .initAlreadyGame()
                             .getFutureGame()
@@ -125,13 +124,13 @@ public class Prediction implements PromiseGenerator, OviGoalsBotCommandHandler {
                     }
 
                     telegramNotifications
-                            .append(new TelegramNotification(
-                                    context.getIdChat(),
-                                    context.getTelegramBot().getBotUsername(),
-                                    null,
-                                    null,
-                                    "file:/" + seasonChart.getPathChart()
-                            ))
+//                            .append(new TelegramNotification(
+//                                    context.getIdChat(),
+//                                    context.getTelegramBot().getBotUsername(),
+//                                    null,
+//                                    null,
+//                                    "file:/" + seasonChart.getPathChart()
+//                            ))
                             .append(new TelegramNotification(
                                     context.getIdChat(),
                                     context.getTelegramBot().getBotUsername(), //Сезон : ${countGame} ${countGamePostfix}, ${seasonGoals} ${seasonGoalsPostfix}
@@ -145,8 +144,8 @@ public class Prediction implements PromiseGenerator, OviGoalsBotCommandHandler {
                                             """, new HashMapBuilder<String, String>()
                                             .append("seasonTitle", UtilNHL.seasonFormat(UtilNHL.getActiveSeasonOrNext()))
                                             .append("gameAbout", getString(listGameInstance, seasonChart))
-                                            .append("count", String.valueOf(seasonChart.getCountGame()))
-                                            .append("countPostfix", Util.digitTranslate(seasonChart.getCountGame(), "игра", "игры", "игр"))
+                                            .append("count", String.valueOf(seasonChart.getCountGame() + 1))
+                                            .append("countPostfix", Util.digitTranslate(seasonChart.getCountGame() + 1, "игра", "игры", "игр"))
                                     ),
                                     null,
                                     null
@@ -160,7 +159,7 @@ public class Prediction implements PromiseGenerator, OviGoalsBotCommandHandler {
     private static @NotNull String getString(List<NHLTeamSchedule.Game> listGameInstance, Chart.Response seasonChart) {
         String templateInGame = "🔹 Рекорд, скорее всего, не будет побит в этом сезоне";
         if (listGameInstance.size() >= seasonChart.getCountGame()) {
-            NHLTeamSchedule.Game game = listGameInstance.get(seasonChart.getCountGame() - 1);
+            NHLTeamSchedule.Game game = listGameInstance.get(seasonChart.getCountGame());
             templateInGame = String.format(
                     """
                             📅 Ключевой может стать игра 🆚 %s, %s (МСК)
