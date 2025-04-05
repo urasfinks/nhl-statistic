@@ -89,7 +89,7 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
 					<image>
-						<builder>docker.io/paketobuildpacks/builder-jammy-full:latest</builder>
+						<builder>docker.io/paketobuildpacks/builder-jammy-full:0.3.467</builder>
 					</image>
 				</configuration>
 			</plugin>

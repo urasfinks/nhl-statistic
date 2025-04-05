@@ -60,7 +60,7 @@ public class Prediction implements PromiseGenerator, OviGoalsBotCommandHandler {
                     TelegramCommandContext context = promise.getRepositoryMapClass(TelegramCommandContext.class);
                     PlayerStatistic ovi = promise.getRepositoryMapClass(Promise.class, "ovi")
                             .getRepositoryMapClass(PlayerStatistic.class);
-                    Util.logConsole(Prediction.class, UtilJson.toStringPretty(ovi, "{}"));
+                    //Util.logConsole(Prediction.class, UtilJson.toStringPretty(ovi, "{}"));
                     if (ovi.getOffsetGretzky() < 0) {
                         RegisterNotification.add(new TelegramNotification(
                                 context.getIdChat(),
