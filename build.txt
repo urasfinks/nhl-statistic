@@ -31,3 +31,7 @@ select * from http_cache
 where url like '%/getNHLBoxScore?gameID=20250204_FLA%'
 
 NHLBoxScore.getUri(getIdGame())).setOnlyCache(true).generate()) заменить на false и выполнить /stats для тестового бота
+
+Доступные образы:
+https://hub.docker.com/r/paketobuildpacks/builder-jammy-full/tags
+https://paketo.io/docs/reference/builders-reference/
