@@ -108,12 +108,18 @@ public class PlayerStatistic implements PromiseGenerator {
                             .getListGame()
                             .size()
                     );
-                    setNextGame(instance
+                    List<Map<String, Object>> listGame1 = instance
                             .getFutureGame()
                             .sort(UtilListSort.Type.ASC)
-                            .getListGame()
-                            .getFirst()
-                    );
+                            .getListGame();
+                    if (!listGame1.isEmpty()) {
+                        setNextGame(instance
+                                .getFutureGame()
+                                .sort(UtilListSort.Type.ASC)
+                                .getListGame()
+                                .getFirst()
+                        );
+                    }
 
                     if (getIdGameToday() != null && !getIdGameToday().isEmpty()) {
                         promise.addToHead(new ArrayListBuilder<PromiseTask>()

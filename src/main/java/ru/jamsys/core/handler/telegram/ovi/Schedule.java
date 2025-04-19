@@ -69,6 +69,16 @@ public class Schedule implements PromiseGenerator, OviGoalsBotCommandHandler {
 
     public static void paging(List<NHLTeamSchedule.Game> listGame, int page, TelegramCommandContext context, String titleTemplate) {
         StringBuilder sb = new StringBuilder();
+        if(listGame == null || listGame.isEmpty()){
+            RegisterNotification.add(new TelegramNotification(
+                    context.getIdChat(),
+                    context.getTelegramBot().getBotUsername(),
+                    "Нет запланированных игр",
+                    null,
+                    null
+            ));
+            return;
+        }
         Paginator<NHLTeamSchedule.Game> paginator = new Paginator<>(listGame, 10);
         paginator.getPage(page).forEach(game -> sb.append(String.format("""
                         %s — 🆚 %s, %s
