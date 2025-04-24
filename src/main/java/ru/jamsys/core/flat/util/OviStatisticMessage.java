@@ -33,7 +33,7 @@ public class OviStatisticMessage {
                 Статистика Александра Овечкина на ${currentDate}:
                 🎯 Забито голов: ${totalGoals}
                 🏆 ${newReq}
-                📅 Сезон ${seasonTitle}: ${countGame} ${countGamePostfix}, ${seasonGoals} ${seasonGoalsPostfix}, ${assists} ${assistsPostfix}, ${score} ${scorePostfix}, ${countTailGamePrefix} ${countTailGame} ${countTailGamePostfix} в регулярном чемпионате
+                📅 Сезон ${seasonTitle}: ${countGame} ${countGamePostfix}, ${seasonGoals} ${seasonGoalsPostfix}, ${assists} ${assistsPostfix}, ${score} ${scorePostfix}, ${countTailGamePrefix} ${countTailGame} ${countTailGamePostfix}
                 📈 Темп: В среднем ${avgGoalsInGame} гола за игру в этом сезоне
                 
                 ${templateNextGame}
