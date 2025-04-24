@@ -89,7 +89,9 @@ public class NHLTeamSchedule {
             }
             @SuppressWarnings("unchecked")
             List<Map<String, Object>> selector = (List<Map<String, Object>>) UtilJson.selector(parsed, "body.schedule");
-            this.listGame = selector;
+
+            // Пропускаем "gameTime": "TBD" (To Be Determined) время не определено
+            this.listGame = selector.stream().filter(map -> !map.get("gameTime").equals("TBD")).toList();
             Object teamAbv = UtilJson.selector(parsed, "body.team");
             if (teamAbv != null && !teamAbv.toString().isEmpty()) {
                 NHLTeams.Team team = NHLTeams.teams.getByAbv(teamAbv.toString());
@@ -168,6 +170,9 @@ public class NHLTeamSchedule {
                 if (listAlreadyDiffIdGame.contains(gameInstance.getId())) {
                     return false;
                 }
+//                if(){
+//                    return false;
+//                }
                 long gameStartTimestamp = new BigDecimal(game.get("gameTime_epoch").toString()).longValue();
                 // 5 часов просто накинул
                 return gameStartTimestamp > (currentTimestamp - 5 * 60 * 60);

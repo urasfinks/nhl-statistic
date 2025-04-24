@@ -23,6 +23,7 @@ public class DayScheduler implements CronConfigurator, PromiseGenerator, UniqueC
 
     @Override
     public boolean isTimeHasCome(Cron.CompileResult compileResult) {
+        //return true;
         return compileResult.getBeforeTimestamp() != 0;
     }
 
