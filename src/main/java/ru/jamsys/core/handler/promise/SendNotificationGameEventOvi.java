@@ -106,36 +106,8 @@ public class SendNotificationGameEventOvi implements PromiseGenerator {
                                 "true".equals(row.getVote())
                         ))
                 )
-                .then("send", (atomicBoolean, _, promise) -> {
-                    PlayerStatistic ovi = promise.getRepositoryMapClass(Promise.class, "ovi")
-                            .getRepositoryMapClass(PlayerStatistic.class);
-                    String message = OviStatisticMessage.get(ovi);
-                    List<TelegramNotification> listSendStat = new ArrayList<>();
-                    List<TelegramNotification> listSendImage = new ArrayList<>();
+                .then("send", (atomicBoolean, _, _) -> {
                     String botName = App.get(TelegramBotManager.class).getOviBotProperty().getName();
-                    UtilRisc.forEach(atomicBoolean, listIdChat, idChat -> {
-                        listSendStat.add(new TelegramNotification(
-                                idChat,
-                                botName,
-                                message,
-                                null,
-                                null
-                        ));
-
-                        String pathImage = "image/" + ovi.getTotalGoals() + ".png";
-                        if (
-                                listGameEventData.getFirst().getScoredGoal() > 0
-                                        && UtilFileResource.isFile(pathImage, UtilFileResource.Direction.PROJECT)
-                        ) {
-                            listSendImage.add(new TelegramNotification(
-                                    idChat,
-                                    botName,
-                                    null,
-                                    null,
-                                    pathImage
-                            ));
-                        }
-                    });
                     List<TelegramNotification> merge = new ArrayList<>();
                     // Боялся повлиять на общую рассылку, поэтому всё оборачивал в try, так как на живую тестировали
                     try {
@@ -155,8 +127,6 @@ public class SendNotificationGameEventOvi implements PromiseGenerator {
                     } catch (Throwable th) {
                         App.error(th);
                     }
-                    merge.addAll(listSendImage);
-                    merge.addAll(listSendStat);
                     merge.addAll(listEvent);
                     RegisterNotification.add(merge);
                 })

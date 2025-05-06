@@ -38,7 +38,7 @@ public class UtilNHL {
 
     public static Integer getActiveSeasonOrNext(LocalDate date) {
         int year = date.getYear();
-        if (date.getMonthValue() <= Month.APRIL.getValue()) {
+        if (date.getMonthValue() <= Month.MAY.getValue()) {
             return year;
         } else if (date.getMonthValue() >= Month.OCTOBER.getValue()) {
             return year + 1;
